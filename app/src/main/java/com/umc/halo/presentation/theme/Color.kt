@@ -1,4 +1,4 @@
-package com.umc.halo.ui.theme
+package com.umc.halo.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
