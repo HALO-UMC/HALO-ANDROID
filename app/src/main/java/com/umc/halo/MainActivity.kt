@@ -11,14 +11,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.umc.halo.presentation.theme.HALOTheme
+import com.umc.halo.presentation.theme.HaloTheme
+import com.umc.halo.presentation.theme.HaloType
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            HALOTheme {
+            HaloTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
                         name = "Android",
@@ -34,14 +35,14 @@ class MainActivity : ComponentActivity() {
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
         text = "Hello $name!",
-        modifier = modifier
+        modifier = HaloType.title01Bold
     )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    HALOTheme {
+    HaloTheme {
         Greeting("Android")
     }
 }
