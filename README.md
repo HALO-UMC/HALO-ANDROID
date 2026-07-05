@@ -1,3 +1,5 @@
+# **HALO**
+
 > 🖼️ 자녀와 부모님이 매일 하나의 질문과 작은 행동으로 관계를 한 권의 이야기로 완성해가는 서비스
 > 
 
@@ -131,7 +133,7 @@ flowchart TD
 
 브랜치 · 커밋 · PR · 코드 네이밍 · 패키지 구조 규칙은 별도 문서를 참고.
 
-👉 CONVENTION 
+👉 https://exuberant-light-1c4.notion.site/CONVENTION-393ca1e217c08094ad59d341fb5dfd47?source=copy_link
 
 ## **▶️ 빌드 및 실행 방법**
 
