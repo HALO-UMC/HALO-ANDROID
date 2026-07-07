@@ -21,18 +21,6 @@ abstract class BaseViewModel<STATE,EVENT,EFFECT>(initialState: STATE): ViewModel
         _uiState.update { currentState.reducer() }
     }
 
-
-    //sideEffect
-    private val _sideEffect = MutableSharedFlow<EFFECT>() //SharedFlow로 UI effect 관리
-    val sideEffect = _sideEffect.asSharedFlow()
-
-    protected suspend fun emitSideEffect(
-        effect: EFFECT
-    ) {
-        _sideEffect.emit(effect)
-    }
-
-
     //event
     abstract fun onEvent(event: EVENT)
 }
