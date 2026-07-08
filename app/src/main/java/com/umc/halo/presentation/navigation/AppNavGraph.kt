@@ -1,6 +1,5 @@
 package com.umc.halo.presentation.navigation
 
-import android.R
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -106,7 +105,13 @@ fun BottomBar(
     currentRoute: String?
 ) {
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface //BottomNav 배경 색
+        containerColor = MaterialTheme.colorScheme.surface, //BottomNav 배경 색
+        modifier = Modifier.padding(
+            top = 8.dp,
+            start = 10.dp,
+            end = 10.dp,
+            bottom = 8.dp
+        )
     ) {
         BottomNavItem.entries.forEach { item ->
             NavigationBarItem(
@@ -146,9 +151,6 @@ fun BottomBar(
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    //---colors 이용 여부 논의 필요
-                    //selectedTextColor = MaterialTheme.colorScheme.primary, //선택 시 라벨 색
-                    //selectedIconColor = MaterialTheme.colorScheme.primary, //선택 시 아이콘 색
                     indicatorColor = Color.Transparent //인디케이터 투명화
                 )
             )
