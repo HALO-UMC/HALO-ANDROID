@@ -89,7 +89,7 @@ fun LoginScreen(
             text = "Google로 로그인",
             containerColor = Color.White,
             contentColor = Color.Black,
-            iconRes = R.drawable.ic_google,
+            iconRes = R.drawable.ic_launcher_background, // 여기는 추후에 디자인 변경되면 추가
             border = BorderStroke(1.dp, GoogleBorder),
             onClick = onGoogleClick
         )
