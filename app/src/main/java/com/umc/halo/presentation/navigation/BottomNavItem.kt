@@ -1,9 +1,11 @@
 package com.umc.halo.presentation.navigation
 
 import androidx.annotation.DrawableRes
-import androidx.compose.ui.graphics.vector.ImageVector
+//import androidx.compose.ui.graphics.vector.ImageVector
 import com.umc.halo.R
 
+
+//하단바 메뉴 이름, route, 아이콘 정보 담당
 enum class BottomNavItem(
     val route: String,
     val label: String,
