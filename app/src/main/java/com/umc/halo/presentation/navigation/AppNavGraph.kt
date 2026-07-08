@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.navigation
 
+import android.R
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,7 +34,10 @@ fun AppNavGraph(
     Scaffold(
         bottomBar = {
             if (currentRoute in bottomNavRoutes) {
-                BottomBar(navController = navController)
+                BottomBar(
+                    navController = navController,
+                    currentRoute = currentRoute
+                )
             }
         }
     ) { padding ->
@@ -97,11 +102,9 @@ fun AppNavGraph(
 
 @Composable
 fun BottomBar(
-    navController: NavHostController
+    navController: NavHostController,
+    currentRoute: String?
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface //BottomNav 배경 색
     ) {
