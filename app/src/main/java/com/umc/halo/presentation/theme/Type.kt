@@ -1,34 +1,49 @@
 package com.umc.halo.presentation.theme
 
-import androidx.compose.material3.Typography
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
+import com.umc.halo.R
 
-// Set of Material typography styles to start with
-val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
+// 폰트 파일 등록 (res/font의 4개 파일 연결)
+val Pretendard = FontFamily(
+    Font(R.font.pretendard_regular,  FontWeight.Normal),   // Regular
+    Font(R.font.pretendard_medium,   FontWeight.Medium),   // Medium
+    Font(R.font.pretendard_semibold, FontWeight.SemiBold), // Semibold
+    Font(R.font.pretendard_bold,     FontWeight.Bold)      // Bold
 )
+
+// 디자인 시스템 글자 스타일 목록
+object HaloType {
+
+    // -- Title --
+    val title01Bold     = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Bold,     fontSize = 32.sp)
+    val title01SemiBold = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.SemiBold, fontSize = 32.sp)
+    val title02Bold     = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Bold,     fontSize = 28.sp)
+    val title02SemiBold = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.SemiBold, fontSize = 28.sp)
+
+    // -- Heading --
+    val heading01Bold     = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Bold,     fontSize = 24.sp)
+    val heading01SemiBold = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.SemiBold, fontSize = 24.sp)
+    val heading02Bold     = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Bold,     fontSize = 20.sp)
+    val heading02SemiBold = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
+    val heading02Medium   = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Medium,   fontSize = 20.sp)
+
+    // -- Body --
+    val body01SemiBold = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+    val body01Medium   = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Medium,   fontSize = 16.sp)
+    val body01Regular  = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Normal,   fontSize = 16.sp)
+    val body02SemiBold = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+    val body02Medium   = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Medium,   fontSize = 14.sp)
+    val body02Regular  = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Normal,   fontSize = 14.sp)
+    val body03Medium   = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Medium,   fontSize = 12.sp)
+    val body03Regular  = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Normal,   fontSize = 12.sp)
+
+    // -- Caption --
+    val caption01Medium  = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Medium, fontSize = 10.sp)
+    val caption01Regular = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Normal, fontSize = 10.sp)
+    val caption02Medium  = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Medium, fontSize = 8.sp)
+    val caption02Regular = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Normal, fontSize = 8.sp)
+}
