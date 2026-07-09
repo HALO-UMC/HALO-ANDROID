@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-abstract class BaseViewModel<STATE,EVENT,EFFECT>(initialState: STATE): ViewModel() {
+abstract class BaseViewModel<STATE,EVENT>(initialState: STATE): ViewModel() {
 
     //state
     protected val _uiState = MutableStateFlow(initialState) //StateFlow로 UI 상태 관리
