@@ -26,6 +26,12 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeEvent>(HomeUiState()) {
                     Books(9, Color.Green, "오래전 당신"),
                     Books(10, Color.Yellow, "오래전 당신"),
                     Books(11, Color.Black, "오래전 당신")
+                ),
+                customizedStoryBookList = listOf(
+                    CustomizedStoryBooks(1,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
+                    CustomizedStoryBooks(2,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
+                    CustomizedStoryBooks(3,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
+                    CustomizedStoryBooks(4,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남")
                 )
             )
         }
@@ -35,7 +41,8 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeEvent>(HomeUiState()) {
 data class HomeUiState (
     val name: String = "Void",
     val currentProgress: Int = 0,
-    val bookList: List<Books> = emptyList()
+    val bookList: List<Books> = emptyList(),
+    val customizedStoryBookList: List<CustomizedStoryBooks> = emptyList()
 )
 
 sealed class HomeEvent (
@@ -46,4 +53,11 @@ data class Books(
     val id: Int,
     val color: Color,
     val title: String
+)
+
+data class CustomizedStoryBooks(
+    val id: Int,
+    val intro: String,
+    val title: String,
+    val subtitle: String
 )
