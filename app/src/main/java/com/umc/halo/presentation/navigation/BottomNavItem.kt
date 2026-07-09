@@ -24,17 +24,17 @@ enum class BottomNavItem(
         selectedIcon = R.drawable.ic_bottomnav_calendar_filled,
         unselectedIcon = R.drawable.ic_bottomnav_calendar_outlined
     ),
-    THEME_BOX(
-        route = Routes.THEME_BOX,
-        label = "테마함",
-        selectedIcon = R.drawable.ic_bottomnav_theme_filled,
-        unselectedIcon = R.drawable.ic_bottomnav_theme_outlined
-    ),
     STORYBOOK(
         route = Routes.STORYBOOK,
         label = "스토리북",
         selectedIcon = R.drawable.ic_bottomnav_storybook_filled,
         unselectedIcon = R.drawable.ic_bottomnav_storybook_outlined
+    ),
+    THEME_BOX(
+        route = Routes.THEME_BOX,
+        label = "테마함",
+        selectedIcon = R.drawable.ic_bottomnav_theme_filled,
+        unselectedIcon = R.drawable.ic_bottomnav_theme_outlined
     ),
     MYPAGE(
         route = Routes.MYPAGE,

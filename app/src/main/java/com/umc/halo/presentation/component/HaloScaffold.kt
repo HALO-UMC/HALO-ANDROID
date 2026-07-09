@@ -1,0 +1,66 @@
+package com.umc.halo.presentation.component
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.umc.halo.presentation.navigation.BottomNavItem
+
+@Composable
+fun HaloScaffold(
+    navController: NavHostController,
+    content: @Composable (PaddingValues) -> Unit
+) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val bottomNavRoutes = BottomNavItem.entries.map { it.route }
+
+    Scaffold(
+        topBar = {
+            when(currentRoute) {
+                //Routes.HOME -> HomeTopBar()
+                //Routes.MYPAGE -> MyPageTopBar()
+                //Routes.CALENDAR -> CalendarTopBar()
+                //Routes.THEME_BOX -> ThemeBoxTopBar()
+                //Routes.STORYBOOK -> StoryBookTopBar()
+            }
+        },
+        bottomBar = {
+            if (currentRoute in bottomNavRoutes) {
+                Column {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(10.dp)
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.Transparent,
+                                    Color(0xFF858585).copy(alpha = 0.2f)
+                                )
+                            )
+                        )
+                    )
+
+                    BottomNav(
+                        navController = navController,
+                        currentRoute = currentRoute
+                    )
+                }
+            }
+        }
+    ) { innerPadding ->
+        content(innerPadding)
+    }
+}
