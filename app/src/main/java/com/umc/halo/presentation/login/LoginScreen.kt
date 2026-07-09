@@ -34,6 +34,7 @@ import com.umc.halo.presentation.theme.HaloType
 // 카카오 공식 브랜드 색상
 private val KakaoYellow = Color(0xFFFEE500)
 private val KakaoLabel = Color(0xD9000000)      // 검정 85%
+// 구글 색상
 private val GoogleBorder = Color(0xFFDADADA)
 
 /**
