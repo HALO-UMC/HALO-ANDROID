@@ -1,4 +1,4 @@
-package com.umc.halo.core.common
+package com.umc.halo.presentation.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,9 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.umc.halo.presentation.home.HomeTopBar
 import com.umc.halo.presentation.navigation.BottomNavItem
-import com.umc.halo.presentation.navigation.Routes
 
 @Composable
 fun HaloScaffold(
@@ -32,7 +30,7 @@ fun HaloScaffold(
     Scaffold(
         topBar = {
             when(currentRoute) {
-                Routes.HOME -> HomeTopBar()
+                //Routes.HOME -> HomeTopBar()
                 //Routes.MYPAGE -> MyPageTopBar()
                 //Routes.CALENDAR -> CalendarTopBar()
                 //Routes.THEME_BOX -> ThemeBoxTopBar()
