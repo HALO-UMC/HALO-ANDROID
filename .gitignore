@@ -299,3 +299,8 @@ fabric.properties
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/android,androidstudio,kotlin,gradle,macos,windows,java,visualstudiocode
+
+### Claude Code ###
+# Claude Code 관련 문서·산출물 (깃에 올리지 않음)
+CLAUDE.md
+.claude/
