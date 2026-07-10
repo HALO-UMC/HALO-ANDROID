@@ -11,8 +11,10 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeEvent>(HomeUiState()) {
 
     init {
         updateState {
+            //dummyData
             copy(
                 name = "김재환",
+                storyBookState = StoryBookState.BeforeStart,
                 currentProgress = 3,
                 bookList = listOf(
                     Books(1, Color.Red, "오래전 당신"),
@@ -40,7 +42,8 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeEvent>(HomeUiState()) {
 
 data class HomeUiState (
     val name: String = "Void",
-    val currentProgress: Int = 0,
+    val storyBookState: StoryBookState = StoryBookState.BeforeStart,
+    val currentProgress: Int? = null,
     val bookList: List<Books> = emptyList(),
     val customizedStoryBookList: List<CustomizedStoryBooks> = emptyList()
 )
@@ -61,3 +64,9 @@ data class CustomizedStoryBooks(
     val title: String,
     val subtitle: String
 )
+
+enum class StoryBookState {
+    InProgress,
+    END,
+    BeforeStart
+}
