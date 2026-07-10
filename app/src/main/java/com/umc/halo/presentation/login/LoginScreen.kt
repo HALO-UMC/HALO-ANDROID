@@ -97,7 +97,7 @@ fun LoginScreen(
             text = "카카오 로그인",
             containerColor = KakaoYellow,
             contentColor = KakaoLabel,
-            iconRes = R.drawable.ic_loginscreen_kakao_logo,
+            iconRes = R.drawable.ic_login_kakao_logo,
             onClick = onKakaoClick
         )
 
