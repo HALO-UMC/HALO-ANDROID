@@ -67,7 +67,10 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
+
+    // Animation - Lottie
     implementation(libs.lottie.compose)
+    implementation(libs.dotlottie)
 
     // DI - Hilt
     implementation(libs.hilt.android)

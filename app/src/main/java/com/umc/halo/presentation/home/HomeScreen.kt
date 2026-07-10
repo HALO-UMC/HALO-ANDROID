@@ -107,4 +107,9 @@ fun HomeScreenContents(
     }
 }
 
+@Composable
+fun CharacterAnimation() {
+
+}
+
 
