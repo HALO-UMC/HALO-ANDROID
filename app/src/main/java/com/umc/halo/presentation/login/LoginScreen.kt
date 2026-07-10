@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,9 +25,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.R
+import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloTheme
@@ -34,9 +37,7 @@ import com.umc.halo.presentation.theme.HaloType
 
 // 카카오 공식 브랜드 색상
 private val KakaoYellow = Color(0xFFFEE500)
-private val KakaoLabel = Color(0xD9000000)      // 검정 85%
-// 구글 색상
-private val GoogleBorder = Color(0xFFDADADA)
+private val KakaoLabel = Color(0xFF191919)       // 카카오 로고 라벨 색
 
 /**
  * 로그인 화면 진입점
@@ -69,11 +70,11 @@ fun LoginScreen(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 21.dp),
+            .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(Modifier.weight(2.3f))
+        Spacer(Modifier.weight(2f))
 
         Text(
             text = "모두 준비되었어요!",
@@ -81,7 +82,18 @@ fun LoginScreen(
             color = Gray800
         )
 
-        Spacer(Modifier.weight(1.5f))
+        Spacer(Modifier.height(64.dp))
+
+        // 중앙 HALO 캐릭터
+        Image(
+            painter = painterResource(id = R.drawable.ic_login_character),
+            contentDescription = null,          // 장식용 이미지라 null
+            modifier = Modifier
+                .width(94.dp)
+                .height(110.dp)
+        )
+
+        Spacer(Modifier.height(28.dp))
 
         Text(
             text = "당신의 이야기를\nHALO와 함께 시작해볼까요?",
@@ -98,6 +110,7 @@ fun LoginScreen(
             containerColor = KakaoYellow,
             contentColor = KakaoLabel,
             iconRes = R.drawable.ic_login_kakao_logo,
+            iconSize = 20.dp,
             onClick = onKakaoClick
         )
 
@@ -107,9 +120,10 @@ fun LoginScreen(
         SocialLoginButton(
             text = "Google로 로그인",
             containerColor = Color.White,
-            contentColor = Color.Black,
-            iconRes = R.drawable.ic_launcher_background, // 여기는 추후에 디자인 변경되면 추가
-            border = BorderStroke(1.dp, GoogleBorder),
+            contentColor = Gray800,
+            iconRes = R.drawable.ic_login_google_logo,
+            iconSize = 24.dp,
+            border = BorderStroke(1.dp, Gray200),
             onClick = onGoogleClick
         )
 
@@ -137,30 +151,37 @@ private fun SocialLoginButton(
     onClick: () -> Unit,
     @DrawableRes iconRes: Int,
     modifier: Modifier = Modifier,
+    iconSize: Dp = 24.dp,
     border: BorderStroke? = null
 ) {
     Button(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(52.dp),
-        shape = RoundedCornerShape(12.dp),
+            .height(48.dp),
+        shape = RoundedCornerShape(30.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = contentColor
         ),
         border = border
     ) {
-        Image(
-            painter = painterResource(id = iconRes),
-            contentDescription = null,          // 장식용 로고라 null
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(Modifier.width(8.dp))
-        Text(
-            text = text,
-            style = HaloType.body01Medium
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = iconRes),
+                contentDescription = null,          // 장식용 로고라 null
+                modifier = Modifier.size(iconSize)
+            )
+            Text(
+                text = text,
+                style = HaloType.body01Medium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
 
