@@ -79,7 +79,7 @@ fun HomeScreenContents(
 
         Text(
             text = "${state.name}님 반가워요!,\n${state.currentProgress}",
-            style = HaloType.body01SemiBold,
+            style = HaloType.heading03SemiBold,
             modifier = Modifier.padding(horizontal = 24.dp),
             color = Color(0xFF3C3A35)
         )
