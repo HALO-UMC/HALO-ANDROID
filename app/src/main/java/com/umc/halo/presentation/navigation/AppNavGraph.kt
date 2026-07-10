@@ -34,7 +34,7 @@ fun AppNavGraph(
         }
 
         composable(Routes.HOME) {
-            HomeScreen(modifier)
+            HomeScreen()
         }
 
         composable(Routes.CALENDAR) {
