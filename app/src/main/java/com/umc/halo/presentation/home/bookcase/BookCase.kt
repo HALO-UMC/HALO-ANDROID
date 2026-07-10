@@ -40,6 +40,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.lottiefiles.dotlottie.core.compose.runtime.DotLottieController
 import com.umc.halo.R
 import com.umc.halo.presentation.home.Books
 import com.umc.halo.presentation.home.HomeUiState
@@ -50,7 +51,8 @@ import com.umc.halo.presentation.theme.HaloType
 
 @Composable
 fun BookCase(
-    state: HomeUiState
+    state: HomeUiState,
+    controller: DotLottieController
 ) {
     Column(
         Modifier
@@ -92,7 +94,7 @@ fun BookCase(
                 contentScale = ContentScale.FillBounds
             )
 
-            BookCaseContents(state.bookList)
+            BookCaseContents(state.bookList,controller)
         }
     }
 }
@@ -101,7 +103,8 @@ fun BookCase(
 
 @Composable
 fun BookCaseContents(
-    bookList: List<Books>
+    bookList: List<Books>,
+    controller: DotLottieController
 ) {
     var selectedId by remember {
         mutableStateOf<Int?>(null)
@@ -128,6 +131,7 @@ fun BookCaseContents(
                     selectedId = null
                 else
                     selectedId = item.id
+                controller.play()
             }
         }
     }
