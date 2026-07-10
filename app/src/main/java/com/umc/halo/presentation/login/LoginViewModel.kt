@@ -11,7 +11,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     // TODO: 로그인 UseCase 주입 예정 (providerToken 확정 + 서버 완성 후)
-) : BaseViewModel<LoginUiState, LoginUiEvent, Nothing>(
+) : BaseViewModel<LoginUiState, LoginUiEvent>(
     initialState = LoginUiState()
 ) {
     override fun onEvent(event: LoginUiEvent) {

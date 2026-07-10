@@ -30,6 +30,7 @@ object HaloType {
     val heading02Bold     = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Bold,     fontSize = 20.sp)
     val heading02SemiBold = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
     val heading02Medium   = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.Medium,   fontSize = 20.sp)
+    val heading03SemiBold = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.SemiBold,   fontSize = 18.sp)
 
     // -- Body --
     val body01SemiBold = TextStyle(fontFamily = Pretendard, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
