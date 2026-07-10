@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
 
 
@@ -34,8 +35,7 @@ fun AppNavGraph(
         }
 
         composable(Routes.HOME) {
-            //홈화면
-            Text(text = "Home")
+            HomeScreen()
         }
 
         composable(Routes.CALENDAR) {
