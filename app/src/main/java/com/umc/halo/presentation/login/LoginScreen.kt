@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray800
@@ -36,6 +37,23 @@ private val KakaoYellow = Color(0xFFFEE500)
 private val KakaoLabel = Color(0xD9000000)      // 검정 85%
 // 구글 색상
 private val GoogleBorder = Color(0xFFDADADA)
+
+/**
+ * 로그인 화면 진입점
+ * NavGraph 에서 이 LoginRoute 호출
+ */
+@Composable
+fun LoginRoute(
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = hiltViewModel()
+) {
+    // 지금은 표시할 상태(isLoading)를 아직 UI 에 쓰지 않아 구독을 생략함
+    LoginScreen(
+        onKakaoClick = { viewModel.onEvent(LoginUiEvent.KakaoLoginClicked) },
+        onGoogleClick = { viewModel.onEvent(LoginUiEvent.GoogleLoginClicked) },
+        modifier = modifier
+    )
+}
 
 /**
  * 온보딩 마지막 단계 - 소셜 로그인 화면
