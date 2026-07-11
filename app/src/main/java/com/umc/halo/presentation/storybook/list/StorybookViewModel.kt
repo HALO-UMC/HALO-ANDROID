@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.storybook.list
 
 import com.umc.halo.domain.model.storybook.CustomStorybook
+import com.umc.halo.domain.model.storybook.InProgressStorybook
 import com.umc.halo.domain.model.storybook.Storybook
 import com.umc.halo.domain.model.storybook.StorybookTheme
 import com.umc.halo.presentation.base.BaseViewModel
@@ -23,6 +24,10 @@ class StorybookViewModel : BaseViewModel<StorybookUiState, StorybookUiEvent>(Sto
 
             is StorybookUiEvent.OnStorybookClicked -> {
                 // TODO: 스토리북 상세(목차)로 navigation
+            }
+
+            is StorybookUiEvent.OnContinueStorybookClicked -> {
+                // TODO: 해당 스토리북의 event.chapter 장(챕터 진행 화면)으로 navigation
             }
         }
     }
@@ -77,6 +82,13 @@ class StorybookViewModel : BaseViewModel<StorybookUiState, StorybookUiEvent>(Sto
                             Storybook(52, "당신의 1호 팬", "가족과의 만남")
                         )
                     )
+                ),
+                // 진행중 탭 더미 (시작일 빠른 순으로 앞에서부터 좌상단 배치)
+                inProgressStorybooks = listOf(
+                    InProgressStorybook(101, "오래전 당신", "가족과의 만남", currentChapter = 4, isWaiting = false),
+                    InProgressStorybook(102, "오래전 당신", "가족과의 만남", currentChapter = 4, isWaiting = false),
+                    InProgressStorybook(103, "오래전 당신", "가족과의 만남", currentChapter = 4, isWaiting = false),
+                    InProgressStorybook(104, "오래전 당신", "가족과의 만남", currentChapter = 10, isWaiting = true)
                 )
             )
         }
