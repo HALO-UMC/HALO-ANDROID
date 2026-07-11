@@ -30,3 +30,15 @@ data class StorybookTheme(
     val title: String,               // 섹션 제목 (예: "대화가 어색할 때")
     val storybooks: List<Storybook>  // 해당 상황에 추천되는 책들
 )
+
+/**
+ * '진행중' 탭에 표시되는 스토리북
+ * 목록은 시작일이 빠른 순으로 좌상단부터 배치 (정렬은 데이터 계층에서)
+ */
+data class InProgressStorybook(
+    val id: Int,
+    val title: String,
+    val subtitle: String,
+    val currentChapter: Int,  // "N장 진행중" 책갈피에 표시
+    val isWaiting: Boolean     // 오늘 분량 완료
+)
