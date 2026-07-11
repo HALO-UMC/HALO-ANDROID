@@ -88,7 +88,7 @@ fun HomeScreenContents(
         Spacer(Modifier.height(40.dp))
 
         Text(
-            text = "${state.name}님 반가워요!,\n${state.currentProgress}",
+            text = "${state.userInfo.name}님 반가워요!,\n${state.greetingMessage}",
             style = HaloType.heading03SemiBold,
             modifier = Modifier.padding(horizontal = 24.dp),
             color = Color(0xFF3C3A35)
@@ -101,7 +101,7 @@ fun HomeScreenContents(
 
             Box(
                 modifier = Modifier
-                    .offset(y = (-78).dp)
+                    .offset(y = (-80).dp)
                     .align(Alignment.TopEnd)
                     .padding(horizontal = 20.dp)
                     .width(90.dp)
@@ -119,26 +119,25 @@ fun HomeScreenContents(
 
         Spacer(Modifier.height(21.dp))
 
-        if (state.storyBookState == StoryBookState.BeforeStart) {
-            CustomizedStoryBook(state.customizedStoryBookList)
+        when (val userState = state.userState) {
+            UserState.FTU -> {
+                CustomizedStoryBook(state.customizedStoryBookList)
 
-            Spacer(Modifier.height(32.dp))
+                Spacer(Modifier.height(32.dp))
 
-            ActionGuide()
+                ActionGuide()
+            }
+
+            is UserState.RU -> {
+                Spacer(Modifier.height(24.dp))
+
+                ContinueStoryBook(userState)
+            }
         }
-
-        Spacer(Modifier.height(24.dp))
-
-        if (state.storyBookState != StoryBookState.BeforeStart)
-            ContinueStoryBook(state)
 
         Spacer(Modifier.height(30.dp))
     }
 }
 
-@Composable
-fun CharacterAnimation() {
-
-}
 
 

@@ -13,9 +13,15 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeEvent>(HomeUiState()) {
         updateState {
             //dummyData
             copy(
-                name = "김재환",
-                storyBookState = StoryBookState.BeforeStart,
-                currentProgress = 3,
+                userInfo = UserInfo("김재환", true),
+                userState = UserState.RU(
+                    currentProgress = CurrentProgress(
+                        theme = 1,
+                        chapter = 1
+                    ),
+                    progressState = ProgressState.InProgress
+                ),
+                greetingMessage = "부모님과의 하루를 기록해보세요.",
                 bookList = listOf(
                     Books(1, Color.Red, "오래전 당신"),
                     Books(2, Color.Blue, "오래전 당신"),
@@ -41,9 +47,9 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeEvent>(HomeUiState()) {
 }
 
 data class HomeUiState (
-    val name: String = "Void",
-    val storyBookState: StoryBookState = StoryBookState.BeforeStart,
-    val currentProgress: Int? = null,
+    val userInfo: UserInfo = UserInfo("void",false),
+    val userState: UserState = UserState.FTU,
+    val greetingMessage: String = "void",
     val bookList: List<Books> = emptyList(),
     val customizedStoryBookList: List<CustomizedStoryBooks> = emptyList()
 )
@@ -65,8 +71,26 @@ data class CustomizedStoryBooks(
     val subtitle: String
 )
 
-enum class StoryBookState {
+enum class ProgressState {
     InProgress,
-    END,
+    Complete,
     BeforeStart
+}
+
+data class CurrentProgress(
+    val theme: Int,
+    val chapter: Int
+)
+
+data class UserInfo(
+    val name: String,
+    val auth: Boolean
+)
+
+sealed interface UserState {
+    data object FTU: UserState
+    data class RU(
+        val currentProgress: CurrentProgress,
+        val progressState: ProgressState
+    ): UserState
 }
