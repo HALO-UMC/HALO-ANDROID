@@ -2,6 +2,7 @@ package com.umc.halo.presentation.home.continue_storybook
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
+import com.umc.halo.presentation.home.HomeUiEvent
+import com.umc.halo.presentation.home.HomeViewModel
 import com.umc.halo.presentation.home.ProgressState
 import com.umc.halo.presentation.home.UserState
 import com.umc.halo.presentation.theme.Black
@@ -38,7 +41,8 @@ import com.umc.halo.presentation.theme.White
 
 @Composable
 fun ContinueStoryBook(
-    state: UserState.RU
+    state: UserState.RU,
+    vm: HomeViewModel
 ) {
     Column(
         modifier = Modifier
@@ -57,7 +61,15 @@ fun ContinueStoryBook(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(114.dp),
+                    .height(114.dp)
+                    .clickable {
+                        vm.onEvent(
+                            HomeUiEvent.OnContinueStoryBookClicked(
+                                storyBookId = state.currentProgress.theme,
+                                chapterId = state.currentProgress.chapter
+                            )
+                        )
+                    },
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = White
@@ -83,7 +95,8 @@ fun ContentsOverlay(
         modifier = Modifier
             .fillMaxWidth()
             .height(114.dp)
-            .alpha(0.9f),
+            .alpha(0.9f)
+            .clickable { }, //contents click overlay
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = White

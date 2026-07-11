@@ -2,11 +2,24 @@ package com.umc.halo.presentation.home
 
 import androidx.compose.ui.graphics.Color
 import com.umc.halo.presentation.base.BaseViewModel
+import com.umc.halo.presentation.base.UiEvent
 
-class HomeViewModel: BaseViewModel<HomeUiState, HomeEvent>(HomeUiState()) {
+class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
 
-    override fun onEvent(event: HomeEvent) {
-        TODO("Not yet implemented")
+    override fun onEvent(event: HomeUiEvent) {
+        when (event) {
+            is HomeUiEvent.OnBookClicked -> {
+                //스토리북 목차로 navigation
+            }
+
+            is HomeUiEvent.OnCustomizedStoryBookClicked -> {
+                //스토리북 목차로 navigation
+            }
+
+            is HomeUiEvent.OnContinueStoryBookClicked -> {
+                //스토리북 상세로 navigation
+            }
+        }
     }
 
     init {
@@ -54,9 +67,14 @@ data class HomeUiState (
     val customizedStoryBookList: List<CustomizedStoryBooks> = emptyList()
 )
 
-sealed class HomeEvent (
-
-)
+sealed interface HomeUiEvent {
+    data class OnCustomizedStoryBookClicked(val storyBookId: Int): HomeUiEvent
+    data class OnBookClicked(val storyBookId: Int): HomeUiEvent
+    data class OnContinueStoryBookClicked(
+        val storyBookId: Int,
+        val chapterId: Int,
+        ): HomeUiEvent
+}
 
 data class Books(
     val id: Int,

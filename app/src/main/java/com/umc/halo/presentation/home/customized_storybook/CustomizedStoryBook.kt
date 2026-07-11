@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.home.customized_storybook
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.presentation.home.CustomizedStoryBooks
+import com.umc.halo.presentation.home.HomeUiEvent
+import com.umc.halo.presentation.home.HomeViewModel
 import com.umc.halo.presentation.theme.Black
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.HaloType
@@ -31,7 +34,8 @@ import com.umc.halo.presentation.theme.Primary500
 
 @Composable
 fun CustomizedStoryBook(
-    customizedStoryBookList: List<CustomizedStoryBooks>
+    customizedStoryBookList: List<CustomizedStoryBooks>,
+    vm: HomeViewModel
 ) {
     Column(
         modifier = Modifier
@@ -51,9 +55,9 @@ fun CustomizedStoryBook(
         ) {
             items(
                 items = customizedStoryBookList,
-                key = { item -> item.id },
+                key = { item -> item.id }
             ) { item ->
-                CustomizedStoryBookList(item)
+                CustomizedStoryBookList(item,vm)
             }
         }
     }
@@ -61,12 +65,18 @@ fun CustomizedStoryBook(
 
 @Composable
 fun CustomizedStoryBookList(
-    item: CustomizedStoryBooks
+    item: CustomizedStoryBooks,
+    vm: HomeViewModel
 ) {
     Box(
         modifier = Modifier
             .width(246.dp)
             .height(175.dp)
+            .clickable {
+                vm.onEvent(
+                    HomeUiEvent.OnCustomizedStoryBookClicked(item.id)
+                )
+            }
     ) {
         Column {
             Box(

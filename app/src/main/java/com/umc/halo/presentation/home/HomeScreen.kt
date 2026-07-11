@@ -69,7 +69,7 @@ fun HomeScreen(
                 .fillMaxSize()
         ) {
             item {
-                HomeScreenContents(state = state)
+                HomeScreenContents(state,vm)
             }
         }
     }
@@ -77,7 +77,8 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContents(
-    state: HomeUiState
+    state: HomeUiState,
+    vm: HomeViewModel
 ) {
     val controller = remember { DotLottieController() }
 
@@ -97,7 +98,7 @@ fun HomeScreenContents(
         Spacer(Modifier.height(57.dp))
 
         Box() {
-            BookCase(state,controller)
+            BookCase(state,controller,vm)
 
             Box(
                 modifier = Modifier
@@ -110,7 +111,7 @@ fun HomeScreenContents(
                 DotLottieAnimation(
                     source = DotLottieSource.Asset("main_charactermotion.lottie"),
                     controller = controller,
-                    autoplay = true,
+                    autoplay = false,
                     loop = false
                 )
             }

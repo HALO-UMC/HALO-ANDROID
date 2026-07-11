@@ -43,7 +43,9 @@ import androidx.compose.ui.unit.dp
 import com.lottiefiles.dotlottie.core.compose.runtime.DotLottieController
 import com.umc.halo.R
 import com.umc.halo.presentation.home.Books
+import com.umc.halo.presentation.home.HomeUiEvent
 import com.umc.halo.presentation.home.HomeUiState
+import com.umc.halo.presentation.home.HomeViewModel
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.HaloType
@@ -52,7 +54,8 @@ import com.umc.halo.presentation.theme.HaloType
 @Composable
 fun BookCase(
     state: HomeUiState,
-    controller: DotLottieController
+    controller: DotLottieController,
+    vm: HomeViewModel
 ) {
     Column(
         Modifier
@@ -94,7 +97,7 @@ fun BookCase(
                 contentScale = ContentScale.FillBounds
             )
 
-            BookCaseContents(state.bookList,controller)
+            BookCaseContents(state.bookList,controller,vm)
         }
     }
 }
@@ -104,7 +107,8 @@ fun BookCase(
 @Composable
 fun BookCaseContents(
     bookList: List<Books>,
-    controller: DotLottieController
+    controller: DotLottieController,
+    vm: HomeViewModel
 ) {
     var selectedId by remember {
         mutableStateOf<Int?>(null)
@@ -127,11 +131,15 @@ fun BookCaseContents(
                 item = item,
                 isSelected = isSelected,
             ) {
-                if(selectedId == item.id)
-                    selectedId = null
-                else
+                //-- 토글 로직 제거 (논의 중)
+//                if(selectedId == item.id)
+//                    selectedId = null
+//                else
                     selectedId = item.id
                 controller.play()
+                vm.onEvent(
+                    HomeUiEvent.OnBookClicked(item.id)
+                )
             }
         }
     }
