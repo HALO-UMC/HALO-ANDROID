@@ -9,6 +9,7 @@ import com.umc.halo.domain.model.home.Size
 import com.umc.halo.domain.model.home.UserInfo
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.base.BaseViewModel
+import com.umc.halo.presentation.base.UiState
 
 class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
 
