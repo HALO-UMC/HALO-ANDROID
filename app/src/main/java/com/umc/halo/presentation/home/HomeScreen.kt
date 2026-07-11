@@ -36,6 +36,7 @@ import com.lottiefiles.dotlottie.core.compose.runtime.DotLottieController
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
 import com.lottiefiles.dotlottie.core.util.DotLottieSource
 import com.umc.halo.R
+import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.home.actionguide.ActionGuide
 import com.umc.halo.presentation.home.bookcase.BookCase
 import com.umc.halo.presentation.home.continue_storybook.ContinueStoryBook
@@ -122,7 +123,7 @@ fun HomeScreenContents(
 
         when (val userState = state.userState) {
             UserState.FTU -> {
-                CustomizedStoryBook(state.customizedStoryBookList)
+                CustomizedStoryBook(state.customizedStoryBookList,vm)
 
                 Spacer(Modifier.height(32.dp))
 
@@ -132,7 +133,7 @@ fun HomeScreenContents(
             is UserState.RU -> {
                 Spacer(Modifier.height(24.dp))
 
-                ContinueStoryBook(userState)
+                ContinueStoryBook(userState,vm)
             }
         }
 

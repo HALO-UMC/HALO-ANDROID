@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
-import com.umc.halo.presentation.home.CustomizedStoryBooks
+import com.umc.halo.domain.model.home.CustomizedStoryBooks
 import com.umc.halo.presentation.home.HomeUiEvent
 import com.umc.halo.presentation.home.HomeViewModel
 import com.umc.halo.presentation.theme.Black

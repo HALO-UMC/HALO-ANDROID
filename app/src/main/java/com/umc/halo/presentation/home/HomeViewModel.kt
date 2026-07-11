@@ -1,8 +1,13 @@
 package com.umc.halo.presentation.home
 
 import androidx.compose.ui.graphics.Color
+import com.umc.halo.domain.model.home.Books
+import com.umc.halo.domain.model.home.CurrentProgress
+import com.umc.halo.domain.model.home.CustomizedStoryBooks
+import com.umc.halo.domain.model.home.ProgressState
+import com.umc.halo.domain.model.home.UserInfo
+import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.base.BaseViewModel
-import com.umc.halo.presentation.base.UiEvent
 
 class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
 
@@ -49,7 +54,7 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
                     Books(11, Color.Black, "오래전 당신")
                 ),
                 customizedStoryBookList = listOf(
-                    CustomizedStoryBooks(1,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
+                    CustomizedStoryBooks(1, "대화가 어색한 당신을 위한", "오래전 당신", "가족과의 만남"),
                     CustomizedStoryBooks(2,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
                     CustomizedStoryBooks(3,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
                     CustomizedStoryBooks(4,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남")
@@ -57,58 +62,4 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
             )
         }
     }
-}
-
-data class HomeUiState (
-    val userInfo: UserInfo = UserInfo("void",false),
-    val userState: UserState = UserState.FTU,
-    val greetingMessage: String = "void",
-    val bookList: List<Books> = emptyList(),
-    val customizedStoryBookList: List<CustomizedStoryBooks> = emptyList()
-)
-
-sealed interface HomeUiEvent {
-    data class OnCustomizedStoryBookClicked(val storyBookId: Int): HomeUiEvent
-    data class OnBookClicked(val storyBookId: Int): HomeUiEvent
-    data class OnContinueStoryBookClicked(
-        val storyBookId: Int,
-        val chapterId: Int,
-        ): HomeUiEvent
-}
-
-data class Books(
-    val id: Int,
-    val color: Color,
-    val title: String
-)
-
-data class CustomizedStoryBooks(
-    val id: Int,
-    val intro: String,
-    val title: String,
-    val subtitle: String
-)
-
-enum class ProgressState {
-    InProgress,
-    Complete,
-    BeforeStart
-}
-
-data class CurrentProgress(
-    val theme: Int,
-    val chapter: Int
-)
-
-data class UserInfo(
-    val name: String,
-    val auth: Boolean
-)
-
-sealed interface UserState {
-    data object FTU: UserState
-    data class RU(
-        val currentProgress: CurrentProgress,
-        val progressState: ProgressState
-    ): UserState
 }

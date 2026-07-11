@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.lottiefiles.dotlottie.core.compose.runtime.DotLottieController
 import com.umc.halo.R
-import com.umc.halo.presentation.home.Books
+import com.umc.halo.domain.model.home.Books
 import com.umc.halo.presentation.home.HomeUiEvent
 import com.umc.halo.presentation.home.HomeUiState
 import com.umc.halo.presentation.home.HomeViewModel
