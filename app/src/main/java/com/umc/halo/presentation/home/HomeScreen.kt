@@ -37,7 +37,6 @@ import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
 import com.lottiefiles.dotlottie.core.util.DotLottieSource
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.UserState
-import com.umc.halo.presentation.base.BaseScreen
 import com.umc.halo.presentation.home.actionguide.ActionGuide
 import com.umc.halo.presentation.home.bookcase.BookCase
 import com.umc.halo.presentation.home.continue_storybook.ContinueStoryBook
