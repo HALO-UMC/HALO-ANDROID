@@ -2,6 +2,7 @@ package com.umc.halo.presentation.home.continue_storybook
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,8 +27,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
-import com.umc.halo.presentation.home.HomeUiState
-import com.umc.halo.presentation.home.StoryBookState
+import com.umc.halo.domain.model.home.ProgressState
+import com.umc.halo.domain.model.home.UserState
+import com.umc.halo.presentation.home.HomeUiEvent
+import com.umc.halo.presentation.home.HomeViewModel
 import com.umc.halo.presentation.theme.Black
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray500
@@ -38,7 +41,8 @@ import com.umc.halo.presentation.theme.White
 
 @Composable
 fun ContinueStoryBook(
-    state: HomeUiState
+    state: UserState.RU,
+    vm: HomeViewModel
 ) {
     Column(
         modifier = Modifier
@@ -46,7 +50,7 @@ fun ContinueStoryBook(
             .fillMaxWidth()
     ) {
         Text(
-            text = "${state.currentProgress}장을 바로 시작해보세요!",
+            text = "${state.currentProgress.theme}장을 바로 시작해보세요!",
             style = HaloType.body02Medium,
             color = Color(0xFF3C3A35)
         )
@@ -57,7 +61,15 @@ fun ContinueStoryBook(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(114.dp),
+                    .height(114.dp)
+                    .clickable {
+                        vm.onEvent(
+                            HomeUiEvent.OnContinueStoryBookClicked(
+                                storyBookId = state.currentProgress.theme,
+                                chapterId = state.currentProgress.chapter
+                            )
+                        )
+                    },
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = White
@@ -66,22 +78,25 @@ fun ContinueStoryBook(
                     defaultElevation = 8.dp
                 )
             ) {
-                ContinueStoryBookContents()
+                ContinueStoryBookContents(state)
             }
 
-            if (state.storyBookState == StoryBookState.END)
-                ContentsOverlay()
+            if (state.progressState == ProgressState.Complete)
+                ContentsOverlay(state)
         }
     }
 }
 
 @Composable
-fun ContentsOverlay() {
+fun ContentsOverlay(
+    state: UserState.RU
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(114.dp)
-            .alpha(0.9f),
+            .alpha(0.9f)
+            .clickable { }, //contents click overlay
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = White
@@ -92,7 +107,7 @@ fun ContentsOverlay() {
         )
         {
             Text(
-                text = "테마 5장은\n'내일 다시' 참여할 수 있어요!",
+                text = "테마 ${state.currentProgress.theme}장은\n'내일 다시' 참여할 수 있어요!",
                 style = HaloType.body01Medium,
                 color = Gray600,
                 modifier = Modifier
@@ -104,7 +119,9 @@ fun ContentsOverlay() {
 }
 
 @Composable
-fun ContinueStoryBookContents() {
+fun ContinueStoryBookContents(
+    state: UserState.RU
+) {
     Row(
         modifier = Modifier
             .padding(
@@ -137,6 +154,7 @@ fun ContinueStoryBookContents() {
             Spacer(Modifier.weight(2.5f))
 
             Text(
+                //--백엔드 전달 방식 고려 후 제작
                 text = "오래전 당신",
                 style = HaloType.body01SemiBold,
                 color = Black
@@ -145,7 +163,7 @@ fun ContinueStoryBookContents() {
             Spacer(Modifier.weight(1f))
 
             Text(
-                text = "오늘 6장까지 완료할 수 있어요!",
+                text = "오늘 ${state.currentProgress.theme}장까지 완료할 수 있어요!",
                 style = HaloType.caption01Regular,
                 color = Gray500
             )
@@ -153,7 +171,7 @@ fun ContinueStoryBookContents() {
             Spacer(Modifier.weight(6f))
 
             Text(
-                text = "5/10",
+                text = "${state.currentProgress.chapter}/10",
                 style = HaloType.caption01Regular,
                 color = Primary500
             )
@@ -174,7 +192,7 @@ fun ContinueStoryBookContents() {
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .width(54.dp)
+                        .width(((state.currentProgress.chapter/10f)*121).dp)
                         .border(
                             width = 0.dp,
                             color = Color.Transparent,
