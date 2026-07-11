@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -27,16 +28,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umc.halo.R
 import com.umc.halo.domain.model.storybook.CustomStorybook
-import com.umc.halo.domain.model.storybook.Storybook
+import com.umc.halo.domain.model.storybook.InProgressStorybook
 import com.umc.halo.domain.model.storybook.StorybookTheme
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray400
@@ -54,6 +53,11 @@ private val SectionTitleColor = Color(0xFF3C3A35)
 
 // 좌우 공통 가로 패딩
 private val HorizontalPadding = 24.dp
+
+// 스토리북 카드 공통 폭
+private val StorybookCardWidth = 139.dp
+// 진행중 2열 그리드 폭 = 카드 2개 + 열 간격 18
+private val StorybookGridWidth = StorybookCardWidth * 2 + 18.dp
 
 /**
  * 스토리북 목록 화면 진입점
@@ -91,7 +95,13 @@ private fun StorybookContent(
 
         when (state.selectedTab) {
             StorybookTab.ALL -> StorybookAllList(state = state, onEvent = onEvent)
-            StorybookTab.IN_PROGRESS, StorybookTab.DONE -> ComingSoonPlaceholder() //여기는 추후 구현
+            StorybookTab.IN_PROGRESS -> StorybookInProgressGrid(
+                items = state.inProgressStorybooks,
+                onContinue = { id, chapter ->
+                    onEvent(StorybookUiEvent.OnContinueStorybookClicked(id, chapter))
+                }
+            )
+            StorybookTab.DONE -> ComingSoonPlaceholder() //완료 탭은 추후 구현
         }
     }
 }
@@ -129,6 +139,7 @@ private fun SegmentedTabButton(
     Box(
         modifier = Modifier
             .alpha(if (selected) 1f else 0.4f) // 미선택 탭 전체를 흐리게
+            .width(58.dp)   // 디자인 고정 폭(58 * 3 + gap 8 * 2 = 190)
             .height(36.dp)
             .clip(shape)
             .background(if (selected) Primary100 else White)
@@ -137,8 +148,7 @@ private fun SegmentedTabButton(
                 color = if (selected) Color.Transparent else Gray100,
                 shape = shape
             )
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -306,8 +316,10 @@ private fun StorybookThemeSection(
                 items = theme.storybooks,
                 key = { it.id }
             ) { book ->
-                StorybookBookCard(
-                    book = book,
+                StorybookCard(
+                    title = book.title,
+                    subtitle = book.subtitle,
+                    modifier = Modifier.width(StorybookCardWidth),
                     onClick = { onClick(book.id) }
                 )
             }
@@ -315,55 +327,63 @@ private fun StorybookThemeSection(
     }
 }
 
+/**
+ * 진행중 탭
+ */
 @Composable
-private fun StorybookBookCard(
-    book: Storybook,
-    onClick: () -> Unit
+private fun StorybookInProgressGrid(
+    items: List<InProgressStorybook>,
+    onContinue: (Int, Int) -> Unit
 ) {
-    val shape = RoundedCornerShape(8.dp)
-    Column(
-        modifier = Modifier
-            .width(131.dp)
-            .height(166.dp)
-            .shadow(elevation = 4.dp, shape = shape)
-            .clip(shape)
-            .background(White)
-            .clickable { onClick() }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 30.dp)
     ) {
-        // 커버 이미지 자리(현재는 임시) — 추후 구현 예정
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(106.dp)
-                .background(Gray100)
-        )
-
-        // 하단 흰색 라벨(제목/부제)
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .background(White)
-                .padding(horizontal = 10.dp, vertical = 11.dp)
-        ) {
-            Text(
-                text = book.title,
-                style = HaloType.body01SemiBold,
-                color = Gray800,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = book.subtitle,
-                style = HaloType.caption01Regular,
-                color = Gray700
-            )
+        item {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "진행중인 스토리북",
+                    style = HaloType.body01SemiBold,
+                    color = SectionTitleColor,
+                    modifier = Modifier.padding(start = HorizontalPadding)
+                )
+                Spacer(Modifier.height(18.dp)) // 제목 → 그리드 간격
+            }
+        }
+        itemsIndexed(
+            items = items.chunked(2),
+            key = { _, row -> row.first().id }
+        ) { index, rowItems ->
+            Column(modifier = Modifier.fillMaxWidth()) {
+                if (index > 0) Spacer(Modifier.height(24.dp)) // 행 간격
+                // 고정폭 카드 2개를 한 줄에 그리드 블록을 화면 중앙 정렬(카드는 좌측부터 채움)
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    Row(
+                        modifier = Modifier.width(StorybookGridWidth),
+                        horizontalArrangement = Arrangement.spacedBy(18.dp)
+                    ) {
+                        rowItems.forEach { book ->
+                            StorybookCard(
+                                title = book.title,
+                                subtitle = book.subtitle,
+                                modifier = Modifier.width(StorybookCardWidth),
+                                progressChapter = book.currentChapter,
+                                isWaiting = book.isWaiting,
+                                onClick = { onContinue(book.id, book.currentChapter) }
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
 /**
- * 진행중/완료 탭 임시 - 추후 구현 예정
+ * 완료 탭 임시 - 추후 구현 예정
  */
 @Composable
 private fun ComingSoonPlaceholder() {
