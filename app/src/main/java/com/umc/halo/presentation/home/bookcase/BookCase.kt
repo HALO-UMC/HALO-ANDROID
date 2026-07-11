@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
@@ -83,7 +84,7 @@ fun BookCase(
                 painter = painterResource(R.drawable.shape_home_shelf),
                 contentDescription = null,
                 modifier = Modifier
-                    .offset(y = (130).dp)
+                    .offset(y = (120).dp)
                     .fillMaxWidth()
                     .dropShadow(
                         shape = RoundedCornerShape(8.dp),
@@ -117,9 +118,11 @@ fun BookCaseContents(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .height(135.dp)
+            .height(125.dp)
             .padding(horizontal = 24.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement
+            .spacedBy(8.dp),
+        verticalAlignment = Alignment.Bottom
     ) {
         items(
             items = bookList,
@@ -131,12 +134,15 @@ fun BookCaseContents(
                 item = item,
                 isSelected = isSelected,
             ) {
+                if(selectedId == null)
+                    controller.play()
+
                 //-- 토글 로직 제거 (논의 중)
-//                if(selectedId == item.id)
-//                    selectedId = null
-//                else
+                if(selectedId == item.id)
+                    //selectedId = null
+                else
                     selectedId = item.id
-                controller.play()
+
                 vm.onEvent(
                     HomeUiEvent.OnBookClicked(item.id)
                 )
@@ -159,7 +165,7 @@ fun BookItem(
     val coverAlpha by animateFloatAsState(targetValue = if (isSelected) 1f else 0f, label = "coverAlpha")
 
     val coverSize by animateDpAsState(targetValue = if (isSelected) 100.dp else 0.dp)
-    val spineSize by animateDpAsState(targetValue = if (isSelected) 0.dp else 30.dp)
+    val spineSize by animateDpAsState(targetValue = if (isSelected) 0.dp else item.size.width.dp)
 
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
@@ -178,7 +184,7 @@ fun BookItem(
         Box(
             modifier = Modifier
                 .width(spineSize)
-                .fillMaxHeight()
+                .height(item.size.height.dp)
                 .graphicsLayer {
                     transformOrigin = TransformOrigin(1f, 0.5f)
                     rotationY = spineRotation
@@ -192,7 +198,7 @@ fun BookItem(
         Box(
             modifier = Modifier
                 .width(coverSize)
-                .fillMaxHeight()
+                .height(item.size.height.dp)
                 .graphicsLayer {
                     transformOrigin = TransformOrigin(0f, 0.5f)
                     rotationY = coverRotation
