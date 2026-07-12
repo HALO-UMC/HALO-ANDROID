@@ -36,7 +36,7 @@ fun HaloScaffold(
                 //Routes.MYPAGE -> MyPageTopBar()
                 //Routes.CALENDAR -> CalendarTopBar()
                 //Routes.THEME_BOX -> ThemeBoxTopBar()
-                //Routes.STORYBOOK -> StoryBookTopBar()
+                Routes.STORYBOOK -> HaloTopBar(title = "HALO", showLeftIcon = false)
             }
         },
         bottomBar = {
