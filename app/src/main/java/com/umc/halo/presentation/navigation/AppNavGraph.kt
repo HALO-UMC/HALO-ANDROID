@@ -8,19 +8,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
+import com.umc.halo.presentation.onboarding.OnboardingRoute
 import com.umc.halo.presentation.storybook.list.StorybookScreen
 
-
-//NavHost + BottomBar 표시 여부 + 화면 route 연결
+// NavHost + BottomBar 표시 여부 + 화면 route 연결
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    //--Route와 일치하는 화면 출력
+    // Route와 일치하는 화면 출력
     NavHost(
         navController = navController,
-        startDestination = Routes.HOME,
+
+        // TODO: 온보딩 UI 확인용 임시 startDestination
+        // 나중에 로그인 흐름 연결할 때 Routes.LOGIN 또는 Routes.SPLASH로 다시 변경 예정
+        startDestination = Routes.ONBOARDING,
+
         modifier = modifier
     ) {
         composable(Routes.SPLASH) {
@@ -28,7 +32,15 @@ fun AppNavGraph(
         }
 
         composable(Routes.ONBOARDING) {
-            Text(text = "Onboarding")
+            OnboardingRoute(
+                onNavigateToHome = {
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.ONBOARDING) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         }
 
         composable(Routes.LOGIN) {
@@ -40,12 +52,10 @@ fun AppNavGraph(
         }
 
         composable(Routes.CALENDAR) {
-            //캘린더
             Text(text = "Calendar")
         }
 
         composable(Routes.THEME_BOX) {
-            //테마함
             Text(text = "Theme Box")
         }
 
@@ -55,7 +65,6 @@ fun AppNavGraph(
         }
 
         composable(Routes.MYPAGE) {
-            //마이페이지
             Text(text = "MyPage")
         }
 
@@ -72,4 +81,3 @@ fun AppNavGraph(
         }
     }
 }
-
