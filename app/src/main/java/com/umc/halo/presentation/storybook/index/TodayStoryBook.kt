@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import java.util.Locale
 import androidx.compose.ui.unit.dp
 import com.umc.halo.presentation.component.ButtonState
 import com.umc.halo.presentation.component.HaloMaterialButton
@@ -25,7 +26,9 @@ import com.umc.halo.presentation.theme.HaloType
 
 private val CoverPlaceholderColor = Gray100 // TODO: 실제 커버 이미지로 추후 교체
 @Composable
-fun TodayStoryBook() {
+fun TodayStoryBook(
+    todayStoryBook: TodayStoryBook
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,7 +57,7 @@ fun TodayStoryBook() {
         Spacer(Modifier.height(18.dp))
 
         Text(
-            text = "01장 나와 같은 나이였던 시절",
+            text = "${todayStoryBook.id.toTwoDigits()}장 ${todayStoryBook.title}",
             style = HaloType.body02SemiBold,
             color = Gray800
         )
@@ -62,7 +65,7 @@ fun TodayStoryBook() {
         Spacer(Modifier.height(4.dp))
 
         Text(
-            text = "지금의 내 나이였을 때 부모님은 어떤 하루를 살고 있었는지 들어봅시다.",
+            text = todayStoryBook.tag,
             style = HaloType.caption01Regular,
             color = Gray600
         )
@@ -80,4 +83,8 @@ fun TodayStoryBook() {
             buttonState = ButtonState.ABLE
         )
     }
+}
+
+fun Int.toTwoDigits(): String {
+    return String.format(Locale.US,"%02d", this)
 }

@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
+import com.umc.halo.domain.model.home.CurrentProgress
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.Gray700
@@ -32,26 +33,30 @@ import com.umc.halo.presentation.theme.Primary30
 import com.umc.halo.presentation.theme.Primary500
 
 @Composable
-fun StoryBookProgress() {
+fun StoryBookProgress(
+    storyBookProgress: CurrentProgress
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 6.dp)
     ) {
         Text(
-            text = "아직 첫 장을 펼치지 않았어요", // 상황에 따라 문구 변경 필요
+            text = progressString(storyBookProgress.chapter), // 상황에 따라 문구 변경 필요
             style = HaloType.body02Regular,
             color = Gray700
         )
 
         Spacer(Modifier.height(19.dp))
 
-        StoryBookProgressBar()
+        StoryBookProgressBar(storyBookProgress)
     }
 }
 
 @Composable
-fun StoryBookProgressBar() {
+fun StoryBookProgressBar(
+    storyBookProgress: CurrentProgress
+) {
     Column(
         modifier = Modifier
             .padding(start = 12.dp)
@@ -74,7 +79,7 @@ fun StoryBookProgressBar() {
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(3f/10f) // 나누기 n배 (임시: 3)
+                    .fillMaxWidth(storyBookProgress.chapter/10f) // 나누기 n배 (임시: 3)
                     .border(
                         width = 0.dp,
                         color = Color.Transparent,
@@ -91,9 +96,9 @@ fun StoryBookProgressBar() {
     }
 
     Row() {
-        Spacer(Modifier.fillMaxWidth(3f/10f))
+        Spacer(Modifier.fillMaxWidth(storyBookProgress.chapter/10f))
 
-        ProgressIndicator()
+        ProgressIndicator(storyBookProgress)
     }
 }
 
@@ -118,7 +123,9 @@ fun ProgressDivider(
 
 
 @Composable
-fun ProgressIndicator() {
+fun ProgressIndicator(
+    storyBookProgress: CurrentProgress
+) {
     Column(
         modifier = Modifier
             .offset(x = (-11).dp)
@@ -157,7 +164,7 @@ fun ProgressIndicator() {
                 )
         ) {
             Text(
-                text = "10%",
+                text = "${storyBookProgress.chapter*10}%",
                 style = HaloType.body03Regular,
                 color = Primary30,
                 modifier = Modifier
@@ -166,3 +173,17 @@ fun ProgressIndicator() {
         }
     }
 }
+
+fun progressString(progress: Int): String {
+    val koreanOrders = listOf(
+        "첫", "두", "세", "네", "다섯",
+        "여섯", "일곱", "여덟", "아홉"
+    )
+
+    return when (progress) {
+        0 -> "아직 첫 장을 펼치지 않았어요"
+        10 -> "모든 페이지를 완성했어요!"
+        else -> "${koreanOrders[progress-1]} 번째 장을 완성했어요"
+    }
+}
+
