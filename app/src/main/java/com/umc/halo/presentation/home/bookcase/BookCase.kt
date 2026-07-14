@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -30,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
@@ -40,9 +40,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.lottiefiles.dotlottie.core.compose.runtime.DotLottieController
 import com.umc.halo.R
-import com.umc.halo.presentation.home.Books
+import com.umc.halo.domain.model.home.Books
+import com.umc.halo.presentation.home.HomeUiEvent
 import com.umc.halo.presentation.home.HomeUiState
+import com.umc.halo.presentation.home.HomeViewModel
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.HaloType
@@ -50,7 +53,9 @@ import com.umc.halo.presentation.theme.HaloType
 
 @Composable
 fun BookCase(
-    state: HomeUiState
+    state: HomeUiState,
+    controller: DotLottieController,
+    vm: HomeViewModel
 ) {
     Column(
         Modifier
@@ -78,7 +83,7 @@ fun BookCase(
                 painter = painterResource(R.drawable.shape_home_shelf),
                 contentDescription = null,
                 modifier = Modifier
-                    .offset(y = (130).dp)
+                    .offset(y = (120).dp)
                     .fillMaxWidth()
                     .dropShadow(
                         shape = RoundedCornerShape(8.dp),
@@ -92,7 +97,7 @@ fun BookCase(
                 contentScale = ContentScale.FillBounds
             )
 
-            BookCaseContents(state.bookList)
+            BookCaseContents(state.bookList,controller,vm)
         }
     }
 }
@@ -101,7 +106,9 @@ fun BookCase(
 
 @Composable
 fun BookCaseContents(
-    bookList: List<Books>
+    bookList: List<Books>,
+    controller: DotLottieController,
+    vm: HomeViewModel
 ) {
     var selectedId by remember {
         mutableStateOf<Int?>(null)
@@ -110,9 +117,11 @@ fun BookCaseContents(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .height(135.dp)
+            .height(125.dp)
             .padding(horizontal = 24.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement
+            .spacedBy(8.dp),
+        verticalAlignment = Alignment.Bottom
     ) {
         items(
             items = bookList,
@@ -124,10 +133,18 @@ fun BookCaseContents(
                 item = item,
                 isSelected = isSelected,
             ) {
+                if(selectedId == null)
+                    controller.play()
+
+                //-- 토글 로직 제거 (논의 중)
                 if(selectedId == item.id)
-                    selectedId = null
+                    //selectedId = null
                 else
                     selectedId = item.id
+
+                vm.onEvent(
+                    HomeUiEvent.OnBookClicked(item.id)
+                )
             }
         }
     }
@@ -147,7 +164,7 @@ fun BookItem(
     val coverAlpha by animateFloatAsState(targetValue = if (isSelected) 1f else 0f, label = "coverAlpha")
 
     val coverSize by animateDpAsState(targetValue = if (isSelected) 100.dp else 0.dp)
-    val spineSize by animateDpAsState(targetValue = if (isSelected) 0.dp else 30.dp)
+    val spineSize by animateDpAsState(targetValue = if (isSelected) 0.dp else item.size.width.dp)
 
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
@@ -166,7 +183,7 @@ fun BookItem(
         Box(
             modifier = Modifier
                 .width(spineSize)
-                .fillMaxHeight()
+                .height(item.size.height.dp)
                 .graphicsLayer {
                     transformOrigin = TransformOrigin(1f, 0.5f)
                     rotationY = spineRotation
@@ -180,7 +197,7 @@ fun BookItem(
         Box(
             modifier = Modifier
                 .width(coverSize)
-                .fillMaxHeight()
+                .height(item.size.height.dp)
                 .graphicsLayer {
                     transformOrigin = TransformOrigin(0f, 0.5f)
                     rotationY = coverRotation
