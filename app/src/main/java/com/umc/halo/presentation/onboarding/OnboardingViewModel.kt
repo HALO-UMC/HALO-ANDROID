@@ -20,15 +20,15 @@ class OnboardingViewModel @Inject constructor() :
                 updateGender(event.gender)
             }
 
-            is OnboardingUiEvent.BirthYearChanged -> {
+            is OnboardingUiEvent.BirthYearSelected -> {
                 updateBirthYear(event.year)
             }
 
-            is OnboardingUiEvent.BirthMonthChanged -> {
+            is OnboardingUiEvent.BirthMonthSelected -> {
                 updateBirthMonth(event.month)
             }
 
-            is OnboardingUiEvent.BirthDayChanged -> {
+            is OnboardingUiEvent.BirthDaySelected -> {
                 updateBirthDay(event.day)
             }
 
@@ -55,8 +55,14 @@ class OnboardingViewModel @Inject constructor() :
     }
 
     private fun updateName(name: String) {
+        val filteredName = name
+            .filter { character ->
+                character.toString().matches(NAME_ALLOWED_REGEX)
+            }
+            .take(MAX_NAME_LENGTH)
+
         updateState {
-            copy(name = name)
+            copy(name = filteredName)
         }
     }
 
@@ -66,27 +72,21 @@ class OnboardingViewModel @Inject constructor() :
         }
     }
 
-    private fun updateBirthYear(year: String) {
-        val onlyDigits = year.filter { it.isDigit() }.take(4)
-
+    private fun updateBirthYear(year: Int) {
         updateState {
-            copy(birthYear = onlyDigits)
+            copy(birthYear = year)
         }
     }
 
-    private fun updateBirthMonth(month: String) {
-        val onlyDigits = month.filter { it.isDigit() }.take(2)
-
+    private fun updateBirthMonth(month: Int) {
         updateState {
-            copy(birthMonth = onlyDigits)
+            copy(birthMonth = month)
         }
     }
 
-    private fun updateBirthDay(day: String) {
-        val onlyDigits = day.filter { it.isDigit() }.take(2)
-
+    private fun updateBirthDay(day: Int) {
         updateState {
-            copy(birthDay = onlyDigits)
+            copy(birthDay = day)
         }
     }
 
@@ -139,6 +139,10 @@ class OnboardingViewModel @Inject constructor() :
     }
 
     companion object {
+        private const val MAX_NAME_LENGTH = 10
         private const val MAX_PARENT_PERSONALITY_COUNT = 3
+
+        // 한글 완성형, 한글 조합 중간 글자, 영어, 숫자 허용
+        private val NAME_ALLOWED_REGEX = Regex("[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9]")
     }
 }
