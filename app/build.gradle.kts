@@ -16,6 +16,8 @@ val localProperties = Properties().apply {
     }
 }
 val baseUrl: String = localProperties.getProperty("BASE_URL") ?: "\"http://localhost:8080/\""
+// 카카오 네이티브 앱 키 (KAKAO_NATIVE_APP_KEY에 오류나면 빌드는 성공하지만 로그인은 동작 하지 않음)
+val kakaoNativeAppKey: String = localProperties.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
 
 android {
     namespace = "com.umc.halo"
@@ -36,6 +38,11 @@ android {
 
         // BuildConfig.BASE_URL 로 코드에서 접근 (값은 local.properties 에서 주입)
         buildConfigField("String", "BASE_URL", baseUrl)
+
+        // 카카오 SDK 초기화(KakaoSdk.init)에서 BuildConfig.KAKAO_NATIVE_APP_KEY 로 사용
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoNativeAppKey\"")
+        // manifest의 로그인 redirect scheme에 주입
+        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoNativeAppKey
     }
 
     buildTypes {
@@ -85,6 +92,9 @@ dependencies {
 
     // Local storage - DataStore
     implementation(libs.androidx.datastore.preferences)
+
+    // 소셜 로그인 - Kakao
+    implementation(libs.kakao.user)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
