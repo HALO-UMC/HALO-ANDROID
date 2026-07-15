@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
 import com.umc.halo.presentation.onboarding.OnboardingRoute
+import com.umc.halo.presentation.storybook.index.StoryBookDetailScreen
 import com.umc.halo.presentation.storybook.list.StorybookScreen
 
 // NavHost + BottomBar 표시 여부 + 화면 route 연결
@@ -69,7 +70,7 @@ fun AppNavGraph(
         }
 
         composable(Routes.STORYBOOK_DETAIL) {
-            Text(text = "Storybook Detail")
+            StoryBookDetailScreen()
         }
 
         composable(Routes.CHAPTER_PROGRESS) {
