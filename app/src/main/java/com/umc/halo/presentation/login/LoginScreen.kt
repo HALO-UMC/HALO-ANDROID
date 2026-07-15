@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,9 +49,11 @@ fun LoginRoute(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
+    // 카카오 SDK 호출에 필요한 Activity Context
+    val context = LocalContext.current
     // 지금은 표시할 상태(isLoading)를 아직 UI 에 쓰지 않아 구독을 생략함
     LoginScreen(
-        onKakaoClick = { viewModel.onEvent(LoginUiEvent.KakaoLoginClicked) },
+        onKakaoClick = { viewModel.onEvent(LoginUiEvent.KakaoLoginClicked(context)) },
         onGoogleClick = { viewModel.onEvent(LoginUiEvent.GoogleLoginClicked) },
         modifier = modifier
     )
