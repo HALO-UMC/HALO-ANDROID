@@ -13,6 +13,7 @@ class StoryBookDetailViewModel: BaseViewModel<StoryBookDetailUiState, StoryBookD
 
     init {
         updateState {
+            //dummyData
             copy(
                 storyBookId = 1,
                 storyBookInfo = StoryBookInfo(

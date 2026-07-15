@@ -18,6 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.umc.halo.presentation.home.HomeTopBar
 import com.umc.halo.presentation.navigation.BottomNavItem
 import com.umc.halo.presentation.navigation.Routes
+import com.umc.halo.presentation.storybook.index.StoryBookDetailTopBar
 
 @Composable
 fun HaloScaffold(
@@ -37,6 +38,7 @@ fun HaloScaffold(
                 //Routes.CALENDAR -> CalendarTopBar()
                 //Routes.THEME_BOX -> ThemeBoxTopBar()
                 Routes.STORYBOOK -> HaloTopBar(title = "HALO", showLeftIcon = false)
+                Routes.STORYBOOK_DETAIL -> StoryBookDetailTopBar()
             }
         },
         bottomBar = {

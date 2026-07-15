@@ -128,7 +128,7 @@ fun ProgressIndicator(
 ) {
     Column(
         modifier = Modifier
-            .offset(x = (-11).dp)
+            .offset(x = (-22).dp)
     ) {
         Canvas(
             modifier = Modifier

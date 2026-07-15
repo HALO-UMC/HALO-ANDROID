@@ -27,7 +27,9 @@ import com.umc.halo.presentation.theme.HaloType
 private val CoverPlaceholderColor = Gray100 // TODO: 실제 커버 이미지로 추후 교체
 @Composable
 fun TodayStoryBook(
-    todayStoryBook: TodayStoryBook
+    storyBookId: Long,
+    todayStoryBook: TodayStoryBook,
+    onEvent: (StoryBookDetailUiEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -78,7 +80,7 @@ fun TodayStoryBook(
                 .aspectRatio(46f/7f),
             text = "바로 시작하기",
             onClick = {
-
+                onEvent(StoryBookDetailUiEvent.OnClickTodayStoryBook(storyBookId,todayStoryBook.id.toLong()))
             },
             buttonState = ButtonState.ABLE
         )

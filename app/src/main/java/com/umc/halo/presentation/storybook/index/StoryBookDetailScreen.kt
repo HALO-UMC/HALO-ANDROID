@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -35,13 +36,14 @@ private val CoverPlaceholderColor = Gray100 // TODO: 실제 커버 이미지로 
 
 
 @Composable
-fun StoryBookDetailTopBar() {
+fun StoryBookDetailTopBar(
+    vm: StoryBookDetailViewModel = viewModel()
+) {
+    val state by vm.uiState.collectAsState()
+
     HaloTopBar(
-        title = "현재 스트리북",
-        showLeftIcon = true,
-        onClick = {
-            //뒤로가기
-        }
+        title = state.storyBookInfo.title,
+        showLeftIcon = false
     )
 }
 
@@ -57,7 +59,9 @@ fun StoryBookDetailScreen(
             .padding(horizontal = ScreenPaddingHorizontal)
     ) {
         item {
-            StoryBookIndexIntro(state)
+            StoryBookIndexIntro(
+                state,
+                onEvent = vm::onEvent)
 
             Spacer(Modifier.height(56.dp))
 
@@ -72,16 +76,20 @@ fun StoryBookDetailScreen(
 
         items(
             items = state.storyBookIndex,
-            key = { item -> item.id },
+            key = { item -> item.id }
         ) { item ->
-            StoryBookIndex(item)
+            StoryBookIndex(
+                state.storyBookId,
+                item,
+                onEvent = vm::onEvent)
         }
     }
 }
 
 @Composable
 fun StoryBookIndexIntro(
-    state: StoryBookDetailUiState
+    state: StoryBookDetailUiState,
+    onEvent: (StoryBookDetailUiEvent) -> Unit
 ) {
     Column() {
         Spacer(Modifier.height(20.dp))
@@ -94,7 +102,7 @@ fun StoryBookIndexIntro(
 
         Spacer(Modifier.height(48.dp))
 
-        TodayStoryBook(state.todayStoryBookInfo)
+        TodayStoryBook(state.storyBookId,state.todayStoryBookInfo, onEvent)
     }
 }
 
@@ -133,7 +141,9 @@ fun StoryThemeIntro(
             text = storyBookInfo.storyBookIntro,
             style = HaloType.body03Regular,
             color = Gray500,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center
         )
     }
 }

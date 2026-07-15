@@ -1,6 +1,8 @@
 package com.umc.halo.presentation.storybook.index
 
+import android.R.attr.onClick
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,13 +27,20 @@ import com.umc.halo.presentation.theme.HaloType
 private val CoverPlaceholderColor = Gray100 // TODO: 실제 커버 이미지로 추후 교체
 @Composable
 fun StoryBookIndex(
-    item: StoryBookIndex
+    storyBookId: Long,
+    item: StoryBookIndex,
+    onEvent: (StoryBookDetailUiEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        Row() {
+        Row(
+            modifier = Modifier
+                .clickable{
+                    onEvent(StoryBookDetailUiEvent.OnClickStoryBookIndex(storyBookId,item.id.toLong()))
+                }
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(9f / 26f)
