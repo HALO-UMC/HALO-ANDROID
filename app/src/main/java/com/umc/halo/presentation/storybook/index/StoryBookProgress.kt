@@ -112,7 +112,7 @@ fun ProgressDivider(
         repeat(number-1) {
             Icon(
                 painter = painterResource(R.drawable.ic_storybookindex_progress_divider),
-                contentDescription = "progress_divider",
+                contentDescription = null,
                 tint = Gray100
             )
 
@@ -183,7 +183,8 @@ fun progressString(progress: Int): String {
     return when (progress) {
         0 -> "아직 첫 장을 펼치지 않았어요"
         10 -> "모든 페이지를 완성했어요!"
-        else -> "${koreanOrders[progress-1]} 번째 장을 완성했어요"
+        in 1..9 -> "${koreanOrders[progress-1]} 번째 장을 완성했어요"
+        else -> ""
     }
 }
 
