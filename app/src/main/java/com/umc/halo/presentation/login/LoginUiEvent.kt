@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.login
 
+import android.content.Context
 import com.umc.halo.presentation.base.UiEvent
 
 /**
@@ -8,6 +9,7 @@ import com.umc.halo.presentation.base.UiEvent
  * sealed 로 ViewModel 의 when 에서 모든 케이스 처리
  */
 sealed interface LoginUiEvent : UiEvent {
-    data object KakaoLoginClicked : LoginUiEvent
+    // 카카오 로그인 SDK 는 Activity Context를 필요로 하여 이벤트에 담아 전달함
+    data class KakaoLoginClicked(val context: Context) : LoginUiEvent
     data object GoogleLoginClicked : LoginUiEvent
 }
