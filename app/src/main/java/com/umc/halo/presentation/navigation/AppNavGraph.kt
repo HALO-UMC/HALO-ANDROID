@@ -24,7 +24,7 @@ fun AppNavGraph(
 
         // TODO: 온보딩 UI 확인용 임시 startDestination
         // 나중에 로그인 흐름 연결할 때 Routes.LOGIN 또는 Routes.SPLASH로 다시 변경 예정
-        startDestination = Routes.STORYBOOK_DETAIL,
+        startDestination = Routes.ONBOARDING,
 
         modifier = modifier
     ) {
