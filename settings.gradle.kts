@@ -20,6 +20,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://jitpack.io")
+        maven("https://devrepo.kakao.com/nexus/content/groups/public/") // 카카오 SDK 저장소
     }
 }
 
