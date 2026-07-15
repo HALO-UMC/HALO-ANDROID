@@ -1,6 +1,7 @@
 package com.umc.halo
 
 import android.app.Application
+import com.kakao.sdk.common.KakaoSdk
 import dagger.hilt.android.HiltAndroidApp
 
 /**
@@ -10,4 +11,11 @@ import dagger.hilt.android.HiltAndroidApp
  * 이 클래스는 AndroidManifest 의 <application android:name> 에 등록되어야 실제로 동작함
  */
 @HiltAndroidApp
-class HaloApplication : Application()
+class HaloApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+
+        // 카카오 SDK 초기화 (앱 실행 시 1회) — 네이티브 앱 키는 local.properties → BuildConfig 로 주입
+        KakaoSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
+    }
+}
