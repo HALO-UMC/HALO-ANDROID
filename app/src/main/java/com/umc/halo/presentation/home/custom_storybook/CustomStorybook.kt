@@ -1,4 +1,4 @@
-package com.umc.halo.presentation.home.customized_storybook
+package com.umc.halo.presentation.home.custom_storybook
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,7 +35,7 @@ import com.umc.halo.presentation.theme.Primary500
 
 
 @Composable
-fun CustomizedStoryBook(
+fun CustomStorybook(
     customStorybookList: List<CustomStorybook>,
     onEvent: (HomeUiEvent) -> Unit
 ) {
@@ -61,76 +61,7 @@ fun CustomizedStoryBook(
             ) { item ->
                 CustomStorybookCard(item) {
                     onEvent(HomeUiEvent.OnCustomizedStoryBookClicked(item.id))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun CustomizedStoryBookList(
-    item: CustomizedStoryBooks,
-    vm: HomeViewModel
-) {
-    Box(
-        modifier = Modifier
-            .width(246.dp)
-            .height(175.dp)
-            .clickable {
-                vm.onEvent(
-                    HomeUiEvent.OnCustomizedStoryBookClicked(item.id)
-                )
-            }
-    ) {
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(108.dp)
-                    .border(
-                        width = 0.dp,
-                        color = Color.Transparent,
-                        shape = RoundedCornerShape(4.dp)
-                    )
-            ) {
-
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Column {
-                    Text(
-                        text = item.intro,
-                        style = HaloType.caption01Medium,
-                        color = Primary500,
-                        modifier = Modifier.width(198.dp),
-                    )
-
-                    Text(
-                        text = item.title,
-                        style = HaloType.body01SemiBold,
-                        color = Black,
-                        modifier = Modifier.width(198.dp)
-                    )
-
-                    Text(
-                        text = item.subtitle,
-                        style = HaloType.caption01Regular,
-                        color = Gray500,
-                        modifier = Modifier.width(198.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Icon(
-                    painter = painterResource(R.drawable.ic_home_right_arrow),
-                    contentDescription = null,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
+                } // 공용 component 이용
             }
         }
     }
