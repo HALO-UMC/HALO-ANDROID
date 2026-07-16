@@ -24,6 +24,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.CustomizedStoryBooks
+import com.umc.halo.domain.model.storybook.CustomStorybook
+import com.umc.halo.presentation.component.CustomStorybookCard
 import com.umc.halo.presentation.home.HomeUiEvent
 import com.umc.halo.presentation.home.HomeViewModel
 import com.umc.halo.presentation.theme.Black
@@ -34,8 +36,8 @@ import com.umc.halo.presentation.theme.Primary500
 
 @Composable
 fun CustomizedStoryBook(
-    customizedStoryBookList: List<CustomizedStoryBooks>,
-    vm: HomeViewModel
+    customStorybookList: List<CustomStorybook>,
+    onEvent: (HomeUiEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -54,10 +56,12 @@ fun CustomizedStoryBook(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(
-                items = customizedStoryBookList,
+                items = customStorybookList,
                 key = { item -> item.id }
             ) { item ->
-                CustomizedStoryBookList(item,vm)
+                CustomStorybookCard(item) {
+                    onEvent(HomeUiEvent.OnCustomizedStoryBookClicked(item.id))
+                }
             }
         }
     }

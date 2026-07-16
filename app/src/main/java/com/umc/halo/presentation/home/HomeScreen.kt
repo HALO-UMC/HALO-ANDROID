@@ -98,7 +98,7 @@ fun HomeScreenContents(
 
         Spacer(Modifier.height(57.dp))
 
-        Box() {
+        Box {
             BookCase(state,controller,vm)
 
             Box(
@@ -123,7 +123,7 @@ fun HomeScreenContents(
 
         when (val userState = state.userState) {
             UserState.FTU -> {
-                CustomizedStoryBook(state.customizedStoryBookList,vm)
+                CustomizedStoryBook(state.customStorybookList,vm::onEvent)
 
                 Spacer(Modifier.height(32.dp))
 
