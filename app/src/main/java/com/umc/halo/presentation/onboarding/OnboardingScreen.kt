@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
+import com.umc.halo.presentation.theme.Error
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.Gray300
@@ -171,6 +172,9 @@ private fun NameInputStep(
     onEvent: (OnboardingUiEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val nameErrorMessage = uiState.nameErrorMessage
+    val isNameError = nameErrorMessage != null
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -216,8 +220,22 @@ private fun NameInputStep(
                     onEvent(OnboardingUiEvent.NameChanged(name))
                 },
                 placeholder = "이름을 입력하세요.",
+                isError = isNameError,
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
+
+            if (nameErrorMessage != null) {
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = nameErrorMessage,
+                    style = HaloType.body03Regular,
+                    color = Error,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                )
+            }
         }
 
         OnboardingBottomButton(
@@ -243,6 +261,7 @@ private fun OnboardingNameTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
+    isError: Boolean,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -253,7 +272,11 @@ private fun OnboardingNameTextField(
         color = Gray30,
         border = BorderStroke(
             width = 1.dp,
-            color = Gray50
+            color = if (isError) {
+                Error
+            } else {
+                Gray50
+            }
         )
     ) {
         BasicTextField(
