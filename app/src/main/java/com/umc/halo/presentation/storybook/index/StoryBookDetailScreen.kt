@@ -155,7 +155,7 @@ fun StoryThemeIntro(
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
+fun StoryBookDetailPreview() {
     StoryBookDetailScreen()
 }
 

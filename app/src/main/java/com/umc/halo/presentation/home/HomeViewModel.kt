@@ -8,6 +8,7 @@ import com.umc.halo.domain.model.home.ProgressState
 import com.umc.halo.domain.model.home.Size
 import com.umc.halo.domain.model.home.UserInfo
 import com.umc.halo.domain.model.home.UserState
+import com.umc.halo.domain.model.storybook.CustomStorybook
 import com.umc.halo.presentation.base.BaseViewModel
 import com.umc.halo.presentation.base.UiState
 
@@ -34,13 +35,7 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
             //dummyData
             copy(
                 userInfo = UserInfo("김재환", true),
-                userState = UserState.RU(
-                    currentProgress = CurrentProgress(
-                        theme = 1,
-                        chapter = 1
-                    ),
-                    progressState = ProgressState.InProgress
-                ),
+                userState = UserState.FTU,
                 greetingMessage = "부모님과의 하루를 기록해보세요.",
                 bookList = listOf(
                     Books(1, Color(0xFFD5B689), "오래전 당신", Size(28,84)),
@@ -54,11 +49,11 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
                     Books(9, Color(0xFF47AA57), "오래전 당신", Size(30,90)),
                     Books(10, Color(0xFFF29EB1), "오래전 당신", Size(24,105))
                 ),
-                customizedStoryBookList = listOf(
-                    CustomizedStoryBooks(1, "대화가 어색한 당신을 위한", "오래전 당신", "가족과의 만남"),
-                    CustomizedStoryBooks(2,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
-                    CustomizedStoryBooks(3,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
-                    CustomizedStoryBooks(4,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남")
+                customStorybookList = listOf(
+                    CustomStorybook(1, "대화가 어색한 당신을 위한", "오래전 당신", "가족과의 만남"),
+                    CustomStorybook(2,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
+                    CustomStorybook(3,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
+                    CustomStorybook(4,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남")
                 )
             )
         }
