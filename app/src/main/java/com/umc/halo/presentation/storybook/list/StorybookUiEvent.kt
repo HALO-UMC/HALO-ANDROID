@@ -15,4 +15,7 @@ sealed interface StorybookUiEvent {
 
     // 진행중 탭 '이어하기'(오늘 진행 안 한 스토리북) 클릭 → 해당 장으로 이동
     data class OnContinueStorybookClicked(val storybookId: Int, val chapter: Int) : StorybookUiEvent
+
+    // 완료 탭 스토리북 클릭 → 해당 테마함으로 이동
+    data class OnDoneStorybookClicked(val storybookId: Int) : StorybookUiEvent
 }

@@ -29,6 +29,10 @@ class StorybookViewModel : BaseViewModel<StorybookUiState, StorybookUiEvent>(Sto
             is StorybookUiEvent.OnContinueStorybookClicked -> {
                 // TODO: 해당 스토리북의 event.chapter 장(챕터 진행 화면)으로 navigation
             }
+
+            is StorybookUiEvent.OnDoneStorybookClicked -> {
+                // TODO: 해당 스토리북의 테마함으로 navigation
+            }
         }
     }
 
@@ -89,6 +93,11 @@ class StorybookViewModel : BaseViewModel<StorybookUiState, StorybookUiEvent>(Sto
                     InProgressStorybook(102, "오래전 당신", "가족과의 만남", currentChapter = 4, isWaiting = false),
                     InProgressStorybook(103, "오래전 당신", "가족과의 만남", currentChapter = 4, isWaiting = false),
                     InProgressStorybook(104, "오래전 당신", "가족과의 만남", currentChapter = 10, isWaiting = true)
+                ),
+                // 완료 탭 더미 (10장까지 완료한 시점이 빠른 순으로 앞에서부터 좌상단 배치)
+                doneStorybooks = listOf(
+                    Storybook(201, "오래전 당신", "가족과의 만남"),
+                    Storybook(202, "오래전 당신", "가족과의 만남")
                 )
             )
         }
