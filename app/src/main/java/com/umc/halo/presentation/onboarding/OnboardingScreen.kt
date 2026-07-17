@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,17 +25,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
-import com.umc.halo.presentation.theme.Gray100
+import com.umc.halo.presentation.theme.Gray30
+import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.Gray300
-import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
-import com.umc.halo.presentation.theme.White
 
 @Composable
 fun OnboardingRoute(
@@ -78,8 +83,12 @@ fun OnboardingScreen(
         OnboardingStep.BASIC_INFO -> {
             TemporaryStep(
                 text = "성별 + 생년월일 화면",
-                onNextClick = { onEvent(OnboardingUiEvent.NextClicked) },
-                onBackClick = { onEvent(OnboardingUiEvent.BackClicked) },
+                onNextClick = {
+                    onEvent(OnboardingUiEvent.NextClicked)
+                },
+                onBackClick = {
+                    onEvent(OnboardingUiEvent.BackClicked)
+                },
                 enabled = uiState.isNextEnabled,
                 modifier = modifier
             )
@@ -88,8 +97,12 @@ fun OnboardingScreen(
         OnboardingStep.WELCOME -> {
             TemporaryStep(
                 text = "환영 화면\n${uiState.userName}님!",
-                onNextClick = { onEvent(OnboardingUiEvent.NextClicked) },
-                onBackClick = { onEvent(OnboardingUiEvent.BackClicked) },
+                onNextClick = {
+                    onEvent(OnboardingUiEvent.NextClicked)
+                },
+                onBackClick = {
+                    onEvent(OnboardingUiEvent.BackClicked)
+                },
                 enabled = uiState.isNextEnabled,
                 modifier = modifier
             )
@@ -98,8 +111,12 @@ fun OnboardingScreen(
         OnboardingStep.PARENT_PERSONALITY -> {
             TemporaryStep(
                 text = "부모님 성격 선택 화면",
-                onNextClick = { onEvent(OnboardingUiEvent.NextClicked) },
-                onBackClick = { onEvent(OnboardingUiEvent.BackClicked) },
+                onNextClick = {
+                    onEvent(OnboardingUiEvent.NextClicked)
+                },
+                onBackClick = {
+                    onEvent(OnboardingUiEvent.BackClicked)
+                },
                 enabled = uiState.isNextEnabled,
                 modifier = modifier
             )
@@ -108,8 +125,12 @@ fun OnboardingScreen(
         OnboardingStep.RELATIONSHIP -> {
             TemporaryStep(
                 text = "부모님과 나의 관계 선택 화면",
-                onNextClick = { onEvent(OnboardingUiEvent.NextClicked) },
-                onBackClick = { onEvent(OnboardingUiEvent.BackClicked) },
+                onNextClick = {
+                    onEvent(OnboardingUiEvent.NextClicked)
+                },
+                onBackClick = {
+                    onEvent(OnboardingUiEvent.BackClicked)
+                },
                 enabled = uiState.isNextEnabled,
                 modifier = modifier
             )
@@ -118,8 +139,12 @@ fun OnboardingScreen(
         OnboardingStep.GOAL -> {
             TemporaryStep(
                 text = "원하는 관계 선택 화면",
-                onNextClick = { onEvent(OnboardingUiEvent.NextClicked) },
-                onBackClick = { onEvent(OnboardingUiEvent.BackClicked) },
+                onNextClick = {
+                    onEvent(OnboardingUiEvent.NextClicked)
+                },
+                onBackClick = {
+                    onEvent(OnboardingUiEvent.BackClicked)
+                },
                 enabled = uiState.isNextEnabled,
                 modifier = modifier
             )
@@ -129,7 +154,9 @@ fun OnboardingScreen(
             TemporaryStep(
                 text = "온보딩 완료 화면",
                 onNextClick = onNavigateToHome,
-                onBackClick = { onEvent(OnboardingUiEvent.BackClicked) },
+                onBackClick = {
+                    onEvent(OnboardingUiEvent.BackClicked)
+                },
                 enabled = true,
                 buttonText = "시작하기",
                 modifier = modifier
@@ -144,74 +171,70 @@ private fun NameInputStep(
     onEvent: (OnboardingUiEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .navigationBarsPadding()
-            .imePadding()
-            .padding(horizontal = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(140.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(top = 153.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val titleText = buildAnnotatedString {
+                append("안녕하세요!\n")
 
-        Text(
-            text = "이름을 알려주세요",
-            style = HaloType.heading01SemiBold,
-            color = Gray800
-        )
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.SemiBold
+                    )
+                ) {
+                    append("당신의 이름")
+                }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "HALO가 당신을 어떻게 부르면 좋을까요?",
-            style = HaloType.body02Medium,
-            color = Gray400
-        )
-
-        Spacer(modifier = Modifier.height(52.dp))
-
-        OnboardingNameTextField(
-            value = uiState.name,
-            onValueChange = { name ->
-                onEvent(OnboardingUiEvent.NameChanged(name))
-            },
-            placeholder = "이름 입력"
-        )
-
-        val nameErrorMessage = uiState.nameErrorMessage
-
-        if (nameErrorMessage != null) {
-            Spacer(modifier = Modifier.height(8.dp))
+                append("을 알려주세요")
+            }
 
             Text(
-                text = nameErrorMessage,
-                style = HaloType.body03Medium,
-                color = Primary500,
-                modifier = Modifier.fillMaxWidth()
+                text = titleText,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 21.dp),
+                style = HaloType.heading01Regular.copy(
+                    textAlign = TextAlign.Center
+                ),
+                color = Gray800
             )
-        } else {
-            Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = "2~10자, 한글/영어/숫자만 입력할 수 있어요.",
-                style = HaloType.body03Medium,
-                color = Gray400,
-                modifier = Modifier.fillMaxWidth()
+            Spacer(modifier = Modifier.height(35.dp))
+
+            OnboardingNameTextField(
+                value = uiState.name,
+                onValueChange = { name ->
+                    onEvent(OnboardingUiEvent.NameChanged(name))
+                },
+                placeholder = "이름을 입력하세요.",
+                modifier = Modifier.padding(horizontal = 24.dp)
             )
         }
-
-        Spacer(modifier = Modifier.weight(1f))
 
         OnboardingBottomButton(
             text = "다음",
             enabled = uiState.isNextEnabled,
             onClick = {
                 onEvent(OnboardingUiEvent.NextClicked)
-            }
+            },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(
+                    start = 24.dp,
+                    end = 24.dp,
+                    bottom = 20.dp
+                )
         )
-
-        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
@@ -226,36 +249,41 @@ private fun OnboardingNameTextField(
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
-        shape = RoundedCornerShape(16.dp),
-        color = White,
+        shape = RoundedCornerShape(18.dp),
+        color = Gray30,
         border = BorderStroke(
             width = 1.dp,
-            color = if (value.isNotBlank()) Primary500 else Gray100
+            color = Gray50
         )
     ) {
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
-            textStyle = HaloType.body01Medium.copy(
-                color = Gray800
+            textStyle = HaloType.body02Regular.copy(
+                color = Gray800,
+                lineHeight = 20.3.sp,
+                letterSpacing = (-0.14).sp
             ),
             cursorBrush = SolidColor(Primary500),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text
             ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 17.dp),
+            modifier = Modifier.fillMaxSize(),
             decorationBox = { innerTextField ->
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     if (value.isBlank()) {
                         Text(
                             text = placeholder,
-                            style = HaloType.body01Medium,
+                            style = HaloType.body02Regular.copy(
+                                lineHeight = 20.3.sp,
+                                letterSpacing = (-0.14).sp
+                            ),
                             color = Gray300
                         )
                     }
