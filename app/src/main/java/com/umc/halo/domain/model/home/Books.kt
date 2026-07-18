@@ -13,10 +13,3 @@ data class Size(
     val width: Int,
     val height: Int
 )
-
-data class CustomizedStoryBooks(
-    val id: Int,
-    val intro: String,
-    val title: String,
-    val subtitle: String
-)
