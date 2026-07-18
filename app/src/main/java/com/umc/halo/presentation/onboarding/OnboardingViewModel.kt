@@ -20,15 +20,15 @@ class OnboardingViewModel @Inject constructor() :
                 updateGender(event.gender)
             }
 
-            is OnboardingUiEvent.BirthYearChanged -> {
+            is OnboardingUiEvent.BirthYearSelected -> {
                 updateBirthYear(event.year)
             }
 
-            is OnboardingUiEvent.BirthMonthChanged -> {
+            is OnboardingUiEvent.BirthMonthSelected -> {
                 updateBirthMonth(event.month)
             }
 
-            is OnboardingUiEvent.BirthDayChanged -> {
+            is OnboardingUiEvent.BirthDaySelected -> {
                 updateBirthDay(event.day)
             }
 
@@ -54,9 +54,42 @@ class OnboardingViewModel @Inject constructor() :
         }
     }
 
-    private fun updateName(name: String) {
+    private fun updateName(input: String) {
+        val containsInvalidCharacter = input.any { character ->
+            !character.isAllowedNameCharacter()
+        }
+
+        val exceedsMaxLength = input.length > MAX_NAME_LENGTH
+
+        /*
+         * 허용되지 않은 문자는 실제 입력값에는 반영하지 않는다.
+         * 10자를 초과한 문자도 입력값에는 반영하지 않는다.
+         */
+        val filteredName = input
+            .filter { character ->
+                character.isAllowedNameCharacter()
+            }
+            .take(MAX_NAME_LENGTH)
+
+        val shouldShowError = when {
+            // 아무것도 입력하지 않은 초기 상태에서는 에러를 보여주지 않는다.
+            input.isEmpty() -> false
+
+            // 특수문자를 입력했거나 10자를 초과하려 한 경우
+            containsInvalidCharacter -> true
+            exceedsMaxLength -> true
+
+            // 허용된 문자이지만 아직 2자 미만인 경우
+            filteredName.length < MIN_NAME_LENGTH -> true
+
+            else -> false
+        }
+
         updateState {
-            copy(name = name)
+            copy(
+                name = filteredName,
+                isNameErrorVisible = shouldShowError
+            )
         }
     }
 
@@ -66,27 +99,21 @@ class OnboardingViewModel @Inject constructor() :
         }
     }
 
-    private fun updateBirthYear(year: String) {
-        val onlyDigits = year.filter { it.isDigit() }.take(4)
-
+    private fun updateBirthYear(year: Int) {
         updateState {
-            copy(birthYear = onlyDigits)
+            copy(birthYear = year)
         }
     }
 
-    private fun updateBirthMonth(month: String) {
-        val onlyDigits = month.filter { it.isDigit() }.take(2)
-
+    private fun updateBirthMonth(month: Int) {
         updateState {
-            copy(birthMonth = onlyDigits)
+            copy(birthMonth = month)
         }
     }
 
-    private fun updateBirthDay(day: String) {
-        val onlyDigits = day.filter { it.isDigit() }.take(2)
-
+    private fun updateBirthDay(day: Int) {
         updateState {
-            copy(birthDay = onlyDigits)
+            copy(birthDay = day)
         }
     }
 
@@ -97,7 +124,8 @@ class OnboardingViewModel @Inject constructor() :
                     selectedParentPersonalities - personality
                 }
 
-                selectedParentPersonalities.size < MAX_PARENT_PERSONALITY_COUNT -> {
+                selectedParentPersonalities.size <
+                        MAX_PARENT_PERSONALITY_COUNT -> {
                     selectedParentPersonalities + personality
                 }
 
