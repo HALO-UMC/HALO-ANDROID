@@ -18,7 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.umc.halo.presentation.home.HomeTopBar
 import com.umc.halo.presentation.navigation.BottomNavItem
 import com.umc.halo.presentation.navigation.Routes
-import com.umc.halo.presentation.storybook.index.StoryBookDetailTopBar
+import com.umc.halo.presentation.storybook.detail.StoryBookDetailTopBar
 
 @Composable
 fun HaloScaffold(
