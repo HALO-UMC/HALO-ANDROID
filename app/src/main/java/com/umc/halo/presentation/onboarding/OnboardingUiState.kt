@@ -17,6 +17,39 @@ internal fun Char.isAllowedNameCharacter(): Boolean {
     return NAME_ALLOWED_CHARACTER_REGEX.matches(toString())
 }
 
+private fun isValidBirthDate(
+    year: Int,
+    month: Int,
+    day: Int
+): Boolean {
+    if (year <= 0) return false
+    if (month !in 1..12) return false
+
+    val maxDay = when (month) {
+        1, 3, 5, 7, 8, 10, 12 -> {
+            31
+        }
+
+        4, 6, 9, 11 -> {
+            30
+        }
+
+        2 -> {
+            val isLeapYear =
+                year % 400 == 0 ||
+                        (year % 4 == 0 && year % 100 != 0)
+
+            if (isLeapYear) 29 else 28
+        }
+
+        else -> {
+            return false
+        }
+    }
+
+    return day in 1..maxDay
+}
+
 enum class Gender(
     val label: String
 ) {
@@ -63,14 +96,29 @@ data class OnboardingUiState(
             null
         }
 
+    val isBirthDateValid: Boolean
+        get() {
+            val year = birthYear ?: return false
+            val month = birthMonth ?: return false
+            val day = birthDay ?: return false
+
+            return isValidBirthDate(
+                year = year,
+                month = month,
+                day = day
+            )
+        }
+
+    /*
+     * 기존 화면 코드에서 사용하는 이름을 유지한다.
+     * 세 값이 단순히 선택됐는지가 아니라 실제 존재하는 날짜인지도 검사한다.
+     */
     val isBirthDateSelected: Boolean
-        get() = birthYear != null &&
-                birthMonth != null &&
-                birthDay != null
+        get() = isBirthDateValid
 
     val birthDateText: String
         get() {
-            if (!isBirthDateSelected) return ""
+            if (!isBirthDateValid) return ""
 
             return "%04d.%02d.%02d".format(
                 birthYear,
@@ -86,11 +134,15 @@ data class OnboardingUiState(
     val isNextEnabled: Boolean
         get() = when (currentStep) {
             OnboardingStep.NAME -> {
-                isNameValid
+                /*
+                 * 잘못된 문자를 제거한 뒤 저장된 이름이 유효하더라도
+                 * 현재 오류가 표시 중이면 다음 단계로 이동하지 못하게 한다.
+                 */
+                isNameValid && !isNameErrorVisible
             }
 
             OnboardingStep.BASIC_INFO -> {
-                selectedGender != null && isBirthDateSelected
+                selectedGender != null && isBirthDateValid
             }
 
             OnboardingStep.WELCOME -> {

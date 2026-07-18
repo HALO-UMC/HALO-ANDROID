@@ -25,6 +25,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.error
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -173,7 +177,6 @@ private fun NameInputStep(
     modifier: Modifier = Modifier
 ) {
     val nameErrorMessage = uiState.nameErrorMessage
-    val isNameError = nameErrorMessage != null
 
     Box(
         modifier = modifier
@@ -220,7 +223,7 @@ private fun NameInputStep(
                     onEvent(OnboardingUiEvent.NameChanged(name))
                 },
                 placeholder = "이름을 입력하세요.",
-                isError = isNameError,
+                errorMessage = nameErrorMessage,
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
 
@@ -261,9 +264,11 @@ private fun OnboardingNameTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    isError: Boolean,
+    errorMessage: String?,
     modifier: Modifier = Modifier
 ) {
+    val isError = errorMessage != null
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -292,7 +297,15 @@ private fun OnboardingNameTextField(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text
             ),
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .semantics {
+                    contentDescription = "이름 입력"
+
+                    if (errorMessage != null) {
+                        error(errorMessage)
+                    }
+                },
             decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier
@@ -307,7 +320,8 @@ private fun OnboardingNameTextField(
                                 lineHeight = 20.3.sp,
                                 letterSpacing = (-0.14).sp
                             ),
-                            color = Gray300
+                            color = Gray300,
+                            modifier = Modifier.clearAndSetSemantics { }
                         )
                     }
 

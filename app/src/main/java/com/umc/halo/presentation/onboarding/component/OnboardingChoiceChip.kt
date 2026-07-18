@@ -1,13 +1,14 @@
 package com.umc.halo.presentation.onboarding.component
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray700
@@ -16,7 +17,7 @@ import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.White
 
-// 온보딩 성격 태그 선택 동그라미 컨포넌트
+// 온보딩 성격 태그 선택 컴포넌트
 @Composable
 fun OnboardingChoiceChip(
     text: String,
@@ -26,8 +27,10 @@ fun OnboardingChoiceChip(
     enabled: Boolean = true
 ) {
     Surface(
-        modifier = modifier.clickable(
+        modifier = modifier.selectable(
+            selected = selected,
             enabled = enabled,
+            role = Role.Checkbox,
             onClick = onClick
         ),
         shape = RoundedCornerShape(30.dp),

@@ -1,16 +1,17 @@
 package com.umc.halo.presentation.onboarding.component
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray500
@@ -20,7 +21,7 @@ import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.White
 
-// 온보딩 관계 태그 선택 카드 컨포넌트
+// 온보딩 관계 선택 카드 컴포넌트
 @Composable
 fun OnboardingSelectCard(
     title: String,
@@ -34,8 +35,10 @@ fun OnboardingSelectCard(
         modifier = modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = 64.dp)
-            .clickable(
+            .selectable(
+                selected = selected,
                 enabled = enabled,
+                role = Role.RadioButton,
                 onClick = onClick
             ),
         shape = RoundedCornerShape(18.dp),
