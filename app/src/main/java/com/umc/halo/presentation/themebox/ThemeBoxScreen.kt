@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.themebox
 
 import android.annotation.SuppressLint
+import androidx.appcompat.widget.DialogTitle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -28,11 +30,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.umc.halo.presentation.component.ButtonState
+import com.umc.halo.presentation.component.HaloMaterialButton
 import com.umc.halo.presentation.theme.Gray100
+import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray600
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import kotlin.math.absoluteValue
+
+data class Theme(
+    val character: String,
+    val title: String,
+    val subTitle: String
+)
+
+val themeList = listOf(
+    Theme("할로로","오래전 당신","가족과의 만남"),
+    Theme("케로로","당신 사용 설명서", "부제"),
+    Theme("기로로","가족의 온도", "부제"),
+    Theme("도로로","취향이 닿는 날", "부제")
+)
 
 @Composable
 fun ThemeBoxScreen() {
@@ -46,7 +64,23 @@ fun ThemeBoxScreen() {
         
         Spacer(Modifier.height(26.dp))
 
-        ThemeBox()
+        ThemeBox(themeList)
+
+        Spacer(Modifier.height(60.dp))
+
+        HaloMaterialButton(
+            buttonState = ButtonState.ABLE,
+            text = "감상 시작",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .aspectRatio(52f/9f),
+            style = HaloType.body01SemiBold
+        ) {
+            //네비게이션
+        }
+
+        Spacer(Modifier.height(27.dp))
     }
 }
 
@@ -104,25 +138,46 @@ fun ProgressBox() {
 }
 
 @Composable
-fun ThemeBox() {
+fun ThemeBox(
+    themeList: List<Theme>
+) {
     Box(
         Modifier
             .fillMaxWidth()
     ) {
-        CarouselPager()
+        CarouselPager(themeList)
     }
 }
 
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun CarouselPager() {
+fun CarouselPager(
+    themeList: List<Theme>
+) {
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth()
     ) {
+        val carouselItems = buildList {
+            add(themeList.last())
+            addAll(themeList)
+            add(themeList.first())
+        }
+
         val baseWidth = maxWidth
         val horizontalPadding = baseWidth * 0.2f
         val pageSpacing = baseWidth * 0.04f
-        val pagerState = rememberPagerState(pageCount = { 10 })
+        val pagerState = rememberPagerState(
+            pageCount = { carouselItems.size },
+            initialPage = 1
+        )
+
+        LaunchedEffect(pagerState.currentPage) {
+            when (pagerState.currentPage) {
+                0 -> pagerState.scrollToPage(themeList.size)
+                carouselItems.lastIndex -> pagerState.scrollToPage(1)
+            }
+        }
 
         HorizontalPager(
             modifier = Modifier.fillMaxWidth(),
@@ -146,16 +201,48 @@ fun CarouselPager() {
                 fraction = 1f - pageOffset.coerceIn(0f, 1f)
             )
 
-            Card(
-                Modifier
-                    .graphicsLayer(
-                        scaleY = pagerSize,
-                        alpha = alpha
-                    )
-                    .fillMaxWidth()
-                    .aspectRatio(0.7f)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                //내용 채우기
+                Card(
+                    Modifier
+                        .graphicsLayer(
+                            scaleY = pagerSize,
+                            alpha = alpha
+                        )
+                        .fillMaxWidth()
+                        .aspectRatio(0.7f)
+                ) {
+                    Text(carouselItems[page].character)
+                }
+
+                Spacer(Modifier.height(18.dp))
+
+                Text(
+                    text = carouselItems[page].title,
+                    style = HaloType.heading01SemiBold,
+                    color = Gray800,
+                    modifier = Modifier
+                        .graphicsLayer(
+                            scaleX = pagerSize,
+                            scaleY = pagerSize,
+                            alpha = alpha
+                        )
+                )
+
+                Spacer(Modifier.height(2.dp))
+
+                Text(
+                    text = carouselItems[page].subTitle,
+                    style = HaloType.body02Medium,
+                    color = Gray500,
+                    modifier = Modifier
+                        .graphicsLayer(
+                            scaleX = pagerSize,
+                            scaleY = pagerSize,
+                            alpha = alpha
+                        )
+                )
             }
         }
     }
