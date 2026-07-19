@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
@@ -58,15 +59,21 @@ fun ThemeBoxScreen() {
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.weight(6f))
+        //Spacer(Modifier.height(12.dp))
 
-        ProgressBox()
-        
-        Spacer(Modifier.height(26.dp))
+        ProgressBox(Modifier.weight(22f))
 
-        ThemeBox(themeList)
+        Spacer(Modifier.weight(13f))
+        //Spacer(Modifier.height(26.dp))
 
-        Spacer(Modifier.height(60.dp))
+        ThemeBox(
+            Modifier.weight(190f),
+            themeList
+        )
+
+        Spacer(Modifier.weight(30f))
+        //Spacer(Modifier.height(60.dp))
 
         HaloMaterialButton(
             buttonState = ButtonState.ABLE,
@@ -80,14 +87,17 @@ fun ThemeBoxScreen() {
             //네비게이션
         }
 
-        Spacer(Modifier.height(27.dp))
+        Spacer(Modifier.weight(13f))
+        //Spacer(Modifier.height(27.dp))
     }
 }
 
 @Composable
-fun ProgressBox() {
+fun ProgressBox(
+    modifier: Modifier = Modifier
+) {
     Row(
-        Modifier
+        modifier
             .padding(10.dp)
             .fillMaxWidth(14/20f)
             .height(IntrinsicSize.Min)
@@ -102,7 +112,8 @@ fun ProgressBox() {
                 color = Gray600
             )
 
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.weight(2f))
+            //Spacer(Modifier.height(4.dp))
 
             Text(
                 text = "3개",
@@ -126,7 +137,8 @@ fun ProgressBox() {
                 color = Gray600
             )
 
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.weight(2f))
+            //Spacer(Modifier.height(4.dp))
 
             Text(
                 text = "3개",
@@ -139,10 +151,11 @@ fun ProgressBox() {
 
 @Composable
 fun ThemeBox(
+    modifier: Modifier = Modifier,
     themeList: List<Theme>
 ) {
     Box(
-        Modifier
+        modifier
             .fillMaxWidth()
     ) {
         CarouselPager(themeList)
@@ -158,26 +171,15 @@ fun CarouselPager(
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth()
     ) {
-        val carouselItems = buildList {
-            add(themeList.last())
-            addAll(themeList)
-            add(themeList.first())
-        }
-
+        val middle = Int.MAX_VALUE / 2
+        val initialPage = middle - (middle % themeList.size)
         val baseWidth = maxWidth
         val horizontalPadding = baseWidth * 0.2f
         val pageSpacing = baseWidth * 0.04f
         val pagerState = rememberPagerState(
-            pageCount = { carouselItems.size },
-            initialPage = 1
+            pageCount = { Int.MAX_VALUE },
+            initialPage = initialPage
         )
-
-        LaunchedEffect(pagerState.currentPage) {
-            when (pagerState.currentPage) {
-                0 -> pagerState.scrollToPage(themeList.size)
-                carouselItems.lastIndex -> pagerState.scrollToPage(1)
-            }
-        }
 
         HorizontalPager(
             modifier = Modifier.fillMaxWidth(),
@@ -185,6 +187,8 @@ fun CarouselPager(
             contentPadding = PaddingValues(horizontal = horizontalPadding),
             pageSpacing = pageSpacing
         ) { page ->
+            val item = themeList[page % themeList.size]
+
             val pageOffset = (
                     (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
                     ).absoluteValue
@@ -213,13 +217,14 @@ fun CarouselPager(
                         .fillMaxWidth()
                         .aspectRatio(0.7f)
                 ) {
-                    Text(carouselItems[page].character)
+                    Text(item.character)
                 }
 
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.weight(9f))
+                //Spacer(Modifier.height(18.dp))
 
                 Text(
-                    text = carouselItems[page].title,
+                    text = item.title,
                     style = HaloType.heading01SemiBold,
                     color = Gray800,
                     modifier = Modifier
@@ -230,10 +235,11 @@ fun CarouselPager(
                         )
                 )
 
-                Spacer(Modifier.height(2.dp))
+                Spacer(Modifier.weight(1f))
+                //Spacer(Modifier.height(2.dp))
 
                 Text(
-                    text = carouselItems[page].subTitle,
+                    text = item.subTitle,
                     style = HaloType.body02Medium,
                     color = Gray500,
                     modifier = Modifier
