@@ -9,7 +9,7 @@ import com.umc.halo.presentation.base.UiEvent
  * sealed 로 ViewModel 의 when 에서 모든 케이스 처리
  */
 sealed interface LoginUiEvent : UiEvent {
-    // 카카오 로그인 SDK 는 Activity Context를 필요로 하여 이벤트에 담아 전달함
+    // 카카오/구글 로그인 SDK 모두 계정 선택 UI 를 띄울 Activity Context 를 필요로 하여 이벤트에 담아 전달함
     data class KakaoLoginClicked(val context: Context) : LoginUiEvent
-    data object GoogleLoginClicked : LoginUiEvent
+    data class GoogleLoginClicked(val context: Context) : LoginUiEvent
 }

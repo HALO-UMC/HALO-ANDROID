@@ -18,6 +18,8 @@ val localProperties = Properties().apply {
 val baseUrl: String = localProperties.getProperty("BASE_URL") ?: "\"http://localhost:8080/\""
 // 카카오 네이티브 앱 키 (KAKAO_NATIVE_APP_KEY에 오류나면 빌드는 성공하지만 로그인은 동작 하지 않음)
 val kakaoNativeAppKey: String = localProperties.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
+// 구글 Web 클라이언트 ID (idToken 발급용 serverClientId) 값 없으면 빌드는 되지만 구글 로그인은 동작 안 함
+val googleWebClientId: String = localProperties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
 
 android {
     namespace = "com.umc.halo"
@@ -43,6 +45,9 @@ android {
         buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoNativeAppKey\"")
         // manifest의 로그인 redirect scheme에 주입
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoNativeAppKey
+
+        // 구글 로그인 GetSignInWithGoogleOption 의 serverClientId 로 사용 (BuildConfig.GOOGLE_WEB_CLIENT_ID)
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
     }
 
     buildTypes {
@@ -95,6 +100,11 @@ dependencies {
 
     // 소셜 로그인 - Kakao
     implementation(libs.kakao.user)
+
+    // 소셜 로그인 - Google (Credential Manager + Sign in with Google)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

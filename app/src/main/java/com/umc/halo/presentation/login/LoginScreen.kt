@@ -49,12 +49,12 @@ fun LoginRoute(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
-    // 카카오 SDK 호출에 필요한 Activity Context
+    // 카카오/구글 SDK 호출에 필요한 Activity Context
     val context = LocalContext.current
     // 지금은 표시할 상태(isLoading)를 아직 UI 에 쓰지 않아 구독을 생략함
     LoginScreen(
         onKakaoClick = { viewModel.onEvent(LoginUiEvent.KakaoLoginClicked(context)) },
-        onGoogleClick = { viewModel.onEvent(LoginUiEvent.GoogleLoginClicked) },
+        onGoogleClick = { viewModel.onEvent(LoginUiEvent.GoogleLoginClicked(context)) },
         modifier = modifier
     )
 }
