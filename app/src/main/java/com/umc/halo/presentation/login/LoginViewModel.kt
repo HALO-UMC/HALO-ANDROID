@@ -2,6 +2,7 @@ package com.umc.halo.presentation.login
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.data.remote.auth.GoogleLoginDataSource
 import com.umc.halo.data.remote.auth.KakaoLoginDataSource
 import com.umc.halo.domain.model.auth.SocialProvider
 import com.umc.halo.domain.repository.auth.AuthRepository
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val kakaoLoginDataSource: KakaoLoginDataSource,
+    private val googleLoginDataSource: GoogleLoginDataSource,
     private val authRepository: AuthRepository
 ) : BaseViewModel<LoginUiState, LoginUiEvent>(
     initialState = LoginUiState()
@@ -24,10 +26,7 @@ class LoginViewModel @Inject constructor(
     override fun onEvent(event: LoginUiEvent) {
         when (event) {
             is LoginUiEvent.KakaoLoginClicked -> loginWithKakao(event.context)
-
-            LoginUiEvent.GoogleLoginClicked -> {
-                // TODO: 구글 SDK 로 providerToken 받기
-            }
+            is LoginUiEvent.GoogleLoginClicked -> loginWithGoogle(event.context)
         }
     }
 
@@ -37,6 +36,21 @@ class LoginViewModel @Inject constructor(
             runCatching {
                 val idToken = kakaoLoginDataSource.login(context)            // 카카오에서 idToken
                 authRepository.login(SocialProvider.KAKAO, idToken)          // 서버 로그인 → 토큰 저장 + 결과
+            }.onSuccess { result ->
+                // TODO: result.isNewUser / result.onboardingCompleted 로 화면 이동 분기 (온보딩 or 홈)
+            }.onFailure {
+                // TODO: 로그인 실패 처리 (에러 UI/이펙트) — 현재는 isLoading 만 원복됨
+            }
+            updateState { copy(isLoading = false) }
+        }
+    }
+
+    private fun loginWithGoogle(context: Context) {
+        viewModelScope.launch {
+            updateState { copy(isLoading = true) }
+            runCatching {
+                val idToken = googleLoginDataSource.login(context)           // 구글에서 idToken
+                authRepository.login(SocialProvider.GOOGLE, idToken)         // 서버 로그인 → 토큰 저장 + 결과
             }.onSuccess { result ->
                 // TODO: result.isNewUser / result.onboardingCompleted 로 화면 이동 분기 (온보딩 or 홈)
             }.onFailure {
