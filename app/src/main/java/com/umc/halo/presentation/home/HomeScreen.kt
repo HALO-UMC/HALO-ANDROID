@@ -102,19 +102,25 @@ fun HomeScreenContents(
 
         Spacer(Modifier.height(21.dp))
 
-        when (val userState = state.userState) {
-            UserState.FTU -> {
-                CustomStorybook(state.customStorybookList,vm::onEvent)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+        ) {
+            when (val userState = state.userState) {
+                UserState.FTU -> {
+                    CustomStorybook(state.customStorybookList,vm::onEvent)
 
-                Spacer(Modifier.height(32.dp))
+                    Spacer(Modifier.height(32.dp))
 
-                ActionGuide()
-            }
+                    ActionGuide()
+                }
 
-            is UserState.RU -> {
-                Spacer(Modifier.height(24.dp))
+                is UserState.RU -> {
+                    Spacer(Modifier.height(24.dp))
 
-                ContinueStoryBook(userState,vm)
+                    ContinueStoryBook(userState,vm)
+                }
             }
         }
 

@@ -2,6 +2,8 @@ package com.umc.halo.presentation.themebox
 
 import android.annotation.SuppressLint
 import androidx.appcompat.widget.DialogTitle
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -14,47 +16,69 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.umc.halo.R
 import com.umc.halo.presentation.component.ButtonState
 import com.umc.halo.presentation.component.HaloMaterialButton
+import com.umc.halo.presentation.home.HomeUiEvent
+import com.umc.halo.presentation.home.custom_storybook.CustomStorybook
 import com.umc.halo.presentation.theme.Gray100
+import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray600
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import kotlin.math.absoluteValue
 
-data class Theme(
-    val character: String,
-    val title: String,
-    val subTitle: String
-)
 
-val themeList = listOf(
-    Theme("할로로","오래전 당신","가족과의 만남"),
-    Theme("케로로","당신 사용 설명서", "부제"),
-    Theme("기로로","가족의 온도", "부제"),
-    Theme("도로로","취향이 닿는 날", "부제")
-)
 
 @Composable
-fun ThemeBoxScreen() {
+fun ThemeBoxScreen(
+    vm: ThemeBoxViewModel = viewModel()
+) {
+    val state by vm.uiState.collectAsState()
+    
+    when (val uiState = state) {
+        is ThemeBoxUiState.Filled -> {
+            ThemeBoxFilledScreen(uiState)
+        }
+        is ThemeBoxUiState.Empty -> {
+            ThemeBoxEmptyScreen(uiState, vm::onEvent)
+        }
+    }
+}
+
+@Composable
+fun ThemeBoxFilledScreen(
+    state: ThemeBoxUiState.Filled
+) {
     Column(
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -62,14 +86,17 @@ fun ThemeBoxScreen() {
         Spacer(Modifier.weight(6f))
         //Spacer(Modifier.height(12.dp))
 
-        ProgressBox(Modifier.weight(22f))
+        ProgressBox(
+            Modifier.weight(22f),
+            state.numberOfCharacter,
+            state.storyBookInProgress)
 
         Spacer(Modifier.weight(13f))
         //Spacer(Modifier.height(26.dp))
 
         ThemeBox(
             Modifier.weight(190f),
-            themeList
+            state.themeList
         )
 
         Spacer(Modifier.weight(30f))
@@ -92,9 +119,77 @@ fun ThemeBoxScreen() {
     }
 }
 
+
+@Composable
+fun ThemeBoxEmptyScreen(
+    state: ThemeBoxUiState.Empty,
+    onEvent: (ThemeBoxUiEvent) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp)
+    ) {
+        Spacer(Modifier.height(24.dp))
+
+        ThemeBoxEmpty()
+
+        Spacer(Modifier.height(35.dp))
+
+        when (state) {
+            is ThemeBoxUiState.Empty.FTU -> {
+                CustomStorybook(state.customStorybookList) {
+                    //onClick 추가
+                }
+            }
+            is ThemeBoxUiState.Empty.RU -> {
+                //이어하기 컴포넌트 추가
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ThemeBoxEmpty() {
+    Card(
+        Modifier
+            .fillMaxWidth()
+            .aspectRatio(78f/47f),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Gray30
+        )
+    ) {
+        Column(
+            Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                modifier = Modifier
+                    .width(85.42.dp)
+                    .height(99.29.dp),
+                painter = painterResource(R.drawable.image_themebox_empty),
+                contentDescription = null
+            )
+
+            Spacer(Modifier.height(18.dp))
+
+            Text(
+                text = "아직 완성된 캐릭터가 없어요!",
+                style = HaloType.body02Medium,
+                color = Gray800
+            )
+        }
+    }
+}
+
 @Composable
 fun ProgressBox(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    numberOfCharacter: Int,
+    storyBookInProgress: Int
 ) {
     Row(
         modifier
@@ -116,7 +211,7 @@ fun ProgressBox(
             //Spacer(Modifier.height(4.dp))
 
             Text(
-                text = "3개",
+                text = "${numberOfCharacter}개",
                 style = HaloType.body01SemiBold,
                 color = Gray800
             )
@@ -141,7 +236,7 @@ fun ProgressBox(
             //Spacer(Modifier.height(4.dp))
 
             Text(
-                text = "3개",
+                text = "${storyBookInProgress}개",
                 style = HaloType.body01SemiBold,
                 color = Gray800
             )
@@ -162,97 +257,6 @@ fun ThemeBox(
     }
 }
 
-
-@SuppressLint("UnusedBoxWithConstraintsScope")
-@Composable
-fun CarouselPager(
-    themeList: List<Theme>
-) {
-    BoxWithConstraints(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        val middle = Int.MAX_VALUE / 2
-        val initialPage = middle - (middle % themeList.size)
-        val baseWidth = maxWidth
-        val horizontalPadding = baseWidth * 0.2f
-        val pageSpacing = baseWidth * 0.04f
-        val pagerState = rememberPagerState(
-            pageCount = { Int.MAX_VALUE },
-            initialPage = initialPage
-        )
-
-        HorizontalPager(
-            modifier = Modifier.fillMaxWidth(),
-            state = pagerState,
-            contentPadding = PaddingValues(horizontal = horizontalPadding),
-            pageSpacing = pageSpacing
-        ) { page ->
-            val item = themeList[page % themeList.size]
-
-            val pageOffset = (
-                    (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-                    ).absoluteValue
-
-            val pagerSize = lerp(
-                start = 0.78f,
-                stop = 1f,
-                fraction = 1f - pageOffset.coerceIn(0f, 1f)
-            )
-
-            val alpha = lerp(
-                start = 0.78f,
-                stop = 1f,
-                fraction = 1f - pageOffset.coerceIn(0f, 1f)
-            )
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Card(
-                    Modifier
-                        .graphicsLayer(
-                            scaleY = pagerSize,
-                            alpha = alpha
-                        )
-                        .fillMaxWidth()
-                        .aspectRatio(0.7f)
-                ) {
-                    Text(item.character)
-                }
-
-                Spacer(Modifier.weight(9f))
-                //Spacer(Modifier.height(18.dp))
-
-                Text(
-                    text = item.title,
-                    style = HaloType.heading01SemiBold,
-                    color = Gray800,
-                    modifier = Modifier
-                        .graphicsLayer(
-                            scaleX = pagerSize,
-                            scaleY = pagerSize,
-                            alpha = alpha
-                        )
-                )
-
-                Spacer(Modifier.weight(1f))
-                //Spacer(Modifier.height(2.dp))
-
-                Text(
-                    text = item.subTitle,
-                    style = HaloType.body02Medium,
-                    color = Gray500,
-                    modifier = Modifier
-                        .graphicsLayer(
-                            scaleX = pagerSize,
-                            scaleY = pagerSize,
-                            alpha = alpha
-                        )
-                )
-            }
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable

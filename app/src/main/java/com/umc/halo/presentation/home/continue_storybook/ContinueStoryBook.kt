@@ -46,7 +46,6 @@ fun ContinueStoryBook(
 ) {
     Column(
         modifier = Modifier
-            .padding(horizontal = 24.dp)
             .fillMaxWidth()
     ) {
         Text(
