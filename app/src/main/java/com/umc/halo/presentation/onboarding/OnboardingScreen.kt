@@ -25,10 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.error
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
+import com.umc.halo.presentation.onboarding.screen.BasicInfoStep
 import com.umc.halo.presentation.theme.Error
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray50
@@ -86,15 +83,9 @@ fun OnboardingScreen(
         }
 
         OnboardingStep.BASIC_INFO -> {
-            TemporaryStep(
-                text = "성별 + 생년월일 화면",
-                onNextClick = {
-                    onEvent(OnboardingUiEvent.NextClicked)
-                },
-                onBackClick = {
-                    onEvent(OnboardingUiEvent.BackClicked)
-                },
-                enabled = uiState.isNextEnabled,
+            BasicInfoStep(
+                uiState = uiState,
+                onEvent = onEvent,
                 modifier = modifier
             )
         }
@@ -177,6 +168,7 @@ private fun NameInputStep(
     modifier: Modifier = Modifier
 ) {
     val nameErrorMessage = uiState.nameErrorMessage
+    val isNameError = nameErrorMessage != null
 
     Box(
         modifier = modifier
@@ -223,7 +215,7 @@ private fun NameInputStep(
                     onEvent(OnboardingUiEvent.NameChanged(name))
                 },
                 placeholder = "이름을 입력하세요.",
-                errorMessage = nameErrorMessage,
+                isError = isNameError,
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
 
@@ -264,11 +256,9 @@ private fun OnboardingNameTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    errorMessage: String?,
+    isError: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val isError = errorMessage != null
-
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -297,15 +287,7 @@ private fun OnboardingNameTextField(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text
             ),
-            modifier = Modifier
-                .fillMaxSize()
-                .semantics {
-                    contentDescription = "이름 입력"
-
-                    if (errorMessage != null) {
-                        error(errorMessage)
-                    }
-                },
+            modifier = Modifier.fillMaxSize(),
             decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier
@@ -320,8 +302,7 @@ private fun OnboardingNameTextField(
                                 lineHeight = 20.3.sp,
                                 letterSpacing = (-0.14).sp
                             ),
-                            color = Gray300,
-                            modifier = Modifier.clearAndSetSemantics { }
+                            color = Gray300
                         )
                     }
 
