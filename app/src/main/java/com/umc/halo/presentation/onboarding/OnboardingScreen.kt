@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.onboarding.screen.BasicInfoStep
+import com.umc.halo.presentation.onboarding.screen.WelcomeStep
 import com.umc.halo.presentation.theme.Error
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray50
@@ -91,15 +92,11 @@ fun OnboardingScreen(
         }
 
         OnboardingStep.WELCOME -> {
-            TemporaryStep(
-                text = "환영 화면\n${uiState.userName}님!",
+            WelcomeStep(
+                userName = uiState.userName,
                 onNextClick = {
                     onEvent(OnboardingUiEvent.NextClicked)
                 },
-                onBackClick = {
-                    onEvent(OnboardingUiEvent.BackClicked)
-                },
-                enabled = uiState.isNextEnabled,
                 modifier = modifier
             )
         }
