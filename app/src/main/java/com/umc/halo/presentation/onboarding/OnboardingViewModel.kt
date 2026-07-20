@@ -119,22 +119,33 @@ class OnboardingViewModel @Inject constructor() :
 
     private fun toggleParentPersonality(personality: String) {
         updateState {
-            val newList = when {
+            val updatedPersonalities = when {
+                /*
+                 * 이미 선택된 태그를 다시 누르면 선택 해제
+                 */
                 personality in selectedParentPersonalities -> {
                     selectedParentPersonalities - personality
                 }
 
+                /*
+                 * 전체 선택 개수가 3개 미만이면 선택 추가
+                 */
                 selectedParentPersonalities.size <
                         MAX_PARENT_PERSONALITY_COUNT -> {
                     selectedParentPersonalities + personality
                 }
 
+                /*
+                 * 이미 전체에서 3개를 선택했다면 변경하지 않음
+                 */
                 else -> {
                     selectedParentPersonalities
                 }
             }
 
-            copy(selectedParentPersonalities = newList)
+            copy(
+                selectedParentPersonalities = updatedPersonalities
+            )
         }
     }
 
@@ -164,9 +175,5 @@ class OnboardingViewModel @Inject constructor() :
         updateState {
             copy(currentStep = currentStep.previous())
         }
-    }
-
-    companion object {
-        private const val MAX_PARENT_PERSONALITY_COUNT = 3
     }
 }

@@ -3,8 +3,6 @@ package com.umc.halo.presentation.onboarding
 internal const val MIN_NAME_LENGTH = 2
 internal const val MAX_NAME_LENGTH = 10
 
-private const val MAX_PARENT_PERSONALITY_COUNT = 3
-
 private const val NAME_VALIDATION_MESSAGE =
     "2~10자 이내의 한글/영어/숫자로 입력해주세요."
 
