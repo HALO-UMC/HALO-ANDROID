@@ -20,14 +20,14 @@ class ThemeBoxViewModel: BaseViewModel<ThemeBoxUiState, ThemeBoxUiEvent>(ThemeBo
 //                    Theme("도로로","취향이 닿는 날", "부제")
 //                )
 //            )
-            ThemeBoxUiState.Empty.FTU(
-                customStorybookList = listOf(
-                    CustomStorybook(1, "대화가 어색한 당신을 위한", "오래전 당신", "가족과의 만남"),
-                    CustomStorybook(2,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
-                    CustomStorybook(3,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
-                    CustomStorybook(4,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남")
-                )
-            )
+//            ThemeBoxUiState.Empty.FTU(
+//                customStorybookList = listOf(
+//                    CustomStorybook(1, "대화가 어색한 당신을 위한", "오래전 당신", "가족과의 만남"),
+//                    CustomStorybook(2,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
+//                    CustomStorybook(3,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
+//                    CustomStorybook(4,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남")
+//                )
+//            )
             ThemeBoxUiState.Empty.RU(
 
             )

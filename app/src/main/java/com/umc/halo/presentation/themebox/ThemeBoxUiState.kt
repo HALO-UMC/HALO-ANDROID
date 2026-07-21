@@ -2,6 +2,8 @@ package com.umc.halo.presentation.themebox
 
 import com.umc.halo.domain.model.home.CurrentProgress
 import com.umc.halo.domain.model.storybook.CustomStorybook
+import com.umc.halo.domain.model.themebox.ContinueStorybook
+import com.umc.halo.domain.model.themebox.Theme
 
 sealed interface ThemeBoxUiState{
     data class Filled(
@@ -22,14 +24,5 @@ sealed interface ThemeBoxUiState{
 }
 
 
-data class Theme(
-    val character: String,
-    val title: String,
-    val subTitle: String
-)
 
-data class ContinueStorybook(
-    val title: String,
-    val theme: Int,
-    val chapter: Int
-)
+
