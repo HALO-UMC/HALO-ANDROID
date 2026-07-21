@@ -2,6 +2,7 @@ package com.umc.halo.presentation.onboarding.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.umc.halo.presentation.onboarding.OnboardingUiState
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
-import com.umc.halo.presentation.theme.Black
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
@@ -35,49 +35,52 @@ fun CompleteStep(
     modifier: Modifier = Modifier
 ) {
     /*
-     * 현재 관계 1개와 원하는 관계 방향 1~2개를 합친다.
-     *
-     * 예시:
-     * 대체로 좋은 편이에요.
-     * 같이 보내는 시간을 만들고 싶어요.
-     * 마음을 표현해보고 싶어요.
+     * 현재 부모님과의 관계 1개와
+     * 목표 관계 1~2개를 합쳐 완료 화면에 표시한다.
      */
     val selectedDirections = buildList {
         uiState.selectedRelationship?.let { relationship ->
-            add(relationship.withFinalPeriod())
+            add(relationship)
         }
 
-        addAll(
-            uiState.selectedGoals.map { goal ->
-                goal.withFinalPeriod()
-            }
-        )
+        addAll(uiState.selectedGoals)
     }
 
-    Box(
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
         /*
-         * 화면 중앙을 기준으로 배치하므로
-         * 특정 화면 좌표에 고정하는 방식보다
-         * 여러 화면 크기에서 안정적으로 표시된다.
+         * 화면 높이에 비례해 제목 위치를 고정한다.
+         *
+         * 카드 개수가 바뀌어도 제목 위치는 움직이지 않는다.
+         */
+        val titleTopPosition = maxHeight * 0.37f
+
+        /*
+         * 선택 목록은 제목 영역과 별도로 배치한다.
+         *
+         * 이 값을 크게 하면
+         * "선택한 관계 방향" 영역이 더 아래로 내려간다.
+         */
+        val selectedSectionTopPosition =
+            titleTopPosition + 124.dp
+
+        /*
+         * 완료 안내 문구
          */
         Column(
             modifier = Modifier
-                .align(Alignment.Center)
+                .align(Alignment.TopCenter)
                 .widthIn(max = 360.dp)
                 .fillMaxWidth()
-                .padding(
-                    start = 24.dp,
-                    end = 24.dp,
-                    bottom = 24.dp
-                )
+                .padding(horizontal = 24.dp)
+                .padding(top = titleTopPosition),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "모든 준비가 끝났어요!",
-                modifier = Modifier.fillMaxWidth(),
                 style = HaloType.heading01Regular.copy(
                     fontSize = 24.sp,
                     lineHeight = 36.sp,
@@ -87,11 +90,10 @@ fun CompleteStep(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "이제 HALO 와 함께 부모님과의 관계를\n한 장씩 기록해볼까요?",
-                modifier = Modifier.fillMaxWidth(),
                 style = HaloType.body01Regular.copy(
                     fontSize = 16.sp,
                     lineHeight = 23.2.sp,
@@ -100,9 +102,22 @@ fun CompleteStep(
                 color = Gray800,
                 textAlign = TextAlign.Center
             )
+        }
 
-            Spacer(modifier = Modifier.height(28.dp))
-
+        /*
+         * 선택한 관계 방향
+         *
+         * 제목 영역과 별도로 고정되어 있기 때문에
+         * 카드가 2개 또는 3개여도 제목 위치는 그대로다.
+         */
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .widthIn(max = 360.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(top = selectedSectionTopPosition)
+        ) {
             Text(
                 text = "선택한 관계 방향",
                 style = HaloType.body01SemiBold.copy(
@@ -110,7 +125,7 @@ fun CompleteStep(
                     lineHeight = 23.2.sp,
                     letterSpacing = (-0.16).sp
                 ),
-                color = Black
+                color = Gray800
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -126,6 +141,9 @@ fun CompleteStep(
             }
         }
 
+        /*
+         * 시작하기 버튼은 항상 화면 하단에 고정한다.
+         */
         OnboardingBottomButton(
             text = "시작하기",
             enabled = true,
@@ -165,20 +183,7 @@ private fun SelectedDirectionCard(
                 lineHeight = 20.3.sp,
                 letterSpacing = (-0.14).sp
             ),
-            color = Gray700,
-            maxLines = 1
+            color = Gray700
         )
-    }
-}
-
-/*
- * 선택지 문자열에 마침표가 없다면 완료 화면에서만 붙여준다.
- * 원본 상태값은 변경하지 않는다.
- */
-private fun String.withFinalPeriod(): String {
-    return if (endsWith(".")) {
-        this
-    } else {
-        "$this."
     }
 }
