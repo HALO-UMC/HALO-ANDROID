@@ -60,11 +60,13 @@ fun ParentPersonalityStep(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .widthIn(max = 360.dp)
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
                 .statusBarsPadding()
-                .padding(bottom = 110.dp)
         ) {
+            /*
+             * 진행 바는 스크롤 영역과 분리하여
+             * 화면 상단에 고정한다.
+             */
             OnboardingProgressBar(
                 currentStep = 1,
                 totalStep = 3,
@@ -77,6 +79,10 @@ fun ParentPersonalityStep(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            /*
+             * 뒤로 가기 영역도 진행 바 아래에 고정한다.
+             * IconButton의 터치 영역은 44dp로 유지한다.
+             */
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -102,10 +108,22 @@ fun ParentPersonalityStep(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
+            /*
+             * 남은 화면 높이를 선택 영역이 차지한다.
+             * 화면 높이가 작거나 내용이 길어질 경우
+             * 이 영역만 세로로 스크롤된다.
+             */
             Column(
-                modifier = Modifier.padding(horizontal = 24.dp)
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        top = 8.dp,
+                        bottom = 24.dp
+                    )
             ) {
                 val titleText = buildAnnotatedString {
                     append("${uiState.userName}님이 생각하시는\n")
@@ -175,8 +193,8 @@ fun ParentPersonalityStep(
                              * 전체 선택 개수가 3개 미만이거나,
                              * 이미 선택된 태그인 경우에만 누를 수 있다.
                              *
-                             * 선택된 태그는 3개 상태에서도 다시 눌러
-                             * 선택을 해제할 수 있어야 한다.
+                             * 선택된 태그는 3개가 선택된 상태에서도
+                             * 다시 눌러 선택을 해제할 수 있어야 한다.
                              */
                             val isEnabled =
                                 isSelected ||
@@ -199,24 +217,26 @@ fun ParentPersonalityStep(
                     }
                 }
             }
-        }
 
-        OnboardingBottomButton(
-            text = "다음",
-            enabled = uiState.isNextEnabled,
-            onClick = {
-                onEvent(OnboardingUiEvent.NextClicked)
-            },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .widthIn(max = 360.dp)
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(
-                    start = 24.dp,
-                    end = 24.dp,
-                    bottom = 20.dp
-                )
-        )
+            /*
+             * 하단 버튼은 스크롤 영역 밖에 배치하여
+             * 화면 크기와 관계없이 항상 하단에 유지한다.
+             */
+            OnboardingBottomButton(
+                text = "다음",
+                enabled = uiState.isNextEnabled,
+                onClick = {
+                    onEvent(OnboardingUiEvent.NextClicked)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        bottom = 20.dp
+                    )
+            )
+        }
     }
 }

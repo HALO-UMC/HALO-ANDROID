@@ -14,7 +14,7 @@ import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.umc.halo.presentation.theme.Gray100
-import com.umc.halo.presentation.theme.Primary500
+import com.umc.halo.presentation.theme.Gray700
 
 @Composable
 fun OnboardingProgressBar(
@@ -39,7 +39,7 @@ fun OnboardingProgressBar(
                     steps = (totalStep - 1).coerceAtLeast(0)
                 )
             },
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         repeat(totalStep) { index ->
             val isActive = index < safeCurrentStep
@@ -47,14 +47,14 @@ fun OnboardingProgressBar(
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(6.dp)
+                    .height(5.dp)
                     .background(
                         color = if (isActive) {
-                            Primary500
+                            Gray700
                         } else {
                             Gray100
                         },
-                        shape = RoundedCornerShape(30.dp)
+                        shape = RoundedCornerShape(3.dp)
                     )
             )
         }
