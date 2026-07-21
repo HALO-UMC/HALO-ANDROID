@@ -22,6 +22,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -43,6 +47,7 @@ import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
+import com.umc.halo.presentation.theme.Error
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -51,6 +56,10 @@ fun ParentPersonalityStep(
     onEvent: (OnboardingUiEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showLimitMessage by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -189,32 +198,64 @@ fun ParentPersonalityStep(
                             val isSelected =
                                 personality in uiState.selectedParentPersonalities
 
-                            /*
-                             * 전체 선택 개수가 3개 미만이거나,
-                             * 이미 선택된 태그인 경우에만 누를 수 있다.
-                             *
-                             * 선택된 태그는 3개가 선택된 상태에서도
-                             * 다시 눌러 선택을 해제할 수 있어야 한다.
-                             */
-                            val isEnabled =
-                                isSelected ||
-                                        uiState.selectedParentPersonalities.size <
-                                        MAX_PARENT_PERSONALITY_COUNT
-
                             OnboardingChoiceChip(
                                 text = personality,
                                 selected = isSelected,
-                                enabled = isEnabled,
+
+                                // 3개가 선택되어 있어도 다른 태그를 누를 수 있어야
+                                // 최대 선택 안내 문구를 띄울 수 있다.
+                                enabled = true,
+
                                 onClick = {
-                                    onEvent(
-                                        OnboardingUiEvent.ParentPersonalityClicked(
-                                            personality
-                                        )
-                                    )
+                                    when {
+                                        // 이미 선택된 태그를 다시 누르면 선택 해제
+                                        // 실제 선택 상태가 바뀌므로 안내 문구도 제거
+                                        isSelected -> {
+                                            showLimitMessage = false
+
+                                            onEvent(
+                                                OnboardingUiEvent.ParentPersonalityClicked(
+                                                    personality
+                                                )
+                                            )
+                                        }
+
+                                        // 선택 개수가 3개 미만이면 정상적으로 추가
+                                        uiState.selectedParentPersonalities.size <
+                                                MAX_PARENT_PERSONALITY_COUNT -> {
+                                            showLimitMessage = false
+
+                                            onEvent(
+                                                OnboardingUiEvent.ParentPersonalityClicked(
+                                                    personality
+                                                )
+                                            )
+                                        }
+
+                                        // 이미 3개인데 새로운 태그를 누른 경우
+                                        // 선택 상태는 변경하지 않고 안내만 표시
+                                        else -> {
+                                            showLimitMessage = true
+                                        }
+                                    }
                                 }
                             )
                         }
                     }
+                }
+
+                if (showLimitMessage) {
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "태그는 최대 3개까지 선택할 수 있어요.",
+                        style = HaloType.body03Regular.copy(
+                            fontSize = 12.sp,
+                            lineHeight = 17.4.sp,
+                            letterSpacing = (-0.12).sp
+                        ),
+                        color = Error
+                    )
                 }
             }
 
