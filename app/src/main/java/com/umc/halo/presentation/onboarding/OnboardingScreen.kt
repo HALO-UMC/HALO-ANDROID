@@ -39,6 +39,7 @@ import com.umc.halo.presentation.onboarding.screen.GoalStep
 import com.umc.halo.presentation.onboarding.screen.ParentPersonalityStep
 import com.umc.halo.presentation.onboarding.screen.RelationshipStep
 import com.umc.halo.presentation.onboarding.screen.WelcomeStep
+import com.umc.halo.presentation.onboarding.screen.CompleteStep
 import com.umc.halo.presentation.theme.Error
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray50
@@ -122,11 +123,9 @@ fun OnboardingScreen(
         }
 
         OnboardingStep.COMPLETE -> {
-            TemporaryStep(
-                text = "온보딩 완료 화면",
-                onNextClick = onNavigateToHome,
-                enabled = true,
-                buttonText = "시작하기",
+            CompleteStep(
+                uiState = uiState,
+                onStartClick = onNavigateToHome,
                 modifier = modifier
             )
         }
