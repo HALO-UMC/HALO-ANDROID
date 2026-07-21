@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.themebox
 
+import com.umc.halo.domain.model.home.CurrentProgress
 import com.umc.halo.domain.model.storybook.CustomStorybook
 
 sealed interface ThemeBoxUiState{
@@ -11,7 +12,7 @@ sealed interface ThemeBoxUiState{
 
     sealed interface Empty : ThemeBoxUiState {
         data class RU(
-            val storyBookInProgress: Int = 0
+            val continueStorybookList: List<ContinueStorybook> = emptyList()
         ): Empty
 
         data class FTU(
@@ -25,4 +26,10 @@ data class Theme(
     val character: String,
     val title: String,
     val subTitle: String
+)
+
+data class ContinueStorybook(
+    val title: String,
+    val theme: Int,
+    val chapter: Int
 )

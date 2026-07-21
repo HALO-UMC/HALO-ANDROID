@@ -28,6 +28,9 @@ class ThemeBoxViewModel: BaseViewModel<ThemeBoxUiState, ThemeBoxUiEvent>(ThemeBo
                     CustomStorybook(4,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남")
                 )
             )
+            ThemeBoxUiState.Empty.RU(
+
+            )
         }
     }
 }

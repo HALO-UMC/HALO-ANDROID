@@ -27,7 +27,7 @@ import com.lottiefiles.dotlottie.core.util.DotLottieSource
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.home.actionguide.ActionGuide
 import com.umc.halo.presentation.home.bookcase.BookCase
-import com.umc.halo.presentation.home.continue_storybook.ContinueStoryBook
+import com.umc.halo.presentation.home.continue_storybook.ContinueStoryBookHome
 import com.umc.halo.presentation.home.custom_storybook.CustomStorybook
 import com.umc.halo.presentation.theme.HaloType
 
@@ -119,7 +119,7 @@ fun HomeScreenContents(
                 is UserState.RU -> {
                     Spacer(Modifier.height(24.dp))
 
-                    ContinueStoryBook(userState,vm)
+                    ContinueStoryBookHome(userState,vm)
                 }
             }
         }

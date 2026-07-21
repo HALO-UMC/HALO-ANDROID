@@ -40,7 +40,7 @@ import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.White
 
 @Composable
-fun ContinueStoryBook(
+fun ContinueStoryBookHome(
     state: UserState.RU,
     vm: HomeViewModel
 ) {
