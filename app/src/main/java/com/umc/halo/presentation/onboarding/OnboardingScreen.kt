@@ -38,6 +38,7 @@ import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.onboarding.screen.BasicInfoStep
 import com.umc.halo.presentation.onboarding.screen.WelcomeStep
 import com.umc.halo.presentation.onboarding.screen.ParentPersonalityStep
+import com.umc.halo.presentation.onboarding.screen.RelationshipStep
 import com.umc.halo.presentation.theme.Error
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray50
@@ -111,16 +112,9 @@ fun OnboardingScreen(
         }
 
         OnboardingStep.RELATIONSHIP -> {
-            TemporaryStep(
-                text = "부모님과 나의 관계 선택 화면",
-                onNextClick = {
-                    onEvent(OnboardingUiEvent.NextClicked)
-                },
-                onBackClick = {
-                    onEvent(OnboardingUiEvent.BackClicked)
-                },
-                enabled = uiState.isNextEnabled,
-                modifier = modifier
+            RelationshipStep(
+                uiState = uiState,
+                onEvent = onEvent
             )
         }
 
