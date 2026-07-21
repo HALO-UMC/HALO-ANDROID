@@ -6,6 +6,9 @@ internal const val MAX_NAME_LENGTH = 10
 private const val NAME_VALIDATION_MESSAGE =
     "2~10자 이내의 한글/영어/숫자로 입력해주세요."
 
+private const val GOAL_LIMIT_MESSAGE =
+    "두 개까지 선택이 가능해요."
+
 // 완성형 한글, 한글 조합 중간 자음·모음, 영어, 숫자 허용
 private val NAME_ALLOWED_CHARACTER_REGEX = Regex(
     "[가-힣ㄱ-ㅎㅏ-ㅣ\u1100-\u11FF\uA960-\uA97F\uD7B0-\uD7FFa-zA-Z0-9]"
@@ -70,7 +73,12 @@ data class OnboardingUiState(
 
     val selectedParentPersonalities: List<String> = emptyList(),
     val selectedRelationship: String? = null,
-    val selectedGoal: String? = null
+
+    // 원하는 관계는 최소 1개, 최대 2개 선택
+    val selectedGoals: List<String> = emptyList(),
+
+    // 이미 두 개를 선택한 상태에서 세 번째 항목을 누르면 표시
+    val isGoalLimitMessageVisible: Boolean = false
 ) {
     val userName: String
         get() = name.ifBlank { "주연" }
@@ -109,7 +117,7 @@ data class OnboardingUiState(
 
     /*
      * 기존 화면 코드에서 사용하는 이름을 유지한다.
-     * 세 값이 단순히 선택됐는지가 아니라 실제 존재하는 날짜인지도 검사한다.
+     * 세 값이 단순히 선택됐는지가 아니라 실제 존재하는 날짜인지 검사한다.
      */
     val isBirthDateSelected: Boolean
         get() = isBirthDateValid
@@ -128,6 +136,16 @@ data class OnboardingUiState(
     val isParentPersonalityValid: Boolean
         get() = selectedParentPersonalities.size in
                 1..MAX_PARENT_PERSONALITY_COUNT
+
+    val isGoalValid: Boolean
+        get() = selectedGoals.size in 1..MAX_GOAL_COUNT
+
+    val goalLimitMessage: String?
+        get() = if (isGoalLimitMessageVisible) {
+            GOAL_LIMIT_MESSAGE
+        } else {
+            null
+        }
 
     val isNextEnabled: Boolean
         get() = when (currentStep) {
@@ -156,7 +174,7 @@ data class OnboardingUiState(
             }
 
             OnboardingStep.GOAL -> {
-                selectedGoal != null
+                isGoalValid
             }
 
             OnboardingStep.COMPLETE -> {

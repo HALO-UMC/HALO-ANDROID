@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,9 +35,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.onboarding.screen.BasicInfoStep
-import com.umc.halo.presentation.onboarding.screen.WelcomeStep
+import com.umc.halo.presentation.onboarding.screen.GoalStep
 import com.umc.halo.presentation.onboarding.screen.ParentPersonalityStep
 import com.umc.halo.presentation.onboarding.screen.RelationshipStep
+import com.umc.halo.presentation.onboarding.screen.WelcomeStep
 import com.umc.halo.presentation.theme.Error
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray50
@@ -70,12 +70,6 @@ fun OnboardingScreen(
     onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(uiState.currentStep) {
-        if (uiState.currentStep == OnboardingStep.COMPLETE) {
-            // 완료 화면 자체도 UI로 보여줄 예정이라 지금은 이동하지 않음
-        }
-    }
-
     when (uiState.currentStep) {
         OnboardingStep.NAME -> {
             NameInputStep(
@@ -114,20 +108,15 @@ fun OnboardingScreen(
         OnboardingStep.RELATIONSHIP -> {
             RelationshipStep(
                 uiState = uiState,
-                onEvent = onEvent
+                onEvent = onEvent,
+                modifier = modifier
             )
         }
 
         OnboardingStep.GOAL -> {
-            TemporaryStep(
-                text = "원하는 관계 선택 화면",
-                onNextClick = {
-                    onEvent(OnboardingUiEvent.NextClicked)
-                },
-                onBackClick = {
-                    onEvent(OnboardingUiEvent.BackClicked)
-                },
-                enabled = uiState.isNextEnabled,
+            GoalStep(
+                uiState = uiState,
+                onEvent = onEvent,
                 modifier = modifier
             )
         }
@@ -136,9 +125,6 @@ fun OnboardingScreen(
             TemporaryStep(
                 text = "온보딩 완료 화면",
                 onNextClick = onNavigateToHome,
-                onBackClick = {
-                    onEvent(OnboardingUiEvent.BackClicked)
-                },
                 enabled = true,
                 buttonText = "시작하기",
                 modifier = modifier
@@ -303,7 +289,6 @@ private fun OnboardingNameTextField(
 private fun TemporaryStep(
     text: String,
     onNextClick: () -> Unit,
-    onBackClick: () -> Unit,
     enabled: Boolean,
     modifier: Modifier = Modifier,
     buttonText: String = "다음"
