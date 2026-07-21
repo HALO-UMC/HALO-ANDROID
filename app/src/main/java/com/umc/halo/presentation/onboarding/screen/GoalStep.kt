@@ -123,8 +123,10 @@ fun GoalStep(
                             fontWeight = FontWeight.SemiBold
                         )
                     ) {
-                        append("어떤 사이가 되고 싶나요?")
+                        append("어떤 사이")
                     }
+
+                    append("가 되고 싶나요?")
                 }
 
                 Text(
