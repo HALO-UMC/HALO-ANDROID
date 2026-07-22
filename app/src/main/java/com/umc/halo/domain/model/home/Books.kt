@@ -1,17 +1,19 @@
 package com.umc.halo.domain.model.home
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 
 data class Books(
     val id: Int,
-    val color: Color,
     val title: String,
-    val size: Size
-)
-
-data class Size(
+    val subtitle: String,
+    val spineImage: Int,
+    val coverImage: Int,
+    val height: Int,
     val width: Int,
-    val height: Int
+    val tilt: Float,
+    val offsetY: Float,
+    val offsetX: Int
 )
 
 data class CustomizedStoryBooks(
