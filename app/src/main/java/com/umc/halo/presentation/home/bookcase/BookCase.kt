@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
@@ -132,8 +134,10 @@ fun BookCaseContents(
 
                 if(selectedId == item.id)
                     selectedId = null
-                else
+                else if (selectedId == null) {
                     selectedId = item.id
+                }
+
 
                 vm.onEvent(
                     HomeUiEvent.OnBookClicked(item.id)
@@ -158,26 +162,39 @@ fun BookItem(
 
     var startRotation by remember { mutableStateOf(false) }
     var resetTilt by remember { mutableStateOf(false) }
-    LaunchedEffect(isSelected) {
-        if (isSelected) {
-
-            // tilt 제거
-            resetTilt = true
+    var deletePot by remember { mutableStateOf(false) }
+    LaunchedEffect(hasSelection) {
+        if (hasSelection) {
+            //화분 제거
+            deletePot = true
 
             delay(300)
 
-            // 책 펼치기
-            startRotation = true
+            if (isSelected) {
+                // tilt 제거
+                resetTilt = true
 
+                delay(300)
+
+                // 책 펼치기
+                startRotation = true
+            }
         } else {
 
-            // 책 닫기
-            startRotation = false
+            if (!isSelected) {
+                // 책 닫기
+                startRotation = false
 
-            delay(600)
+                delay(600)
 
-            // tilt 복원
-            resetTilt = false
+                // tilt 복원
+                resetTilt = false
+
+                delay(300)
+            }
+
+            //화분 복원
+            deletePot = false
         }
     }
 
@@ -189,12 +206,19 @@ fun BookItem(
         targetValue = if (startRotation) 0f else 90f,
         animationSpec = rotationSpec
     )
+    val spineAlpha by animateFloatAsState(
+        targetValue = if (isSelected || !hasSelection) 1f else 0.4f,
+        animationSpec = tween(300)
+    )
+    val potAlpha by animateFloatAsState(
+        targetValue = if (deletePot) 0f else 1f,
+        animationSpec = tween(300)
+    )
 
-    val spineAlpha = when {
-            isSelected -> 1f
-            !hasSelection -> 1f
-            else -> 0.4f
-        }
+
+    val width by animateDpAsState(
+        targetValue = if (resetTilt) item.width.dp else item.offsetX.dp
+    )
 
     val coverProgress = 1f - (coverRotation / 90f)
     val widthProgress = ((coverProgress - 0.8f) / 0.2f)
@@ -204,7 +228,7 @@ fun BookItem(
         fraction = coverProgress.coerceIn(0f, 1f)
     )
     val spineWidth = lerp(
-        start = item.offsetX.dp,
+        start = width,
         stop = 0.dp,
         fraction = widthProgress.coerceIn(0f, 1f)
     )
@@ -217,11 +241,12 @@ fun BookItem(
         targetValue = if (resetTilt) 0.dp else item.offsetY.dp
     )
 
+
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
     LaunchedEffect(isSelected) {
         if (isSelected) {
-            delay(150)
+            delay(900)
             bringIntoViewRequester.bringIntoView()
         }
     }
@@ -252,6 +277,20 @@ fun BookItem(
                 contentDescription = "${item.id}",
                 modifier = Modifier.fillMaxSize()
             )
+
+            if (item.id == 1) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_home_bookcase_pot),
+                    contentDescription = null,
+                    tint = Color.Unspecified,
+                    modifier = Modifier
+                        .offset(
+                            x = 35.dp,
+                            y = 165.dp
+                        )
+                        .alpha(potAlpha)
+                )
+            }
         }
         Box(
             modifier = Modifier
