@@ -13,12 +13,25 @@ data class CustomStorybook(
 )
 
 /**
+ * 사용자의 스토리북 진행 상태
+ * 스토리북 목록의 전체 탭 -> 카드 배지(책갈피)에 사용 (없으면 아직 시작 전 → 배지 없음)
+ */
+sealed interface StorybookProgress {
+    // 진행중: 현재 진행 장수
+    data class InProgress(val chapter: Int) : StorybookProgress
+
+    // 완료: 10장까지 모두 끝냄
+    data object Done : StorybookProgress
+}
+
+/**
  * 테마 섹션 안에 들어가는 스토리북
  */
 data class Storybook(
     val id: Int,
     val title: String,
-    val subtitle: String
+    val subtitle: String,
+    val progress: StorybookProgress? = null  // 전체 탭 카드 배지용 (null = 배지 없음)
     // TODO: 서버 연동 후 커버 이미지 추가 예정
 )
 
