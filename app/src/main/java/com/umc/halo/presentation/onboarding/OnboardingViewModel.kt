@@ -41,7 +41,7 @@ class OnboardingViewModel @Inject constructor() :
             }
 
             is OnboardingUiEvent.GoalClicked -> {
-                updateGoal(event.goal)
+                toggleGoal(event.goal)
             }
 
             OnboardingUiEvent.NextClicked -> {
@@ -119,22 +119,33 @@ class OnboardingViewModel @Inject constructor() :
 
     private fun toggleParentPersonality(personality: String) {
         updateState {
-            val newList = when {
+            val updatedPersonalities = when {
+                /*
+                 * 이미 선택된 태그를 다시 누르면 선택 해제
+                 */
                 personality in selectedParentPersonalities -> {
                     selectedParentPersonalities - personality
                 }
 
+                /*
+                 * 전체 선택 개수가 3개 미만이면 선택 추가
+                 */
                 selectedParentPersonalities.size <
                         MAX_PARENT_PERSONALITY_COUNT -> {
                     selectedParentPersonalities + personality
                 }
 
+                /*
+                 * 이미 전체에서 3개를 선택했다면 변경하지 않음
+                 */
                 else -> {
                     selectedParentPersonalities
                 }
             }
 
-            copy(selectedParentPersonalities = newList)
+            copy(
+                selectedParentPersonalities = updatedPersonalities
+            )
         }
     }
 
@@ -144,9 +155,45 @@ class OnboardingViewModel @Inject constructor() :
         }
     }
 
-    private fun updateGoal(goal: String) {
+    /*
+     * 원하는 관계는 전체 항목 중 최소 1개, 최대 2개까지 선택한다.
+     */
+    private fun toggleGoal(goal: String) {
         updateState {
-            copy(selectedGoal = goal)
+            when {
+                /*
+                 * 이미 선택된 항목을 다시 누르면 선택을 해제한다.
+                 * 선택 상태가 정상적으로 변경됐으므로 안내 문구도 제거한다.
+                 */
+                goal in selectedGoals -> {
+                    copy(
+                        selectedGoals = selectedGoals - goal,
+                        isGoalLimitMessageVisible = false
+                    )
+                }
+
+                /*
+                 * 현재 선택 개수가 두 개 미만이면 새 항목을 추가한다.
+                 */
+                selectedGoals.size < MAX_GOAL_COUNT -> {
+                    copy(
+                        selectedGoals = selectedGoals + goal,
+                        isGoalLimitMessageVisible = false
+                    )
+                }
+
+                /*
+                 * 이미 두 개를 선택한 상태에서 세 번째 항목을 누른 경우다.
+                 *
+                 * 기존 선택 상태는 그대로 유지하고,
+                 * 최대 선택 개수 안내 문구만 표시한다.
+                 */
+                else -> {
+                    copy(
+                        isGoalLimitMessageVisible = true
+                    )
+                }
+            }
         }
     }
 
@@ -164,9 +211,5 @@ class OnboardingViewModel @Inject constructor() :
         updateState {
             copy(currentStep = currentStep.previous())
         }
-    }
-
-    companion object {
-        private const val MAX_PARENT_PERSONALITY_COUNT = 3
     }
 }

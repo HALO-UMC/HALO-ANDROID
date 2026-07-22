@@ -14,7 +14,7 @@ import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.umc.halo.presentation.theme.Gray100
-import com.umc.halo.presentation.theme.Primary500
+import com.umc.halo.presentation.theme.Gray700
 
 @Composable
 fun OnboardingProgressBar(
@@ -29,6 +29,11 @@ fun OnboardingProgressBar(
         maximumValue = totalStep
     )
 
+    // currentStep이 1이면 첫 번째,
+    // currentStep이 2이면 두 번째,
+    // currentStep이 3이면 세 번째만 활성화된다.
+    val activeIndex = safeCurrentStep - 1
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -39,18 +44,18 @@ fun OnboardingProgressBar(
                     steps = (totalStep - 1).coerceAtLeast(0)
                 )
             },
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         repeat(totalStep) { index ->
-            val isActive = index < safeCurrentStep
+            val isActive = index == activeIndex
 
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(6.dp)
+                    .height(5.dp)
                     .background(
                         color = if (isActive) {
-                            Primary500
+                            Gray700
                         } else {
                             Gray100
                         },

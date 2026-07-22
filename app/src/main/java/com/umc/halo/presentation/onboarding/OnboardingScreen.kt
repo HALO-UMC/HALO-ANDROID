@@ -19,16 +19,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.error
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
+import com.umc.halo.presentation.onboarding.screen.BasicInfoStep
+import com.umc.halo.presentation.onboarding.screen.GoalStep
+import com.umc.halo.presentation.onboarding.screen.ParentPersonalityStep
+import com.umc.halo.presentation.onboarding.screen.RelationshipStep
+import com.umc.halo.presentation.onboarding.screen.WelcomeStep
+import com.umc.halo.presentation.onboarding.screen.CompleteStep
 import com.umc.halo.presentation.theme.Error
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray50
@@ -70,12 +71,6 @@ fun OnboardingScreen(
     onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(uiState.currentStep) {
-        if (uiState.currentStep == OnboardingStep.COMPLETE) {
-            // 완료 화면 자체도 UI로 보여줄 예정이라 지금은 이동하지 않음
-        }
-    }
-
     when (uiState.currentStep) {
         OnboardingStep.NAME -> {
             NameInputStep(
@@ -86,84 +81,51 @@ fun OnboardingScreen(
         }
 
         OnboardingStep.BASIC_INFO -> {
-            TemporaryStep(
-                text = "성별 + 생년월일 화면",
-                onNextClick = {
-                    onEvent(OnboardingUiEvent.NextClicked)
-                },
-                onBackClick = {
-                    onEvent(OnboardingUiEvent.BackClicked)
-                },
-                enabled = uiState.isNextEnabled,
+            BasicInfoStep(
+                uiState = uiState,
+                onEvent = onEvent,
                 modifier = modifier
             )
         }
 
         OnboardingStep.WELCOME -> {
-            TemporaryStep(
-                text = "환영 화면\n${uiState.userName}님!",
+            WelcomeStep(
+                userName = uiState.userName,
                 onNextClick = {
                     onEvent(OnboardingUiEvent.NextClicked)
                 },
-                onBackClick = {
-                    onEvent(OnboardingUiEvent.BackClicked)
-                },
-                enabled = uiState.isNextEnabled,
                 modifier = modifier
             )
         }
 
         OnboardingStep.PARENT_PERSONALITY -> {
-            TemporaryStep(
-                text = "부모님 성격 선택 화면",
-                onNextClick = {
-                    onEvent(OnboardingUiEvent.NextClicked)
-                },
-                onBackClick = {
-                    onEvent(OnboardingUiEvent.BackClicked)
-                },
-                enabled = uiState.isNextEnabled,
+            ParentPersonalityStep(
+                uiState = uiState,
+                onEvent = onEvent,
                 modifier = modifier
             )
         }
 
         OnboardingStep.RELATIONSHIP -> {
-            TemporaryStep(
-                text = "부모님과 나의 관계 선택 화면",
-                onNextClick = {
-                    onEvent(OnboardingUiEvent.NextClicked)
-                },
-                onBackClick = {
-                    onEvent(OnboardingUiEvent.BackClicked)
-                },
-                enabled = uiState.isNextEnabled,
+            RelationshipStep(
+                uiState = uiState,
+                onEvent = onEvent,
                 modifier = modifier
             )
         }
 
         OnboardingStep.GOAL -> {
-            TemporaryStep(
-                text = "원하는 관계 선택 화면",
-                onNextClick = {
-                    onEvent(OnboardingUiEvent.NextClicked)
-                },
-                onBackClick = {
-                    onEvent(OnboardingUiEvent.BackClicked)
-                },
-                enabled = uiState.isNextEnabled,
+            GoalStep(
+                uiState = uiState,
+                onEvent = onEvent,
                 modifier = modifier
             )
         }
 
         OnboardingStep.COMPLETE -> {
-            TemporaryStep(
-                text = "온보딩 완료 화면",
-                onNextClick = onNavigateToHome,
-                onBackClick = {
-                    onEvent(OnboardingUiEvent.BackClicked)
-                },
-                enabled = true,
-                buttonText = "시작하기",
+            CompleteStep(
+                uiState = uiState,
+                onStartClick = onNavigateToHome,
                 modifier = modifier
             )
         }
@@ -177,6 +139,7 @@ private fun NameInputStep(
     modifier: Modifier = Modifier
 ) {
     val nameErrorMessage = uiState.nameErrorMessage
+    val isNameError = nameErrorMessage != null
 
     Box(
         modifier = modifier
@@ -223,7 +186,7 @@ private fun NameInputStep(
                     onEvent(OnboardingUiEvent.NameChanged(name))
                 },
                 placeholder = "이름을 입력하세요.",
-                errorMessage = nameErrorMessage,
+                isError = isNameError,
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
 
@@ -264,11 +227,9 @@ private fun OnboardingNameTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    errorMessage: String?,
+    isError: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val isError = errorMessage != null
-
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -297,15 +258,7 @@ private fun OnboardingNameTextField(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text
             ),
-            modifier = Modifier
-                .fillMaxSize()
-                .semantics {
-                    contentDescription = "이름 입력"
-
-                    if (errorMessage != null) {
-                        error(errorMessage)
-                    }
-                },
+            modifier = Modifier.fillMaxSize(),
             decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier
@@ -320,8 +273,7 @@ private fun OnboardingNameTextField(
                                 lineHeight = 20.3.sp,
                                 letterSpacing = (-0.14).sp
                             ),
-                            color = Gray300,
-                            modifier = Modifier.clearAndSetSemantics { }
+                            color = Gray300
                         )
                     }
 
@@ -336,7 +288,6 @@ private fun OnboardingNameTextField(
 private fun TemporaryStep(
     text: String,
     onNextClick: () -> Unit,
-    onBackClick: () -> Unit,
     enabled: Boolean,
     modifier: Modifier = Modifier,
     buttonText: String = "다음"
