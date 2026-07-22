@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.onboarding.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -52,6 +53,14 @@ fun GoalStep(
     onEvent: (OnboardingUiEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    /*
+     * 기기 시스템 뒤로가기 버튼을 눌렀을 때도
+     * 현재 관계 선택 단계로 이동한다.
+     */
+    BackHandler {
+        onEvent(OnboardingUiEvent.BackClicked)
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -142,7 +151,7 @@ fun GoalStep(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "해당되는 항목을 모두 선택해주세요.",
+                    text = "해당되는 항목을 모두 선택해주세요. (최대 2개).",
                     style = HaloType.body03Regular.copy(
                         fontSize = 12.sp,
                         lineHeight = 17.4.sp,

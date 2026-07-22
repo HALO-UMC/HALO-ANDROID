@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.onboarding.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,11 +44,11 @@ import com.umc.halo.presentation.onboarding.PARENT_PERSONALITY_GROUPS
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.onboarding.component.OnboardingChoiceChip
 import com.umc.halo.presentation.onboarding.component.OnboardingProgressBar
+import com.umc.halo.presentation.theme.Error
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
-import com.umc.halo.presentation.theme.Error
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -58,6 +59,14 @@ fun ParentPersonalityStep(
 ) {
     var showLimitMessage by rememberSaveable {
         mutableStateOf(false)
+    }
+
+    /*
+     * 기기 시스템 뒤로가기 버튼을 눌렀을 때도
+     * 온보딩 이전 단계로 이동한다.
+     */
+    BackHandler {
+        onEvent(OnboardingUiEvent.BackClicked)
     }
 
     Box(

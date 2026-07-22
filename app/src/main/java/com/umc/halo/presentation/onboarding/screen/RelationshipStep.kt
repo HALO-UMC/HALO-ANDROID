@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.onboarding.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -80,6 +81,14 @@ fun RelationshipStep(
     onEvent: (OnboardingUiEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    /*
+     * 기기 시스템 뒤로가기 버튼을 눌렀을 때도
+     * 부모님 성격 선택 단계로 이동한다.
+     */
+    BackHandler {
+        onEvent(OnboardingUiEvent.BackClicked)
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
