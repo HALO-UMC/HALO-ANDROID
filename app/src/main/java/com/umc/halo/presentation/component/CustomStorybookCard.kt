@@ -6,8 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -16,63 +17,81 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.domain.model.storybook.CustomStorybook
-import com.umc.halo.presentation.theme.Gray100
+import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
+import com.umc.halo.presentation.theme.White
 
+/**
+ * 맞춤 스토리북 카드
+ */
 @Composable
 fun CustomStorybookCard(
     item: CustomStorybook,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .width(246.dp)
-            .clickable { onClick() },
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    val shape = RoundedCornerShape(16.dp)
+    Row(
+        modifier = modifier
+            .shadow(elevation = 2.dp, shape = shape)   // 카드 그림자
+            .clip(shape)
+            .background(White)
+            .clickable { onClick() }
+            .padding(horizontal = 18.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(18.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // 커버 이미지 자리(현재는 임시) — 추후 구현 예정
+        // 커버 이미지 자리(임시) — 서버 연동 후 실제 이미지로 교체
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(108.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Gray100)
+                .width(75.dp)
+                .height(90.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Gray50)
         )
 
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
                 Text(
                     text = item.tag,
-                    style = HaloType.caption01Medium,
+                    style = HaloType.body03Medium,
                     color = Primary500
                 )
-                Text(
-                    text = item.title,
-                    style = HaloType.body01SemiBold,
-                    color = Gray800
-                )
-                Text(
-                    text = item.subtitle,
-                    style = HaloType.caption01Regular,
-                    color = Gray500
-                )
+                Column {
+                    Text(
+                        text = item.title,
+                        style = HaloType.body01SemiBold,
+                        color = Gray800
+                    )
+                    Text(
+                        text = item.subtitle,
+                        style = HaloType.body03Regular,
+                        color = Gray500
+                    )
+                }
             }
 
             Icon(
                 painter = painterResource(R.drawable.ic_home_right_arrow),
                 contentDescription = null,
-                tint = Color.Unspecified
+                tint = Color.Unspecified,
+                modifier = Modifier.size(18.dp)
             )
         }
     }
