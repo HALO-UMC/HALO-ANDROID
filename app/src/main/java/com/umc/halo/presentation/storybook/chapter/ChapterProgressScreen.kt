@@ -113,12 +113,12 @@ private fun ChapterProgressScreen(
         ChapterProgressStep.QUESTION -> {
             ChapterQuestionStep(
                 chapter = chapter,
-                answers = state.answers,
-                isNextEnabled = state.isNextEnabled,
+                answers = state.questionAnswers,
+                isNextEnabled = state.isQuestionStepNextEnabled,
                 onAnswerChanged = { questionIndex, answer ->
                     onEvent(
-                        ChapterProgressUiEvent.AnswerChanged(
-                            questionIndex = questionIndex,
+                        ChapterProgressUiEvent.QuestionAnswerChanged(
+                            index = questionIndex,
                             answer = answer
                         )
                     )
@@ -137,7 +137,9 @@ private fun ChapterProgressScreen(
                 isNextEnabled = state.isSceneStepNextEnabled,
                 onMethodSelected = { method ->
                     onEvent(
-                        ChapterProgressUiEvent.SceneRecordMethodSelected(method)
+                        ChapterProgressUiEvent.SceneRecordMethodSelected(
+                            method = method
+                        )
                     )
                 },
                 onBackClick = handleBack,
