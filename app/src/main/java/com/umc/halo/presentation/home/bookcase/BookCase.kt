@@ -42,6 +42,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
@@ -156,44 +157,53 @@ fun BookItem(
     onClick: () -> Unit
 ) {
     val rotationSpec = tween<Float>(
-        durationMillis = 600,
+        durationMillis = 900,
         easing = FastOutSlowInEasing
     )
 
     var startRotation by remember { mutableStateOf(false) }
     var resetTilt by remember { mutableStateOf(false) }
+    var changeAlpha by remember { mutableStateOf(false) }
     var deletePot by remember { mutableStateOf(false) }
     LaunchedEffect(hasSelection) {
         if (hasSelection) {
-            //화분 제거
+            // 화분 제거
             deletePot = true
 
-            delay(300)
+            delay(100)
 
+            // 선택된 책만 tilt 제거 + 회전
             if (isSelected) {
                 // tilt 제거
                 resetTilt = true
 
-                delay(300)
+                delay(100)
 
                 // 책 펼치기
                 startRotation = true
             }
+
+            delay(300)
+
+            // 모든 아이템의 alpha 변경
+            changeAlpha = true
+
         } else {
 
             if (!isSelected) {
-                // 책 닫기
+                // 다른 책 alpha 복원 + 책 닫기
                 startRotation = false
+                changeAlpha = false
 
-                delay(600)
+                delay(900)
 
                 // tilt 복원
                 resetTilt = false
 
-                delay(300)
+                delay(100)
             }
 
-            //화분 복원
+            // 화분 복원
             deletePot = false
         }
     }
@@ -206,16 +216,20 @@ fun BookItem(
         targetValue = if (startRotation) 0f else 90f,
         animationSpec = rotationSpec
     )
+    val targetSpineAlpha = when {
+        isSelected -> 1f       // 내가 클릭한 책
+        changeAlpha -> 0.4f     // 아무것도 선택 안 됨
+        else -> 1f            // 다른 책
+    }
     val spineAlpha by animateFloatAsState(
-        targetValue = if (isSelected || !hasSelection) 1f else 0.4f,
-        animationSpec = tween(300)
+        targetValue = targetSpineAlpha,
+        animationSpec = tween(300),
+        label = "spineAlpha"
     )
     val potAlpha by animateFloatAsState(
         targetValue = if (deletePot) 0f else 1f,
-        animationSpec = tween(300)
+        animationSpec = tween(100)
     )
-
-
     val width by animateDpAsState(
         targetValue = if (resetTilt) item.width.dp else item.offsetX.dp
     )
@@ -235,7 +249,7 @@ fun BookItem(
 
     val tilt by animateFloatAsState(
         targetValue = if (resetTilt) 0f else item.tilt,
-        animationSpec = tween(300)
+        animationSpec = tween(100)
     )
     val offsetY by animateDpAsState(
         targetValue = if (resetTilt) 0.dp else item.offsetY.dp
@@ -312,7 +326,7 @@ fun BookItem(
                     painter = painterResource(item.coverImage),
                     contentDescription = "${item.id}",
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.FillBounds
                 )
 
 //                Column(
