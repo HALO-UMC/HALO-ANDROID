@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
+import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray400
@@ -29,6 +30,7 @@ import com.umc.halo.presentation.theme.Gray600
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary30
 import com.umc.halo.presentation.theme.Primary50
+import com.umc.halo.presentation.theme.White
 
 @Composable
 fun ActionGuide() {
@@ -46,7 +48,7 @@ fun ActionGuide() {
 
         Text(
             text = "할로가 처음이라면!",
-            style = HaloType.caption01Medium,
+            style = HaloType.body03Regular,
             color = Gray500
         )
 
@@ -59,12 +61,12 @@ fun ActionGuide() {
 
         ActionGuideFrame(
             number = "2",
-            contents = "준비된 스토리북 테마를 골라요"
+            contents = "각 테마는 10장으로 구성되어 있어요"
         )
 
         ActionGuideFrame(
             number = "3",
-            contents = "준비된 스토리북 테마를 골라요"
+            contents = "테마 별로 하루에 한 장씩 천천히 채워가요"
         )
     }
 }
@@ -81,10 +83,10 @@ fun ActionGuideFrame(
                 .height(44.dp)
                 .border(
                     width = 1.dp,
-                    color = Primary50,
-                    shape = RoundedCornerShape(8.dp)
+                    color = Gray100,
+                    shape = RoundedCornerShape(16.dp)
                 )
-                .background(Primary30)
+                .background(Gray30)
         ) {
             Row(
                 modifier = Modifier
@@ -95,14 +97,14 @@ fun ActionGuideFrame(
                         .size(24.dp)
                         .border(
                             width = 1.dp,
-                            color = Gray30,
+                            color = White,
                             shape = RoundedCornerShape(16.dp)
                         )
                 ) {
                     Text(
                         text = number,
                         style = HaloType.caption01Medium,
-                        color = Gray400,
+                        color = Gray500,
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
@@ -111,7 +113,7 @@ fun ActionGuideFrame(
 
                 Text(
                     text = contents,
-                    style = HaloType.body03Regular,
+                    style = HaloType.body02Medium,
                     color = Gray600,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
@@ -119,14 +121,6 @@ fun ActionGuideFrame(
             }
         }
 
-        Icon(
-            painter = painterResource(R.drawable.ic_home_action_guide),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(start = 22.dp)
-                .background(Gray200)
-        )
-
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(12.dp))
     }
 }

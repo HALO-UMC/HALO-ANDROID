@@ -97,8 +97,6 @@ fun BookCase(
     }
 }
 
-
-
 @Composable
 fun BookCaseContents(
     bookList: List<Books>,
