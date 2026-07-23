@@ -210,10 +210,7 @@ fun BookItem(
         targetValue = if(startRotation) -90f else 0f,
         animationSpec = rotationSpec
     )
-    val coverRotation by animateFloatAsState(
-        targetValue = if (startRotation) 0f else 90f,
-        animationSpec = rotationSpec
-    )
+    val coverRotation = spineRotation + 90f
     val targetSpineAlpha = when {
         isSelected -> 1f       // 내가 클릭한 책
         changeAlpha -> 0.4f     // 아무것도 선택 안 됨
@@ -231,6 +228,11 @@ fun BookItem(
     val width by animateDpAsState(
         targetValue = if (resetTilt) item.width.dp else item.offsetX.dp
     )
+    val currentContentScale = if (width <= item.width.dp) {
+        ContentScale.FillBounds
+    } else {
+        ContentScale.Fit
+    }
 
     val coverProgress = 1f - (coverRotation / 90f)
     val widthProgress = ((coverProgress - 0.8f) / 0.2f)
@@ -278,7 +280,7 @@ fun BookItem(
                     transformOrigin = TransformOrigin(1f, 0.5f)
                     rotationY = spineRotation
                     rotationZ = tilt
-                    cameraDistance = 16f
+                    cameraDistance = 32f * density
                     alpha = spineAlpha
                     clip = false
                 }
@@ -287,7 +289,8 @@ fun BookItem(
             Image(
                 painter = painterResource(item.spineImage),
                 contentDescription = "${item.id}",
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                contentScale = currentContentScale
             )
 
             if (item.id == 1) {
@@ -311,7 +314,7 @@ fun BookItem(
                 .graphicsLayer {
                     transformOrigin = TransformOrigin(0f, 0.5f)
                     rotationY = coverRotation
-                    cameraDistance = 16f
+                    cameraDistance = 32f * density
                     clip = false
                 }
         ) {
