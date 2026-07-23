@@ -3,7 +3,6 @@ package com.umc.halo.presentation.storybook.chapter.component
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,12 +11,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.umc.halo.presentation.theme.Gray100
-import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.White
+
+private val ChapterButtonDisabledContainer = Color(0xFFEEEEEE)
+private val ChapterButtonDisabledContent = Color(0xFF8C8C8C)
 
 @Composable
 fun ChapterBottomButton(
@@ -36,8 +37,8 @@ fun ChapterBottomButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = Primary500,
             contentColor = White,
-            disabledContainerColor = Gray100,
-            disabledContentColor = Gray400
+            disabledContainerColor = ChapterButtonDisabledContainer,
+            disabledContentColor = ChapterButtonDisabledContent
         )
     ) {
         Text(
@@ -47,9 +48,6 @@ fun ChapterBottomButton(
     }
 }
 
-/**
- * 모든 챕터 진행 화면에서 버튼 위치를 동일하게 유지하는 영역
- */
 @Composable
 fun ChapterBottomAction(
     text: String,
@@ -60,7 +58,6 @@ fun ChapterBottomAction(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .imePadding()
             .navigationBarsPadding()
             .padding(
                 start = 24.dp,

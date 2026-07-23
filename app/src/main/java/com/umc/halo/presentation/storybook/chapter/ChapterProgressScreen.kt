@@ -24,6 +24,7 @@ import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomButton
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterGuideStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterIntroStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterQuestionStep
+import com.umc.halo.presentation.storybook.chapter.screen.ChapterSceneStep
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
@@ -120,6 +121,23 @@ private fun ChapterProgressScreen(
                             questionIndex = questionIndex,
                             answer = answer
                         )
+                    )
+                },
+                onBackClick = handleBack,
+                onNextClick = {
+                    onEvent(ChapterProgressUiEvent.NextClicked)
+                }
+            )
+        }
+
+        ChapterProgressStep.SCENE -> {
+            ChapterSceneStep(
+                chapter = chapter,
+                selectedMethod = state.selectedSceneRecordMethod,
+                isNextEnabled = state.isSceneStepNextEnabled,
+                onMethodSelected = { method ->
+                    onEvent(
+                        ChapterProgressUiEvent.SceneRecordMethodSelected(method)
                     )
                 },
                 onBackClick = handleBack,
