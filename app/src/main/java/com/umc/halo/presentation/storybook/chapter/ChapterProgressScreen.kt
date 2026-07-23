@@ -22,6 +22,7 @@ import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomButton
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterIntroStep
+import com.umc.halo.presentation.storybook.chapter.screen.ChapterGuideStep
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
@@ -89,6 +90,16 @@ private fun ChapterProgressScreen(
     when (state.currentStep) {
         ChapterProgressStep.INTRO -> {
             ChapterIntroStep(
+                chapter = chapter,
+                onBackClick = handleBack,
+                onNextClick = {
+                    onEvent(ChapterProgressUiEvent.NextClicked)
+                }
+            )
+        }
+
+        ChapterProgressStep.GUIDE -> {
+            ChapterGuideStep(
                 chapter = chapter,
                 onBackClick = handleBack,
                 onNextClick = {

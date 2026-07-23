@@ -4,11 +4,6 @@ import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.domain.model.storybook.ChapterStatus
 import com.umc.halo.presentation.base.BaseViewModel
 
-/**
- * 챕터 작성 플로우의 상태와 이벤트를 관리하는 ViewModel
- *
- * 현재는 서버 연결 전이므로 챕터 정보를 DummyData로 생성합니다.
- */
 class ChapterProgressViewModel :
     BaseViewModel<ChapterProgressUiState, ChapterProgressUiEvent>(
         initialState = ChapterProgressUiState()
@@ -61,23 +56,16 @@ class ChapterProgressViewModel :
 
     private fun moveToNextStep() {
         updateState {
-            copy(
-                currentStep = currentStep.next()
-            )
+            copy(currentStep = currentStep.next())
         }
     }
 
     private fun moveToPreviousStep() {
         updateState {
-            copy(
-                currentStep = currentStep.previous()
-            )
+            copy(currentStep = currentStep.previous())
         }
     }
 
-    /**
-     * 서버 연결 전 챕터 더미 데이터
-     */
     private fun createDummyChapter(
         storybookId: Long,
         chapterId: Long
@@ -100,6 +88,11 @@ class ChapterProgressViewModel :
                         "지금의 내 나이였을 때 부모님은 어떤 하루를 살고\n" +
                         "있었는지 들어봅니다.",
                 backgroundImageUrl = null,
+                guideImageUrl = null,
+                themeGuideText = "지금의 부모님도 한때는\n지금 나의 나이로 하루를 살고 있었어요.",
+                chapterGuideText = "부모님은 처음 어떻게 만나셨을까요?\n" +
+                        "첫인상부터 조심스럽게 물어보며 가족의\n" +
+                        "시작을 떠올려봐요!",
                 status = ChapterStatus.AVAILABLE
             )
 
@@ -111,6 +104,9 @@ class ChapterProgressViewModel :
                 title = "${chapterNumber}번째 이야기",
                 description = "부모님의 이야기를 차근차근 기록하는 챕터입니다.",
                 backgroundImageUrl = null,
+                guideImageUrl = null,
+                themeGuideText = "지금의 부모님도 한때는\n지금 나의 나이로 하루를 살고 있었어요.",
+                chapterGuideText = "부모님의 이야기를 천천히 떠올려볼까요?",
                 status = ChapterStatus.AVAILABLE
             )
         }

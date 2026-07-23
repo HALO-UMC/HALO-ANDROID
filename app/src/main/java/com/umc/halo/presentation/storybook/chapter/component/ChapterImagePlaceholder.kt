@@ -16,22 +16,19 @@ import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.HaloType
 import kotlin.math.ceil
 
-private val CheckerColorLight = Color(0xFFF7F7F7)
-private val CheckerColorDark = Color(0xFFEDEDED)
+private val DefaultCheckerColorLight = Color(0xFFF7F7F7)
+private val DefaultCheckerColorDark = Color(0xFFEDEDED)
 
-/**
- * 서버 이미지가 연결되기 전 사용하는 이미지 Placeholder
- *
- * 추후 실제 이미지 표시 기능을 연결하면,
- * imageUrl이 없을 때만 이 Placeholder를 보여줍니다.
- */
 @Composable
 fun ChapterImagePlaceholder(
     imageUrl: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showLabel: Boolean = true,
+    lightColor: Color = DefaultCheckerColorLight,
+    darkColor: Color = DefaultCheckerColorDark
 ) {
     Box(
-        modifier = modifier.background(CheckerColorLight),
+        modifier = modifier.background(lightColor),
         contentAlignment = Alignment.Center
     ) {
         Canvas(
@@ -43,14 +40,15 @@ fun ChapterImagePlaceholder(
 
             repeat(rowCount) { row ->
                 repeat(columnCount) { column ->
-                    val color = if ((row + column) % 2 == 0) {
-                        CheckerColorLight
-                    } else {
-                        CheckerColorDark
-                    }
+                    val checkerColor =
+                        if ((row + column) % 2 == 0) {
+                            lightColor
+                        } else {
+                            darkColor
+                        }
 
                     drawRect(
-                        color = color,
+                        color = checkerColor,
                         topLeft = Offset(
                             x = column * cellSize,
                             y = row * cellSize
@@ -64,14 +62,16 @@ fun ChapterImagePlaceholder(
             }
         }
 
-        Text(
-            text = if (imageUrl.isNullOrBlank()) {
-                "챕터 배경 이미지"
-            } else {
-                "이미지 URL 연결 예정"
-            },
-            style = HaloType.body03Regular,
-            color = Gray500
-        )
+        if (showLabel) {
+            Text(
+                text = if (imageUrl.isNullOrBlank()) {
+                    "챕터 배경 이미지"
+                } else {
+                    "이미지 URL 연결 예정"
+                },
+                style = HaloType.body03Regular,
+                color = Gray500
+            )
+        }
     }
 }

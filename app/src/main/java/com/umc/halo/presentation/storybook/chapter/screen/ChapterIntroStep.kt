@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
@@ -20,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.presentation.component.HaloTopBar
-import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomButton
+import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomAction
 import com.umc.halo.presentation.storybook.chapter.component.ChapterImagePlaceholder
 import com.umc.halo.presentation.theme.Gray600
 import com.umc.halo.presentation.theme.Gray800
@@ -30,9 +29,6 @@ import com.umc.halo.presentation.theme.White
 
 private val ChapterTagBackground = Color(0xFFFFF3E8)
 
-/**
- * 챕터 작성 플로우의 첫 번째 소개 화면
- */
 @Composable
 fun ChapterIntroStep(
     chapter: Chapter,
@@ -75,12 +71,11 @@ fun ChapterIntroStep(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .navigationBarsPadding()
                     .padding(
                         start = 24.dp,
                         top = 24.dp,
                         end = 24.dp,
-                        bottom = 16.dp
+                        bottom = 100.dp
                     )
             ) {
                 ChapterNumberTag(
@@ -105,16 +100,15 @@ fun ChapterIntroStep(
                     style = HaloType.body02Regular,
                     color = Gray600
                 )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                ChapterBottomButton(
-                    text = "다음",
-                    enabled = true,
-                    onClick = onNextClick
-                )
             }
         }
+
+        ChapterBottomAction(
+            text = "다음",
+            enabled = true,
+            onClick = onNextClick,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
