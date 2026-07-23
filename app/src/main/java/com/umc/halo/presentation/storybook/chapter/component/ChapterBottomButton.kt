@@ -3,14 +3,21 @@ package com.umc.halo.presentation.storybook.chapter.component
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.umc.halo.presentation.component.ButtonState
-import com.umc.halo.presentation.component.HaloMaterialButton
+import com.umc.halo.presentation.theme.Gray100
+import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.HaloType
+import com.umc.halo.presentation.theme.Primary500
+import com.umc.halo.presentation.theme.White
 
 @Composable
 fun ChapterBottomButton(
@@ -19,19 +26,25 @@ fun ChapterBottomButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    HaloMaterialButton(
-        buttonState = if (enabled) {
-            ButtonState.ABLE
-        } else {
-            ButtonState.DISABLED
-        },
-        text = text,
-        style = HaloType.body01SemiBold,
+    Button(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier
             .fillMaxWidth()
-            .height(54.dp)
-    )
+            .height(54.dp),
+        shape = RoundedCornerShape(30.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Primary500,
+            contentColor = White,
+            disabledContainerColor = Gray100,
+            disabledContentColor = Gray400
+        )
+    ) {
+        Text(
+            text = text,
+            style = HaloType.body01SemiBold
+        )
+    }
 }
 
 /**
@@ -47,6 +60,7 @@ fun ChapterBottomAction(
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .imePadding()
             .navigationBarsPadding()
             .padding(
                 start = 24.dp,

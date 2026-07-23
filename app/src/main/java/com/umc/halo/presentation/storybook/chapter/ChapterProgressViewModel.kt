@@ -18,6 +18,13 @@ class ChapterProgressViewModel :
                 )
             }
 
+            is ChapterProgressUiEvent.AnswerChanged -> {
+                updateAnswer(
+                    questionIndex = event.questionIndex,
+                    answer = event.answer
+                )
+            }
+
             ChapterProgressUiEvent.NextClicked -> {
                 moveToNextStep()
             }
@@ -37,24 +44,52 @@ class ChapterProgressViewModel :
         if (
             currentState.isInitialized &&
             currentChapter?.storybookId == storybookId &&
-            currentChapter?.id == chapterId
+            currentChapter.id == chapterId
         ) {
             return
         }
 
+        val chapter = createDummyChapter(
+            storybookId = storybookId,
+            chapterId = chapterId
+        )
+
         updateState {
             copy(
                 isInitialized = true,
-                chapter = createDummyChapter(
-                    storybookId = storybookId,
-                    chapterId = chapterId
-                ),
-                currentStep = ChapterProgressStep.INTRO
+                chapter = chapter,
+                currentStep = ChapterProgressStep.INTRO,
+                answers = List(chapter.questions.size) { "" }
             )
         }
     }
 
+    /**
+     * 선택한 질문의 답변만 변경합니다.
+     */
+    private fun updateAnswer(
+        questionIndex: Int,
+        answer: String
+    ) {
+        if (questionIndex !in currentState.answers.indices) {
+            return
+        }
+
+        val updatedAnswers = currentState.answers.toMutableList().apply {
+            this[questionIndex] = answer
+        }
+
+        updateState {
+            copy(answers = updatedAnswers)
+        }
+    }
+
     private fun moveToNextStep() {
+        // 필수 입력이 완료되지 않았다면 다음 단계로 이동하지 않습니다.
+        if (!currentState.isNextEnabled) {
+            return
+        }
+
         updateState {
             copy(currentStep = currentStep.next())
         }
@@ -89,10 +124,16 @@ class ChapterProgressViewModel :
                         "있었는지 들어봅니다.",
                 backgroundImageUrl = null,
                 guideImageUrl = null,
-                themeGuideText = "지금의 부모님도 한때는\n지금 나의 나이로 하루를 살고 있었어요.",
+                themeGuideText = "지금의 부모님도 한때는\n" +
+                        "지금 나의 나이로 하루를 살고 있었어요.",
                 chapterGuideText = "부모님은 처음 어떻게 만나셨을까요?\n" +
                         "첫인상부터 조심스럽게 물어보며 가족의\n" +
                         "시작을 떠올려봐요!",
+                questions = listOf(
+                    "그 시절 부모님의 나이를 기록해보세요.",
+                    "어디에 살고 계셨나요?",
+                    "어떤 일을 하고 계셨나요?"
+                ),
                 status = ChapterStatus.AVAILABLE
             )
 
@@ -105,8 +146,14 @@ class ChapterProgressViewModel :
                 description = "부모님의 이야기를 차근차근 기록하는 챕터입니다.",
                 backgroundImageUrl = null,
                 guideImageUrl = null,
-                themeGuideText = "지금의 부모님도 한때는\n지금 나의 나이로 하루를 살고 있었어요.",
+                themeGuideText = "지금의 부모님도 한때는\n" +
+                        "지금 나의 나이로 하루를 살고 있었어요.",
                 chapterGuideText = "부모님의 이야기를 천천히 떠올려볼까요?",
+                questions = listOf(
+                    "그날 부모님은 어디에 계셨나요?",
+                    "가장 기억에 남는 순간은 무엇인가요?",
+                    "그때 어떤 마음이셨을까요?"
+                ),
                 status = ChapterStatus.AVAILABLE
             )
         }

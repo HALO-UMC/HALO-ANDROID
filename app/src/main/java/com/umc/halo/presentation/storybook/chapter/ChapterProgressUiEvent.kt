@@ -14,6 +14,14 @@ sealed interface ChapterProgressUiEvent {
     ) : ChapterProgressUiEvent
 
     /**
+     * 질문 답변 변경
+     */
+    data class AnswerChanged(
+        val questionIndex: Int,
+        val answer: String
+    ) : ChapterProgressUiEvent
+
+    /**
      * 하단의 다음 버튼 클릭
      */
     data object NextClicked : ChapterProgressUiEvent

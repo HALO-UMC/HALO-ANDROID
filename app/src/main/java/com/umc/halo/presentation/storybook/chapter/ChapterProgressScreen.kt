@@ -21,8 +21,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomButton
-import com.umc.halo.presentation.storybook.chapter.screen.ChapterIntroStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterGuideStep
+import com.umc.halo.presentation.storybook.chapter.screen.ChapterIntroStep
+import com.umc.halo.presentation.storybook.chapter.screen.ChapterQuestionStep
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
@@ -108,6 +109,26 @@ private fun ChapterProgressScreen(
             )
         }
 
+        ChapterProgressStep.QUESTION -> {
+            ChapterQuestionStep(
+                chapter = chapter,
+                answers = state.answers,
+                isNextEnabled = state.isNextEnabled,
+                onAnswerChanged = { questionIndex, answer ->
+                    onEvent(
+                        ChapterProgressUiEvent.AnswerChanged(
+                            questionIndex = questionIndex,
+                            answer = answer
+                        )
+                    )
+                },
+                onBackClick = handleBack,
+                onNextClick = {
+                    onEvent(ChapterProgressUiEvent.NextClicked)
+                }
+            )
+        }
+
         else -> {
             ChapterTemporaryStep(
                 chapter = chapter,
@@ -179,7 +200,7 @@ private fun ChapterTemporaryStep(
                 color = Gray500
             )
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(24.dp))
 
             if (currentStep != ChapterProgressStep.REVIEW) {
                 ChapterBottomButton(

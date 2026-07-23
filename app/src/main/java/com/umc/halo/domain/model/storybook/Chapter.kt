@@ -32,5 +32,8 @@ data class Chapter(
     // 각 챕터별로 달라지는 말풍선 문구
     val chapterGuideText: String,
 
+    // 해당 챕터에서 사용자에게 보여줄 질문 목록
+    val questions: List<String>,
+
     val status: ChapterStatus
 )
