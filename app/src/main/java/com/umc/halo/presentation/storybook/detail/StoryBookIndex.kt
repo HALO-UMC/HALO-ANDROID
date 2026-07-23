@@ -1,6 +1,5 @@
-package com.umc.halo.presentation.storybook.index
+package com.umc.halo.presentation.storybook.detail
 
-import android.R.attr.onClick
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

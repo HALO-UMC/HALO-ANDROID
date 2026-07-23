@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray200
@@ -23,6 +24,7 @@ fun HaloMaterialButton(
     buttonState: ButtonState,
     text: String,
     modifier: Modifier = Modifier,
+    style: TextStyle = HaloType.body02Regular,
     onClick: () -> Unit,
 ) {
     val (containerColor, contentColor, borderColor) = when (buttonState) {
@@ -69,7 +71,7 @@ fun HaloMaterialButton(
     ) {
         Text(
             text = text,
-            style = HaloType.body02Regular
+            style = style
         )
     }
 }

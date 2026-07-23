@@ -2,9 +2,6 @@ package com.umc.halo.presentation.home
 
 import androidx.compose.ui.graphics.Color
 import com.umc.halo.domain.model.home.Books
-import com.umc.halo.domain.model.home.CurrentProgress
-import com.umc.halo.domain.model.home.CustomizedStoryBooks
-import com.umc.halo.domain.model.home.ProgressState
 import com.umc.halo.domain.model.home.Size
 import com.umc.halo.domain.model.home.UserInfo
 import com.umc.halo.domain.model.home.UserState

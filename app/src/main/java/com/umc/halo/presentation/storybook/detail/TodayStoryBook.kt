@@ -1,4 +1,4 @@
-package com.umc.halo.presentation.storybook.index
+package com.umc.halo.presentation.storybook.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
