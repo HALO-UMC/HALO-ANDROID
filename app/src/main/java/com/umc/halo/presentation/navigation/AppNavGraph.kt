@@ -9,8 +9,9 @@ import androidx.navigation.compose.composable
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
 import com.umc.halo.presentation.onboarding.OnboardingRoute
-import com.umc.halo.presentation.storybook.index.StoryBookDetailScreen
+import com.umc.halo.presentation.storybook.detail.StoryBookDetailScreen
 import com.umc.halo.presentation.storybook.list.StorybookScreen
+import com.umc.halo.presentation.themebox.ThemeBoxScreen
 
 // NavHost + BottomBar 표시 여부 + 화면 route 연결
 @Composable
@@ -57,7 +58,7 @@ fun AppNavGraph(
         }
 
         composable(Routes.THEME_BOX) {
-            Text(text = "Theme Box")
+            ThemeBoxScreen()
         }
 
         composable(Routes.STORYBOOK) {

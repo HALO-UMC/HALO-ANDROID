@@ -34,10 +34,7 @@ import com.umc.halo.presentation.theme.White
 
 @Composable
 fun ActionGuide() {
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 24.dp),
-    ) {
+    Column {
         Text(
             text = "할로 행동 가이드",
             style = HaloType.body01SemiBold,

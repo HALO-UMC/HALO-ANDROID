@@ -1,7 +1,6 @@
 package com.umc.halo.domain.model.home
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 
 data class Books(
     val id: Int,

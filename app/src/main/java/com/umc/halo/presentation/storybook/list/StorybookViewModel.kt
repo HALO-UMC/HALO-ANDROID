@@ -3,6 +3,7 @@ package com.umc.halo.presentation.storybook.list
 import com.umc.halo.domain.model.storybook.CustomStorybook
 import com.umc.halo.domain.model.storybook.InProgressStorybook
 import com.umc.halo.domain.model.storybook.Storybook
+import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.domain.model.storybook.StorybookTheme
 import com.umc.halo.presentation.base.BaseViewModel
 
@@ -50,8 +51,8 @@ class StorybookViewModel : BaseViewModel<StorybookUiState, StorybookUiEvent>(Sto
                         id = 1,
                         title = "대화가 어색할 때",
                         storybooks = listOf(
-                            Storybook(11, "오래전 당신", "가족과의 만남"),
-                            Storybook(12, "한 장의 가족사진", "가족과의 만남")
+                            Storybook(11, "오래전 당신", "가족과의 만남", StorybookProgress.InProgress(4)),
+                            Storybook(12, "한 장의 가족사진", "가족과의 만남", StorybookProgress.Done)
                         )
                     ),
                     StorybookTheme(
@@ -59,7 +60,7 @@ class StorybookViewModel : BaseViewModel<StorybookUiState, StorybookUiEvent>(Sto
                         title = "부모님을 더 알고싶을 때",
                         storybooks = listOf(
                             Storybook(21, "가족의 온도", "가족과의 만남"),
-                            Storybook(22, "당신 사용 설명서", "가족과의 만남")
+                            Storybook(22, "당신 사용 설명서", "가족과의 만남", StorybookProgress.Done)
                         )
                     ),
                     StorybookTheme(
