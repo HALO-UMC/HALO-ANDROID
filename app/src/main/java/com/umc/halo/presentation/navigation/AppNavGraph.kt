@@ -10,8 +10,9 @@ import com.umc.halo.presentation.calendar.CalendarScreen
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
 import com.umc.halo.presentation.onboarding.OnboardingRoute
-import com.umc.halo.presentation.storybook.index.StoryBookDetailScreen
+import com.umc.halo.presentation.storybook.detail.StoryBookDetailScreen
 import com.umc.halo.presentation.storybook.list.StorybookScreen
+import com.umc.halo.presentation.themebox.ThemeBoxScreen
 
 // NavHost + BottomBar 표시 여부 + 화면 route 연결
 @Composable
@@ -25,7 +26,7 @@ fun AppNavGraph(
 
         // TODO: 온보딩 UI 확인용 임시 startDestination
         // 나중에 로그인 흐름 연결할 때 Routes.LOGIN 또는 Routes.SPLASH로 다시 변경 예정
-        startDestination = Routes.ONBOARDING,
+        startDestination = Routes.HOME,
 
         modifier = modifier
     ) {
@@ -75,7 +76,7 @@ fun AppNavGraph(
         }
 
         composable(Routes.THEME_BOX) {
-            Text(text = "Theme Box")
+            ThemeBoxScreen()
         }
 
         composable(Routes.STORYBOOK) {

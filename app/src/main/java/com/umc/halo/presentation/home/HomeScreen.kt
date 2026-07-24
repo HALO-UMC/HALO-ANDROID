@@ -27,7 +27,7 @@ import com.lottiefiles.dotlottie.core.util.DotLottieSource
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.home.actionguide.ActionGuide
 import com.umc.halo.presentation.home.bookcase.BookCase
-import com.umc.halo.presentation.home.continue_storybook.ContinueStoryBook
+import com.umc.halo.presentation.home.continue_storybook.ContinueStoryBookHome
 import com.umc.halo.presentation.home.custom_storybook.CustomStorybook
 import com.umc.halo.presentation.theme.HaloType
 
@@ -102,19 +102,25 @@ fun HomeScreenContents(
 
         Spacer(Modifier.height(21.dp))
 
-        when (val userState = state.userState) {
-            UserState.FTU -> {
-                CustomStorybook(state.customStorybookList,vm::onEvent)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+        ) {
+            when (val userState = state.userState) {
+                UserState.FTU -> {
+                    CustomStorybook(state.customStorybookList,vm::onEvent)
 
-                Spacer(Modifier.height(32.dp))
+                    Spacer(Modifier.height(32.dp))
 
-                ActionGuide()
-            }
+                    ActionGuide()
+                }
 
-            is UserState.RU -> {
-                Spacer(Modifier.height(24.dp))
+                is UserState.RU -> {
+                    Spacer(Modifier.height(24.dp))
 
-                ContinueStoryBook(userState,vm)
+                    ContinueStoryBookHome(userState,vm)
+                }
             }
         }
 

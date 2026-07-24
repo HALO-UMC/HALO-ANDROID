@@ -1,4 +1,4 @@
-package com.umc.halo.presentation.storybook.index
+package com.umc.halo.presentation.storybook.detail
 
 import com.umc.halo.domain.model.home.CurrentProgress
 import com.umc.halo.presentation.base.BaseViewModel
