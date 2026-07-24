@@ -4,11 +4,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.Books
+import com.umc.halo.domain.model.home.CurrentProgress
+import com.umc.halo.domain.model.home.ProgressState
 import com.umc.halo.domain.model.home.UserInfo
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.domain.model.storybook.CustomStorybook
+import com.umc.halo.domain.model.themebox.ContinueStorybook
 import com.umc.halo.presentation.base.BaseViewModel
 import com.umc.halo.presentation.base.UiState
+import com.umc.halo.presentation.themebox.ContinueStorybook
 
 class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
 
@@ -33,7 +37,7 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
             //dummyData
             copy(
                 userInfo = UserInfo("김재환", true),
-                userState = UserState.FTU,
+                userState = UserState.RU(currentProgress = CurrentProgress(1,5), progressState = ProgressState.Complete),
                 greetingMessage = "부모님과의 하루를 기록해보세요.",
                 bookList = listOf(
                     Books(1, "오래전 당신", "가족과의 만남",R.drawable.image_home_bookcase_1, R.drawable.image_home_bookcase_cover_1,240, 48, 0f, 0f, 48),
@@ -49,9 +53,10 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
                 ),
                 customStorybookList = listOf(
                     CustomStorybook(1, "대화가 어색한 당신을 위한", "오래전 당신", "가족과의 만남"),
-                    CustomStorybook(2,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
-                    CustomStorybook(3,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
-                    CustomStorybook(4,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남")
+                    CustomStorybook(2,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남")
+                ),
+                continueStorybookList = listOf(
+                    ContinueStorybook("오래전 당신",1,5)
                 )
             )
         }

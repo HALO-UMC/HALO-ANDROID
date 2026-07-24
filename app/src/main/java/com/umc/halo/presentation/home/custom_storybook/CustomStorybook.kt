@@ -25,31 +25,29 @@ import com.umc.halo.presentation.theme.Primary500
 
 @Composable
 fun CustomStorybook(
-    customStorybookList: List<CustomStorybook>,
+    items: List<CustomStorybook>,
     onEvent: (HomeUiEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 24.dp)
     ) {
         Text(
-            text = "맞춤 스토리북",
-            style = HaloType.body02Medium,
+            text = "맞춤 스토리북 추천",
+            style = HaloType.body01SemiBold,
             color = Color(0xFF3C3A35)
         )
 
         Spacer(Modifier.height(12.dp))
 
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(
-                items = customStorybookList,
-                key = { item -> item.id }
-            ) { item ->
-                CustomStorybookCard(item) {
-                    onEvent(HomeUiEvent.OnCustomizedStoryBookClicked(item.id))
-                } // 공용 component 이용
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            items.forEach { item ->
+                CustomStorybookCard(
+                    item = item,
+                    onClick = { onEvent(HomeUiEvent.OnCustomizedStoryBookClicked(item.id)) },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }

@@ -42,7 +42,6 @@ import com.umc.halo.R
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.home.actionguide.ActionGuide
 import com.umc.halo.presentation.home.bookcase.BookCase
-import com.umc.halo.presentation.home.continue_storybook.ContinueStoryBook
 import com.umc.halo.presentation.home.custom_storybook.CustomStorybook
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray30
@@ -159,7 +158,7 @@ fun HomeScreenContents(
                         .background(Primary30)
                         .padding(vertical = 23.dp)
                 ) {
-                    ContinueStoryBook(userState,vm)
+                    ContinueStorybookHome(state.continueStorybookList)
                 }
 
                 Spacer(Modifier.height(32.dp))

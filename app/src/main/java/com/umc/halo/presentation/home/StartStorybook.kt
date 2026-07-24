@@ -1,4 +1,4 @@
-package com.umc.halo.presentation.home.continue_storybook
+package com.umc.halo.presentation.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,8 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.ProgressState
 import com.umc.halo.domain.model.home.UserState
-import com.umc.halo.presentation.home.HomeUiEvent
-import com.umc.halo.presentation.home.HomeViewModel
 import com.umc.halo.presentation.theme.Black
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray500
@@ -40,7 +38,7 @@ import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.White
 
 @Composable
-fun ContinueStoryBookHome(
+fun StartStorybook(
     state: UserState.RU,
     vm: HomeViewModel
 ) {
@@ -77,7 +75,7 @@ fun ContinueStoryBookHome(
                     defaultElevation = 8.dp
                 )
             ) {
-                ContinueStoryBookContents(state)
+                StartStorybookContents(state)
             }
 
             if (state.progressState == ProgressState.Complete)
@@ -118,7 +116,7 @@ fun ContentsOverlay(
 }
 
 @Composable
-fun ContinueStoryBookContents(
+fun StartStorybookContents(
     state: UserState.RU
 ) {
     Row(
