@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.storybook.chapter
 
 import com.umc.halo.domain.model.storybook.Chapter
+import com.umc.halo.domain.model.storybook.ChapterSceneCard
 
 enum class ChapterSceneRecordMethod {
     PHOTO,
@@ -18,14 +19,23 @@ data class ChapterProgressUiState(
     // 질문 입력 답변
     val questionAnswers: List<String> = listOf("", "", ""),
 
+    // 장면카드 후보 목록
+    val sceneCards: List<ChapterSceneCard> = emptyList(),
+
     // 장면 남기기 방식 선택
     val selectedSceneRecordMethod: ChapterSceneRecordMethod? = null,
 
     // 갤러리에서 선택한 이미지 Uri 문자열
     val selectedSceneImageUri: String? = null,
 
-    // 나중에 장면카드 구현 시 사용할 값
-    val selectedSceneCardId: Long? = null
+    // 최종 선택 완료된 장면카드 id
+    val selectedSceneCardId: Long? = null,
+
+    // 장면카드 모달에서 임시로 선택 중인 카드 id
+    val pendingSceneCardId: Long? = null,
+
+    // 장면카드 선택 모달 표시 여부
+    val isSceneCardModalVisible: Boolean = false
 ) {
     val isFirstStep: Boolean
         get() = currentStep == ChapterProgressStep.INTRO
@@ -33,12 +43,12 @@ data class ChapterProgressUiState(
     val isQuestionStepNextEnabled: Boolean
         get() = questionAnswers.all { it.isNotBlank() }
 
-    /**
-     * 현재 선택된 방식에 맞는 실제 선택 결과가 있는지 확인합니다.
-     *
-     * PHOTO 상태라면 selectedSceneImageUri가 있어야 하고,
-     * SCENE_CARD 상태라면 selectedSceneCardId가 있어야 합니다.
-     */
+    val selectedSceneCard: ChapterSceneCard?
+        get() = sceneCards.firstOrNull { it.id == selectedSceneCardId }
+
+    val pendingSceneCard: ChapterSceneCard?
+        get() = sceneCards.firstOrNull { it.id == pendingSceneCardId }
+
     val isSceneSelected: Boolean
         get() = when (selectedSceneRecordMethod) {
             ChapterSceneRecordMethod.PHOTO -> !selectedSceneImageUri.isNullOrBlank()
@@ -48,4 +58,7 @@ data class ChapterProgressUiState(
 
     val isSceneStepNextEnabled: Boolean
         get() = isSceneSelected
+
+    val isSceneCardConfirmEnabled: Boolean
+        get() = pendingSceneCardId != null
 }

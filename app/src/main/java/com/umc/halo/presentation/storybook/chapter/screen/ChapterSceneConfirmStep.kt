@@ -33,11 +33,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.umc.halo.domain.model.storybook.Chapter
+import com.umc.halo.domain.model.storybook.ChapterSceneCard
 import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.storybook.chapter.ChapterSceneRecordMethod
 import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomAction
+import com.umc.halo.presentation.storybook.chapter.component.ChapterSceneCardImage
 import com.umc.halo.presentation.theme.Gray400
-import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.White
 
@@ -48,7 +49,9 @@ fun ChapterSceneConfirmStep(
     chapter: Chapter,
     selectedMethod: ChapterSceneRecordMethod?,
     selectedImageUri: String?,
+    selectedSceneCard: ChapterSceneCard?,
     onImageSelected: (String) -> Unit,
+    onSceneCardChangeClick: () -> Unit,
     onBackClick: () -> Unit,
     onNextClick: () -> Unit
 ) {
@@ -105,29 +108,32 @@ fun ChapterSceneConfirmStep(
 
                 Spacer(modifier = Modifier.height(42.dp))
 
-                SelectedSceneImage(
-                    selectedImageUri = selectedImageUri
+                SelectedScenePreview(
+                    selectedMethod = selectedMethod,
+                    selectedImageUri = selectedImageUri,
+                    selectedSceneCard = selectedSceneCard
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 SceneImageChangeButton(
-                    text = when (selectedMethod) {
-                        ChapterSceneRecordMethod.SCENE_CARD -> "카드 이미지 변경하기"
-                        else -> "사진 다시 선택하기"
-                    },
+                    text = "카드 이미지 변경하기",
                     onClick = {
                         when (selectedMethod) {
-                            ChapterSceneRecordMethod.SCENE_CARD -> {
-                                // 장면카드 모달 구현 후 여기서 다시 열기
-                            }
-
-                            else -> {
+                            ChapterSceneRecordMethod.PHOTO -> {
                                 photoPickerLauncher.launch(
                                     PickVisualMediaRequest(
                                         ActivityResultContracts.PickVisualMedia.ImageOnly
                                     )
                                 )
+                            }
+
+                            ChapterSceneRecordMethod.SCENE_CARD -> {
+                                onSceneCardChangeClick()
+                            }
+
+                            null -> {
+                                onSceneCardChangeClick()
                             }
                         }
                     }
@@ -145,7 +151,42 @@ fun ChapterSceneConfirmStep(
 }
 
 @Composable
-private fun SelectedSceneImage(
+private fun SelectedScenePreview(
+    selectedMethod: ChapterSceneRecordMethod?,
+    selectedImageUri: String?,
+    selectedSceneCard: ChapterSceneCard?
+) {
+    when (selectedMethod) {
+        ChapterSceneRecordMethod.PHOTO -> {
+            SelectedPhotoImage(
+                selectedImageUri = selectedImageUri
+            )
+        }
+
+        ChapterSceneRecordMethod.SCENE_CARD -> {
+            if (selectedSceneCard != null) {
+                ChapterSceneCardImage(
+                    card = selectedSceneCard,
+                    cornerRadius = 20.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .widthIn(max = 312.dp)
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(20.dp))
+                )
+            } else {
+                EmptySelectedSceneBox()
+            }
+        }
+
+        null -> {
+            EmptySelectedSceneBox()
+        }
+    }
+}
+
+@Composable
+private fun SelectedPhotoImage(
     selectedImageUri: String?
 ) {
     val context = LocalContext.current
@@ -174,21 +215,26 @@ private fun SelectedSceneImage(
             contentScale = ContentScale.Crop
         )
     } else {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .widthIn(max = 312.dp)
-                .aspectRatio(1f)
-                .clip(RoundedCornerShape(20.dp))
-                .background(Color(0xFFF7F7F7)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "선택한 이미지를 불러오는 중이에요",
-                style = HaloType.body03Regular,
-                color = Gray400
-            )
-        }
+        EmptySelectedSceneBox()
+    }
+}
+
+@Composable
+private fun EmptySelectedSceneBox() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .widthIn(max = 312.dp)
+            .aspectRatio(1f)
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color(0xFFF7F7F7)),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "선택한 이미지를 불러오는 중이에요",
+            style = HaloType.body03Regular,
+            color = Gray400
+        )
     }
 }
 

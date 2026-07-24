@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.storybook.chapter
 
 import com.umc.halo.domain.model.storybook.Chapter
+import com.umc.halo.domain.model.storybook.ChapterSceneCard
 import com.umc.halo.domain.model.storybook.ChapterStatus
 import com.umc.halo.presentation.base.BaseViewModel
 
@@ -31,6 +32,26 @@ class ChapterProgressViewModel :
 
             is ChapterProgressUiEvent.SceneImageSelected -> {
                 updateSceneImage(event.imageUri)
+            }
+
+            ChapterProgressUiEvent.SceneCardModalRequested -> {
+                openSceneCardModal()
+            }
+
+            ChapterProgressUiEvent.SceneCardModalDismissed -> {
+                closeSceneCardModal()
+            }
+
+            is ChapterProgressUiEvent.PendingSceneCardSelected -> {
+                updatePendingSceneCard(event.cardId)
+            }
+
+            ChapterProgressUiEvent.SceneCardConfirmed -> {
+                confirmSceneCard()
+            }
+
+            ChapterProgressUiEvent.SceneCardChangeClicked -> {
+                openSceneCardModalFromConfirm()
             }
 
             ChapterProgressUiEvent.NextClicked -> {
@@ -68,9 +89,15 @@ class ChapterProgressViewModel :
                 chapter = chapter,
                 currentStep = ChapterProgressStep.INTRO,
                 questionAnswers = List(chapter.questions.size) { "" },
+                sceneCards = createDummySceneCards(
+                    storybookId = storybookId,
+                    chapterId = chapterId
+                ),
                 selectedSceneRecordMethod = null,
                 selectedSceneImageUri = null,
-                selectedSceneCardId = null
+                selectedSceneCardId = null,
+                pendingSceneCardId = null,
+                isSceneCardModalVisible = false
             )
         }
     }
@@ -110,7 +137,63 @@ class ChapterProgressViewModel :
                 selectedSceneRecordMethod = ChapterSceneRecordMethod.PHOTO,
                 selectedSceneImageUri = imageUri,
                 selectedSceneCardId = null,
+                pendingSceneCardId = null,
+                isSceneCardModalVisible = false,
                 currentStep = ChapterProgressStep.SCENE_CONFIRM
+            )
+        }
+    }
+
+    private fun openSceneCardModal() {
+        updateState {
+            copy(
+                selectedSceneRecordMethod = ChapterSceneRecordMethod.SCENE_CARD,
+                pendingSceneCardId = selectedSceneCardId,
+                isSceneCardModalVisible = true
+            )
+        }
+    }
+
+    private fun closeSceneCardModal() {
+        updateState {
+            copy(
+                pendingSceneCardId = selectedSceneCardId,
+                isSceneCardModalVisible = false
+            )
+        }
+    }
+
+    private fun updatePendingSceneCard(
+        cardId: Long
+    ) {
+        updateState {
+            copy(
+                pendingSceneCardId = cardId
+            )
+        }
+    }
+
+    private fun confirmSceneCard() {
+        val selectedCardId = currentState.pendingSceneCardId ?: return
+
+        updateState {
+            copy(
+                selectedSceneRecordMethod = ChapterSceneRecordMethod.SCENE_CARD,
+                selectedSceneCardId = selectedCardId,
+                selectedSceneImageUri = null,
+                isSceneCardModalVisible = false,
+                currentStep = ChapterProgressStep.SCENE_CONFIRM
+            )
+        }
+    }
+
+    private fun openSceneCardModalFromConfirm() {
+        updateState {
+            copy(
+                currentStep = ChapterProgressStep.SCENE,
+                selectedSceneRecordMethod = ChapterSceneRecordMethod.SCENE_CARD,
+                pendingSceneCardId = selectedSceneCardId,
+                isSceneCardModalVisible = true
             )
         }
     }
@@ -125,7 +208,7 @@ class ChapterProgressViewModel :
 
         if (
             currentState.currentStep == ChapterProgressStep.SCENE &&
-            !currentState.isSceneSelected
+            !currentState.isSceneStepNextEnabled
         ) {
             return
         }
@@ -140,7 +223,8 @@ class ChapterProgressViewModel :
     private fun moveToPreviousStep() {
         updateState {
             copy(
-                currentStep = currentStep.previous()
+                currentStep = currentStep.previous(),
+                isSceneCardModalVisible = false
             )
         }
     }
@@ -201,5 +285,41 @@ class ChapterProgressViewModel :
                 status = ChapterStatus.AVAILABLE
             )
         }
+    }
+
+    private fun createDummySceneCards(
+        storybookId: Long,
+        chapterId: Long
+    ): List<ChapterSceneCard> {
+        return listOf(
+            ChapterSceneCard(
+                id = 1L,
+                storybookId = storybookId,
+                chapterId = chapterId,
+                title = "편지",
+                imageUrl = null
+            ),
+            ChapterSceneCard(
+                id = 2L,
+                storybookId = storybookId,
+                chapterId = chapterId,
+                title = "여행",
+                imageUrl = null
+            ),
+            ChapterSceneCard(
+                id = 3L,
+                storybookId = storybookId,
+                chapterId = chapterId,
+                title = "대화",
+                imageUrl = null
+            ),
+            ChapterSceneCard(
+                id = 4L,
+                storybookId = storybookId,
+                chapterId = chapterId,
+                title = "졸업",
+                imageUrl = null
+            )
+        )
     }
 }

@@ -23,6 +23,18 @@ sealed interface ChapterProgressUiEvent {
         val imageUri: String
     ) : ChapterProgressUiEvent
 
+    data object SceneCardModalRequested : ChapterProgressUiEvent
+
+    data object SceneCardModalDismissed : ChapterProgressUiEvent
+
+    data class PendingSceneCardSelected(
+        val cardId: Long
+    ) : ChapterProgressUiEvent
+
+    data object SceneCardConfirmed : ChapterProgressUiEvent
+
+    data object SceneCardChangeClicked : ChapterProgressUiEvent
+
     data object NextClicked : ChapterProgressUiEvent
 
     data object BackClicked : ChapterProgressUiEvent

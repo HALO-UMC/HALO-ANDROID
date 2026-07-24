@@ -31,9 +31,11 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.umc.halo.domain.model.storybook.Chapter
+import com.umc.halo.domain.model.storybook.ChapterSceneCard
 import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.storybook.chapter.ChapterSceneRecordMethod
 import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomAction
+import com.umc.halo.presentation.storybook.chapter.component.ChapterSceneCardModal
 import com.umc.halo.presentation.storybook.chapter.component.ChapterStepProgressBar
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray800
@@ -51,10 +53,18 @@ private val OptionDefaultTextColor = Color(0xFF404040)
 @Composable
 fun ChapterSceneStep(
     chapter: Chapter,
+    sceneCards: List<ChapterSceneCard>,
     selectedMethod: ChapterSceneRecordMethod?,
+    pendingSceneCardId: Long?,
+    isSceneCardModalVisible: Boolean,
+    isSceneCardConfirmEnabled: Boolean,
     isNextEnabled: Boolean,
     onMethodSelected: (ChapterSceneRecordMethod) -> Unit,
     onImageSelected: (String) -> Unit,
+    onSceneCardModalRequested: () -> Unit,
+    onSceneCardModalDismissed: () -> Unit,
+    onPendingSceneCardSelected: (Long) -> Unit,
+    onSceneCardConfirmClick: () -> Unit,
     onBackClick: () -> Unit,
     onNextClick: () -> Unit
 ) {
@@ -66,78 +76,93 @@ fun ChapterSceneStep(
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(White)
     ) {
-        HaloTopBar(
-            title = chapter.storybookTitle,
-            showLeftIcon = true,
-            onClick = onBackClick
-        )
-
-        Box(
+        Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 110.dp)
+            HaloTopBar(
+                title = chapter.storybookTitle,
+                showLeftIcon = true,
+                onClick = onBackClick
+            )
+
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
-                Spacer(modifier = Modifier.height(30.dp))
-
-                ChapterStepProgressBar(
-                    currentStepIndex = 1,
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                ChapterSceneHeader(
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-
-                Spacer(modifier = Modifier.height(74.dp))
-
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 40.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                        .fillMaxSize()
+                        .padding(bottom = 110.dp)
                 ) {
-                    SceneRecordOptionButton(
-                        text = "사진으로 남기기",
-                        method = ChapterSceneRecordMethod.PHOTO,
-                        selected = selectedMethod == ChapterSceneRecordMethod.PHOTO,
-                        onClick = {
-                            onMethodSelected(ChapterSceneRecordMethod.PHOTO)
+                    Spacer(modifier = Modifier.height(30.dp))
 
-                            photoPickerLauncher.launch(
-                                PickVisualMediaRequest(
-                                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                    ChapterStepProgressBar(
+                        currentStepIndex = 1,
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    ChapterSceneHeader(
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(74.dp))
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 40.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        SceneRecordOptionButton(
+                            text = "사진으로 남기기",
+                            method = ChapterSceneRecordMethod.PHOTO,
+                            selected = selectedMethod == ChapterSceneRecordMethod.PHOTO,
+                            onClick = {
+                                onMethodSelected(ChapterSceneRecordMethod.PHOTO)
+
+                                photoPickerLauncher.launch(
+                                    PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                                    )
                                 )
-                            )
-                        }
-                    )
+                            }
+                        )
 
-                    SceneRecordOptionButton(
-                        text = "장면카드로 남기기",
-                        method = ChapterSceneRecordMethod.SCENE_CARD,
-                        selected = selectedMethod == ChapterSceneRecordMethod.SCENE_CARD,
-                        onClick = {
-                            onMethodSelected(ChapterSceneRecordMethod.SCENE_CARD)
-                            // 장면카드 모달 구현 후 여기서 연결 예정
-                        }
-                    )
+                        SceneRecordOptionButton(
+                            text = "장면카드로 남기기",
+                            method = ChapterSceneRecordMethod.SCENE_CARD,
+                            selected = selectedMethod == ChapterSceneRecordMethod.SCENE_CARD,
+                            onClick = {
+                                onSceneCardModalRequested()
+                            }
+                        )
+                    }
                 }
-            }
 
-            ChapterBottomAction(
-                text = "다음",
-                enabled = isNextEnabled,
-                onClick = onNextClick,
-                modifier = Modifier.align(Alignment.BottomCenter)
+                ChapterBottomAction(
+                    text = "다음",
+                    enabled = isNextEnabled,
+                    onClick = onNextClick,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
+            }
+        }
+
+        if (isSceneCardModalVisible) {
+            ChapterSceneCardModal(
+                themeTitle = "나와 같은 나이였던 시절",
+                sceneCards = sceneCards,
+                selectedCardId = pendingSceneCardId,
+                isConfirmEnabled = isSceneCardConfirmEnabled,
+                onCardClick = onPendingSceneCardSelected,
+                onDismiss = onSceneCardModalDismissed,
+                onConfirmClick = onSceneCardConfirmClick
             )
         }
     }
