@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.umc.halo.presentation.calendar.CalendarScreen
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
 import com.umc.halo.presentation.onboarding.OnboardingRoute
@@ -54,7 +55,24 @@ fun AppNavGraph(
         }
 
         composable(Routes.CALENDAR) {
-            Text(text = "Calendar")
+            CalendarScreen(
+                // 캘린더 → 스토리북(전체탭) / 테마함
+                // 하단바와 같은 백스택 옵션으로 전환
+                onNavigateToStorybook = {
+                    navController.navigate(Routes.STORYBOOK) {
+                        launchSingleTop = true
+                        restoreState = true
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    }
+                },
+                onNavigateToThemeBox = {
+                    navController.navigate(Routes.THEME_BOX) {
+                        launchSingleTop = true
+                        restoreState = true
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    }
+                }
+            )
         }
 
         composable(Routes.THEME_BOX) {

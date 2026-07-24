@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.umc.halo.presentation.calendar.CalendarTopBar
 import com.umc.halo.presentation.navigation.BottomNavItem
 import com.umc.halo.presentation.navigation.Routes
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailTopBar
@@ -34,6 +35,8 @@ fun HaloScaffold(
             when(currentRoute) {
                 Routes.HOME -> HaloTopBar(title = "HALO", showLeftIcon = false)
                 //Routes.MYPAGE -> MyPageTopBar()
+                Routes.CALENDAR -> CalendarTopBar()
+                //Routes.THEME_BOX -> ThemeBoxTopBar()
                 //Routes.CALENDAR -> CalendarTopBar()
                 Routes.THEME_BOX -> HaloTopBar(title = "테마전시관", showLeftIcon = false)
                 Routes.STORYBOOK -> HaloTopBar(title = "HALO", showLeftIcon = false)
