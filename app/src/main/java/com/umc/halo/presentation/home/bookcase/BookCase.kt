@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.home.bookcase
 
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -226,7 +227,11 @@ fun BookItem(
         animationSpec = tween(100)
     )
     val width by animateDpAsState(
-        targetValue = if (resetTilt) item.width.dp else item.offsetX.dp
+        targetValue = if (resetTilt) item.width.dp else item.offsetX.dp,
+        animationSpec = tween(
+            durationMillis = 100,
+            easing = FastOutSlowInEasing
+        )
     )
     val currentContentScale = if (width <= item.width.dp) {
         ContentScale.FillBounds
@@ -234,25 +239,23 @@ fun BookItem(
         ContentScale.Fit
     }
 
-    val coverProgress = 1f - (coverRotation / 90f)
-    val widthProgress = ((coverProgress - 0.8f) / 0.2f)
-    val coverWidth = lerp(
-        start = 0.dp,
-        stop = 180.dp,
-        fraction = coverProgress.coerceIn(0f, 1f)
-    )
-    val spineWidth = lerp(
-        start = width,
-        stop = 0.dp,
-        fraction = widthProgress.coerceIn(0f, 1f)
-    )
+    val openProgress = (-spineRotation / 90f).coerceIn(0f, 1f)
+    val spineWidth = lerp(width, 0.dp, openProgress)
+    val coverWidth = lerp(0.dp, 180.dp, openProgress)
 
     val tilt by animateFloatAsState(
         targetValue = if (resetTilt) 0f else item.tilt,
-        animationSpec = tween(100)
+        animationSpec = tween(
+            durationMillis = 100,
+            easing = FastOutSlowInEasing
+        )
     )
     val offsetY by animateDpAsState(
-        targetValue = if (resetTilt) 0.dp else item.offsetY.dp
+        targetValue = if (resetTilt) 0.dp else item.offsetY.dp,
+        animationSpec = tween(
+            durationMillis = 100,
+            easing = FastOutSlowInEasing
+        )
     )
 
 
@@ -280,7 +283,7 @@ fun BookItem(
                     transformOrigin = TransformOrigin(1f, 0.5f)
                     rotationY = spineRotation
                     rotationZ = tilt
-                    cameraDistance = 32f * density
+                    cameraDistance = 6f * density
                     alpha = spineAlpha
                     clip = false
                 }
@@ -314,7 +317,7 @@ fun BookItem(
                 .graphicsLayer {
                     transformOrigin = TransformOrigin(0f, 0.5f)
                     rotationY = coverRotation
-                    cameraDistance = 32f * density
+                    cameraDistance = 6f * density
                     clip = false
                 }
         ) {
