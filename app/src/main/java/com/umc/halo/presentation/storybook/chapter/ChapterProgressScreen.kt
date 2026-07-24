@@ -25,6 +25,7 @@ import com.umc.halo.presentation.storybook.chapter.screen.ChapterGuideStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterIntroStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterQuestionStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterSceneStep
+import com.umc.halo.presentation.storybook.chapter.screen.ChapterSceneConfirmStep
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
@@ -139,6 +140,32 @@ private fun ChapterProgressScreen(
                     onEvent(
                         ChapterProgressUiEvent.SceneRecordMethodSelected(
                             method = method
+                        )
+                    )
+                },
+                onImageSelected = { imageUri ->
+                    onEvent(
+                        ChapterProgressUiEvent.SceneImageSelected(
+                            imageUri = imageUri
+                        )
+                    )
+                },
+                onBackClick = handleBack,
+                onNextClick = {
+                    onEvent(ChapterProgressUiEvent.NextClicked)
+                }
+            )
+        }
+
+        ChapterProgressStep.SCENE_CONFIRM -> {
+            ChapterSceneConfirmStep(
+                chapter = chapter,
+                selectedMethod = state.selectedSceneRecordMethod,
+                selectedImageUri = state.selectedSceneImageUri,
+                onImageSelected = { imageUri ->
+                    onEvent(
+                        ChapterProgressUiEvent.SceneImageSelected(
+                            imageUri = imageUri
                         )
                     )
                 },

@@ -18,14 +18,6 @@ class ChapterProgressViewModel :
                 )
             }
 
-            ChapterProgressUiEvent.NextClicked -> {
-                moveToNextStep()
-            }
-
-            ChapterProgressUiEvent.BackClicked -> {
-                moveToPreviousStep()
-            }
-
             is ChapterProgressUiEvent.QuestionAnswerChanged -> {
                 updateQuestionAnswer(
                     questionIndex = event.index,
@@ -35,6 +27,18 @@ class ChapterProgressViewModel :
 
             is ChapterProgressUiEvent.SceneRecordMethodSelected -> {
                 updateSceneRecordMethod(event.method)
+            }
+
+            is ChapterProgressUiEvent.SceneImageSelected -> {
+                updateSceneImage(event.imageUri)
+            }
+
+            ChapterProgressUiEvent.NextClicked -> {
+                moveToNextStep()
+            }
+
+            ChapterProgressUiEvent.BackClicked -> {
+                moveToPreviousStep()
             }
         }
     }
@@ -63,20 +67,14 @@ class ChapterProgressViewModel :
                 isInitialized = true,
                 chapter = chapter,
                 currentStep = ChapterProgressStep.INTRO,
-
-                // 질문 개수만큼 빈 답변 생성
                 questionAnswers = List(chapter.questions.size) { "" },
-
-                // 장면 선택 화면 초기화
                 selectedSceneRecordMethod = null,
-                isSceneImageSelected = false
+                selectedSceneImageUri = null,
+                selectedSceneCardId = null
             )
         }
     }
 
-    /**
-     * 질문 페이지에서 특정 질문의 답변만 변경합니다.
-     */
     private fun updateQuestionAnswer(
         questionIndex: Int,
         answer: String
@@ -90,25 +88,29 @@ class ChapterProgressViewModel :
         }
 
         updateState {
-            copy(
-                questionAnswers = updatedAnswers
-            )
+            copy(questionAnswers = updatedAnswers)
         }
     }
 
-    /**
-     * 장면 남기기 방식 선택
-     *
-     * 아직 실제 사진/장면카드 선택 완료 기능은 없으므로
-     * isSceneImageSelected는 false로 유지합니다.
-     */
     private fun updateSceneRecordMethod(
         method: ChapterSceneRecordMethod
     ) {
         updateState {
             copy(
-                selectedSceneRecordMethod = method,
-                isSceneImageSelected = false
+                selectedSceneRecordMethod = method
+            )
+        }
+    }
+
+    private fun updateSceneImage(
+        imageUri: String
+    ) {
+        updateState {
+            copy(
+                selectedSceneRecordMethod = ChapterSceneRecordMethod.PHOTO,
+                selectedSceneImageUri = imageUri,
+                selectedSceneCardId = null,
+                currentStep = ChapterProgressStep.SCENE_CONFIRM
             )
         }
     }
@@ -123,7 +125,7 @@ class ChapterProgressViewModel :
 
         if (
             currentState.currentStep == ChapterProgressStep.SCENE &&
-            !currentState.isSceneStepNextEnabled
+            !currentState.isSceneSelected
         ) {
             return
         }
