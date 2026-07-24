@@ -73,7 +73,9 @@ import kotlinx.coroutines.delay
 fun BookCase(
     state: HomeUiState,
     controller: DotLottieController,
-    vm: HomeViewModel
+    selectedId: Int?,
+    vm: HomeViewModel,
+    onSelected: (Int?) -> Unit
 ) {
     Column(
         Modifier
@@ -87,7 +89,7 @@ fun BookCase(
                 .background(Color(0xFFDBCBC0))
         )
 
-        BookCaseContents(state.bookList,controller,vm)
+        BookCaseContents(state.bookList,controller,selectedId,onSelected,vm)
 
         Box(
             Modifier
@@ -102,11 +104,10 @@ fun BookCase(
 fun BookCaseContents(
     bookList: List<Books>,
     controller: DotLottieController,
+    selectedId: Int?,
+    onSelected: (Int?) -> Unit,
     vm: HomeViewModel
 ) {
-    var selectedId by remember {
-        mutableStateOf<Int?>(null)
-    }
     val listState = rememberLazyListState()
 
     LazyRow(
@@ -133,9 +134,9 @@ fun BookCaseContents(
                     controller.play()
 
                 if(selectedId == item.id)
-                    selectedId = null
+                    onSelected(null)
                 else if (selectedId == null) {
-                    selectedId = item.id
+                    onSelected(item.id)
                 }
 
 

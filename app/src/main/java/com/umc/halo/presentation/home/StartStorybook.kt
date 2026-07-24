@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.ProgressState
+import com.umc.halo.domain.model.home.StartStorybook
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.theme.Black
 import com.umc.halo.presentation.theme.Gray100
@@ -39,15 +40,15 @@ import com.umc.halo.presentation.theme.White
 
 @Composable
 fun StartStorybook(
-    state: UserState.RU,
-    vm: HomeViewModel
+    item: StartStorybook,
+    onEvent: (HomeUiEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
         Text(
-            text = "${state.currentProgress.theme}장을 바로 시작해보세요!",
+            text = "${item.currentProgress}장을 바로 시작해보세요!",
             style = HaloType.body02Medium,
             color = Color(0xFF3C3A35)
         )
@@ -60,10 +61,10 @@ fun StartStorybook(
                     .fillMaxWidth()
                     .height(114.dp)
                     .clickable {
-                        vm.onEvent(
+                        onEvent(
                             HomeUiEvent.OnContinueStoryBookClicked(
-                                storyBookId = state.currentProgress.theme,
-                                chapterId = state.currentProgress.chapter
+                                storyBookId = item.storybookId,
+                                chapterId = item.currentProgress
                             )
                         )
                     },
@@ -75,18 +76,18 @@ fun StartStorybook(
                     defaultElevation = 8.dp
                 )
             ) {
-                StartStorybookContents(state)
+                StartStorybookContents(item)
             }
 
-            if (state.progressState == ProgressState.Complete)
-                ContentsOverlay(state)
+            if (item.isCompleted)
+                ContentsOverlay(item)
         }
     }
 }
 
 @Composable
 fun ContentsOverlay(
-    state: UserState.RU
+    item: StartStorybook
 ) {
     Card(
         modifier = Modifier
@@ -104,7 +105,7 @@ fun ContentsOverlay(
         )
         {
             Text(
-                text = "테마 ${state.currentProgress.theme}장은\n'내일 다시' 참여할 수 있어요!",
+                text = "테마 ${item.currentProgress + 1}장은\n'내일 다시' 참여할 수 있어요!",
                 style = HaloType.body01Medium,
                 color = Gray600,
                 modifier = Modifier
@@ -117,7 +118,7 @@ fun ContentsOverlay(
 
 @Composable
 fun StartStorybookContents(
-    state: UserState.RU
+    item: StartStorybook
 ) {
     Row(
         modifier = Modifier
@@ -160,7 +161,7 @@ fun StartStorybookContents(
             Spacer(Modifier.weight(1f))
 
             Text(
-                text = "오늘 ${state.currentProgress.theme}장까지 완료할 수 있어요!",
+                text = "오늘 ${item.currentProgress + 1}장까지 완료할 수 있어요!",
                 style = HaloType.caption01Regular,
                 color = Gray500
             )
@@ -168,7 +169,7 @@ fun StartStorybookContents(
             Spacer(Modifier.weight(6f))
 
             Text(
-                text = "${state.currentProgress.chapter}/10",
+                text = "${item.currentProgress}/10",
                 style = HaloType.caption01Regular,
                 color = Primary500
             )
@@ -189,7 +190,7 @@ fun StartStorybookContents(
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .width(((state.currentProgress.chapter/10f)*121).dp)
+                        .width(((item.currentProgress/10f)*121).dp)
                         .border(
                             width = 0.dp,
                             color = Color.Transparent,

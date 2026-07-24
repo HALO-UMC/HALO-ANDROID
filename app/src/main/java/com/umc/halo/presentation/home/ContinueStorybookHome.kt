@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,12 +39,13 @@ fun ContinueStorybookHome(
 ) {
     Column(
         Modifier.fillMaxWidth()
-            .padding(horizontal = 24.dp)
     ) {
         Text(
             text = "진행중인 스토리북",
             style = HaloType.body01SemiBold,
-            color = Color(0xFF3C3A35)
+            color = Color(0xFF3C3A35),
+            modifier = Modifier
+            .padding(horizontal = 24.dp)
         )
 
         Spacer(Modifier.height(12.dp))
@@ -54,16 +56,13 @@ fun ContinueStorybookHome(
 
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            pageSpacing = 24.dp,
+            contentPadding = PaddingValues(horizontal = 24.dp)
         ) { page ->
 
             val firstIndex = page * 2
             val secondIndex = firstIndex + 1
-            Log.d(
-                "Pager",
-                "page=$page, firstIndex=$firstIndex, secondIndex=$secondIndex, itemSize=${item.size}, pageCount=${pagerState.pageCount}"
-            )
-
 
             Column(
                 Modifier.fillMaxWidth()

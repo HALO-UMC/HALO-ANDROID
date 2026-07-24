@@ -21,3 +21,10 @@ data class CustomizedStoryBooks(
     val title: String,
     val subtitle: String
 )
+
+data class StartStorybook(
+    val storybookId: Int,
+    val title: String,
+    val currentProgress: Int,
+    val isCompleted: Boolean
+)

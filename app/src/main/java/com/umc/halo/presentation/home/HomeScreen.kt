@@ -83,6 +83,8 @@ fun HomeScreenContents(
 ) {
     val controller = remember { DotLottieController() }
     var bgmPlayer by remember { mutableStateOf(false) }
+    var bookClicked by remember { mutableStateOf(false) }
+    var selectedId by remember { mutableStateOf<Int?>(null) }
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -116,7 +118,9 @@ fun HomeScreenContents(
         Spacer(Modifier.height(57.dp))
 
         Box {
-            BookCase(state,controller,vm)
+            BookCase(state,controller,selectedId, vm) { id ->
+                selectedId = id
+            }
 
             Box(
                 modifier = Modifier
@@ -135,7 +139,7 @@ fun HomeScreenContents(
             }
         }
 
-        when (val userState = state.userState) {
+        when (state.userState) {
             UserState.FTU -> {
                 Box(
                     Modifier
@@ -143,7 +147,11 @@ fun HomeScreenContents(
                         .background(Primary30)
                         .padding(vertical = 23.dp)
                 ) {
-                    CustomStorybook(state.customStorybookList,vm::onEvent)
+                    if (selectedId != null) {
+                       // StartStorybook() { }
+                    } else {
+                        CustomStorybook(state.customStorybookList,vm::onEvent)
+                    }
                 }
 
                 Spacer(Modifier.height(32.dp))

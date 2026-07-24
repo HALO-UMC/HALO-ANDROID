@@ -37,7 +37,7 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
             //dummyData
             copy(
                 userInfo = UserInfo("김재환", true),
-                userState = UserState.RU(currentProgress = CurrentProgress(1,5), progressState = ProgressState.Complete),
+                userState = UserState.RU,
                 greetingMessage = "부모님과의 하루를 기록해보세요.",
                 bookList = listOf(
                     Books(1, "오래전 당신", "가족과의 만남",R.drawable.image_home_bookcase_1, R.drawable.image_home_bookcase_cover_1,240, 48, 0f, 0f, 48),
@@ -56,6 +56,9 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
                     CustomStorybook(2,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남")
                 ),
                 continueStorybookList = listOf(
+                    ContinueStorybook("오래전 당신",1,5),
+                    ContinueStorybook("오래전 당신",1,5),
+                    ContinueStorybook("오래전 당신",1,5),
                     ContinueStorybook("오래전 당신",1,5)
                 )
             )
