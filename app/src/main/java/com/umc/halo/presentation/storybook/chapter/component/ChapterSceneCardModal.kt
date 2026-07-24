@@ -1,27 +1,40 @@
 package com.umc.halo.presentation.storybook.chapter.component
 
+import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -31,13 +44,19 @@ import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.White
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.URL
 
 private val DimColor = Color(0xCC000000)
 private val DisabledButtonColor = Color(0xFFEEEEEE)
+private val CharacterPlaceholderColor = Color(0xFFF7F7F7)
+private val CharacterPlaceholderLineColor = Color(0xFFD9D9D9)
 
 @Composable
 fun ChapterSceneCardModal(
     themeTitle: String,
+    characterImageUrl: String?,
     sceneCards: List<ChapterSceneCard>,
     selectedCardId: Long?,
     isConfirmEnabled: Boolean,
@@ -51,6 +70,7 @@ fun ChapterSceneCardModal(
 
     Box(
         modifier = Modifier
+            .fillMaxSize()
             .background(DimColor)
             .clickable { onDismiss() }
     ) {
@@ -58,10 +78,11 @@ fun ChapterSceneCardModal(
             modifier = Modifier
                 .align(Alignment.Center)
                 .width(288.dp)
-                .height(344.dp)
-                .clickable(enabled = false) {}
+                .height(470.dp)
+                .clickable {}
         ) {
             ChapterModalCharacter(
+                characterImageUrl = characterImageUrl,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .offset(y = 0.dp)
@@ -72,18 +93,21 @@ fun ChapterSceneCardModal(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .width(288.dp)
-                    .height(273.dp),
+                    .height(385.dp),
                 shape = RoundedCornerShape(20.dp),
                 color = White
             ) {
                 Column(
                     modifier = Modifier
-                        .width(288.dp)
-                        .height(273.dp),
+                        .fillMaxSize()
+                        .padding(
+                            start = 32.dp,
+                            top = 24.dp,
+                            end = 32.dp,
+                            bottom = 20.dp
+                        ),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier.height(24.dp))
-
                     Text(
                         text = themeTitle,
                         style = HaloType.body01SemiBold,
@@ -91,7 +115,7 @@ fun ChapterSceneCardModal(
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(7.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
                         text = "오늘의 이야기와 어울리는 장면카드를 골라주세요.",
@@ -103,12 +127,13 @@ fun ChapterSceneCardModal(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     SceneCardGrid(
+                        modifier = Modifier.fillMaxWidth(),
                         sceneCards = sceneCards,
                         selectedCardId = selectedCardId,
                         onCardClick = onCardClick
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.weight(1f))
 
                     SceneCardConfirmButton(
                         enabled = isConfirmEnabled,
@@ -122,11 +147,14 @@ fun ChapterSceneCardModal(
 
 @Composable
 private fun SceneCardGrid(
+    modifier: Modifier = Modifier,
     sceneCards: List<ChapterSceneCard>,
     selectedCardId: Long?,
     onCardClick: (Long) -> Unit
 ) {
     Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         sceneCards
@@ -134,7 +162,11 @@ private fun SceneCardGrid(
             .chunked(2)
             .forEach { rowCards ->
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    modifier = Modifier.width(212.dp),
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = 12.dp,
+                        alignment = Alignment.CenterHorizontally
+                    )
                 ) {
                     rowCards.forEach { card ->
                         ChapterSceneCardImage(
@@ -193,84 +225,79 @@ private fun SceneCardConfirmButton(
 
 @Composable
 private fun ChapterModalCharacter(
+    characterImageUrl: String?,
     modifier: Modifier = Modifier
 ) {
-    Canvas(
-        modifier = modifier.size(
-            width = 108.dp,
-            height = 90.dp
-        )
-    ) {
-        val bodyColor = Color(0xFFD7B77B)
+    var imageBitmap by remember(characterImageUrl) {
+        mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null)
+    }
 
-        drawCircle(
-            color = bodyColor,
-            radius = 22.dp.toPx(),
-            center = Offset(size.width * 0.5f, size.height * 0.45f)
-        )
+    LaunchedEffect(characterImageUrl) {
+        imageBitmap = if (characterImageUrl.isNullOrBlank()) {
+            null
+        } else {
+            withContext(Dispatchers.IO) {
+                runCatching {
+                    URL(characterImageUrl).openStream().use { inputStream ->
+                        BitmapFactory.decodeStream(inputStream)?.asImageBitmap()
+                    }
+                }.getOrNull()
+            }
+        }
+    }
 
-        drawCircle(
-            color = bodyColor,
-            radius = 16.dp.toPx(),
-            center = Offset(size.width * 0.32f, size.height * 0.5f)
-        )
-
-        drawCircle(
-            color = bodyColor,
-            radius = 16.dp.toPx(),
-            center = Offset(size.width * 0.68f, size.height * 0.5f)
-        )
-
-        drawCircle(
-            color = bodyColor,
-            radius = 15.dp.toPx(),
-            center = Offset(size.width * 0.5f, size.height * 0.24f)
-        )
-
-        drawCircle(
-            color = bodyColor,
-            radius = 12.dp.toPx(),
-            center = Offset(size.width * 0.22f, size.height * 0.68f)
-        )
-
-        drawCircle(
-            color = bodyColor,
-            radius = 12.dp.toPx(),
-            center = Offset(size.width * 0.78f, size.height * 0.68f)
-        )
-
-        drawCircle(
-            color = White,
-            radius = 8.dp.toPx(),
-            center = Offset(size.width * 0.43f, size.height * 0.53f)
-        )
-
-        drawCircle(
-            color = White,
-            radius = 8.dp.toPx(),
-            center = Offset(size.width * 0.57f, size.height * 0.53f)
-        )
-
-        drawCircle(
-            color = Color(0xFF0D0D0D),
-            radius = 3.dp.toPx(),
-            center = Offset(size.width * 0.45f, size.height * 0.55f)
-        )
-
-        drawCircle(
-            color = Color(0xFF0D0D0D),
-            radius = 3.dp.toPx(),
-            center = Offset(size.width * 0.55f, size.height * 0.55f)
-        )
-
-        drawRoundRect(
-            color = Primary500,
-            topLeft = Offset(size.width * 0.46f, size.height * 0.61f),
-            size = androidx.compose.ui.geometry.Size(
-                width = size.width * 0.08f,
-                height = size.height * 0.08f
+    if (imageBitmap != null) {
+        Image(
+            bitmap = imageBitmap!!,
+            contentDescription = "장면 선택 캐릭터",
+            modifier = modifier.size(
+                width = 108.dp,
+                height = 90.dp
             ),
-            cornerRadius = CornerRadius(10.dp.toPx())
+            contentScale = ContentScale.Fit
         )
+        return
+    }
+
+    Canvas(
+        modifier = modifier
+            .size(
+                width = 108.dp,
+                height = 90.dp
+            )
+            .background(
+                color = CharacterPlaceholderColor,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .border(
+                width = 1.dp,
+                color = CharacterPlaceholderLineColor,
+                shape = RoundedCornerShape(12.dp)
+            )
+    ) {
+        val cellSize = 9.dp.toPx()
+        val strokeWidth = 1.dp.toPx()
+
+        var x = cellSize
+        while (x < size.width) {
+            drawLine(
+                color = CharacterPlaceholderLineColor,
+                start = Offset(x, 0f),
+                end = Offset(x, size.height),
+                strokeWidth = strokeWidth
+            )
+            x += cellSize
+        }
+
+        var y = cellSize
+        while (y < size.height) {
+            drawLine(
+                color = CharacterPlaceholderLineColor,
+                start = Offset(0f, y),
+                end = Offset(size.width, y),
+                strokeWidth = strokeWidth
+            )
+            y += cellSize
+        }
     }
 }

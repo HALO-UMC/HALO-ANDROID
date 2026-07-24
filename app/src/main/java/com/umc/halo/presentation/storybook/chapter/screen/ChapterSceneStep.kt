@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.domain.model.storybook.ChapterSceneCard
 import com.umc.halo.presentation.component.HaloTopBar
@@ -45,6 +47,7 @@ import com.umc.halo.presentation.theme.White
 
 private val TagBackgroundColor = Color(0xFFFFFAF7)
 private val TagTextColor = Color(0xFFFF9742)
+private val SceneTitleColor = Color(0xFF0D0D0D)
 
 private val OptionDefaultBackground = Color(0xFFF7F7F7)
 private val OptionSelectedBackground = Color(0xFFFFF3E8)
@@ -98,14 +101,14 @@ fun ChapterSceneStep(
                         .fillMaxSize()
                         .padding(bottom = 110.dp)
                 ) {
-                    Spacer(modifier = Modifier.height(30.dp))
+                    Spacer(modifier = Modifier.height(18.dp))
 
                     ChapterStepProgressBar(
                         currentStepIndex = 1,
                         modifier = Modifier.padding(horizontal = 20.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(25.dp))
 
                     ChapterSceneHeader(
                         modifier = Modifier.padding(horizontal = 24.dp)
@@ -156,7 +159,8 @@ fun ChapterSceneStep(
 
         if (isSceneCardModalVisible) {
             ChapterSceneCardModal(
-                themeTitle = "나와 같은 나이였던 시절",
+                themeTitle = chapter.title,
+                characterImageUrl = chapter.characterImageUrl,
                 sceneCards = sceneCards,
                 selectedCardId = pendingSceneCardId,
                 isConfirmEnabled = isSceneCardConfirmEnabled,
@@ -175,22 +179,18 @@ private fun ChapterSceneHeader(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        Box(
-            modifier = Modifier
-                .background(
-                    color = TagBackgroundColor,
-                    shape = RoundedCornerShape(100.dp)
-                )
-                .padding(
-                    horizontal = 10.dp,
-                    vertical = 8.dp
-                ),
-            contentAlignment = Alignment.Center
+        Surface(
+            color = TagBackgroundColor,
+            shape = RoundedCornerShape(100.dp)
         ) {
             Text(
                 text = "02",
-                style = HaloType.caption01Medium,
-                color = TagTextColor
+                style = HaloType.body03Medium,
+                color = TagTextColor,
+                modifier = Modifier.padding(
+                    horizontal = 10.dp,
+                    vertical = 8.dp
+                )
             )
         }
 
@@ -198,11 +198,14 @@ private fun ChapterSceneHeader(
 
         Text(
             text = "오늘의 장면을 남겨볼까요?",
-            style = HaloType.body01SemiBold,
-            color = Gray800
+            style = HaloType.body01SemiBold.copy(
+                fontSize = 18.sp,
+                lineHeight = 26.sp
+            ),
+            color = SceneTitleColor
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         Text(
             text = "사진으로 남겨도, 장면카드로 대신해도 좋아요.\n이 페이지에 어울리는 순간을 골라주세요.",

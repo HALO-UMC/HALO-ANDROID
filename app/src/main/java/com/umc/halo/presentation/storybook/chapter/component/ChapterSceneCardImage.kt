@@ -1,22 +1,37 @@
 package com.umc.halo.presentation.storybook.chapter.component
 
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.umc.halo.domain.model.storybook.ChapterSceneCard
 import com.umc.halo.presentation.theme.Primary500
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.URL
+
+private val SceneCardPlaceholderColor = Color(0xFFF7F7F7)
+private val SceneCardPlaceholderLineColor = Color(0xFFE6E6E6)
+private val SceneCardSelectedOverlay = Color(0xB3FFAC69)
 
 @Composable
 fun ChapterSceneCardImage(
@@ -26,170 +41,81 @@ fun ChapterSceneCardImage(
     cornerRadius: Dp = 10.dp
 ) {
     val shape = RoundedCornerShape(cornerRadius)
+    var imageBitmap by remember(card.imageUrl) {
+        mutableStateOf<ImageBitmap?>(null)
+    }
+
+    LaunchedEffect(card.imageUrl) {
+        imageBitmap = if (card.imageUrl.isNullOrBlank()) {
+            null
+        } else {
+            withContext(Dispatchers.IO) {
+                runCatching {
+                    URL(card.imageUrl).openStream().use { inputStream ->
+                        BitmapFactory.decodeStream(inputStream)?.asImageBitmap()
+                    }
+                }.getOrNull()
+            }
+        }
+    }
 
     Box(
         modifier = modifier
+            .clip(shape)
             .background(
-                color = sceneCardBackgroundColor(card.id),
+                color = SceneCardPlaceholderColor,
                 shape = shape
             )
             .border(
-                width = if (selected) 3.dp else 0.dp,
+                width = if (selected) 1.dp else 0.dp,
                 color = if (selected) Primary500 else Color.Transparent,
                 shape = shape
             )
     ) {
-        Canvas(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            when (card.id) {
-                1L -> drawLetterCard()
-                2L -> drawTravelCard()
-                3L -> drawTalkCard()
-                else -> drawGraduationCard()
+        if (imageBitmap != null) {
+            Image(
+                bitmap = imageBitmap!!,
+                contentDescription = card.title,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Canvas(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                val cellSize = 10.dp.toPx()
+                val strokeWidth = 1.dp.toPx()
+
+                var x = cellSize
+                while (x < size.width) {
+                    drawLine(
+                        color = SceneCardPlaceholderLineColor,
+                        start = Offset(x, 0f),
+                        end = Offset(x, size.height),
+                        strokeWidth = strokeWidth
+                    )
+                    x += cellSize
+                }
+
+                var y = cellSize
+                while (y < size.height) {
+                    drawLine(
+                        color = SceneCardPlaceholderLineColor,
+                        start = Offset(0f, y),
+                        end = Offset(size.width, y),
+                        strokeWidth = strokeWidth
+                    )
+                    y += cellSize
+                }
             }
         }
+
+        if (selected) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(SceneCardSelectedOverlay)
+            )
+        }
     }
-}
-
-private fun sceneCardBackgroundColor(
-    cardId: Long
-): Color {
-    return when (cardId) {
-        1L -> Color(0xFFFFF1D9)
-        2L -> Color(0xFFFFD7A6)
-        3L -> Color(0xFFDDEEFF)
-        else -> Color(0xFFE8F7D5)
-    }
-}
-
-private fun DrawScope.drawLetterCard() {
-    drawRoundRect(
-        color = Color(0xFFFFFFFF),
-        topLeft = Offset(
-            x = size.width * 0.22f,
-            y = size.height * 0.22f
-        ),
-        size = androidx.compose.ui.geometry.Size(
-            width = size.width * 0.56f,
-            height = size.height * 0.46f
-        ),
-        cornerRadius = CornerRadius(8.dp.toPx())
-    )
-
-    drawLine(
-        color = Color(0xFFD9C3A5),
-        start = Offset(size.width * 0.3f, size.height * 0.38f),
-        end = Offset(size.width * 0.7f, size.height * 0.38f),
-        strokeWidth = 2.dp.toPx()
-    )
-
-    drawLine(
-        color = Color(0xFFD9C3A5),
-        start = Offset(size.width * 0.3f, size.height * 0.48f),
-        end = Offset(size.width * 0.62f, size.height * 0.48f),
-        strokeWidth = 2.dp.toPx()
-    )
-
-    drawCircle(
-        color = Color(0xFFFF7B10),
-        radius = size.minDimension * 0.055f,
-        center = Offset(size.width * 0.5f, size.height * 0.7f)
-    )
-}
-
-private fun DrawScope.drawTravelCard() {
-    drawCircle(
-        color = Color(0xFFFFF1D9),
-        radius = size.minDimension * 0.22f,
-        center = Offset(size.width * 0.72f, size.height * 0.25f)
-    )
-
-    val mountainPath = Path().apply {
-        moveTo(size.width * 0.1f, size.height * 0.78f)
-        lineTo(size.width * 0.35f, size.height * 0.42f)
-        lineTo(size.width * 0.52f, size.height * 0.66f)
-        lineTo(size.width * 0.72f, size.height * 0.36f)
-        lineTo(size.width * 0.92f, size.height * 0.78f)
-        close()
-    }
-
-    drawPath(
-        path = mountainPath,
-        color = Color(0xFFE6A86F)
-    )
-
-    drawRoundRect(
-        color = Color(0xFFFFFFFF),
-        topLeft = Offset(
-            x = size.width * 0.18f,
-            y = size.height * 0.62f
-        ),
-        size = androidx.compose.ui.geometry.Size(
-            width = size.width * 0.48f,
-            height = size.height * 0.16f
-        ),
-        cornerRadius = CornerRadius(20.dp.toPx())
-    )
-}
-
-private fun DrawScope.drawTalkCard() {
-    drawCircle(
-        color = Color(0xFF404040),
-        radius = size.minDimension * 0.12f,
-        center = Offset(size.width * 0.34f, size.height * 0.38f)
-    )
-
-    drawCircle(
-        color = Color(0xFF404040),
-        radius = size.minDimension * 0.12f,
-        center = Offset(size.width * 0.68f, size.height * 0.32f)
-    )
-
-    drawRoundRect(
-        color = Color(0xFFFFFFFF),
-        topLeft = Offset(size.width * 0.18f, size.height * 0.52f),
-        size = androidx.compose.ui.geometry.Size(
-            width = size.width * 0.58f,
-            height = size.height * 0.18f
-        ),
-        cornerRadius = CornerRadius(24.dp.toPx())
-    )
-}
-
-private fun DrawScope.drawGraduationCard() {
-    drawCircle(
-        color = Color(0xFFFFD6C9),
-        radius = size.minDimension * 0.13f,
-        center = Offset(size.width * 0.5f, size.height * 0.45f)
-    )
-
-    val hatPath = Path().apply {
-        moveTo(size.width * 0.28f, size.height * 0.32f)
-        lineTo(size.width * 0.5f, size.height * 0.2f)
-        lineTo(size.width * 0.72f, size.height * 0.32f)
-        lineTo(size.width * 0.5f, size.height * 0.44f)
-        close()
-    }
-
-    drawPath(
-        path = hatPath,
-        color = Color(0xFF2B2B2B)
-    )
-
-    drawRoundRect(
-        color = Color(0xFF2B2B2B),
-        topLeft = Offset(size.width * 0.37f, size.height * 0.52f),
-        size = androidx.compose.ui.geometry.Size(
-            width = size.width * 0.26f,
-            height = size.height * 0.3f
-        ),
-        cornerRadius = CornerRadius(10.dp.toPx())
-    )
-
-    drawCircle(
-        color = Color(0xFFFF7B10),
-        radius = size.minDimension * 0.035f,
-        center = Offset(size.width * 0.76f, size.height * 0.76f)
-    )
 }

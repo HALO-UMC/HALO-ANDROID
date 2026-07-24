@@ -26,6 +26,9 @@ data class Chapter(
     // 두 번째 시작 안내 화면의 배경 + 캐릭터 통합 이미지
     val guideImageUrl: String?,
 
+    // 스토리북 테마별 장면 선택 모달 캐릭터 이미지
+    val characterImageUrl: String?,
+
     // 스토리북 테마별로 달라지는 상단 공감 문구
     val themeGuideText: String,
 

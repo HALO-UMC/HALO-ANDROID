@@ -252,6 +252,7 @@ class ChapterProgressViewModel :
                         "있었는지 들어봅니다.",
                 backgroundImageUrl = null,
                 guideImageUrl = null,
+                characterImageUrl = null,
                 themeGuideText = "지금의 부모님도 한때는\n" +
                         "지금 나의 나이로 하루를 살고 있었어요.",
                 chapterGuideText = "부모님은 처음 어떻게 만나셨을까요?\n" +
@@ -274,6 +275,7 @@ class ChapterProgressViewModel :
                 description = "부모님의 이야기를 차근차근 기록하는 챕터입니다.",
                 backgroundImageUrl = null,
                 guideImageUrl = null,
+                characterImageUrl = null,
                 themeGuideText = "지금의 부모님도 한때는\n" +
                         "지금 나의 나이로 하루를 살고 있었어요.",
                 chapterGuideText = "부모님의 이야기를 천천히 떠올려볼까요?",

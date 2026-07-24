@@ -134,7 +134,11 @@ private fun ChapterProgressScreen(
         ChapterProgressStep.SCENE -> {
             ChapterSceneStep(
                 chapter = chapter,
+                sceneCards = state.sceneCards,
                 selectedMethod = state.selectedSceneRecordMethod,
+                pendingSceneCardId = state.pendingSceneCardId,
+                isSceneCardModalVisible = state.isSceneCardModalVisible,
+                isSceneCardConfirmEnabled = state.isSceneCardConfirmEnabled,
                 isNextEnabled = state.isSceneStepNextEnabled,
                 onMethodSelected = { method ->
                     onEvent(
@@ -150,6 +154,22 @@ private fun ChapterProgressScreen(
                         )
                     )
                 },
+                onSceneCardModalRequested = {
+                    onEvent(ChapterProgressUiEvent.SceneCardModalRequested)
+                },
+                onSceneCardModalDismissed = {
+                    onEvent(ChapterProgressUiEvent.SceneCardModalDismissed)
+                },
+                onPendingSceneCardSelected = { cardId ->
+                    onEvent(
+                        ChapterProgressUiEvent.PendingSceneCardSelected(
+                            cardId = cardId
+                        )
+                    )
+                },
+                onSceneCardConfirmClick = {
+                    onEvent(ChapterProgressUiEvent.SceneCardConfirmed)
+                },
                 onBackClick = handleBack,
                 onNextClick = {
                     onEvent(ChapterProgressUiEvent.NextClicked)
@@ -162,12 +182,16 @@ private fun ChapterProgressScreen(
                 chapter = chapter,
                 selectedMethod = state.selectedSceneRecordMethod,
                 selectedImageUri = state.selectedSceneImageUri,
+                selectedSceneCard = state.selectedSceneCard,
                 onImageSelected = { imageUri ->
                     onEvent(
                         ChapterProgressUiEvent.SceneImageSelected(
                             imageUri = imageUri
                         )
                     )
+                },
+                onSceneCardChangeClick = {
+                    onEvent(ChapterProgressUiEvent.SceneCardChangeClicked)
                 },
                 onBackClick = handleBack,
                 onNextClick = {
