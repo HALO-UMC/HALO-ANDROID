@@ -65,7 +65,7 @@ fun ActionGuide() {
 
         ActionGuideFrame(
             number = "3",
-            contents = "테마 별로 하루에 한 장씩 천천히 채워가요"
+            contents = "테마별로 하루에 한 장씩 천천히 채워가요"
         )
     }
 }
