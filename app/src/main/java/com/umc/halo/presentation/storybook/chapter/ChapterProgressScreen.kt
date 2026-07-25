@@ -41,6 +41,7 @@ fun ChapterProgressRoute(
     storybookId: Long,
     chapterId: Long,
     onNavigateBack: () -> Unit,
+    onNavigateToResult: (Long, Long) -> Unit,
     vm: ChapterProgressViewModel = viewModel()
 ) {
     val state by vm.uiState.collectAsState()
@@ -60,7 +61,8 @@ fun ChapterProgressRoute(
     ChapterProgressScreen(
         state = state,
         onEvent = vm::onEvent,
-        onNavigateBack = onNavigateBack
+        onNavigateBack = onNavigateBack,
+        onNavigateToResult = onNavigateToResult
     )
 }
 
@@ -71,7 +73,8 @@ fun ChapterProgressRoute(
 private fun ChapterProgressScreen(
     state: ChapterProgressUiState,
     onEvent: (ChapterProgressUiEvent) -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToResult: (Long, Long) -> Unit
 ) {
     val chapter = state.chapter
 
@@ -231,7 +234,10 @@ private fun ChapterProgressScreen(
                 selectedMood = state.selectedMood,
                 onBackClick = handleBack,
                 onCompleteClick = {
-                    onEvent(ChapterProgressUiEvent.NextClicked)
+                    onNavigateToResult(
+                        chapter.storybookId,
+                        chapter.id
+                    )
                 }
             )
         }

@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
 import com.umc.halo.presentation.onboarding.OnboardingRoute
+import com.umc.halo.presentation.storybook.chapter.ChapterResultRoute
 import com.umc.halo.presentation.storybook.chapter.ChapterProgressRoute
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailScreen
 import com.umc.halo.presentation.storybook.list.StorybookScreen
@@ -105,6 +106,14 @@ fun AppNavGraph(
                 chapterId = chapterId,
                 onNavigateBack = {
                     navController.popBackStack()
+                },
+                onNavigateToResult = { resultStorybookId, resultChapterId ->
+                    navController.navigate(
+                        Routes.chapterResult(
+                            storybookId = resultStorybookId,
+                            chapterId = resultChapterId
+                        )
+                    )
                 }
             )
         }
@@ -119,8 +128,22 @@ fun AppNavGraph(
                     type = NavType.LongType
                 }
             )
-        ) {
-            Text(text = "Chapter Result")
+        ) { backStackEntry ->
+            val storybookId = backStackEntry.arguments
+                ?.getLong("storybookId")
+                ?: return@composable
+
+            val chapterId = backStackEntry.arguments
+                ?.getLong("chapterId")
+                ?: return@composable
+
+            ChapterResultRoute(
+                storybookId = storybookId,
+                chapterId = chapterId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
