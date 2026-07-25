@@ -8,6 +8,17 @@ enum class ChapterSceneRecordMethod {
     SCENE_CARD
 }
 
+enum class ChapterMood(
+    val id: String
+) {
+    THANKFUL("thankful"),
+    SAD("sad"),
+    THOUGHTFUL("thoughtful"),
+    ANGRY("angry"),
+    AWKWARD("awkward"),
+    HAPPY("happy")
+}
+
 /**
  * 챕터 작성 화면 전체에서 사용하는 UI 상태
  */
@@ -35,7 +46,10 @@ data class ChapterProgressUiState(
     val pendingSceneCardId: Long? = null,
 
     // 장면카드 선택 모달 표시 여부
-    val isSceneCardModalVisible: Boolean = false
+    val isSceneCardModalVisible: Boolean = false,
+
+    // 이번 장을 기록하며 선택한 감정
+    val selectedMood: ChapterMood? = null
 ) {
     val isFirstStep: Boolean
         get() = currentStep == ChapterProgressStep.INTRO
@@ -61,4 +75,7 @@ data class ChapterProgressUiState(
 
     val isSceneCardConfirmEnabled: Boolean
         get() = pendingSceneCardId != null
+
+    val isMoodStepNextEnabled: Boolean
+        get() = selectedMood != null
 }

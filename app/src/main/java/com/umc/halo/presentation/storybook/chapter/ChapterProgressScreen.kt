@@ -23,6 +23,7 @@ import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomButton
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterGuideStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterIntroStep
+import com.umc.halo.presentation.storybook.chapter.screen.ChapterMoodStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterQuestionStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterSceneStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterSceneConfirmStep
@@ -192,6 +193,25 @@ private fun ChapterProgressScreen(
                 },
                 onSceneCardChangeClick = {
                     onEvent(ChapterProgressUiEvent.SceneCardChangeClicked)
+                },
+                onBackClick = handleBack,
+                onNextClick = {
+                    onEvent(ChapterProgressUiEvent.NextClicked)
+                }
+            )
+        }
+
+        ChapterProgressStep.MOOD -> {
+            ChapterMoodStep(
+                chapter = chapter,
+                selectedMood = state.selectedMood,
+                isNextEnabled = state.isMoodStepNextEnabled,
+                onMoodClick = { mood ->
+                    onEvent(
+                        ChapterProgressUiEvent.MoodSelected(
+                            mood = mood
+                        )
+                    )
                 },
                 onBackClick = handleBack,
                 onNextClick = {

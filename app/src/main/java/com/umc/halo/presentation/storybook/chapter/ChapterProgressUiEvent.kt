@@ -35,6 +35,10 @@ sealed interface ChapterProgressUiEvent {
 
     data object SceneCardChangeClicked : ChapterProgressUiEvent
 
+    data class MoodSelected(
+        val mood: ChapterMood
+    ) : ChapterProgressUiEvent
+
     data object NextClicked : ChapterProgressUiEvent
 
     data object BackClicked : ChapterProgressUiEvent

@@ -54,6 +54,10 @@ class ChapterProgressViewModel :
                 openSceneCardModalFromConfirm()
             }
 
+            is ChapterProgressUiEvent.MoodSelected -> {
+                updateMood(event.mood)
+            }
+
             ChapterProgressUiEvent.NextClicked -> {
                 moveToNextStep()
             }
@@ -97,7 +101,8 @@ class ChapterProgressViewModel :
                 selectedSceneImageUri = null,
                 selectedSceneCardId = null,
                 pendingSceneCardId = null,
-                isSceneCardModalVisible = false
+                isSceneCardModalVisible = false,
+                selectedMood = null
             )
         }
     }
@@ -198,6 +203,20 @@ class ChapterProgressViewModel :
         }
     }
 
+    private fun updateMood(
+        mood: ChapterMood
+    ) {
+        updateState {
+            copy(
+                selectedMood = if (selectedMood == mood) {
+                    null
+                } else {
+                    mood
+                }
+            )
+        }
+    }
+
     private fun moveToNextStep() {
         if (
             currentState.currentStep == ChapterProgressStep.QUESTION &&
@@ -209,6 +228,13 @@ class ChapterProgressViewModel :
         if (
             currentState.currentStep == ChapterProgressStep.SCENE &&
             !currentState.isSceneStepNextEnabled
+        ) {
+            return
+        }
+
+        if (
+            currentState.currentStep == ChapterProgressStep.MOOD &&
+            !currentState.isMoodStepNextEnabled
         ) {
             return
         }
