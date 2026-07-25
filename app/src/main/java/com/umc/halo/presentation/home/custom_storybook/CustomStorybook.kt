@@ -26,7 +26,7 @@ import com.umc.halo.presentation.theme.Primary500
 @Composable
 fun CustomStorybook(
     items: List<CustomStorybook>,
-    onEvent: (HomeUiEvent) -> Unit
+    onClick: (Long) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -45,7 +45,7 @@ fun CustomStorybook(
             items.forEach { item ->
                 CustomStorybookCard(
                     item = item,
-                    onClick = { onEvent(HomeUiEvent.OnCustomizedStoryBookClicked(item.id)) },
+                    onClick = { onClick(item.id.toLong()) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }

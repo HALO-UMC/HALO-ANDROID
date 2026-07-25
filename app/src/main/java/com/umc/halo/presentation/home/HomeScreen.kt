@@ -28,12 +28,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lottiefiles.dotlottie.core.compose.runtime.DotLottieController
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
@@ -43,6 +45,9 @@ import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.home.actionguide.ActionGuide
 import com.umc.halo.presentation.home.bookcase.BookCase
 import com.umc.halo.presentation.home.custom_storybook.CustomStorybook
+import com.umc.halo.presentation.login.LoginScreen
+import com.umc.halo.presentation.login.LoginUiEvent
+import com.umc.halo.presentation.login.LoginViewModel
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray600
@@ -50,18 +55,42 @@ import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary30
 import com.umc.halo.presentation.theme.Primary500
 
-@Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
-    HomeScreen()
+fun HomeRoute(
+    viewModel: HomeViewModel = hiltViewModel(),
+    onNavigateToStorybook: (Long) -> Unit
+) {
+    val state by viewModel.uiState.collectAsState()
+
+    HomeScreen(
+        state = state,
+        onEvent = { event ->
+            when (event) {
+                is HomeUiEvent.OnBookClicked -> {
+                    viewModel.onEvent(event)
+                }
+
+                is HomeUiEvent.OnCustomizedStoryBookClicked -> {
+                    onNavigateToStorybook(event.storyBookId)
+                }
+
+                is HomeUiEvent.OnContinueStoryBookClicked -> {
+                    onNavigateToStorybook(event.storyBookId)
+                }
+
+                is HomeUiEvent.OnStartStorybookClicked -> {
+                    onNavigateToStorybook(event.storyBookId)
+                }
+            }
+        }
+    )
 }
 
 @Composable
 fun HomeScreen(
-    vm: HomeViewModel = viewModel()
+    state: HomeUiState,
+    onEvent: (HomeUiEvent) -> Unit
 ) {
-    val state by vm.uiState.collectAsState()
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -70,7 +99,10 @@ fun HomeScreen(
                 .fillMaxSize()
         ) {
             item {
-                HomeScreenContents(state,vm)
+                HomeScreenContents(
+                    state = state,
+                    onEvent = onEvent
+                )
             }
         }
     }
@@ -79,7 +111,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContents(
     state: HomeUiState,
-    vm: HomeViewModel
+    onEvent: (HomeUiEvent) -> Unit
 ) {
     val controller = remember { DotLottieController() }
     var bgmPlayer by remember { mutableStateOf(false) }
@@ -116,7 +148,7 @@ fun HomeScreenContents(
         Spacer(Modifier.height(57.dp))
 
         Box {
-            BookCase(state,controller, vm::onEvent)
+            BookCase(state,controller, onEvent)
 
             Box(
                 modifier = Modifier
@@ -144,9 +176,14 @@ fun HomeScreenContents(
                         .padding(vertical = 23.dp)
                 ) {
                     if (state.startStorybook != null) {
-                        StartStorybook(state.startStorybook, vm::onEvent)
+                        StartStorybook(state.startStorybook, onEvent)
                     } else {
-                        CustomStorybook(state.customStorybookList,vm::onEvent)
+                        val customStorybook = state.customStorybookList
+                        CustomStorybook(customStorybook,
+                            onClick = { id ->
+                                onEvent(HomeUiEvent.OnCustomizedStoryBookClicked(id))
+                            }
+                        )
                     }
                 }
 
@@ -163,9 +200,9 @@ fun HomeScreenContents(
                         .padding(vertical = 23.dp)
                 ) {
                     if (state.startStorybook != null) {
-                        StartStorybook(state.startStorybook, vm::onEvent)
+                        StartStorybook(state.startStorybook, onEvent)
                     } else {
-                        ContinueStorybookHome(state.continueStorybookList)
+                        ContinueStorybookHome(state.continueStorybookList, onEvent)
                     }
                 }
 

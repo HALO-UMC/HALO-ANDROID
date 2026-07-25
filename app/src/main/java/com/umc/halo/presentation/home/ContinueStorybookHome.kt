@@ -35,7 +35,8 @@ import com.umc.halo.presentation.themebox.ContinueStorybook
 
 @Composable
 fun ContinueStorybookHome(
-    item: List<ContinueStorybook>
+    item: List<ContinueStorybook>,
+    onEvent: (HomeUiEvent) -> Unit
 ) {
     Column(
         Modifier.fillMaxWidth()
@@ -61,18 +62,22 @@ fun ContinueStorybookHome(
             contentPadding = PaddingValues(horizontal = 24.dp)
         ) { page ->
 
-            val firstIndex = page * 2
-            val secondIndex = firstIndex + 1
+            val firstItem = item[page * 2]
+            val secondItem = item[page * 2 + 1]
 
             Column(
                 Modifier.fillMaxWidth()
 
             ) {
-                ContinueStorybookCard(item[firstIndex])
+                ContinueStorybookCard(firstItem) {
+                    onEvent(HomeUiEvent.OnContinueStoryBookClicked(firstItem.storybookId))
+                }
 
-                if (secondIndex < item.size) {
+                if (page * 2 + 1 < item.size) {
                     Spacer(Modifier.height(10.dp))
-                    ContinueStorybookCard(item[secondIndex])
+                    ContinueStorybookCard(secondItem) {
+                        onEvent(HomeUiEvent.OnContinueStoryBookClicked(firstItem.storybookId))
+                    }
                 }
             }
         }

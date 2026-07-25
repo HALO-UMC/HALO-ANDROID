@@ -48,12 +48,12 @@ fun ThemeBoxEmptyScreen(
 
         when (state) {
             is ThemeBoxUiState.Empty.FTU -> {
-                CustomStorybook(state.customStorybookList) {
-                    //onClick 추가
+                CustomStorybook(state.customStorybookList) { id ->
+                    onEvent(ThemeBoxUiEvent.OnCustomizedStoryBookClicked(id))
                 }
             }
             is ThemeBoxUiState.Empty.RU -> {
-                ContinueStorybook(state.continueStorybookList)
+                ContinueStorybook(state.continueStorybookList, onEvent)
             }
         }
     }
@@ -96,7 +96,8 @@ fun ThemeBoxEmpty() {
 
 @Composable
 fun ContinueStorybook(
-    continueStorybookList: List<ContinueStorybook>
+    continueStorybookList: List<ContinueStorybook>,
+    onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
     LazyColumn() {
         item {
@@ -112,7 +113,9 @@ fun ContinueStorybook(
         items(
             items = continueStorybookList
         ) { item ->
-            ContinueStorybookCard(item)
+            ContinueStorybookCard(item) {
+                onEvent(ThemeBoxUiEvent.OnContinueStoryBookClicked(item.storybookId))
+            }
         }
     }
 }

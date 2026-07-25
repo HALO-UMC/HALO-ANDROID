@@ -106,7 +106,7 @@ fun BookCaseContents(
     onEvent: (HomeUiEvent) -> Unit
 ) {
     val listState = rememberLazyListState()
-    var selectedId by remember { mutableStateOf<Int?>(null) }
+    var selectedId by remember { mutableStateOf<Long?>(null) }
 
     LazyRow(
         state = listState,
@@ -294,7 +294,7 @@ fun BookItem(
                 contentScale = currentContentScale
             )
 
-            if (item.id == 1) {
+            if (item.id == 1L) {
                 Icon(
                     painter = painterResource(R.drawable.ic_home_bookcase_pot),
                     contentDescription = null,

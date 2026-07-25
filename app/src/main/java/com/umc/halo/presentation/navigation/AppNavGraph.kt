@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.umc.halo.presentation.calendar.CalendarScreen
+import com.umc.halo.presentation.home.HomeRoute
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
 import com.umc.halo.presentation.onboarding.OnboardingRoute
@@ -51,7 +52,13 @@ fun AppNavGraph(
         }
 
         composable(Routes.HOME) {
-            HomeScreen()
+            HomeRoute(
+                onNavigateToStorybook = { storybookId ->
+                    navController.navigate(Routes.storybookDetail(storybookId)) {
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(Routes.CALENDAR) {

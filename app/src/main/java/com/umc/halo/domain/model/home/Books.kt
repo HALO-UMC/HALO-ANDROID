@@ -3,7 +3,7 @@ package com.umc.halo.domain.model.home
 import androidx.compose.ui.graphics.Color
 
 data class Books(
-    val id: Int,
+    val id: Long,
     val title: String,
     val subtitle: String,
     val spineImage: Int,
@@ -17,15 +17,8 @@ data class Books(
     val isCompleted: Boolean
 )
 
-data class CustomizedStoryBooks(
-    val id: Int,
-    val intro: String,
-    val title: String,
-    val subtitle: String
-)
-
 data class StartStorybook(
-    val storybookId: Int = 0,
+    val storybookId: Long = 0,
     val title: String = "void",
     val subtitle: String = "void",
     val currentProgress: Int = 0,

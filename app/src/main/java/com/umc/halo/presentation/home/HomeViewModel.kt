@@ -25,10 +25,13 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
             is HomeUiEvent.OnContinueStoryBookClicked -> {
                 //스토리북 상세로 navigation
             }
+
+            is HomeUiEvent.OnStartStorybookClicked -> {
+            }
         }
     }
 
-    private fun selectedStorybook(id: Int?) {
+    private fun selectedStorybook(id: Long?) {
         val book = _uiState.value.bookList.find { it.id == id }
 
         Log.d("test",book.toString())

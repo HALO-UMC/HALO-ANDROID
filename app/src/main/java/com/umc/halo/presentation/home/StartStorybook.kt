@@ -75,9 +75,8 @@ fun StartStorybook(
                     )
                     .clickable {
                         onEvent(
-                            HomeUiEvent.OnContinueStoryBookClicked(
-                                storyBookId = item.storybookId,
-                                chapterId = item.currentProgress
+                            HomeUiEvent.OnStartStorybookClicked(
+                                storyBookId = item.storybookId
                             )
                         )
                     },
