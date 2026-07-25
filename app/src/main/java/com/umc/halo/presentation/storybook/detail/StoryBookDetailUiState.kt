@@ -30,7 +30,8 @@ data class StoryBookIndex(
     val id: Long,
     val title: String,
     val subTitle: String,
-    val isLocked: Boolean
+    val isLocked: Boolean,
+    val isCompleted: Boolean
 )
 
 data class TodayStoryBook(

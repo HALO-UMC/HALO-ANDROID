@@ -24,9 +24,9 @@ class StoryBookDetailViewModel: BaseViewModel<StoryBookDetailUiState, StoryBookD
                 ),
                 storyBookProgress = CurrentProgress(1,8),
                 storyBookIndex = listOf(
-                    StoryBookIndex(1,"나와 같은 나이였던 시절","부모님이 지금의 내 나이였을 때의 하루",false),
-                    StoryBookIndex(2,"나와 같은 나이였던 시절","부모님이 지금의 내 나이였을 때의 하루",false),
-                    StoryBookIndex(3,"나와 같은 나이였던 시절","부모님이 지금의 내 나이였을 때의 하루",false)
+                    StoryBookIndex(1,"나와 같은 나이였던 시절","부모님이 지금의 내 나이였을 때의 하루",false,true),
+                    StoryBookIndex(2,"나와 같은 나이였던 시절","부모님이 지금의 내 나이였을 때의 하루",false,false),
+                    StoryBookIndex(3,"나와 같은 나이였던 시절","부모님이 지금의 내 나이였을 때의 하루",true,false)
                 )
             )
         }

@@ -11,6 +11,7 @@ import com.umc.halo.presentation.home.HomeRoute
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
 import com.umc.halo.presentation.onboarding.OnboardingRoute
+import com.umc.halo.presentation.storybook.detail.StoryBookDetailRoute
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailScreen
 import com.umc.halo.presentation.storybook.list.StorybookScreen
 import com.umc.halo.presentation.themebox.ThemeBoxRoute
@@ -103,7 +104,18 @@ fun AppNavGraph(
         }
 
         composable(Routes.STORYBOOK_DETAIL) {
-            StoryBookDetailScreen()
+            StoryBookDetailRoute(
+                onNavigateToChapterResult = { storybookId, chapterId ->
+                    navController.navigate(Routes.chapterResult(storybookId,chapterId)) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToChapterProgress = { storybookId, chapterId ->
+                    navController.navigate(Routes.chapterProgress(storybookId,chapterId)) {
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(Routes.CHAPTER_PROGRESS) {
