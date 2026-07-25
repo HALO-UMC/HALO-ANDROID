@@ -25,17 +25,7 @@ fun AppNavGraph(
 ) {
     NavHost(
         navController = navController,
-
-        /*
-         * 챕터 첫 화면 UI 확인용 임시 startDestination
-         *
-         * 첫 화면 확인이 끝나면 다시 Routes.HOME으로 복구할 예정입니다.
-         */
-        startDestination = Routes.chapterProgress(
-            storybookId = 1L,
-            chapterId = 1L
-        ),
-
+        startDestination = Routes.HOME,
         modifier = modifier
     ) {
         composable(Routes.SPLASH) {

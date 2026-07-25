@@ -162,9 +162,18 @@ class ChapterProgressViewModel :
     private fun closeSceneCardModal() {
         updateState {
             copy(
+                selectedSceneRecordMethod = committedSceneRecordMethod(),
                 pendingSceneCardId = selectedSceneCardId,
                 isSceneCardModalVisible = false
             )
+        }
+    }
+
+    private fun ChapterProgressUiState.committedSceneRecordMethod(): ChapterSceneRecordMethod? {
+        return when {
+            !selectedSceneImageUri.isNullOrBlank() -> ChapterSceneRecordMethod.PHOTO
+            selectedSceneCardId != null -> ChapterSceneRecordMethod.SCENE_CARD
+            else -> null
         }
     }
 

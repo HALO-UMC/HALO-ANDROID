@@ -1,7 +1,5 @@
 package com.umc.halo.presentation.storybook.chapter.screen
 
-import android.graphics.BitmapFactory
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,21 +13,17 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.umc.halo.domain.model.storybook.Chapter
@@ -38,6 +32,7 @@ import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.storybook.chapter.ChapterSceneRecordMethod
 import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomAction
 import com.umc.halo.presentation.storybook.chapter.component.ChapterSceneCardImage
+import com.umc.halo.presentation.storybook.chapter.component.rememberSelectedImageBitmap
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.White
@@ -84,8 +79,7 @@ fun ChapterSceneConfirmStep(
                         start = 24.dp,
                         end = 24.dp,
                         bottom = 110.dp
-                    )
-                    .navigationBarsPadding(),
+                    ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(57.dp))
@@ -189,19 +183,7 @@ private fun SelectedScenePreview(
 private fun SelectedPhotoImage(
     selectedImageUri: String?
 ) {
-    val context = LocalContext.current
-
-    val imageBitmap = remember(selectedImageUri) {
-        if (selectedImageUri.isNullOrBlank()) {
-            null
-        } else {
-            runCatching {
-                context.contentResolver.openInputStream(Uri.parse(selectedImageUri))?.use { inputStream ->
-                    BitmapFactory.decodeStream(inputStream)?.asImageBitmap()
-                }
-            }.getOrNull()
-        }
-    }
+    val imageBitmap = rememberSelectedImageBitmap(selectedImageUri)
 
     if (imageBitmap != null) {
         Image(
@@ -231,7 +213,7 @@ private fun EmptySelectedSceneBox() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "선택한 이미지를 불러오는 중이에요",
+            text = "선택한 이미지가 없어요",
             style = HaloType.body03Regular,
             color = Gray400
         )

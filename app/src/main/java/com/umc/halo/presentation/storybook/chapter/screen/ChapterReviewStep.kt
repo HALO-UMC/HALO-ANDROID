@@ -1,7 +1,5 @@
 package com.umc.halo.presentation.storybook.chapter.screen
 
-import android.graphics.BitmapFactory
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,14 +20,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -41,6 +36,7 @@ import com.umc.halo.presentation.storybook.chapter.ChapterMood
 import com.umc.halo.presentation.storybook.chapter.ChapterSceneRecordMethod
 import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomAction
 import com.umc.halo.presentation.storybook.chapter.component.ChapterSceneCardImage
+import com.umc.halo.presentation.storybook.chapter.component.rememberSelectedImageBitmap
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.Gray800
@@ -256,19 +252,7 @@ private fun ReviewScenePreview(
 private fun ReviewPhotoImage(
     selectedImageUri: String?
 ) {
-    val context = LocalContext.current
-
-    val imageBitmap = remember(selectedImageUri) {
-        if (selectedImageUri.isNullOrBlank()) {
-            null
-        } else {
-            runCatching {
-                context.contentResolver.openInputStream(Uri.parse(selectedImageUri))?.use { inputStream ->
-                    BitmapFactory.decodeStream(inputStream)?.asImageBitmap()
-                }
-            }.getOrNull()
-        }
-    }
+    val imageBitmap = rememberSelectedImageBitmap(selectedImageUri)
 
     if (imageBitmap != null) {
         Image(
