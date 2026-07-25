@@ -25,6 +25,7 @@ import com.umc.halo.presentation.storybook.chapter.screen.ChapterGuideStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterIntroStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterMoodStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterQuestionStep
+import com.umc.halo.presentation.storybook.chapter.screen.ChapterReviewStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterSceneStep
 import com.umc.halo.presentation.storybook.chapter.screen.ChapterSceneConfirmStep
 import com.umc.halo.presentation.theme.Gray500
@@ -215,6 +216,21 @@ private fun ChapterProgressScreen(
                 },
                 onBackClick = handleBack,
                 onNextClick = {
+                    onEvent(ChapterProgressUiEvent.NextClicked)
+                }
+            )
+        }
+
+        ChapterProgressStep.REVIEW -> {
+            ChapterReviewStep(
+                chapter = chapter,
+                answers = state.questionAnswers,
+                selectedMethod = state.selectedSceneRecordMethod,
+                selectedImageUri = state.selectedSceneImageUri,
+                selectedSceneCard = state.selectedSceneCard,
+                selectedMood = state.selectedMood,
+                onBackClick = handleBack,
+                onCompleteClick = {
                     onEvent(ChapterProgressUiEvent.NextClicked)
                 }
             )
