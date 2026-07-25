@@ -37,7 +37,7 @@ fun StoryBookIndex(
         Row(
             modifier = Modifier
                 .clickable{
-                    onEvent(StoryBookDetailUiEvent.OnClickStoryBookIndex(storyBookId,item.id.toLong()))
+                    onEvent(StoryBookDetailUiEvent.OnClickStoryBookIndex(storyBookId,item.id))
                 }
         ) {
             Box(

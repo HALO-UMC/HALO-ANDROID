@@ -27,14 +27,14 @@ data class StoryBookInfo(
 )
 
 data class StoryBookIndex(
-    val id: Int,
+    val id: Long,
     val title: String,
     val subTitle: String,
     val isLocked: Boolean
 )
 
 data class TodayStoryBook(
-    val id: Int,
+    val id: Long,
     val title: String,
     val tag: String,
     val isLocked: Boolean

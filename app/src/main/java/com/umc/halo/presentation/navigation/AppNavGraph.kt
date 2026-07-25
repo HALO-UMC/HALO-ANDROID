@@ -13,6 +13,7 @@ import com.umc.halo.presentation.login.LoginRoute
 import com.umc.halo.presentation.onboarding.OnboardingRoute
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailScreen
 import com.umc.halo.presentation.storybook.list.StorybookScreen
+import com.umc.halo.presentation.themebox.ThemeBoxRoute
 import com.umc.halo.presentation.themebox.ThemeBoxScreen
 
 // NavHost + BottomBar 표시 여부 + 화면 route 연결
@@ -83,7 +84,13 @@ fun AppNavGraph(
         }
 
         composable(Routes.THEME_BOX) {
-            ThemeBoxScreen()
+            ThemeBoxRoute(
+                onNavigateToStorybook = { storybookId ->
+                    navController.navigate(Routes.storybookDetail(storybookId)) {
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(Routes.STORYBOOK) {
