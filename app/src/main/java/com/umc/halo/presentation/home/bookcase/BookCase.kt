@@ -106,7 +106,11 @@ fun BookCaseContents(
     onEvent: (HomeUiEvent) -> Unit
 ) {
     val listState = rememberLazyListState()
-    var selectedId by remember { mutableStateOf<Int?>(null) }
+    var selectedId by remember { mutableStateOf<Long?>(null) }
+
+    onEvent(
+        HomeUiEvent.OnBookClicked(selectedId) // 화면 재구성시 StartStorybook 초기화 용도
+    )
 
     LazyRow(
         state = listState,
@@ -118,8 +122,7 @@ fun BookCaseContents(
         verticalAlignment = Alignment.Bottom
     ) {
         items(
-            items = bookList,
-            key = { item -> item.id }
+            items = bookList
         ) { item ->
             val isSelected = item.id == selectedId
 
@@ -294,7 +297,7 @@ fun BookItem(
                 contentScale = currentContentScale
             )
 
-            if (item.id == 1) {
+            if (item.id == 1L) {
                 Icon(
                     painter = painterResource(R.drawable.ic_home_bookcase_pot),
                     contentDescription = null,

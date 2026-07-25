@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.domain.model.themebox.ContinueStorybook
+import com.umc.halo.presentation.home.HomeUiEvent
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
@@ -38,7 +40,8 @@ import com.umc.halo.presentation.themebox.ContinueStorybook
 
 @Composable
 fun ContinueStorybookCard(
-    item: ContinueStorybook
+    item: ContinueStorybook,
+    onClick: () -> Unit
 ) {
     Card(
         Modifier
@@ -52,7 +55,10 @@ fun ContinueStorybookCard(
                     color = Color(0xCFECE9E7),
                     offset = DpOffset(0.dp, 0.dp)
                 )
-            ),
+            )
+            .clickable{
+                onClick()
+            },
         colors = CardDefaults.cardColors(
             containerColor = White
         )
@@ -80,7 +86,7 @@ fun ContinueStorybookCard(
                 Spacer(Modifier.height(4.dp))
 
                 Text(
-                    text = "오늘 ${item.chapter}장까지 완료할 수 있어요!",
+                    text = "오늘 ${item.currentProgress + 1}장까지 완료할 수 있어요!",
                     style = HaloType.caption01Regular,
                     color = Gray500
                 )
@@ -105,7 +111,7 @@ fun ContinueStorybookCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "${item.chapter}장",
+                        text = "${item.currentProgress}장",
                         style = HaloType.body02Medium,
                         color = Primary500
                     )

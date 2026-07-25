@@ -87,6 +87,6 @@ fun TodayStoryBook(
     }
 }
 
-fun Int.toTwoDigits(): String {
+fun Long.toTwoDigits(): String {
     return String.format(Locale.US,"%02d", this)
 }

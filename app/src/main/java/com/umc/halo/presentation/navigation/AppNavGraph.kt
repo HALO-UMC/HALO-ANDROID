@@ -7,11 +7,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.umc.halo.presentation.calendar.CalendarScreen
+import com.umc.halo.presentation.home.HomeRoute
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
 import com.umc.halo.presentation.onboarding.OnboardingRoute
+import com.umc.halo.presentation.storybook.detail.StoryBookDetailRoute
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailScreen
 import com.umc.halo.presentation.storybook.list.StorybookScreen
+import com.umc.halo.presentation.themebox.ThemeBoxRoute
 import com.umc.halo.presentation.themebox.ThemeBoxScreen
 
 // NavHost + BottomBar 표시 여부 + 화면 route 연결
@@ -51,7 +54,13 @@ fun AppNavGraph(
         }
 
         composable(Routes.HOME) {
-            HomeScreen()
+            HomeRoute(
+                onNavigateToStorybook = { storybookId ->
+                    navController.navigate(Routes.storybookDetail(storybookId)) {
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(Routes.CALENDAR) {
@@ -76,7 +85,13 @@ fun AppNavGraph(
         }
 
         composable(Routes.THEME_BOX) {
-            ThemeBoxScreen()
+            ThemeBoxRoute(
+                onNavigateToStorybook = { storybookId ->
+                    navController.navigate(Routes.storybookDetail(storybookId)) {
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(Routes.STORYBOOK) {
@@ -89,7 +104,18 @@ fun AppNavGraph(
         }
 
         composable(Routes.STORYBOOK_DETAIL) {
-            StoryBookDetailScreen()
+            StoryBookDetailRoute(
+                onNavigateToChapterResult = { storybookId, chapterId ->
+                    navController.navigate(Routes.chapterResult(storybookId,chapterId)) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToChapterProgress = { storybookId, chapterId ->
+                    navController.navigate(Routes.chapterProgress(storybookId,chapterId)) {
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(Routes.CHAPTER_PROGRESS) {
