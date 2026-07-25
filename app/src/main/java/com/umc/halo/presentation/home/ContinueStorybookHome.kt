@@ -74,12 +74,12 @@ fun ContinueStorybookHome(
                     Spacer(Modifier.height(10.dp))
                     ContinueStorybookCard(item[secondIndex])
                 }
-
-                Spacer(Modifier.height(8.dp))
-
-                PageIndicator(pagerState)
             }
         }
+
+        Spacer(Modifier.height(8.dp))
+
+        PageIndicator(pagerState)
     }
 }
 
