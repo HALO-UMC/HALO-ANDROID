@@ -1,20 +1,14 @@
 package com.umc.halo.presentation.home
 
 import android.util.Log
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.Books
-import com.umc.halo.domain.model.home.CurrentProgress
-import com.umc.halo.domain.model.home.ProgressState
 import com.umc.halo.domain.model.home.StartStorybook
 import com.umc.halo.domain.model.home.UserInfo
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.domain.model.storybook.CustomStorybook
 import com.umc.halo.domain.model.themebox.ContinueStorybook
 import com.umc.halo.presentation.base.BaseViewModel
-import com.umc.halo.presentation.base.UiState
-import com.umc.halo.presentation.themebox.ContinueStorybook
 
 class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
 
