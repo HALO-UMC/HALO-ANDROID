@@ -49,7 +49,8 @@ fun StoryBookDetailRoute(
         state = state,
         onEvent = { event ->
             fun navigate(storyBookId: Long, chapterId: Long) {
-                val isCompleted = state.storyBookIndex[chapterId.toInt()].isCompleted
+                val chapter = state.storyBookIndex.firstOrNull { it.id == chapterId } ?: return
+                val isCompleted = chapter.isCompleted
 
                 if (isCompleted) {
                     onNavigateToChapterResult(storyBookId, chapterId)

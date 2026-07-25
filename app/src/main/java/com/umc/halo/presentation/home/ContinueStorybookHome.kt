@@ -63,7 +63,6 @@ fun ContinueStorybookHome(
         ) { page ->
 
             val firstItem = item[page * 2]
-            val secondItem = item[page * 2 + 1]
 
             Column(
                 Modifier.fillMaxWidth()
@@ -74,6 +73,8 @@ fun ContinueStorybookHome(
                 }
 
                 if (page * 2 + 1 < item.size) {
+                    val secondItem = item[page * 2 + 1]
+
                     Spacer(Modifier.height(10.dp))
                     ContinueStorybookCard(secondItem) {
                         onEvent(HomeUiEvent.OnContinueStoryBookClicked(firstItem.storybookId))
