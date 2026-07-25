@@ -2,10 +2,7 @@ package com.umc.halo.domain.model.home
 
 sealed interface UserState {
     data object FTU: UserState
-    data class RU(
-        val currentProgress: CurrentProgress,
-        val progressState: ProgressState
-    ): UserState
+    data object RU: UserState
 }
 
 enum class ProgressState {

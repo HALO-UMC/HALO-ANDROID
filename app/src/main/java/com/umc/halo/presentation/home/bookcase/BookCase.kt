@@ -1,27 +1,38 @@
 package com.umc.halo.presentation.home.bookcase
 
+import android.util.Log
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,8 +40,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
@@ -40,6 +54,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import com.lottiefiles.dotlottie.core.compose.runtime.DotLottieController
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.Books
@@ -48,77 +63,56 @@ import com.umc.halo.presentation.home.HomeUiState
 import com.umc.halo.presentation.home.HomeViewModel
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray30
+import com.umc.halo.presentation.theme.Gray700
+import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
+import com.umc.halo.presentation.theme.White
+import kotlinx.coroutines.delay
 
 
 @Composable
 fun BookCase(
     state: HomeUiState,
     controller: DotLottieController,
-    vm: HomeViewModel
+    onEvent: (HomeUiEvent) -> Unit
 ) {
     Column(
         Modifier
             .fillMaxWidth()
-            .height(210.dp)
-            .border(
-                width = 1.dp,
-                color = Gray100
-            )
-            .background(Gray30)
+            .background(Color(0xFFF8F5F3))
     ) {
-        Spacer(Modifier.height(12.dp))
-
-        Text(
-            text = "책장 둘러보기",
-            style = HaloType.body01SemiBold,
-            modifier = Modifier.padding(horizontal = 24.dp),
-            color = Color(0xFF3C3A35)
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(7.dp)
+                .background(Color(0xFFDBCBC0))
         )
 
-        Spacer(Modifier.height(24.dp))
+        BookCaseContents(state.bookList,controller,onEvent)
 
-        Box() {
-            Image(
-                painter = painterResource(R.drawable.shape_home_shelf),
-                contentDescription = null,
-                modifier = Modifier
-                    .offset(y = (120).dp)
-                    .fillMaxWidth()
-                    .dropShadow(
-                        shape = RoundedCornerShape(8.dp),
-                        shadow = Shadow(
-                            radius = 4.dp,
-                            spread = 0.dp,
-                            color = Color(0x4D3E3E3E),
-                            offset = DpOffset(0.dp, 2.dp)
-                        )
-                    ),
-                contentScale = ContentScale.FillBounds
-            )
-
-            BookCaseContents(state.bookList,controller,vm)
-        }
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(7.dp)
+                .background(Color(0xFFDBCBC0))
+        )
     }
 }
-
-
 
 @Composable
 fun BookCaseContents(
     bookList: List<Books>,
     controller: DotLottieController,
-    vm: HomeViewModel
+    onEvent: (HomeUiEvent) -> Unit
 ) {
-    var selectedId by remember {
-        mutableStateOf<Int?>(null)
-    }
+    val listState = rememberLazyListState()
+    var selectedId by remember { mutableStateOf<Int?>(null) }
 
     LazyRow(
+        state = listState,
         modifier = Modifier
             .fillMaxWidth()
-            .height(125.dp)
-            .padding(horizontal = 24.dp),
+            .height(246.dp),
         horizontalArrangement = Arrangement
             .spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom
@@ -132,18 +126,19 @@ fun BookCaseContents(
             BookItem(
                 item = item,
                 isSelected = isSelected,
+                hasSelection = selectedId != null,
             ) {
                 if(selectedId == null)
                     controller.play()
 
-                //-- 토글 로직 제거 (논의 중)
                 if(selectedId == item.id)
-                    //selectedId = null
-                else
+                    selectedId = null
+                else if (selectedId == null) {
                     selectedId = item.id
+                }
 
-                vm.onEvent(
-                    HomeUiEvent.OnBookClicked(item.id)
+                onEvent(
+                    HomeUiEvent.OnBookClicked(selectedId)
                 )
             }
         }
@@ -155,21 +150,118 @@ fun BookCaseContents(
 fun BookItem(
     item: Books,
     isSelected: Boolean,
+    hasSelection: Boolean,
     onClick: () -> Unit
 ) {
-    val spineRotation by animateFloatAsState(targetValue = if(isSelected) 90f else 0f)
-    val coverRotation by animateFloatAsState(targetValue = if (isSelected) 0f else 90f)
+    val rotationSpec = tween<Float>(
+        durationMillis = 900,
+        easing = FastOutSlowInEasing
+    )
 
-    val spineAlpha by animateFloatAsState(targetValue = if (isSelected) 0f else 1f, label = "spineAlpha")
-    val coverAlpha by animateFloatAsState(targetValue = if (isSelected) 1f else 0f, label = "coverAlpha")
+    var startRotation by remember { mutableStateOf(false) }
+    var resetTilt by remember { mutableStateOf(false) }
+    var changeAlpha by remember { mutableStateOf(false) }
+    var deletePot by remember { mutableStateOf(false) }
+    LaunchedEffect(hasSelection) {
+        if (hasSelection) {
+            // 화분 제거
+            deletePot = true
 
-    val coverSize by animateDpAsState(targetValue = if (isSelected) 100.dp else 0.dp)
-    val spineSize by animateDpAsState(targetValue = if (isSelected) 0.dp else item.size.width.dp)
+            delay(100)
+
+            // 선택된 책만 tilt 제거 + 회전
+            if (isSelected) {
+                // tilt 제거
+                resetTilt = true
+
+                delay(100)
+
+                // 책 펼치기
+                startRotation = true
+            }
+
+            delay(300)
+
+            // 모든 아이템의 alpha 변경
+            changeAlpha = true
+
+        } else {
+
+            if (!isSelected) {
+                // 다른 책 alpha 복원 + 책 닫기
+                startRotation = false
+                changeAlpha = false
+
+                delay(900)
+
+                // tilt 복원
+                resetTilt = false
+
+                delay(100)
+            }
+
+            // 화분 복원
+            deletePot = false
+        }
+    }
+
+    val spineRotation by animateFloatAsState(
+        targetValue = if(startRotation) -90f else 0f,
+        animationSpec = rotationSpec
+    )
+    val coverRotation = spineRotation + 90f
+    val targetSpineAlpha = when {
+        isSelected -> 1f       // 내가 클릭한 책
+        changeAlpha -> 0.4f     // 아무것도 선택 안 됨
+        else -> 1f            // 다른 책
+    }
+    val spineAlpha by animateFloatAsState(
+        targetValue = targetSpineAlpha,
+        animationSpec = tween(300),
+        label = "spineAlpha"
+    )
+    val potAlpha by animateFloatAsState(
+        targetValue = if (deletePot) 0f else 1f,
+        animationSpec = tween(100)
+    )
+    val width by animateDpAsState(
+        targetValue = if (resetTilt) item.width.dp else item.offsetX.dp,
+        animationSpec = tween(
+            durationMillis = 100,
+            easing = FastOutSlowInEasing
+        )
+    )
+    val currentContentScale = if (width <= item.width.dp) {
+        ContentScale.FillBounds
+    } else {
+        ContentScale.Fit
+    }
+
+    val openProgress = (-spineRotation / 90f).coerceIn(0f, 1f)
+    val spineWidth = lerp(width, 0.dp, openProgress)
+    val coverWidth = lerp(0.dp, 180.dp, openProgress)
+
+    val tilt by animateFloatAsState(
+        targetValue = if (resetTilt) 0f else item.tilt,
+        animationSpec = tween(
+            durationMillis = 100,
+            easing = FastOutSlowInEasing
+        )
+    )
+    val offsetY by animateDpAsState(
+        targetValue = if (resetTilt) 0.dp else item.offsetY.dp,
+        animationSpec = tween(
+            durationMillis = 100,
+            easing = FastOutSlowInEasing
+        )
+    )
+
 
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
-    LaunchedEffect(coverSize) {
+    LaunchedEffect(isSelected) {
         if (isSelected) {
+            delay(900)
             bringIntoViewRequester.bringIntoView()
         }
     }
@@ -182,30 +274,87 @@ fun BookItem(
     ) {
         Box(
             modifier = Modifier
-                .width(spineSize)
-                .height(item.size.height.dp)
+                .width(spineWidth)
+                .height(item.height.dp)
+                .offset(y = offsetY)
                 .graphicsLayer {
                     transformOrigin = TransformOrigin(1f, 0.5f)
                     rotationY = spineRotation
-                    cameraDistance = 16f
+                    rotationZ = tilt
+                    cameraDistance = 6f * density
                     alpha = spineAlpha
                     clip = false
                 }
-                .background(item.color)
+                .background(Color.Transparent)
+        ) {
+            Image(
+                painter = painterResource(item.spineImage),
+                contentDescription = "${item.id}",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = currentContentScale
+            )
 
-        )
+            if (item.id == 1) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_home_bookcase_pot),
+                    contentDescription = null,
+                    tint = Color.Unspecified,
+                    modifier = Modifier
+                        .offset(
+                            x = 35.dp,
+                            y = 165.dp
+                        )
+                        .alpha(potAlpha)
+                )
+            }
+        }
         Box(
             modifier = Modifier
-                .width(coverSize)
-                .height(item.size.height.dp)
+                .width(coverWidth)
+                .height(item.height.dp)
                 .graphicsLayer {
                     transformOrigin = TransformOrigin(0f, 0.5f)
                     rotationY = coverRotation
-                    cameraDistance = 16f
-                    alpha = coverAlpha
+                    cameraDistance = 6f * density
                     clip = false
                 }
-                .background(item.color)
-        )
+        ) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(White)
+            ) {
+                Image(
+                    painter = painterResource(item.coverImage),
+                    contentDescription = "${item.id}",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillBounds
+                )
+
+//                Column(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .aspectRatio(180f/83f)
+//                        .background(White)
+//                        .padding(horizontal = 13.86.dp)
+//                        .align(Alignment.BottomCenter),
+//                    verticalArrangement = Arrangement.Center
+//                ) {
+//                    Spacer(Modifier.height(15.24.dp))
+//
+//                    Text(
+//                        text = item.title,
+//                        style = HaloType.heading01SemiBold,
+//                        color = Gray800
+//                    )
+//
+//                    Text(
+//                        text = item.subtitle,
+//                        style = HaloType.body01Regular,
+//                        color = Gray700
+//                    )
+//                }
+            }
+        }
     }
 }
