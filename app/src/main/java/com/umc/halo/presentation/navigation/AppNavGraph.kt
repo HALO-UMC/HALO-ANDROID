@@ -8,13 +8,17 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.umc.halo.presentation.storybook.chapter.ChapterResultRoute
+import com.umc.halo.presentation.storybook.chapter.ChapterProgressRoute
+import com.umc.halo.presentation.calendar.CalendarScreen
+import com.umc.halo.presentation.home.HomeRoute
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
 import com.umc.halo.presentation.onboarding.OnboardingRoute
-import com.umc.halo.presentation.storybook.chapter.ChapterResultRoute
-import com.umc.halo.presentation.storybook.chapter.ChapterProgressRoute
+import com.umc.halo.presentation.storybook.detail.StoryBookDetailRoute
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailScreen
 import com.umc.halo.presentation.storybook.list.StorybookScreen
+import com.umc.halo.presentation.themebox.ThemeBoxRoute
 import com.umc.halo.presentation.themebox.ThemeBoxScreen
 
 // NavHost + BottomBar 표시 여부 + 화면 route 연결
@@ -49,15 +53,44 @@ fun AppNavGraph(
         }
 
         composable(Routes.HOME) {
-            HomeScreen()
+            HomeRoute(
+                onNavigateToStorybook = { storybookId ->
+                    navController.navigate(Routes.storybookDetail(storybookId)) {
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(Routes.CALENDAR) {
-            Text(text = "Calendar")
+            CalendarScreen(
+                // 캘린더 → 스토리북(전체탭) / 테마함
+                // 하단바와 같은 백스택 옵션으로 전환
+                onNavigateToStorybook = {
+                    navController.navigate(Routes.STORYBOOK) {
+                        launchSingleTop = true
+                        restoreState = true
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    }
+                },
+                onNavigateToThemeBox = {
+                    navController.navigate(Routes.THEME_BOX) {
+                        launchSingleTop = true
+                        restoreState = true
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    }
+                }
+            )
         }
 
         composable(Routes.THEME_BOX) {
-            ThemeBoxScreen()
+            ThemeBoxRoute(
+                onNavigateToStorybook = { storybookId ->
+                    navController.navigate(Routes.storybookDetail(storybookId)) {
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(Routes.STORYBOOK) {
@@ -69,7 +102,18 @@ fun AppNavGraph(
         }
 
         composable(Routes.STORYBOOK_DETAIL) {
-            StoryBookDetailScreen()
+            StoryBookDetailRoute(
+                onNavigateToChapterResult = { storybookId, chapterId ->
+                    navController.navigate(Routes.chapterResult(storybookId,chapterId)) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToChapterProgress = { storybookId, chapterId ->
+                    navController.navigate(Routes.chapterProgress(storybookId,chapterId)) {
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(
