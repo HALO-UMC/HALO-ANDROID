@@ -22,9 +22,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.ProgressState
@@ -46,10 +49,11 @@ fun StartStorybook(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 24.dp)
     ) {
         Text(
-            text = "${item.currentProgress}장을 바로 시작해보세요!",
-            style = HaloType.body02Medium,
+            text = "${item.storybookId}장을 바로 시작해보세요!",
+            style = HaloType.body01SemiBold,
             color = Color(0xFF3C3A35)
         )
 
@@ -60,6 +64,15 @@ fun StartStorybook(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(114.dp)
+                    .dropShadow(
+                        shape = RoundedCornerShape(12.dp),
+                        shadow = Shadow(
+                            radius = 4.dp,
+                            spread = 2.dp,
+                            color = Color(0xCFECE9E7),
+                            offset = DpOffset(0.dp, 0.dp)
+                        )
+                    )
                     .clickable {
                         onEvent(
                             HomeUiEvent.OnContinueStoryBookClicked(
@@ -71,9 +84,6 @@ fun StartStorybook(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = White
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 8.dp
                 )
             ) {
                 StartStorybookContents(item)
@@ -153,7 +163,7 @@ fun StartStorybookContents(
 
             Text(
                 //--백엔드 전달 방식 고려 후 제작
-                text = "오래전 당신",
+                text = item.title,
                 style = HaloType.body01SemiBold,
                 color = Black
             )
@@ -166,38 +176,40 @@ fun StartStorybookContents(
                 color = Gray500
             )
 
-            Spacer(Modifier.weight(6f))
+            if (item.currentProgress != 0) {
+                Spacer(Modifier.weight(5f))
 
-            Text(
-                text = "${item.currentProgress}/10",
-                style = HaloType.caption01Regular,
-                color = Primary500
-            )
+                Text(
+                    text = "${item.currentProgress}/10",
+                    style = HaloType.caption01Regular,
+                    color = Primary500
+                )
 
-            Spacer(Modifier.weight(3f))
+                Spacer(Modifier.weight(3f))
 
-            Box(
-                modifier = Modifier
-                    .height(4.dp)
-                    .width(121.dp)
-                    .border(
-                        width = 0.dp,
-                        color = Color.Transparent,
-                        shape = RoundedCornerShape(24.dp)
-                    )
-                    .background(Gray100)
-            ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .width(((item.currentProgress/10f)*121).dp)
+                        .height(4.dp)
+                        .width(121.dp)
                         .border(
                             width = 0.dp,
                             color = Color.Transparent,
                             shape = RoundedCornerShape(24.dp)
                         )
-                        .background(Primary500)
-                )
+                        .background(Gray100)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(((item.currentProgress/10f)*121).dp)
+                            .border(
+                                width = 0.dp,
+                                color = Color.Transparent,
+                                shape = RoundedCornerShape(24.dp)
+                            )
+                            .background(Primary500)
+                    )
+                }
             }
 
             Spacer(Modifier.weight(4f))

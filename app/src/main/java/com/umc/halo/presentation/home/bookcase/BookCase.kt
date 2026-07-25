@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.home.bookcase
 
+import android.util.Log
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -73,9 +74,7 @@ import kotlinx.coroutines.delay
 fun BookCase(
     state: HomeUiState,
     controller: DotLottieController,
-    selectedId: Int?,
-    vm: HomeViewModel,
-    onSelected: (Int?) -> Unit
+    onEvent: (HomeUiEvent) -> Unit
 ) {
     Column(
         Modifier
@@ -89,7 +88,7 @@ fun BookCase(
                 .background(Color(0xFFDBCBC0))
         )
 
-        BookCaseContents(state.bookList,controller,selectedId,onSelected,vm)
+        BookCaseContents(state.bookList,controller,onEvent)
 
         Box(
             Modifier
@@ -104,11 +103,10 @@ fun BookCase(
 fun BookCaseContents(
     bookList: List<Books>,
     controller: DotLottieController,
-    selectedId: Int?,
-    onSelected: (Int?) -> Unit,
-    vm: HomeViewModel
+    onEvent: (HomeUiEvent) -> Unit
 ) {
     val listState = rememberLazyListState()
+    var selectedId by remember { mutableStateOf<Int?>(null) }
 
     LazyRow(
         state = listState,
@@ -134,14 +132,13 @@ fun BookCaseContents(
                     controller.play()
 
                 if(selectedId == item.id)
-                    onSelected(null)
+                    selectedId = null
                 else if (selectedId == null) {
-                    onSelected(item.id)
+                    selectedId = item.id
                 }
 
-
-                vm.onEvent(
-                    HomeUiEvent.OnBookClicked(item.id)
+                onEvent(
+                    HomeUiEvent.OnBookClicked(selectedId)
                 )
             }
         }

@@ -12,7 +12,9 @@ data class Books(
     val width: Int,
     val tilt: Float,
     val offsetY: Float,
-    val offsetX: Int
+    val offsetX: Int,
+    val currentProgress: Int,
+    val isCompleted: Boolean
 )
 
 data class CustomizedStoryBooks(
@@ -23,8 +25,9 @@ data class CustomizedStoryBooks(
 )
 
 data class StartStorybook(
-    val storybookId: Int,
-    val title: String,
-    val currentProgress: Int,
-    val isCompleted: Boolean
+    val storybookId: Int = 0,
+    val title: String = "void",
+    val subtitle: String = "void",
+    val currentProgress: Int = 0,
+    val isCompleted: Boolean = false
 )

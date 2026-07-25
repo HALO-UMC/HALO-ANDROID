@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,7 +43,7 @@ fun ContinueStorybookCard(
     Card(
         Modifier
             .fillMaxWidth()
-            .aspectRatio(156f/37f)
+            .aspectRatio(312f/76f)
             .dropShadow(
                 shape = RoundedCornerShape(12.dp),
                 shadow = Shadow(
@@ -61,7 +62,8 @@ fun ContinueStorybookCard(
                 .padding(
                     horizontal = 18.dp,
                     vertical = 16.dp
-                )
+                ),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
                 Modifier
@@ -95,7 +97,11 @@ fun ContinueStorybookCard(
             ) {
                 Row(
                     Modifier
-                        .padding(12.dp),
+                        .fillMaxSize()
+                        .padding(
+                            horizontal = 12.dp,
+                            vertical = 8.dp
+                        ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -108,7 +114,8 @@ fun ContinueStorybookCard(
 
                     Icon(
                         painter = painterResource(R.drawable.ic_continuestorybook_right_arrow),
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = Primary500
                     )
                 }
             }
