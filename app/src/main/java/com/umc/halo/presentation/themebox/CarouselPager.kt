@@ -21,7 +21,6 @@ import com.umc.halo.domain.model.themebox.Theme
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
-import com.umc.halo.domain.model.themebox.Theme
 import kotlin.math.absoluteValue
 
 

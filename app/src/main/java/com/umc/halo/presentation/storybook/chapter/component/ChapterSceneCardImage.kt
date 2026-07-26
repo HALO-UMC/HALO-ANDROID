@@ -24,14 +24,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.umc.halo.domain.model.storybook.ChapterSceneCard
-import com.umc.halo.presentation.theme.Primary500
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
 
 private val SceneCardPlaceholderColor = Color(0xFFF7F7F7)
 private val SceneCardPlaceholderLineColor = Color(0xFFE6E6E6)
-private val SceneCardSelectedOverlay = Color(0xB3FFAC69)
+private val SceneCardSelectedOverlay = Color(0x33000000)
 
 @Composable
 fun ChapterSceneCardImage(
@@ -67,8 +66,8 @@ fun ChapterSceneCardImage(
                 shape = shape
             )
             .border(
-                width = if (selected) 1.dp else 0.dp,
-                color = if (selected) Primary500 else Color.Transparent,
+                width = 0.dp,
+                color = Color.Transparent,
                 shape = shape
             )
     ) {
