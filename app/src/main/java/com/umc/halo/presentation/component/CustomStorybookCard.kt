@@ -1,5 +1,7 @@
 package com.umc.halo.presentation.component
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
@@ -32,11 +35,14 @@ import com.umc.halo.presentation.theme.White
 
 /**
  * 맞춤 스토리북 카드
+ *
+ * @param coverRes 커버 이미지. null이면 회색 플레이스홀더
  */
 @Composable
 fun CustomStorybookCard(
     item: CustomStorybook,
     modifier: Modifier = Modifier,
+    @DrawableRes coverRes: Int? = null,
     onClick: () -> Unit
 ) {
     val shape = RoundedCornerShape(16.dp)
@@ -50,14 +56,23 @@ fun CustomStorybookCard(
         horizontalArrangement = Arrangement.spacedBy(18.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // 커버 이미지 자리(임시) — 서버 연동 후 실제 이미지로 교체
+        // 커버 이미지 — 서버 연동 후 실제 이미지로 교체
         Box(
             modifier = Modifier
                 .width(75.dp)
                 .height(90.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(Gray50)
-        )
+        ) {
+            if (coverRes != null) {
+                Image(
+                    painter = painterResource(coverRes),
+                    contentDescription = null,      // 장식용 이미지라 null
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.matchParentSize()
+                )
+            }
+        }
 
         Row(
             modifier = Modifier.weight(1f),
