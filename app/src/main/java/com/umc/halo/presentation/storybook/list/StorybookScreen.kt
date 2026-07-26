@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.umc.halo.R
 import com.umc.halo.domain.model.storybook.CustomStorybook
 import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.domain.model.storybook.StorybookTheme
@@ -50,10 +51,14 @@ private val SectionTitleColor = Color(0xFF3C3A35)
 // 좌우 공통 가로 패딩
 private val HorizontalPadding = 24.dp
 
-// 스토리북 카드 공통 폭
-private val StorybookCardWidth = 139.dp
-// 진행중 2열 그리드 폭 = 카드 2개 + 열 간격 18
-private val StorybookGridWidth = StorybookCardWidth * 2 + 18.dp
+// 진행중/완료 2열 그리드
+private val GridColumnSpacing = 16.dp
+private val GridRowSpacing = 36.dp
+
+// 전체 탭 섹션 간격
+private val ThemeCardSpacing = 16.dp             // 테마 가로 스크롤 카드 사이
+private val CustomSectionBottomSpacing = 36.dp   // 맞춤 섹션 ↔ 첫 테마 섹션
+private val ThemeSectionSpacing = 48.dp          // 테마 섹션 ↔ 테마 섹션
 
 /**
  * 스토리북 목록 화면 진입점
@@ -80,7 +85,7 @@ private fun StorybookContent(
             .fillMaxSize()
             .background(White)
     ) {
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(26.dp))
 
         StorybookSegmentedTabs(
             selectedTab = state.selectedTab,
@@ -96,11 +101,11 @@ private fun StorybookContent(
                 title = "진행중인 스토리북",
                 items = state.inProgressStorybooks,
                 key = { it.id }
-            ) { book ->
+            ) { book, cardModifier ->
                 StorybookCard(
                     title = book.title,
                     subtitle = book.subtitle,
-                    modifier = Modifier.width(StorybookCardWidth),
+                    modifier = cardModifier,
                     badge = StorybookBadge.InProgress(book.currentChapter),
                     isWaiting = book.isWaiting,
                     onClick = {
@@ -115,11 +120,11 @@ private fun StorybookContent(
                 title = "완료한 스토리북",
                 items = state.doneStorybooks,
                 key = { it.id }
-            ) { book ->
+            ) { book, cardModifier ->
                 StorybookCard(
                     title = book.title,
                     subtitle = book.subtitle,
-                    modifier = Modifier.width(StorybookCardWidth),
+                    modifier = cardModifier,
                     badge = StorybookBadge.Done,
                     onClick = { onEvent(StorybookUiEvent.OnDoneStorybookClicked(book.id)) }
                 )
@@ -191,29 +196,35 @@ private fun StorybookAllList(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 30.dp),
-        verticalArrangement = Arrangement.spacedBy(36.dp)
+        contentPadding = PaddingValues(bottom = 30.dp)
     ) {
         // 맞춤 스토리북
         if (state.customStorybooks.isNotEmpty()) {
             item {
-                CustomStorybookSection(
-                    userName = state.userName,
-                    items = state.customStorybooks,
-                    onClick = { onEvent(StorybookUiEvent.OnCustomStorybookClicked(it)) }
-                )
+                Column {
+                    CustomStorybookSection(
+                        userName = state.userName,
+                        items = state.customStorybooks,
+                        onClick = { onEvent(StorybookUiEvent.OnCustomStorybookClicked(it)) }
+                    )
+                    Spacer(Modifier.height(CustomSectionBottomSpacing))
+                }
             }
         }
 
-        // 상황별 테마 섹션들
-        items(
+        // 상황별 테마 섹션들 (섹션 사이 간격이 맞춤 섹션과 달라 앞쪽에 간격을 붙임)
+        itemsIndexed(
             items = state.themes,
-            key = { it.id }
-        ) { theme ->
-            StorybookThemeSection(
-                theme = theme,
-                onClick = { onEvent(StorybookUiEvent.OnStorybookClicked(it)) }
-            )
+            key = { _, theme -> theme.id }
+        ) { index, theme ->
+            Column {
+                if (index > 0) Spacer(Modifier.height(ThemeSectionSpacing))
+                StorybookThemeSection(
+                    theme = theme,
+                    isFirstSection = index == 0,
+                    onClick = { onEvent(StorybookUiEvent.OnStorybookClicked(it)) }
+                )
+            }
         }
     }
 }
@@ -236,7 +247,7 @@ private fun CustomStorybookSection(
         Spacer(Modifier.height(2.dp))
         Text(
             text = "부모님과의 관계를 개선하고 싶은 당신에게...",
-            style = HaloType.caption01Regular,
+            style = HaloType.body03Regular,
             color = Gray400
         )
 
@@ -244,11 +255,13 @@ private fun CustomStorybookSection(
 
         // 맞춤 카드를 세로로 배치
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items.forEach { item ->
+            items.forEachIndexed { index, item ->
                 CustomStorybookCard(
                     item = item,
-                    onClick = { onClick(item.id) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    // [임시] 커버 더미 — 실제 커버 연동 시 제거
+                    coverRes = if (index == 0) R.drawable.ic_storybook_customsection_dummy else null,
+                    onClick = { onClick(item.id) }
                 )
             }
         }
@@ -257,10 +270,13 @@ private fun CustomStorybookSection(
 
 /**
  * 상황별 테마 섹션
+ *
+ * @param isFirstSection [임시] 커버 더미를 첫 섹션 첫 카드에만 넣기 위한 표시
  */
 @Composable
 private fun StorybookThemeSection(
     theme: StorybookTheme,
+    isFirstSection: Boolean,
     onClick: (Int) -> Unit
 ) {
     Column {
@@ -273,21 +289,33 @@ private fun StorybookThemeSection(
 
         Spacer(Modifier.height(18.dp))
 
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = HorizontalPadding),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(
-                items = theme.storybooks,
-                key = { it.id }
-            ) { book ->
-                StorybookCard(
-                    title = book.title,
-                    subtitle = book.subtitle,
-                    modifier = Modifier.width(StorybookCardWidth),
-                    badge = book.progress?.toStorybookBadge(),  // 책갈피
-                    onClick = { onClick(book.id) }
-                )
+        // 가로 스크롤이라 weight 를 못 쓰므로 남는 폭을 2등분해 카드 폭을 직접 계산한다.
+        // (2열 그리드와 같은 폭이 나와야 섹션끼리 좌우가 맞음)
+        BoxWithConstraints {
+            val cardWidth = (maxWidth - HorizontalPadding * 2 - ThemeCardSpacing) / 2
+
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = HorizontalPadding),
+                horizontalArrangement = Arrangement.spacedBy(ThemeCardSpacing)
+            ) {
+                itemsIndexed(
+                    items = theme.storybooks,
+                    key = { _, book -> book.id }
+                ) { index, book ->
+                    StorybookCard(
+                        title = book.title,
+                        subtitle = book.subtitle,
+                        modifier = Modifier.width(cardWidth),
+                        // [임시] 커버 더미 — 실제 커버 연동 시 제거
+                        coverRes = if (isFirstSection && index == 0) {
+                            R.drawable.ic_storybook_themesection_dummy
+                        } else {
+                            null
+                        },
+                        badge = book.progress?.toStorybookBadge(),  // 책갈피
+                        onClick = { onClick(book.id) }
+                    )
+                }
             }
         }
     }
@@ -295,13 +323,16 @@ private fun StorybookThemeSection(
 
 /**
  * 진행중 / 완료 탭 공통 골격
+ *
+ * 카드 폭은 고정값이 아니라 남는 폭을 2등분해서 정한다(호출부에 넘기는 modifier).
+ * 그래야 좌우 여백이 [HorizontalPadding] 으로 정확히 대칭이 되고 기기 폭이 달라져도 대응된다.
  */
 @Composable
 private fun <T> StorybookGridSection(
     title: String,
     items: List<T>,
     key: (T) -> Any,
-    card: @Composable (T) -> Unit
+    card: @Composable (T, Modifier) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -323,17 +354,16 @@ private fun <T> StorybookGridSection(
             key = { _, row -> key(row.first()) }
         ) { index, rowItems ->
             Column(modifier = Modifier.fillMaxWidth()) {
-                if (index > 0) Spacer(Modifier.height(24.dp)) // 행 간격
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.TopCenter
+                if (index > 0) Spacer(Modifier.height(GridRowSpacing)) // 행 간격
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = HorizontalPadding),
+                    horizontalArrangement = Arrangement.spacedBy(GridColumnSpacing)
                 ) {
-                    Row(
-                        modifier = Modifier.width(StorybookGridWidth),
-                        horizontalArrangement = Arrangement.spacedBy(18.dp)
-                    ) {
-                        rowItems.forEach { item -> card(item) }
-                    }
+                    rowItems.forEach { item -> card(item, Modifier.weight(1f)) }
+                    // 개수가 홀수라 마지막 줄에 카드가 하나면 빈 칸을 채워 카드 폭을 유지
+                    if (rowItems.size < 2) Spacer(Modifier.weight(1f))
                 }
             }
         }

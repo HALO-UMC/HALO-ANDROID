@@ -112,8 +112,9 @@ class CalendarViewModel : BaseViewModel<CalendarUiState, CalendarUiEvent>(Calend
                         inProgressCount = 1,
                         completedBooks = listOf(
                             CompletedBook(201, "오래전 당신"),
-                            CompletedBook(202, "당신 사용 설명서"),
-                            CompletedBook(203, "가족의 온도")
+                            CompletedBook(202, "당신의 1호 팬"),
+                            CompletedBook(209, "손을 내미는 연습"),
+                            CompletedBook(204, "오늘은 내가 먼저")
                         )
                     )
                 }
