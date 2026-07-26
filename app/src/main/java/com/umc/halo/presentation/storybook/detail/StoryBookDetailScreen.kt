@@ -49,7 +49,8 @@ private val CoverPlaceholderColor = Gray100 // TODO: 실제 커버 이미지로 
 fun StoryBookDetailRoute(
     viewModel: StoryBookDetailViewModel = hiltViewModel(),
     onNavigateToChapterProgress: (Long, Long) -> Unit,
-    onNavigateToChapterResult: (Long, Long) -> Unit
+    onNavigateToChapterResult: (Long, Long) -> Unit,
+    onNavigateToThemeBox: (Long) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -71,8 +72,21 @@ fun StoryBookDetailRoute(
                 is StoryBookDetailUiEvent.OnClickStoryBookIndex ->
                     navigate(event.storyBookId, event.chapterId)
 
-                is StoryBookDetailUiEvent.OnClickTodayStoryBook ->
-                    navigate(event.storyBookId, event.chapterId)
+                is StoryBookDetailUiEvent.OnClickTodayStoryBook -> {
+                    if (state.storyBookInfo.isCompleted) {
+                        onNavigateToThemeBox(event.storyBookId)
+                    } else {
+                        onNavigateToChapterProgress(event.storyBookId, event.chapterId)
+                    }
+                }
+
+                is StoryBookDetailUiEvent.OnClickOpenDialog -> {
+                    viewModel.onEvent(event)
+                }
+
+                is StoryBookDetailUiEvent.OnClickDismissDialog -> {
+                    viewModel.onEvent(event)
+                }
             }
         }
     )
@@ -94,6 +108,10 @@ fun StoryBookDetailScreen(
     state: StoryBookDetailUiState,
     onEvent: (StoryBookDetailUiEvent) -> Unit
 ) {
+    if (state.showDialog) {
+        StoryBookDetailAlert(onEvent)
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -171,7 +189,6 @@ fun StoryThemeIntro(
             modifier = Modifier
                 .height(166.dp)
                 .width(131.dp)
-                .clip(RoundedCornerShape(8.dp))
                 .dropShadow(
                     shape = RoundedCornerShape(16.dp),
                     shadow = Shadow(
@@ -181,12 +198,13 @@ fun StoryThemeIntro(
                         offset = DpOffset(4.dp, 2.dp)
                     )
                 )
+                .clip(RoundedCornerShape(8.dp))
                 .align(Alignment.CenterHorizontally)
         ) {
             StorybookCard(
                 title = storyBookInfo.title,
                 subtitle = "",
-                badge = if (storyBookProgress.chapter == 10) {
+                badge = if (storyBookInfo.isCompleted) {
                     StorybookBadge.Done
                 } else {
                     StorybookBadge.InProgress(storyBookProgress.chapter)
