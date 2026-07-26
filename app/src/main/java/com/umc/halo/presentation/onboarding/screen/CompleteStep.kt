@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.onboarding.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.onboarding.OnboardingUiState
+import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray700
@@ -36,6 +39,7 @@ import com.umc.halo.presentation.theme.HaloType
 @Composable
 fun CompleteStep(
     uiState: OnboardingUiState,
+    onBackClick: () -> Unit,
     onStartClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -51,11 +55,24 @@ fun CompleteStep(
         addAll(uiState.selectedGoals)
     }
 
+    BackHandler(onBack = onBackClick)
+
     BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
+        OnboardingBackButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .statusBarsPadding()
+                .padding(
+                    start = 8.dp,
+                    top = 14.dp
+                )
+        )
+
         /*
          * 화면 높이에 비례해 제목 위치를 고정한다.
          *
