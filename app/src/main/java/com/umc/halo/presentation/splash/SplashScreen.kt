@@ -4,11 +4,16 @@ import android.window.SplashScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
+import com.lottiefiles.dotlottie.core.util.DotLottieSource
 import com.umc.halo.presentation.theme.Primary500
 import kotlinx.coroutines.delay
 
@@ -33,6 +38,16 @@ fun SplashScreen() {
             .background(Primary500),
         contentAlignment = Alignment.Center
     ) {
-        //로티
+        Box(
+            modifier = Modifier
+                .size(200.dp)
+        ) {
+            DotLottieAnimation(
+                source = DotLottieSource.Asset("splash.lottie"),
+                autoplay = true,
+                loop = false,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
     }
 }
