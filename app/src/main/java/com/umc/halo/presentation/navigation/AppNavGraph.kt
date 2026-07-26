@@ -10,17 +10,17 @@ import com.umc.halo.presentation.calendar.CalendarScreen
 import com.umc.halo.presentation.home.HomeRoute
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
-import com.umc.halo.presentation.mypage.AccountInfoScreen
-import com.umc.halo.presentation.mypage.AccountManagementScreen
-import com.umc.halo.presentation.mypage.AnniversaryPlaceholderScreen
-import com.umc.halo.presentation.mypage.MyPageScreen
-import com.umc.halo.presentation.mypage.NotificationSettingsScreen
-import com.umc.halo.presentation.mypage.OpenLicenseScreen
-import com.umc.halo.presentation.mypage.PrivacyPolicyScreen
-import com.umc.halo.presentation.mypage.RelationshipInfoScreen
-import com.umc.halo.presentation.mypage.SystemSettingsScreen
-import com.umc.halo.presentation.mypage.TermsScreen
-import com.umc.halo.presentation.mypage.WithdrawScreen
+import com.umc.halo.presentation.mypage.AccountInfoRoute
+import com.umc.halo.presentation.mypage.NotificationSettingsRoute
+import com.umc.halo.presentation.mypage.SystemSettingsRoute
+import com.umc.halo.presentation.mypage.WithdrawRoute
+import com.umc.halo.presentation.mypage.screen.AccountManagementScreen
+import com.umc.halo.presentation.mypage.screen.AnniversaryPlaceholderScreen
+import com.umc.halo.presentation.mypage.screen.MyPageScreen
+import com.umc.halo.presentation.mypage.screen.OpenLicenseScreen
+import com.umc.halo.presentation.mypage.screen.PrivacyPolicyScreen
+import com.umc.halo.presentation.mypage.screen.RelationshipInfoScreen
+import com.umc.halo.presentation.mypage.screen.TermsScreen
 import com.umc.halo.presentation.onboarding.OnboardingRoute
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailRoute
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailScreen
@@ -149,11 +149,11 @@ fun AppNavGraph(
         }
 
         composable(Routes.MYPAGE_SYSTEM_SETTINGS) {
-            SystemSettingsScreen(onBack = navController::popBackStack)
+            SystemSettingsRoute(onBack = navController::popBackStack)
         }
 
         composable(Routes.MYPAGE_NOTIFICATION_SETTINGS) {
-            NotificationSettingsScreen(onBack = navController::popBackStack)
+            NotificationSettingsRoute(onBack = navController::popBackStack)
         }
 
         composable(Routes.MYPAGE_ACCOUNT_MANAGEMENT) {
@@ -183,7 +183,7 @@ fun AppNavGraph(
         }
 
         composable(Routes.MYPAGE_ACCOUNT_INFO) {
-            AccountInfoScreen(
+            AccountInfoRoute(
                 onBack = navController::popBackStack,
                 onNavigateToWithdraw = {
                     navController.navigate(Routes.MYPAGE_WITHDRAW) {
@@ -202,7 +202,7 @@ fun AppNavGraph(
         }
 
         composable(Routes.MYPAGE_WITHDRAW) {
-            WithdrawScreen(
+            WithdrawRoute(
                 onBack = navController::popBackStack,
                 onNavigateToLogin = {
                     navController.navigate(Routes.LOGIN) {
