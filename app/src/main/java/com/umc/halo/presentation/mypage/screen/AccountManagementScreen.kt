@@ -15,7 +15,6 @@ fun AccountManagementScreen(
     onBack: () -> Unit,
     onNavigateToAccountInfo: () -> Unit,
     onNavigateToOpenLicense: () -> Unit,
-    onNavigateToPrivacyPolicy: () -> Unit,
     onNavigateToTerms: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -30,7 +29,6 @@ fun AccountManagementScreen(
         ) {
             MenuRow(title = "계정 정보", onClick = onNavigateToAccountInfo)
             MenuRow(title = "오픈 라이선스", onClick = onNavigateToOpenLicense)
-            MenuRow(title = "개인정보 처리방침", onClick = onNavigateToPrivacyPolicy)
             MenuRow(title = "이용 약관", onClick = onNavigateToTerms)
         }
     }

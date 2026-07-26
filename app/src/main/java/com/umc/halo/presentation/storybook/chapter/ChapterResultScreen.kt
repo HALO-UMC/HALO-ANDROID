@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -58,9 +59,11 @@ private val ResultHeroGridDark = Color(0xFFE8E8E8)
 
 private data class ChapterResultUiModel(
     val chapter: Chapter,
+    val backgroundImageResId: Int?,
     val questions: List<String>,
     val answers: List<String>,
     val sceneCard: ChapterSceneCard,
+    val sceneCardImageResId: Int?,
     val mood: ChapterMood
 )
 
@@ -100,6 +103,7 @@ private fun ChapterResultScreen(
     ) {
         ChapterResultHero(
             chapter = result.chapter,
+            backgroundImageResId = result.backgroundImageResId,
             onBackClick = onBackClick
         )
 
@@ -129,7 +133,8 @@ private fun ChapterResultScreen(
             Spacer(modifier = Modifier.height(30.dp))
 
             ResultSceneSection(
-                sceneCard = result.sceneCard
+                sceneCard = result.sceneCard,
+                imageResId = result.sceneCardImageResId
             )
 
             Spacer(modifier = Modifier.height(30.dp))
@@ -144,6 +149,7 @@ private fun ChapterResultScreen(
 @Composable
 private fun ChapterResultHero(
     chapter: Chapter,
+    backgroundImageResId: Int?,
     onBackClick: () -> Unit
 ) {
     BoxWithConstraints(
@@ -163,13 +169,22 @@ private fun ChapterResultHero(
                 .height(heroHeight)
                 .clip(heroShape)
         ) {
-            ChapterImagePlaceholder(
-                imageUrl = chapter.backgroundImageUrl,
-                showLabel = false,
-                lightColor = ResultHeroGridLight,
-                darkColor = ResultHeroGridDark,
-                modifier = Modifier.fillMaxSize()
-            )
+            if (backgroundImageResId != null) {
+                Image(
+                    painter = painterResource(id = backgroundImageResId),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                ChapterImagePlaceholder(
+                    imageUrl = chapter.backgroundImageUrl,
+                    showLabel = false,
+                    lightColor = ResultHeroGridLight,
+                    darkColor = ResultHeroGridDark,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
 
             Box(
                 modifier = Modifier
@@ -330,7 +345,8 @@ private fun ResultQuestionAnswer(
 
 @Composable
 private fun ResultSceneSection(
-    sceneCard: ChapterSceneCard
+    sceneCard: ChapterSceneCard,
+    imageResId: Int?
 ) {
     ResultSectionTitle(
         number = "02",
@@ -339,14 +355,26 @@ private fun ResultSceneSection(
 
     Spacer(modifier = Modifier.height(12.dp))
 
-    ChapterSceneCardImage(
-        card = sceneCard,
-        cornerRadius = 10.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(312f / 294f)
-            .clip(RoundedCornerShape(10.dp))
-    )
+    if (imageResId != null) {
+        Image(
+            painter = painterResource(id = imageResId),
+            contentDescription = sceneCard.title,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(312f / 294f)
+                .clip(RoundedCornerShape(10.dp)),
+            contentScale = ContentScale.Crop
+        )
+    } else {
+        ChapterSceneCardImage(
+            card = sceneCard,
+            cornerRadius = 10.dp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(312f / 294f)
+                .clip(RoundedCornerShape(10.dp))
+        )
+    }
 }
 
 @Composable
@@ -486,6 +514,7 @@ private fun createDummyChapterResult(
 
     return ChapterResultUiModel(
         chapter = chapter,
+        backgroundImageResId = R.drawable.mock_storybook_theme_bg,
         questions = listOf(
             "부모님의 어릴 적 꿈은 무엇이었나요?",
             "부모님이 어릴적 좋아했던 것은 무엇이었나요?",
@@ -499,6 +528,7 @@ private fun createDummyChapterResult(
             title = "졸업",
             imageUrl = null
         ),
+        sceneCardImageResId = R.drawable.mock_storybook_scene_card,
         mood = ChapterMood.THOUGHTFUL
     )
 }

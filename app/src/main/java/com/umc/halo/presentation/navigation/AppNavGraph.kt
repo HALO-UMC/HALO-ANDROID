@@ -224,11 +224,6 @@ fun AppNavGraph(
                         launchSingleTop = true
                     }
                 },
-                onNavigateToPrivacyPolicy = {
-                    navController.navigate(Routes.MYPAGE_PRIVACY_POLICY) {
-                        launchSingleTop = true
-                    }
-                },
                 onNavigateToTerms = {
                     navController.navigate(Routes.MYPAGE_TERMS) {
                         launchSingleTop = true
@@ -378,7 +373,12 @@ fun AppNavGraph(
                 storybookId = storybookId,
                 chapterId = chapterId,
                 onNavigateBack = {
-                    navController.popBackStack()
+                    navController.navigate(Routes.storybookDetail(storybookId)) {
+                        popUpTo(Routes.storybookDetail(storybookId)) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
