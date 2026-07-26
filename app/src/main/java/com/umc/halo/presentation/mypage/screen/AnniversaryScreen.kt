@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.mypage.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -58,6 +59,7 @@ import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray500
+import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.Gray600
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
@@ -132,7 +134,7 @@ private fun AnniversaryListScreen(
 
             item {
                 LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(18.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(uiState.upcomingItems) { item ->
@@ -185,17 +187,36 @@ private fun AnniversaryListScreen(
                     .align(Alignment.BottomEnd)
                     .padding(end = 24.dp, bottom = 38.dp)
                     .navigationBarsPadding()
+                    .width(121.dp)
+                    .height(54.dp)
                     .clickable { onEvent(AnniversaryUiEvent.AddClicked) },
-                shape = RoundedCornerShape(30.dp),
+                shape = RoundedCornerShape(100.dp),
                 color = Primary500,
-                shadowElevation = 8.dp
+                shadowElevation = 10.dp
             ) {
-                Text(
-                    text = "일정 추가 +",
-                    style = HaloType.body02SemiBold.copy(fontSize = 16.sp),
-                    color = White,
-                    modifier = Modifier.padding(horizontal = 22.dp, vertical = 16.dp)
-                )
+                Row(
+                    modifier = Modifier.padding(start = 18.dp, end = 18.dp, top = 10.dp, bottom = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Text(
+                        text = "일정 추가",
+                        style = HaloType.body02Medium.copy(fontSize = 16.sp),
+                        color = White,
+                        maxLines = 1
+                    )
+                    Box(
+                        modifier = Modifier.size(24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "+",
+                            style = HaloType.heading03SemiBold.copy(fontSize = 24.sp),
+                            color = White,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
             }
         }
     }
@@ -208,15 +229,15 @@ private fun UpcomingAnniversaryCard(
 ) {
     Surface(
         modifier = Modifier
-            .width(176.dp)
-            .height(112.dp)
+            .width(168.dp)
+            .height(108.dp)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(16.dp),
         color = White,
-        shadowElevation = 1.dp
+        border = BorderStroke(1.dp, Gray50)
     ) {
         Row(
-            modifier = Modifier.padding(start = 20.dp, end = 16.dp, top = 14.dp, bottom = 14.dp),
+            modifier = Modifier.padding(start = 18.dp, end = 18.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
@@ -226,7 +247,7 @@ private fun UpcomingAnniversaryCard(
                 ) {
                     Text(
                         text = item.dDayLabel ?: "D-7",
-                        style = HaloType.body02SemiBold.copy(fontSize = 14.sp),
+                        style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
                         color = if (item.dDayLabel == "D-DAY") Primary600 else Gray600,
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp)
                     )
@@ -234,7 +255,7 @@ private fun UpcomingAnniversaryCard(
                 Spacer(Modifier.height(12.dp))
                 Text(
                     text = item.title,
-                    style = HaloType.body01SemiBold.copy(fontSize = 17.sp),
+                    style = HaloType.body01SemiBold.copy(fontSize = 18.sp),
                     color = Gray800,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -242,7 +263,7 @@ private fun UpcomingAnniversaryCard(
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = item.date.compactWithDayOfWeek("화"),
-                    style = HaloType.body03Regular.copy(fontSize = 12.sp),
+                    style = HaloType.body03Regular.copy(fontSize = 13.sp),
                     color = Gray600
                 )
             }
@@ -274,20 +295,20 @@ private fun AnniversaryListItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = item.title,
-                    style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
+                    style = HaloType.body02SemiBold.copy(fontSize = 16.sp),
                     color = if (selected || highlighted) Primary600 else Gray800
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = item.date.compactWithDayOfWeek(),
-                    style = HaloType.caption01Medium.copy(fontSize = 10.5.sp),
+                    style = HaloType.caption01Medium.copy(fontSize = 11.5.sp),
                     color = if (selected || highlighted) Primary600 else Gray600
                 )
             }
             if (isSelectionMode) {
                 Text(
                     text = "✓",
-                    style = HaloType.body01SemiBold.copy(fontSize = 22.sp),
+                    style = HaloType.body01SemiBold.copy(fontSize = 23.sp),
                     color = if (selected) Primary600 else Gray300
                 )
             } else {
@@ -443,7 +464,7 @@ private fun AnniversaryCalendar(
             )
             Text(
                 text = "${form.visibleYear}년 ${form.visibleMonth}월",
-                style = HaloType.body02Medium.copy(fontSize = 15.sp),
+                style = HaloType.body02Medium.copy(fontSize = 16.sp),
                 color = Gray600,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -497,7 +518,7 @@ private fun CalendarGrid(
             listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT").forEach {
                 Text(
                     text = it,
-                    style = HaloType.caption01Medium.copy(fontSize = 10.sp),
+                    style = HaloType.caption01Medium.copy(fontSize = 11.sp),
                     color = Gray500,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f)
@@ -535,7 +556,7 @@ private fun CalendarGrid(
                         ) {
                             Text(
                                 text = if (day == 0) "" else day.toString(),
-                                style = HaloType.body03Regular.copy(fontSize = 13.sp),
+                                style = HaloType.body03Regular.copy(fontSize = 14.sp),
                                 color = if (selected) White else Gray600
                             )
                         }
@@ -590,7 +611,7 @@ private fun AlarmRow(
     ) {
         Text(
             text = text,
-            style = HaloType.body02Medium.copy(fontSize = 14.sp),
+            style = HaloType.body02Medium.copy(fontSize = 15.sp),
             color = if (enabled) Gray600 else Gray400,
             modifier = Modifier.weight(1f)
         )
@@ -621,14 +642,14 @@ private fun AnniversaryDateField(
         ) {
             Text(
                 text = form.date?.formatted() ?: "날짜를 선택해주세요.",
-                style = HaloType.body03Regular.copy(fontSize = 13.sp),
+                style = HaloType.body03Regular.copy(fontSize = 14.sp),
                 color = if (form.date == null) Gray300 else Gray800,
                 modifier = Modifier.weight(1f)
             )
             if (form.date != null) {
                 Text(
                     text = form.calendarType.label,
-                    style = HaloType.caption01Medium.copy(fontSize = 10.5.sp),
+                    style = HaloType.caption01Medium.copy(fontSize = 11.5.sp),
                     color = Gray300
                 )
                 Spacer(Modifier.width(12.dp))
@@ -672,7 +693,7 @@ private fun AnniversaryTextField(
                 onValueChange = onValueChange,
                 singleLine = singleLine,
                 textStyle = HaloType.body03Regular.copy(
-                    fontSize = 13.sp,
+                    fontSize = 14.sp,
                     color = Gray800
                 ).toTextStyle(),
                 modifier = Modifier.fillMaxWidth()
@@ -680,7 +701,7 @@ private fun AnniversaryTextField(
             if (value.isEmpty()) {
                 Text(
                     text = placeholder,
-                    style = HaloType.body03Regular.copy(fontSize = 12.5.sp),
+                    style = HaloType.body03Regular.copy(fontSize = 13.5.sp),
                     color = Gray300
                 )
             }
@@ -708,14 +729,14 @@ private fun ReadOnlyBox(
         ) {
             Text(
                 text = text,
-                style = HaloType.body03Regular.copy(fontSize = 13.sp),
+                style = HaloType.body03Regular.copy(fontSize = 14.sp),
                 color = Gray800,
                 modifier = Modifier.weight(1f)
             )
             if (trailing != null) {
                 Text(
                     text = trailing,
-                    style = HaloType.caption01Medium.copy(fontSize = 10.5.sp),
+                    style = HaloType.caption01Medium.copy(fontSize = 11.5.sp),
                     color = Gray300
                 )
             }
@@ -736,7 +757,7 @@ private fun AnniversarySectionTitle(text: String) {
 private fun AnniversaryInputLabel(text: String) {
     Text(
         text = text,
-        style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
+        style = HaloType.body02SemiBold.copy(fontSize = 16.sp),
         color = Gray800
     )
 }
@@ -754,7 +775,7 @@ private fun AnniversaryPillButton(
     ) {
         Text(
             text = text,
-            style = HaloType.body03Medium.copy(fontSize = 12.sp),
+            style = HaloType.body03Medium.copy(fontSize = 13.sp),
             color = if (active) Primary600 else Gray500,
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
         )
@@ -774,7 +795,7 @@ private fun CalendarTypeChip(
     ) {
         Text(
             text = text,
-            style = HaloType.caption01Medium.copy(fontSize = 10.5.sp),
+            style = HaloType.caption01Medium.copy(fontSize = 11.5.sp),
             color = if (selected) Primary600 else Gray300,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
         )
