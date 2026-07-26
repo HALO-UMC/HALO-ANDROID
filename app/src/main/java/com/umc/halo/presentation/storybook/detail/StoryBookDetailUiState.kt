@@ -18,7 +18,8 @@ data class StoryBookDetailUiState(
         tag = "지금의 내 나이였을 때 부모님은 어떤 하루를 살고 있었는지 들어봅시다.",
         isLocked = false
     ),
-    val storyBookIndex: List<StoryBookIndex> = emptyList()
+    val storyBookIndex: List<StoryBookIndex> = emptyList(),
+
 )
 
 data class StoryBookInfo(

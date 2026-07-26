@@ -19,15 +19,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.umc.halo.domain.model.home.CurrentProgress
+import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.home.HomeUiEvent
 import com.umc.halo.presentation.home.HomeViewModel
+import com.umc.halo.presentation.storybook.list.StorybookBadge
+import com.umc.halo.presentation.storybook.list.StorybookCard
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
@@ -128,7 +136,7 @@ fun StoryBookIndexIntro(
     Column() {
         Spacer(Modifier.height(20.dp))
 
-        StoryThemeIntro(state.storyBookInfo)
+        StoryThemeIntro(state.storyBookInfo, state.storyBookProgress)
 
         Spacer(Modifier.height(36.dp))
 
@@ -143,7 +151,8 @@ fun StoryBookIndexIntro(
 private val StoryThemeIntroPadding = 12.dp
 @Composable
 fun StoryThemeIntro(
-    storyBookInfo: StoryBookInfo
+    storyBookInfo: StoryBookInfo,
+    storyBookProgress: CurrentProgress
 ) {
     Column(
         modifier = Modifier
@@ -160,13 +169,30 @@ fun StoryThemeIntro(
 
         Box(
             modifier = Modifier
-                .height(132.dp)
-                .width(120.dp)
-                .clip(RoundedCornerShape(5.dp))
-                .background(CoverPlaceholderColor)
+                .height(166.dp)
+                .width(131.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .dropShadow(
+                    shape = RoundedCornerShape(16.dp),
+                    shadow = Shadow(
+                        radius = 8.dp,
+                        spread = 0.dp,
+                        color = Color(0x33999999),
+                        offset = DpOffset(4.dp, 2.dp)
+                    )
+                )
                 .align(Alignment.CenterHorizontally)
         ) {
-            //이미지 추가
+            StorybookCard(
+                title = storyBookInfo.title,
+                subtitle = "",
+                badge = if (storyBookProgress.chapter == 10) {
+                    StorybookBadge.Done
+                } else {
+                    StorybookBadge.InProgress(storyBookProgress.chapter)
+                },
+                modifier = Modifier.fillMaxSize()
+            )
         }
 
         Spacer(Modifier.height(StoryThemeIntroPadding))

@@ -34,9 +34,9 @@ fun TodayStoryBook(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(16.dp))
             .background(Gray30)
-            .padding(18.dp)
+            .padding(16.dp)
     ) {
         Text(
             text = "오늘 펼칠 장면",

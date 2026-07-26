@@ -140,7 +140,7 @@ fun HomeScreenContents(
                 }
                 append("반가워요!,\n${state.greetingMessage}")
             },
-            style = HaloType.heading03SemiBold,
+            style = HaloType.heading03SemiBold, //Medium으로 바꿔야 함
             modifier = Modifier.padding(horizontal = 24.dp),
             color = Color(0xFF3C3A35)
         )

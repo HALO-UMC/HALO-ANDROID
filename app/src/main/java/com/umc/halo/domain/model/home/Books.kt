@@ -21,6 +21,7 @@ data class StartStorybook(
     val storybookId: Long = 0,
     val title: String = "void",
     val subtitle: String = "void",
+    val tag: String = "void",
     val currentProgress: Int = 0,
     val isCompleted: Boolean = false
 )
