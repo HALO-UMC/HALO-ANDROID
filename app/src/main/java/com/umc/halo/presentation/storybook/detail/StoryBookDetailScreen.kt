@@ -29,28 +29,22 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umc.halo.domain.model.home.CurrentProgress
-import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.presentation.component.HaloTopBar
-import com.umc.halo.presentation.home.HomeScreen
-import com.umc.halo.presentation.home.HomeUiEvent
-import com.umc.halo.presentation.home.HomeViewModel
 import com.umc.halo.presentation.storybook.list.StorybookBadge
 import com.umc.halo.presentation.storybook.list.StorybookCard
-import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 
 
 private val ScreenPaddingHorizontal = 24.dp
-private val CoverPlaceholderColor = Gray100 // TODO: 실제 커버 이미지로 추후 교체
 
 @Composable
 fun StoryBookDetailRoute(
     viewModel: StoryBookDetailViewModel = hiltViewModel(),
     onNavigateToChapterProgress: (Long, Long) -> Unit,
     onNavigateToChapterResult: (Long, Long) -> Unit,
-    onNavigateToThemeBox: (Long) -> Unit
+    onNavigateToShowTheme: (Long) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -74,7 +68,7 @@ fun StoryBookDetailRoute(
 
                 is StoryBookDetailUiEvent.OnClickTodayStoryBook -> {
                     if (state.storyBookInfo.isCompleted) {
-                        onNavigateToThemeBox(event.storyBookId)
+                        onNavigateToShowTheme(event.storyBookId)
                     } else {
                         onNavigateToChapterProgress(event.storyBookId, event.chapterId)
                     }

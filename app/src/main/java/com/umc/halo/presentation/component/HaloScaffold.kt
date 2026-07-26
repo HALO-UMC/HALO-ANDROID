@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Scaffold
@@ -19,6 +20,7 @@ import com.umc.halo.presentation.calendar.CalendarTopBar
 import com.umc.halo.presentation.navigation.BottomNavItem
 import com.umc.halo.presentation.navigation.Routes
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailTopBar
+import com.umc.halo.presentation.themebox.show_theme.ShowThemeTopBar
 
 @Composable
 fun HaloScaffold(
@@ -31,13 +33,12 @@ fun HaloScaffold(
     val bottomNavRoutes = BottomNavItem.entries.map { it.route }
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             when(currentRoute) {
                 Routes.HOME -> HaloTopBar(title = "HALO", showLeftIcon = false)
                 //Routes.MYPAGE -> MyPageTopBar()
                 Routes.CALENDAR -> CalendarTopBar()
-                //Routes.THEME_BOX -> ThemeBoxTopBar()
-                //Routes.CALENDAR -> CalendarTopBar()
                 Routes.THEME_BOX -> HaloTopBar(title = "테마전시관", showLeftIcon = false)
                 Routes.STORYBOOK -> HaloTopBar(title = "HALO", showLeftIcon = false)
                 Routes.STORYBOOK_DETAIL -> StoryBookDetailTopBar()

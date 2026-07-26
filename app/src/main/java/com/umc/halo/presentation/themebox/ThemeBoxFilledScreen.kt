@@ -86,7 +86,7 @@ fun ProgressBox(
         ) {
             Text(
                 text = "수집 캐릭터",
-                style = HaloType.body03Medium,
+                style = HaloType.body02Regular,
                 color = Gray600
             )
 
@@ -95,7 +95,7 @@ fun ProgressBox(
 
             Text(
                 text = "${numberOfCharacter}개",
-                style = HaloType.body01SemiBold,
+                style = HaloType.heading03SemiBold, //Medium으로 바꿔야 함
                 color = Gray800
             )
         }
@@ -111,7 +111,7 @@ fun ProgressBox(
         ) {
             Text(
                 text = "진행중인 스토리북",
-                style = HaloType.body03Medium,
+                style = HaloType.body02Regular,
                 color = Gray600
             )
 
@@ -120,7 +120,7 @@ fun ProgressBox(
 
             Text(
                 text = "${storyBookInProgress}개",
-                style = HaloType.body01SemiBold,
+                style = HaloType.heading03SemiBold,
                 color = Gray800
             )
         }

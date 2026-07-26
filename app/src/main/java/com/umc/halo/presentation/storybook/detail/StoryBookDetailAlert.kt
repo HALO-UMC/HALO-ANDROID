@@ -43,7 +43,6 @@ fun StoryBookDetailAlert(
                     color = Gray800,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(Modifier.height(48.dp))
             }
 
         },
@@ -52,7 +51,6 @@ fun StoryBookDetailAlert(
                 buttonState = ButtonState.ABLE,
                 text = "확인",
                 modifier = Modifier
-                    .padding(horizontal = 24.dp)
                     .fillMaxWidth(),
                 style = HaloType.body02SemiBold
             ) {

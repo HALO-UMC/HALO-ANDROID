@@ -97,13 +97,13 @@ fun StoryBookIndex(
                     Icon(
                         painter = painterResource(R.drawable.ic_storybook_detail_islocked),
                         contentDescription = null,
-                        tint = Color(0xFFFF8228)
+                        tint = Color(0xFF626262)
                     )
                 } else {
                     Icon(
                         painter = painterResource(R.drawable.ic_storybook_detail_opened),
                         contentDescription = null,
-                        tint = Color(0xFF626262)
+                        tint = Color(0xFFFF8228)
                     )
                 }
             }
