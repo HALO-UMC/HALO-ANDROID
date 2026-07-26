@@ -5,7 +5,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.umc.halo.presentation.mypage.anniversary.AnniversaryScreenMode
+import com.umc.halo.presentation.mypage.anniversary.AnniversaryUiEvent
+import com.umc.halo.presentation.mypage.anniversary.AnniversaryViewModel
 import com.umc.halo.presentation.mypage.screen.AccountInfoScreen
+import com.umc.halo.presentation.mypage.screen.AnniversaryScreen
 import com.umc.halo.presentation.mypage.screen.NotificationSettingsScreen
 import com.umc.halo.presentation.mypage.screen.SystemSettingsScreen
 import com.umc.halo.presentation.mypage.screen.WithdrawScreen
@@ -76,6 +80,28 @@ fun WithdrawRoute(
         onEvent = viewModel::onEvent,
         onBack = onBack,
         onNavigateToLogin = onNavigateToLogin,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun AnniversaryRoute(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: AnniversaryViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    AnniversaryScreen(
+        uiState = uiState,
+        onEvent = viewModel::onEvent,
+        onBack = {
+            if (uiState.mode == AnniversaryScreenMode.LIST) {
+                onBack()
+            } else {
+                viewModel.onEvent(AnniversaryUiEvent.BackClicked)
+            }
+        },
         modifier = modifier
     )
 }

@@ -11,11 +11,11 @@ import com.umc.halo.presentation.home.HomeRoute
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
 import com.umc.halo.presentation.mypage.AccountInfoRoute
+import com.umc.halo.presentation.mypage.AnniversaryRoute
 import com.umc.halo.presentation.mypage.NotificationSettingsRoute
 import com.umc.halo.presentation.mypage.SystemSettingsRoute
 import com.umc.halo.presentation.mypage.WithdrawRoute
 import com.umc.halo.presentation.mypage.screen.AccountManagementScreen
-import com.umc.halo.presentation.mypage.screen.AnniversaryPlaceholderScreen
 import com.umc.halo.presentation.mypage.screen.MyPageScreen
 import com.umc.halo.presentation.mypage.screen.OpenLicenseScreen
 import com.umc.halo.presentation.mypage.screen.PrivacyPolicyScreen
@@ -145,7 +145,7 @@ fun AppNavGraph(
         }
 
         composable(Routes.MYPAGE_ANNIVERSARY) {
-            AnniversaryPlaceholderScreen(onBack = navController::popBackStack)
+            AnniversaryRoute(onBack = navController::popBackStack)
         }
 
         composable(Routes.MYPAGE_SYSTEM_SETTINGS) {

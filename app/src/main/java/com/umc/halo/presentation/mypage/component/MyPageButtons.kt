@@ -22,17 +22,21 @@ fun PrimaryActionButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    height: Dp = 54.dp
+    height: Dp = 54.dp,
+    enabled: Boolean = true
 ) {
     Button(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier
             .fillMaxWidth()
             .height(height),
         shape = RoundedCornerShape(30.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Primary500,
-            contentColor = White
+            contentColor = White,
+            disabledContainerColor = Gray100,
+            disabledContentColor = Gray400
         )
     ) {
         Text(
