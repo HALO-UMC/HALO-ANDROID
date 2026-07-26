@@ -19,6 +19,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,11 +50,22 @@ private val KakaoLabel = Color(0xFF191919)       // 카카오 로고 라벨 색
 @Composable
 fun LoginRoute(
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel(),
+    onNavigateToTerms: () -> Unit = {}
 ) {
     // 카카오/구글 SDK 호출에 필요한 Activity Context
     val context = LocalContext.current
-    // 지금은 표시할 상태(isLoading)를 아직 UI 에 쓰지 않아 구독을 생략함
+    val uiState by viewModel.uiState.collectAsState()
+
+    // 로그인 성공(현재는 임시 트리거) → 약관동의로 이동
+    // TODO: 서버 연동 시 수정해야함
+    LaunchedEffect(uiState.navigateToTerms) {
+        if (uiState.navigateToTerms) {
+            onNavigateToTerms()
+            viewModel.onEvent(LoginUiEvent.NavigationHandled)
+        }
+    }
+
     LoginScreen(
         onKakaoClick = { viewModel.onEvent(LoginUiEvent.KakaoLoginClicked(context)) },
         onGoogleClick = { viewModel.onEvent(LoginUiEvent.GoogleLoginClicked(context)) },
