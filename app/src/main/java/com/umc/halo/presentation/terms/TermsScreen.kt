@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -175,8 +174,9 @@ private fun TermsAgreementContent(
             text = "다음",
             enabled = uiState.isNextEnabled,
             onClick = onNext,
+            // 네비게이션바 여백은 HaloScaffold 의 innerPadding 으로 이미 들어와 있어
+            // 여기서 navigationBarsPadding() 을 또 걸면 여백이 두 번 잡힌다
             modifier = Modifier
-                .navigationBarsPadding()
                 .padding(start = 24.dp, end = 24.dp, bottom = 20.dp)
         )
     }
@@ -242,7 +242,6 @@ private fun TermsDetailContent(
             enabled = true,
             onClick = onAgree,
             modifier = Modifier
-                .navigationBarsPadding()
                 .padding(start = 24.dp, end = 24.dp, bottom = 20.dp)
         )
     }

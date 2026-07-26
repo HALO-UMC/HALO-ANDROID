@@ -18,16 +18,7 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
                 selectedStorybook(event.storyBookId)
             }
 
-            is HomeUiEvent.OnCustomizedStoryBookClicked -> {
-                //스토리북 목차로 navigation
-            }
-
-            is HomeUiEvent.OnContinueStoryBookClicked -> {
-                //스토리북 상세로 navigation
-            }
-
-            is HomeUiEvent.OnStartStorybookClicked -> {
-            }
+            else -> Unit
         }
     }
 

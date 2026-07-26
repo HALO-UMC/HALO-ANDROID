@@ -1,5 +1,7 @@
 package com.umc.halo.presentation.storybook.list
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -7,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.GenericShape
@@ -18,9 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
@@ -32,20 +38,25 @@ import com.umc.halo.presentation.theme.White
 * 스토리북 카드 디자인 값
 */
 
-private val CardAspectRatio = 131f / 166f            // 가로:세로 (세로형 비율 잠금)
+private val CardAspectRatio = 147f / 185f            // 가로:세로 (세로형 비율 잠금)
 private val CardCornerRadius = 8.dp
 private val CardElevation = 4.dp
-private const val CoverWeight = 106f                 // 커버 : 라벨 높이 비율 = 106 : 60
-private const val LabelWeight = 60f
-private val LabelPaddingHorizontal = 10.dp
-private val LabelPaddingVertical = 11.dp
+private const val CoverWeight = 119f                 // 커버 : 라벨 높이 비율 = 119 : 66
+private const val LabelWeight = 66f
+private val LabelPaddingHorizontal = 12.dp
+private val LabelPaddingVertical = 13.dp
 private val CoverPlaceholderColor = Gray100          // TODO: 실제 커버 이미지로 추후 교체
-private val WaitingOverlayColor = Color(0x80000000)  // 대기 상태 50% 딤
-private val BadgeStartPadding = 4.dp                 // 커버 왼쪽 끝 ~ 책갈피 시작
+private val CoverDimColor = Color(0x1A000000)        // 커버 위 10% 딤 (책갈피·커버가 묻히지 않게)
+private val WaitingOverlayColor = Color(0x99000000)  // 대기 상태 60% 딤
+private val WaitingTextSize = 13.5.sp                // 대기 안내 문구
+
+// 책갈피(배지) 값은 147dp 카드 기준 — 카드 폭을 바꾸면 함께 조정해야 비율이 맞음
+private val BadgeStartPadding = 4.5.dp               // 커버 왼쪽 끝 ~ 책갈피 시작
+private val BadgeTextSize = 11.2.sp                  // 배지 글자
+private val BadgeHeight = 24.7.dp                    // 진행중/완료 공통 높이
 private val InProgressBadgeColor = Gray700           // "N장 진행중" 책갈피 색
 private val DoneBadgeColor = Primary500              // "완료" 책갈피 색
-private val DoneBadgeWidth = 40.dp                   // "완료"는 글자 크기
-private val DoneBadgeHeight = 22.dp
+private val DoneBadgeWidth = 45.dp                   // "완료"는 글자가 고정이라 폭도 고정
 
 /**
  * 커버 위 책갈피 종류
@@ -65,6 +76,7 @@ sealed interface StorybookBadge {
  * 크기는 호출부가 [modifier]로 지정
  * 세로 비율은 내부에서 [CardAspectRatio]로 잠그므로 폭만 정해주면 됨
  *
+ * @param coverRes 커버 이미지. null이면 회색 플레이스홀더
  * @param badge null이면 배지 없음(전체 탭). 진행중/완료 탭은 각각 [StorybookBadge]를 넘김
  * @param isWaiting true면 오늘 분량 완료 상태 → 카드를 어둡게 하고 안내 문구 표시 + 클릭 비활성화
  * @param onClick null이거나 isWaiting=true면 클릭되지 않음
@@ -74,6 +86,7 @@ fun StorybookCard(
     title: String,
     subtitle: String,
     modifier: Modifier = Modifier,
+    @DrawableRes coverRes: Int? = null,
     badge: StorybookBadge? = null,
     isWaiting: Boolean = false,
     onClick: (() -> Unit)? = null
@@ -92,13 +105,29 @@ fun StorybookCard(
             )
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // 커버 이미지 자리(임시) + 책갈피 배지
+            // 커버 이미지 + 책갈피 배지
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(CoverWeight)
                     .background(CoverPlaceholderColor)
             ) {
+                if (coverRes != null) {
+                    Image(
+                        painter = painterResource(coverRes),
+                        contentDescription = null,      // 장식용 이미지라 null
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.matchParentSize()
+                    )
+                }
+
+                // 커버 위 딤(디자인 10%) — 커버 유무와 상관없이 항상
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(CoverDimColor)
+                )
+
                 if (badge != null && !isWaiting) {
                     BookmarkBadge(
                         badge = badge,
@@ -122,14 +151,20 @@ fun StorybookCard(
             ) {
                 Text(
                     text = title,
-                    style = HaloType.body01SemiBold,
+                    style = HaloType.body01SemiBold.copy(
+                        lineHeight = 23.2.sp,
+                        letterSpacing = (-0.32).sp
+                    ),
                     color = Gray800,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = subtitle,
-                    style = HaloType.body03Regular,
+                    style = HaloType.body03Regular.copy(
+                        lineHeight = 17.4.sp,
+                        letterSpacing = (-0.12).sp
+                    ),
                     color = Gray700
                 )
             }
@@ -146,7 +181,11 @@ fun StorybookCard(
             ) {
                 Text(
                     text = "다음 장은\n내일 할 수 있어요!",
-                    style = HaloType.body03Medium,
+                    style = HaloType.body03Medium.copy(
+                        fontSize = WaitingTextSize,
+                        lineHeight = 19.5.sp,
+                        letterSpacing = (-0.13).sp
+                    ),
                     color = White,
                     textAlign = TextAlign.Center
                 )
@@ -167,27 +206,28 @@ private fun BookmarkBadge(
         // 장수에 따라 글자 길이가 변해서 크기를 가변적으로
         is StorybookBadge.InProgress -> Box(
             modifier = modifier
+                .height(BadgeHeight)
                 .background(InProgressBadgeColor, InProgressBadgeShape)
-                .padding(start = 6.dp, end = 20.dp, top = 4.dp, bottom = 4.dp),
+                .padding(start = 6.7.dp, end = 22.4.dp),
             contentAlignment = Alignment.CenterStart
         ) {
             Text(
                 text = "${badge.chapter}장 진행중",
-                style = HaloType.caption01Medium,
+                style = HaloType.caption01Medium.copy(fontSize = BadgeTextSize),
                 color = White
             )
         }
 
         StorybookBadge.Done -> Box(
             modifier = modifier
-                .size(width = DoneBadgeWidth, height = DoneBadgeHeight)
+                .size(width = DoneBadgeWidth, height = BadgeHeight)
                 .background(DoneBadgeColor, DoneBadgeShape)
-                .padding(start = 8.dp),
+                .padding(start = 9.dp),
             contentAlignment = Alignment.CenterStart
         ) {
             Text(
                 text = "완료",
-                style = HaloType.caption01Medium,
+                style = HaloType.caption01Medium.copy(fontSize = BadgeTextSize),
                 color = White
             )
         }

@@ -6,7 +6,8 @@ data class StoryBookDetailUiState(
     val storyBookId: Long = 0,
     val storyBookInfo: StoryBookInfo = StoryBookInfo(
         title = "void",
-        storyBookIntro = "void"
+        storyBookIntro = "void",
+        isCompleted = false
     ),
     val storyBookProgress: CurrentProgress = CurrentProgress(
         theme = 0,
@@ -16,14 +17,18 @@ data class StoryBookDetailUiState(
         id = 1,
         title = "나와 같은 나이었던 시절",
         tag = "지금의 내 나이였을 때 부모님은 어떤 하루를 살고 있었는지 들어봅시다.",
-        isLocked = false
+        isLocked = false,
+        isCompleted = true
     ),
-    val storyBookIndex: List<StoryBookIndex> = emptyList()
+    val storyBookIndex: List<StoryBookIndex> = emptyList(),
+    val showDialog: Boolean = false
+
 )
 
 data class StoryBookInfo(
     val title: String,
-    val storyBookIntro: String
+    val storyBookIntro: String,
+    val isCompleted: Boolean
 )
 
 data class StoryBookIndex(
@@ -38,5 +43,6 @@ data class TodayStoryBook(
     val id: Long,
     val title: String,
     val tag: String,
-    val isLocked: Boolean
+    val isLocked: Boolean,
+    val isCompleted: Boolean
 )

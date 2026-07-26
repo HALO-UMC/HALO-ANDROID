@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.calendar
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -160,14 +162,22 @@ private fun CompletedCard(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // 커버 자리(임시) — 서버 연동 후 실제 이미지로 교체
+        // 커버 이미지
+        // TODO: [임시] 모든 카드가 같은 더미 커버를 씀 — 서버에서 스토리북별 커버가 내려오면 교체
         Box(
             modifier = Modifier
                 .width(57.dp)
                 .height(68.dp)
                 .clip(RoundedCornerShape(6.dp))
                 .background(Gray50)
-        )
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_storybook_customsection_dummy),
+                contentDescription = null,      // 장식용 이미지라 null
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize()
+            )
+        }
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(2.dp)

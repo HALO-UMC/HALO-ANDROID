@@ -25,6 +25,9 @@ object Routes {
     const val MYPAGE_OPEN_LICENSE = "mypage_open_license"
     const val MYPAGE_PRIVACY_POLICY = "mypage_privacy_policy"
 
+    // 테마 감상하기
+    const val SHOW_THEME = "show_theme/{storybookId}"
+
     // Storybook inner screens
     const val STORYBOOK_DETAIL = "storybook_detail/{storybookId}"
 
@@ -46,4 +49,9 @@ object Routes {
         chapterId: Long
     ): String =
         "chapter_result/$storybookId/$chapterId"
+
+    fun showTheme(
+        storybookId: Long
+    ): String =
+        "show_theme/$storybookId"
 }

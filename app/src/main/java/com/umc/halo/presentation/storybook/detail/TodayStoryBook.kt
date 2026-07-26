@@ -34,12 +34,12 @@ fun TodayStoryBook(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(16.dp))
             .background(Gray30)
-            .padding(18.dp)
+            .padding(16.dp)
     ) {
         Text(
-            text = "오늘 펼칠 장면",
+            text = if (todayStoryBook.isCompleted) "테마 감상하기" else if (todayStoryBook.isLocked) "내일 펼칠 장명" else "오늘 펼칠 장면",
             style = HaloType.body01SemiBold,
             color = Gray800
         )
@@ -59,7 +59,7 @@ fun TodayStoryBook(
         Spacer(Modifier.height(18.dp))
 
         Text(
-            text = "${todayStoryBook.id.toTwoDigits()}장 ${todayStoryBook.title}",
+            text = if (todayStoryBook.isCompleted) "완성된 이야기를 감상해보세요" else "${todayStoryBook.id.toTwoDigits()}장 ${todayStoryBook.title}",
             style = HaloType.body02SemiBold,
             color = Gray800
         )
@@ -67,23 +67,48 @@ fun TodayStoryBook(
         Spacer(Modifier.height(4.dp))
 
         Text(
-            text = todayStoryBook.tag,
+            text = if (todayStoryBook.isCompleted) "지금까지 기록한 열 개의 장면을 하나의 이야기로 만나볼 수 있어요." else todayStoryBook.tag,
             style = HaloType.caption01Regular,
             color = Gray600
         )
 
         Spacer(Modifier.height(24.dp))
 
-        HaloMaterialButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(46f/7f),
-            text = "바로 시작하기",
-            onClick = {
-                onEvent(StoryBookDetailUiEvent.OnClickTodayStoryBook(storyBookId,todayStoryBook.id.toLong()))
-            },
-            buttonState = ButtonState.ABLE
-        )
+        if (todayStoryBook.isCompleted) {
+            HaloMaterialButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(46f/7f),
+                text = "감상 시작",
+                onClick = {
+                    onEvent(StoryBookDetailUiEvent.OnClickTodayStoryBook(storyBookId,todayStoryBook.id))
+                },
+                buttonState = ButtonState.ABLE
+            )
+        } else if (todayStoryBook.isLocked) {
+            HaloMaterialButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(46f/7f),
+                text = "내일 만나요!",
+                onClick = {
+                    onEvent(StoryBookDetailUiEvent.OnClickOpenDialog)
+                },
+                buttonState = ButtonState.LINE
+            )
+        } else {
+            HaloMaterialButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(46f/7f),
+                text = "바로 시작하기",
+                onClick = {
+                    onEvent(StoryBookDetailUiEvent.OnClickTodayStoryBook(storyBookId,todayStoryBook.id))
+                },
+                buttonState = ButtonState.ABLE
+            )
+        }
+
     }
 }
 

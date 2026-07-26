@@ -21,6 +21,8 @@ import com.umc.halo.presentation.calendar.CalendarTopBar
 import com.umc.halo.presentation.navigation.BottomNavItem
 import com.umc.halo.presentation.navigation.Routes
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailTopBar
+import com.umc.halo.presentation.themebox.show_theme.ShowThemeTopBar
+import okhttp3.Route
 
 @Composable
 fun HaloScaffold(
@@ -38,8 +40,9 @@ fun HaloScaffold(
      */
     val isEdgeToEdgeRoute =
         currentRoute == Routes.CHAPTER_PROGRESS ||
-                currentRoute == Routes.CHAPTER_RESULT ||
-                currentRoute == Routes.ONBOARDING
+            currentRoute == Routes.CHAPTER_RESULT ||
+            currentRoute == Routes.ONBOARDING ||
+            currentRoute == Routes.SHOW_THEME
 
     Scaffold(
         contentWindowInsets = if (isEdgeToEdgeRoute) {
@@ -58,11 +61,9 @@ fun HaloScaffold(
                 Routes.HOME -> HaloTopBar(title = "HALO", showLeftIcon = false)
                 //Routes.MYPAGE -> MyPageTopBar()
                 Routes.CALENDAR -> CalendarTopBar()
-                //Routes.THEME_BOX -> ThemeBoxTopBar()
-                //Routes.CALENDAR -> CalendarTopBar()
                 Routes.THEME_BOX -> HaloTopBar(title = "테마전시관", showLeftIcon = false)
                 Routes.STORYBOOK -> HaloTopBar(title = "HALO", showLeftIcon = false)
-                Routes.STORYBOOK_DETAIL -> StoryBookDetailTopBar()
+                Routes.STORYBOOK_DETAIL -> StoryBookDetailTopBar() {navController.popBackStack()}
             }
         },
 
