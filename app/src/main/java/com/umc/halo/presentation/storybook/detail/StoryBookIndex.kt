@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.storybook.detail
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -63,7 +65,11 @@ fun StoryBookIndex(
                     .clip(RoundedCornerShape(10.dp))
                     .background(CoverPlaceholderColor)
             ) {
-                //이미지 넣기
+                Image(
+                    painter = painterResource(R.drawable.image_storybook_detail_ex_2),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize()
+                ) // 추가 이미지 들어가야함
             }
 
             Spacer(Modifier.fillMaxWidth(11f/312f))

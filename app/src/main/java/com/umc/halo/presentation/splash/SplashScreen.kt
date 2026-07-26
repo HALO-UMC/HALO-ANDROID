@@ -23,7 +23,7 @@ fun SplashRoute(
     onNavigateToLogin: () -> Unit
 ) {
     LaunchedEffect(Unit) {
-        delay(2000)
+        delay(4000)
 
         onNavigateToLogin()
     }
@@ -40,13 +40,13 @@ fun SplashScreen() {
     ) {
         Box(
             modifier = Modifier
-                .size(200.dp)
+                .size(600.dp)
         ) {
             DotLottieAnimation(
                 source = DotLottieSource.Asset("splash.lottie"),
                 autoplay = true,
                 loop = false,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
         }
     }

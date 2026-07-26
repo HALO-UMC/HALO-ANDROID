@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -149,7 +150,11 @@ fun StartStorybookContents(
                 )
                 .background(Color(0xFFF6F6F6))
         ) {
-
+            Image(
+                painter = painterResource(R.drawable.image_storybook_detail_ex),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            ) //추가 이미지 들어가야 함
         }
 
         Spacer(Modifier.weight(2f))
