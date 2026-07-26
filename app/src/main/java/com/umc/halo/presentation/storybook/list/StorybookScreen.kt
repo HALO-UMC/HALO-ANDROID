@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umc.halo.R
 import com.umc.halo.domain.model.storybook.CustomStorybook
+import com.umc.halo.domain.model.storybook.Storybook
 import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.domain.model.storybook.StorybookTheme
 import com.umc.halo.presentation.component.CustomStorybookCard
@@ -62,16 +63,38 @@ private val ThemeSectionSpacing = 48.dp          // 테마 섹션 ↔ 테마 섹
 
 /**
  * 스토리북 목록 화면 진입점
+ *
+ * 화면 이동은 [onNavigateToStorybookDetail]·[onNavigateToThemeBox] 콜백으로 위임
  */
 @Composable
 fun StorybookScreen(
-    vm: StorybookViewModel = viewModel()
+    vm: StorybookViewModel = viewModel(),
+    onNavigateToStorybookDetail: (Long) -> Unit = {},
+    onNavigateToThemeBox: () -> Unit = {}
 ) {
     val state by vm.uiState.collectAsState()
 
     StorybookContent(
         state = state,
-        onEvent = vm::onEvent
+        onEvent = { event ->
+            when (event) {
+                // 카드 클릭 = 화면 이동 → 화면 경계에서 처리
+                is StorybookUiEvent.OnCustomStorybookClicked ->
+                    onNavigateToStorybookDetail(event.storybookId)
+
+                is StorybookUiEvent.OnStorybookClicked ->
+                    onNavigateToStorybookDetail(event.storybookId)
+
+                is StorybookUiEvent.OnContinueStorybookClicked ->
+                    onNavigateToStorybookDetail(event.storybookId)
+
+                // 완료한 책은 테마함으로
+                is StorybookUiEvent.OnDoneStorybookClicked -> onNavigateToThemeBox()
+
+                // 그 외(탭 전환)는 VM 이 상태로 처리
+                else -> vm.onEvent(event)
+            }
+        }
     )
 }
 
@@ -109,9 +132,7 @@ private fun StorybookContent(
                     badge = StorybookBadge.InProgress(book.currentChapter),
                     isWaiting = book.isWaiting,
                     onClick = {
-                        onEvent(
-                            StorybookUiEvent.OnContinueStorybookClicked(book.id, book.currentChapter)
-                        )
+                        onEvent(StorybookUiEvent.OnContinueStorybookClicked(book.id))
                     }
                 )
             }
@@ -222,7 +243,7 @@ private fun StorybookAllList(
                 StorybookThemeSection(
                     theme = theme,
                     isFirstSection = index == 0,
-                    onClick = { onEvent(StorybookUiEvent.OnStorybookClicked(it)) }
+                    onCardClick = { book -> onEvent(book.toClickEvent()) }
                 )
             }
         }
@@ -236,7 +257,7 @@ private fun StorybookAllList(
 private fun CustomStorybookSection(
     userName: String,
     items: List<CustomStorybook>,
-    onClick: (Int) -> Unit
+    onClick: (Long) -> Unit
 ) {
     Column(modifier = Modifier.padding(horizontal = HorizontalPadding)) {
         Text(
@@ -277,7 +298,7 @@ private fun CustomStorybookSection(
 private fun StorybookThemeSection(
     theme: StorybookTheme,
     isFirstSection: Boolean,
-    onClick: (Int) -> Unit
+    onCardClick: (Storybook) -> Unit
 ) {
     Column {
         Text(
@@ -313,7 +334,7 @@ private fun StorybookThemeSection(
                             null
                         },
                         badge = book.progress?.toStorybookBadge(),  // 책갈피
-                        onClick = { onClick(book.id) }
+                        onClick = { onCardClick(book) }
                     )
                 }
             }
@@ -324,8 +345,7 @@ private fun StorybookThemeSection(
 /**
  * 진행중 / 완료 탭 공통 골격
  *
- * 카드 폭은 고정값이 아니라 남는 폭을 2등분해서 정한다(호출부에 넘기는 modifier).
- * 그래야 좌우 여백이 [HorizontalPadding] 으로 정확히 대칭이 되고 기기 폭이 달라져도 대응된다.
+ * 카드 폭은 남는 폭을 2등분해서 정함
  */
 @Composable
 private fun <T> StorybookGridSection(
@@ -376,6 +396,19 @@ private fun <T> StorybookGridSection(
 private fun StorybookProgress.toStorybookBadge(): StorybookBadge = when (this) {
     is StorybookProgress.InProgress -> StorybookBadge.InProgress(chapter)
     StorybookProgress.Done -> StorybookBadge.Done
+}
+
+/**
+ * 전체 탭 카드의 클릭 목적지는 카드에 붙은 배지가 결정
+ *
+ * - 배지 없음(아직 시작 전) → 스토리북 목차
+ * - "N장 진행중"           → 진행중 탭 카드와 동일하게 스토리북 목차
+ * - "완료"                 → 완료 탭 카드와 동일하게 테마함
+ */
+private fun Storybook.toClickEvent(): StorybookUiEvent = when (progress) {
+    null -> StorybookUiEvent.OnStorybookClicked(id)
+    is StorybookProgress.InProgress -> StorybookUiEvent.OnContinueStorybookClicked(id)
+    StorybookProgress.Done -> StorybookUiEvent.OnDoneStorybookClicked(id)
 }
 
 @Preview(showBackground = true, showSystemUi = true)
