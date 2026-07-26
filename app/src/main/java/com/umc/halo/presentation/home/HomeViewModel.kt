@@ -57,15 +57,15 @@ class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
                 greetingMessage = "부모님과의 하루를 기록해보세요.",
                 bookList = listOf(
                     Books(1, "오래전 당신", "가족과의 만남",R.drawable.image_home_bookcase_1, R.drawable.image_home_bookcase_cover_1,240, 48, 0f, 0f, 48, 5, true),
-                    Books(2, "당신의 1호 팬", "부제",R.drawable.image_home_bookcase_2, R.drawable.image_home_bookcase_cover_1, 230, 68, -14.02f, -13f, 121, 0, false),
-                    Books(3, "취향이 닿는 날", "부제",R.drawable.image_home_bookcase_3, R.drawable.image_home_bookcase_cover_1, 230, 37, 0f, 0f, 37, 0, false),
-                    Books(4, "오늘은 내가 먼저", "부제",R.drawable.image_home_bookcase_4, R.drawable.image_home_bookcase_cover_1, 230, 61, 3.61f, 3.6f, 75, 0, false),
-                    Books(5, "생신까지 열 장", "부제",R.drawable.image_home_bookcase_5,  R.drawable.image_home_bookcase_cover_1, 230, 52, 0f, 0f, 52, 0, false),
-                    Books(6, "나란히 걷는 날", "부제",R.drawable.image_home_bookcase_6, R.drawable.image_home_bookcase_cover_1, 230, 46, -6.2f, -0.7f, 71, 0, false),
-                    Books(7, "당신 사용 설명서", "부제",R.drawable.image_home_bookcase_7,R.drawable.image_home_bookcase_cover_1, 230, 76, 0f, 0f, 76,0, false),
-                    Books(8, "한 장의 가족 사진", "부제",R.drawable.image_home_bookcase_8, R.drawable.image_home_bookcase_cover_1, 230, 38, 0f, 0f, 38,0, false),
-                    Books(9, "손을 내미는 연습", "부제", R.drawable.image_home_bookcase_9, R.drawable.image_home_bookcase_cover_1, 230, 64, 7.65f,7.5f, 95,0, false),
-                    Books(10, "가족의 온도", "부제", R.drawable.image_home_bookcase_10, R.drawable.image_home_bookcase_cover_1, 230, 50,0f,0f, 50,0, false)
+                    Books(2, "당신의 1호 팬", "부제",R.drawable.image_home_bookcase_2, R.drawable.image_home_bookcase_cover_2, 230, 68, -14.02f, -13f, 121, 0, false),
+                    Books(3, "취향이 닿는 날", "부제",R.drawable.image_home_bookcase_3, R.drawable.image_home_bookcase_cover_3, 230, 37, 0f, 0f, 37, 0, false),
+                    Books(4, "오늘은 내가 먼저", "부제",R.drawable.image_home_bookcase_4, R.drawable.image_home_bookcase_cover_4, 230, 61, 3.61f, 3.6f, 75, 0, false),
+                    Books(5, "생신까지 열 장", "부제",R.drawable.image_home_bookcase_5,  R.drawable.image_home_bookcase_cover_5, 230, 52, 0f, 0f, 52, 0, false),
+                    Books(6, "나란히 걷는 날", "부제",R.drawable.image_home_bookcase_6, R.drawable.image_home_bookcase_cover_6, 230, 46, -6.2f, -0.7f, 71, 0, false),
+                    Books(7, "당신 사용 설명서", "부제",R.drawable.image_home_bookcase_7,R.drawable.image_home_bookcase_cover_7, 230, 76, 0f, 0f, 76,0, false),
+                    Books(8, "한 장의 가족 사진", "부제",R.drawable.image_home_bookcase_8, R.drawable.image_home_bookcase_cover_8, 230, 38, 0f, 0f, 38,0, false),
+                    Books(9, "손을 내미는 연습", "부제", R.drawable.image_home_bookcase_9, R.drawable.image_home_bookcase_cover_9, 230, 64, 7.65f,7.5f, 95,0, false),
+                    Books(10, "가족의 온도", "부제", R.drawable.image_home_bookcase_10, R.drawable.image_home_bookcase_cover_10, 230, 50,0f,0f, 50,0, false)
                 ),
                 customStorybookList = listOf(
                     CustomStorybook(1, "대화가 어색한 당신을 위한", "오래전 당신", "가족과의 만남"),

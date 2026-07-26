@@ -43,7 +43,8 @@ fun HaloScaffold(
             currentRoute == Routes.CHAPTER_RESULT ||
             currentRoute == Routes.ONBOARDING ||
             currentRoute == Routes.TERMS ||
-            currentRoute == Routes.SHOW_THEME
+            currentRoute == Routes.SHOW_THEME ||
+                currentRoute == Routes.SPLASH
 
     Scaffold(
         contentWindowInsets = if (isEdgeToEdgeRoute) {

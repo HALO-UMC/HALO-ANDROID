@@ -1,21 +1,27 @@
 package com.umc.halo.presentation.themebox
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.umc.halo.R
 import com.umc.halo.domain.model.themebox.Theme
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
@@ -75,9 +81,14 @@ fun CarouselPager(
                             alpha = alpha
                         )
                         .fillMaxWidth()
-                        .aspectRatio(0.7f)
+                        .aspectRatio(0.7f),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text(item.character)
+                    Image(
+                        painter = painterResource(R.drawable.image_themebox_character_1),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
 
                 Spacer(Modifier.weight(9f))
