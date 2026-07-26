@@ -99,9 +99,9 @@ private fun TagChip(text: String) {
     ) {
         Text(
             text = text,
-            style = HaloType.caption01Medium.copy(fontSize = 10.5.sp),
+            style = HaloType.body03Medium.copy(fontSize = 13.sp),
             color = Primary500,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = 11.dp, vertical = 8.dp)
         )
     }
 }
