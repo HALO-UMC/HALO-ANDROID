@@ -130,7 +130,8 @@ fun SettingSwitchRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    description: String? = null
+    description: String? = null,
+    enabled: Boolean = true
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -140,21 +141,22 @@ fun SettingSwitchRow(
             Text(
                 text = title,
                 style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
-                color = Gray800
+                color = if (enabled) Gray800 else Gray400
             )
             if (description != null) {
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = description,
                     style = HaloType.caption01Medium.copy(fontSize = 10.5.sp),
-                    color = Gray500
+                    color = if (enabled) Gray500 else Gray300
                 )
             }
         }
 
         HaloSwitch(
             checked = checked,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = onCheckedChange,
+            enabled = enabled
         )
     }
 }
@@ -163,11 +165,13 @@ fun SettingSwitchRow(
 fun HaloSwitch(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     Switch(
         checked = checked,
         onCheckedChange = onCheckedChange,
+        enabled = enabled,
         modifier = modifier,
         colors = SwitchDefaults.colors(
             checkedThumbColor = White,
@@ -175,7 +179,13 @@ fun HaloSwitch(
             uncheckedThumbColor = Gray300,
             uncheckedTrackColor = Gray100,
             uncheckedBorderColor = Color.Transparent,
-            checkedBorderColor = Color.Transparent
+            checkedBorderColor = Color.Transparent,
+            disabledCheckedThumbColor = Gray300,
+            disabledCheckedTrackColor = Gray100,
+            disabledUncheckedThumbColor = Gray300,
+            disabledUncheckedTrackColor = Gray100,
+            disabledUncheckedBorderColor = Color.Transparent,
+            disabledCheckedBorderColor = Color.Transparent
         )
     )
 }
@@ -213,28 +223,29 @@ fun InfoRow(
 @Composable
 fun TimeSettingCard(
     timeText: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    enabled: Boolean = true
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(com.umc.halo.presentation.theme.Primary30)
-            .clickable(onClick = onClick)
+            .background(if (enabled) com.umc.halo.presentation.theme.Primary30 else Gray30)
+            .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = timeText,
             style = HaloType.body03Medium.copy(fontSize = 11.5.sp),
-            color = com.umc.halo.presentation.theme.Primary600,
+            color = if (enabled) com.umc.halo.presentation.theme.Primary600 else Gray400,
             modifier = Modifier.weight(1f)
         )
         Icon(
             painter = painterResource(id = R.drawable.ic_home_right_arrow),
             contentDescription = null,
-            tint = com.umc.halo.presentation.theme.Primary600,
+            tint = if (enabled) com.umc.halo.presentation.theme.Primary600 else Gray300,
             modifier = Modifier.size(18.dp)
         )
     }

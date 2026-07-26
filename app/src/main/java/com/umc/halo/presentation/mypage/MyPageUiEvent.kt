@@ -17,6 +17,10 @@ sealed interface MyPageUiEvent : UiEvent {
     data object NotificationTimeDismissed : MyPageUiEvent
     data class NotificationHourChanged(val hour: Int) : MyPageUiEvent
     data class NotificationMinuteChanged(val minute: Int) : MyPageUiEvent
+    data object NotificationHourIncreased : MyPageUiEvent
+    data object NotificationHourDecreased : MyPageUiEvent
+    data object NotificationMinuteIncreased : MyPageUiEvent
+    data object NotificationMinuteDecreased : MyPageUiEvent
     data object NotificationTimeConfirmed : MyPageUiEvent
 
     data class LogoutDialogChanged(val visible: Boolean) : MyPageUiEvent

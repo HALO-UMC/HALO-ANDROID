@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.mypage.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,49 +54,65 @@ fun WithdrawScreen(
     MyPageContainer(modifier = modifier) {
         MyPageTopBar(title = "회원 탈퇴", onBack = onBack)
 
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(top = 34.dp, bottom = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "정말 탈퇴하시겠어요?",
-                style = HaloType.heading02SemiBold.copy(fontSize = 21.sp),
-                color = Gray800,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "회원 탈퇴 시 계정 정보와 진행 중인 스토리북, 저장된 모든 기록이 삭제되며, 삭제된 데이터는 복구할 수 없어요.",
-                style = HaloType.body03Regular.copy(fontSize = 12.5.sp, lineHeight = 18.sp),
-                color = Gray600,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(top = 58.dp, bottom = 142.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "정말 탈퇴하시겠어요?",
+                    style = HaloType.heading02SemiBold.copy(
+                        fontSize = 24.sp,
+                        lineHeight = 36.sp
+                    ),
+                    color = Gray800,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = "회원 탈퇴 시 계정 정보와 진행 중인 스토리북, 저장된 모든 기록이 삭제되며, 삭제된 데이터는 복구할 수 없어요.",
+                    style = HaloType.body02Regular.copy(
+                        fontSize = 14.sp,
+                        lineHeight = 20.3.sp
+                    ),
+                    color = Gray600,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            Spacer(Modifier.height(36.dp))
-            Image(
-                painter = painterResource(id = R.drawable.ic_orange_character),
-                contentDescription = null,
-                modifier = Modifier.size(width = 104.dp, height = 116.dp)
-            )
+                Spacer(Modifier.height(54.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.ic_orange_character),
+                    contentDescription = null,
+                    modifier = Modifier.size(width = 94.dp, height = 109.dp)
+                )
 
-            Spacer(Modifier.height(28.dp))
-            WarningLine("계정 정보가 삭제돼요.")
-            WarningLine("기록과 스토리북이 모두 사라져요")
-            WarningLine("삭제 후에는 복구할 수 없어요.")
+                Spacer(Modifier.height(42.dp))
+                WarningLine("계정 정보가 삭제돼요.")
+                WarningLine("기록과 스토리북이 모두 사라져요")
+                WarningLine("삭제 후에는 복구할 수 없어요.")
+            }
 
-            Spacer(Modifier.weight(1f))
-            PrimaryActionButton(
-                text = "탈퇴 할게요",
-                onClick = {
-                    onEvent(MyPageUiEvent.WithdrawDialogChanged(true))
-                }
-            )
-            Spacer(Modifier.height(12.dp))
-            SecondaryActionButton(text = "취소", onClick = onBack)
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp)
+            ) {
+                PrimaryActionButton(
+                    text = "탈퇴 할게요",
+                    onClick = {
+                        onEvent(MyPageUiEvent.WithdrawDialogChanged(true))
+                    }
+                )
+                Spacer(Modifier.height(12.dp))
+                SecondaryActionButton(text = "취소", onClick = onBack)
+            }
         }
     }
 }

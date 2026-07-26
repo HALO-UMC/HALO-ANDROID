@@ -32,26 +32,46 @@ class MyPageViewModel : BaseViewModel<MyPageUiState, MyPageUiEvent>(
             }
 
             is MyPageUiEvent.TodayChapterNotificationChanged -> updateState {
-                copy(todayChapterNotificationEnabled = event.enabled)
+                if (allNotificationsEnabled) {
+                    copy(todayChapterNotificationEnabled = event.enabled)
+                } else {
+                    this
+                }
             }
 
             is MyPageUiEvent.AnniversaryNotificationChanged -> updateState {
-                copy(anniversaryNotificationEnabled = event.enabled)
+                if (allNotificationsEnabled) {
+                    copy(anniversaryNotificationEnabled = event.enabled)
+                } else {
+                    this
+                }
             }
 
             is MyPageUiEvent.RetentionNotificationChanged -> updateState {
-                copy(retentionNotificationEnabled = event.enabled)
+                if (allNotificationsEnabled) {
+                    copy(retentionNotificationEnabled = event.enabled)
+                } else {
+                    this
+                }
             }
 
             MyPageUiEvent.NotificationTimeClicked -> updateState {
-                copy(
-                    showNotificationTimeDialog = true,
-                    isEditingNotificationTime = !isNotificationTimeConfigured
-                )
+                if (allNotificationsEnabled) {
+                    copy(
+                        showNotificationTimeDialog = true,
+                        isEditingNotificationTime = !isNotificationTimeConfigured
+                    )
+                } else {
+                    this
+                }
             }
 
             MyPageUiEvent.NotificationTimeEditClicked -> updateState {
-                copy(isEditingNotificationTime = true)
+                if (allNotificationsEnabled) {
+                    copy(isEditingNotificationTime = true)
+                } else {
+                    this
+                }
             }
 
             MyPageUiEvent.NotificationTimeDismissed -> updateState {
@@ -64,6 +84,22 @@ class MyPageViewModel : BaseViewModel<MyPageUiState, MyPageUiEvent>(
 
             is MyPageUiEvent.NotificationMinuteChanged -> updateState {
                 copy(notificationMinute = event.minute.coerceIn(0, 59))
+            }
+
+            MyPageUiEvent.NotificationHourIncreased -> updateState {
+                copy(notificationHour = (notificationHour + 1) % 24)
+            }
+
+            MyPageUiEvent.NotificationHourDecreased -> updateState {
+                copy(notificationHour = (notificationHour + 23) % 24)
+            }
+
+            MyPageUiEvent.NotificationMinuteIncreased -> updateState {
+                copy(notificationMinute = (notificationMinute + 5) % 60)
+            }
+
+            MyPageUiEvent.NotificationMinuteDecreased -> updateState {
+                copy(notificationMinute = (notificationMinute + 55) % 60)
             }
 
             MyPageUiEvent.NotificationTimeConfirmed -> updateState {

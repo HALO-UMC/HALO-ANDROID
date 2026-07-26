@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -23,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.umc.halo.R
 import com.umc.halo.presentation.mypage.MyPageUiEvent
 import com.umc.halo.presentation.mypage.MyPageUiState
@@ -42,15 +45,26 @@ fun NotificationTimeDialog(
     uiState: MyPageUiState,
     onEvent: (MyPageUiEvent) -> Unit
 ) {
-    AlertDialog(
+    Dialog(
         onDismissRequest = {
             onEvent(MyPageUiEvent.NotificationTimeDismissed)
-        },
-        confirmButton = {},
-        containerColor = White,
-        shape = RoundedCornerShape(14.dp),
-        text = {
-            Column {
+        }
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .widthIn(max = 308.dp),
+            shape = RoundedCornerShape(14.dp),
+            color = White
+        ) {
+            Column(
+                modifier = Modifier.padding(
+                    start = 24.dp,
+                    top = 18.dp,
+                    end = 24.dp,
+                    bottom = 18.dp
+                )
+            ) {
                 DialogHeader(
                     timeText = uiState.formattedNotificationTime(),
                     onClose = {
@@ -64,19 +78,17 @@ fun NotificationTimeDialog(
                     NotificationTimeEditor(
                         hour = uiState.notificationHour,
                         minute = uiState.notificationMinute,
-                        onHourClick = {
-                            onEvent(
-                                MyPageUiEvent.NotificationHourChanged(
-                                    (uiState.notificationHour + 1) % 24
-                                )
-                            )
+                        onHourDecrease = {
+                            onEvent(MyPageUiEvent.NotificationHourDecreased)
                         },
-                        onMinuteClick = {
-                            onEvent(
-                                MyPageUiEvent.NotificationMinuteChanged(
-                                    (uiState.notificationMinute + 5) % 60
-                                )
-                            )
+                        onHourIncrease = {
+                            onEvent(MyPageUiEvent.NotificationHourIncreased)
+                        },
+                        onMinuteDecrease = {
+                            onEvent(MyPageUiEvent.NotificationMinuteDecreased)
+                        },
+                        onMinuteIncrease = {
+                            onEvent(MyPageUiEvent.NotificationMinuteIncreased)
                         }
                     )
                 } else {
@@ -90,7 +102,7 @@ fun NotificationTimeDialog(
 
                 Spacer(Modifier.height(26.dp))
 
-                PrimaryActionButton(
+                DialogPrimaryButton(
                     text = "완료",
                     onClick = {
                         onEvent(MyPageUiEvent.NotificationTimeConfirmed)
@@ -98,7 +110,7 @@ fun NotificationTimeDialog(
                 )
             }
         }
-    )
+    }
 }
 
 @Composable
@@ -138,8 +150,10 @@ private fun DialogHeader(
 private fun NotificationTimeEditor(
     hour: Int,
     minute: Int,
-    onHourClick: () -> Unit,
-    onMinuteClick: () -> Unit
+    onHourDecrease: () -> Unit,
+    onHourIncrease: () -> Unit,
+    onMinuteDecrease: () -> Unit,
+    onMinuteIncrease: () -> Unit
 ) {
     Column {
         Text(
@@ -149,16 +163,18 @@ private fun NotificationTimeEditor(
         )
         Spacer(Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            TimeValueBox(
+            TimeStepperBox(
                 value = hour.toString().padStart(2, '0'),
                 label = "시",
-                onClick = onHourClick,
+                onDecrease = onHourDecrease,
+                onIncrease = onHourIncrease,
                 modifier = Modifier.weight(1f)
             )
-            TimeValueBox(
+            TimeStepperBox(
                 value = minute.toString().padStart(2, '0'),
                 label = "분",
-                onClick = onMinuteClick,
+                onDecrease = onMinuteDecrease,
+                onIncrease = onMinuteIncrease,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -204,39 +220,74 @@ private fun NotificationTimeSummary(
 }
 
 @Composable
-private fun TimeValueBox(
+private fun TimeStepperBox(
     value: String,
     label: String,
-    onClick: () -> Unit,
+    onDecrease: () -> Unit,
+    onIncrease: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier
-            .height(54.dp)
-            .clickable(onClick = onClick),
+        modifier = modifier.height(54.dp),
         shape = RoundedCornerShape(12.dp),
         color = Gray30
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Gray30)
-                .padding(horizontal = 14.dp),
-            contentAlignment = Alignment.Center
+                .padding(horizontal = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            Text(
+                text = "-",
+                style = HaloType.body02Medium.copy(fontSize = 15.sp),
+                color = Gray500,
+                modifier = Modifier.clickable(onClick = onDecrease)
+            )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = value,
                     style = HaloType.body02Medium.copy(fontSize = 15.sp),
                     color = Gray500
                 )
-                Spacer(Modifier.size(14.dp))
+                Spacer(Modifier.size(10.dp))
                 Text(
                     text = label,
                     style = HaloType.body02Medium.copy(fontSize = 15.sp),
                     color = Gray700
                 )
             }
+            Text(
+                text = "+",
+                style = HaloType.body02Medium.copy(fontSize = 15.sp),
+                color = Gray500,
+                modifier = Modifier.clickable(onClick = onIncrease)
+            )
         }
+    }
+}
+
+@Composable
+private fun DialogPrimaryButton(
+    text: String,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(42.dp),
+        shape = RoundedCornerShape(30.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Primary500,
+            contentColor = White
+        )
+    ) {
+        Text(
+            text = text,
+            style = HaloType.body02SemiBold.copy(fontSize = 14.sp)
+        )
     }
 }
