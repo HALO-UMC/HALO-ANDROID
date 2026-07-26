@@ -1,10 +1,12 @@
 package com.umc.halo.presentation.storybook.detail
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,8 +15,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import java.util.Locale
 import androidx.compose.ui.unit.dp
+import com.umc.halo.R
 import com.umc.halo.presentation.component.ButtonState
 import com.umc.halo.presentation.component.HaloMaterialButton
 import com.umc.halo.presentation.theme.Gray100
@@ -53,7 +57,11 @@ fun TodayStoryBook(
                 .clip(RoundedCornerShape(20.dp))
                 .background(CoverPlaceholderColor)
         ) {
-            //이미지 넣기
+            Image(
+                painter = painterResource(R.drawable.image_storybook_detail_ex_3),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            ) //추가 이미지 들어가야 함
         }
 
         Spacer(Modifier.height(18.dp))
