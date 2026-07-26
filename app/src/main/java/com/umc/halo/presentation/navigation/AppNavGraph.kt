@@ -26,6 +26,8 @@ import com.umc.halo.presentation.mypage.screen.PrivacyPolicyScreen
 import com.umc.halo.presentation.mypage.screen.RelationshipInfoScreen
 import com.umc.halo.presentation.mypage.screen.TermsScreen
 import com.umc.halo.presentation.onboarding.OnboardingRoute
+import com.umc.halo.presentation.splash.SplashRoute
+import com.umc.halo.presentation.splash.SplashScreen
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailRoute
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailScreen
 import com.umc.halo.presentation.storybook.list.StorybookScreen
@@ -45,12 +47,16 @@ fun AppNavGraph(
 
         // TODO: 테스트용 화면 시작점 = LOGIN
         // 실제 앱 시작점은 추후 Routes.SPLASH 로 변경 예정
-        startDestination = Routes.LOGIN,
+        startDestination = Routes.HOME,
 
         modifier = modifier
     ) {
         composable(Routes.SPLASH) {
-            Text(text = "Splash")
+            SplashRoute(
+                onNavigateToLogin = {
+                    navController.navigate(Routes.LOGIN)
+                }
+            )
         }
 
         composable(Routes.ONBOARDING) {

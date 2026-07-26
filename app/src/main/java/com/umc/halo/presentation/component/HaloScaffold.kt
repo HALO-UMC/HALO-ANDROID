@@ -43,7 +43,7 @@ fun HaloScaffold(
      */
     val isChapterEdgeToEdgeRoute =
         currentRoute == Routes.CHAPTER_PROGRESS ||
-                currentRoute == Routes.CHAPTER_RESULT || currentRoute == Routes.SHOW_THEME
+                currentRoute == Routes.CHAPTER_RESULT || currentRoute == Routes.SHOW_THEME || currentRoute == Routes.SPLASH
 
     Scaffold(
         contentWindowInsets = if (isChapterEdgeToEdgeRoute) {
