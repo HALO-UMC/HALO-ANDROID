@@ -32,6 +32,7 @@ import com.umc.halo.presentation.storybook.list.StorybookScreen
 import com.umc.halo.presentation.terms.TermsRoute
 import com.umc.halo.presentation.themebox.ThemeBoxRoute
 import com.umc.halo.presentation.themebox.ThemeBoxScreen
+import com.umc.halo.presentation.themebox.show_theme.ShowThemeRoute
 
 // NavHost + BottomBar 표시 여부 + 화면 route 연결
 @Composable
@@ -123,6 +124,14 @@ fun AppNavGraph(
                     navController.navigate(Routes.storybookDetail(storybookId)) {
                         launchSingleTop = true
                     }
+                }
+            )
+        }
+
+        composable(Routes.SHOW_THEME) {
+            ShowThemeRoute(
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -274,6 +283,11 @@ fun AppNavGraph(
                 },
                 onNavigateToChapterProgress = { storybookId, chapterId ->
                     navController.navigate(Routes.chapterProgress(storybookId,chapterId)) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToShowTheme = { storybookId ->
+                    navController.navigate(Routes.showTheme(storybookId)) {
                         launchSingleTop = true
                     }
                 }

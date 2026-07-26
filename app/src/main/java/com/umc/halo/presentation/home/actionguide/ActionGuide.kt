@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -79,23 +80,32 @@ fun ActionGuideFrame(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(44.dp)
+                .height(54.dp)
                 .border(
                     width = 1.dp,
                     color = Gray100,
                     shape = RoundedCornerShape(16.dp)
                 )
-                .background(Gray30)
+                .background(
+                    color = Gray30,
+                    shape = RoundedCornerShape(16.dp)
+                )
         ) {
             Row(
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(10.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
                         .size(24.dp)
                         .border(
                             width = 1.dp,
+                            color = White,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .background(
                             color = White,
                             shape = RoundedCornerShape(16.dp)
                         )
@@ -108,7 +118,7 @@ fun ActionGuideFrame(
                     )
                 }
 
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(12.dp))
 
                 Text(
                     text = contents,

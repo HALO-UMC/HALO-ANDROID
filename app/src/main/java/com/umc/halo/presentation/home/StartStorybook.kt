@@ -39,6 +39,7 @@ import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray600
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
+import com.umc.halo.presentation.theme.Primary600
 import com.umc.halo.presentation.theme.White
 
 @Composable
@@ -159,6 +160,16 @@ fun StartStorybookContents(
                 .fillMaxHeight()
         ) {
             Spacer(Modifier.weight(2.5f))
+
+            if (item.currentProgress == 0) {
+                Text(
+                    text = item.tag,
+                    style = HaloType.body03Regular,
+                    color = Primary600
+                )
+
+                Spacer(Modifier.weight(1f))
+            }
 
             Text(
                 //--백엔드 전달 방식 고려 후 제작
