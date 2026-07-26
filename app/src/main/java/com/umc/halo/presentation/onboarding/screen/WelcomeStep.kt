@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.onboarding.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.umc.halo.R
+import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
@@ -41,6 +43,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun WelcomeStep(
     userName: String,
+    onBackClick: () -> Unit,
     onNextClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -59,12 +62,24 @@ fun WelcomeStep(
         isNextButtonVisible = true
     }
 
+    BackHandler(onBack = onBackClick)
+
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .statusBarsPadding()
     ) {
+        OnboardingBackButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(
+                    start = 8.dp,
+                    top = 14.dp
+                )
+        )
+
         val welcomeText = buildAnnotatedString {
             append("반가워요 ")
 

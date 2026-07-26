@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.umc.halo.presentation.onboarding.Gender
 import com.umc.halo.presentation.onboarding.OnboardingUiEvent
 import com.umc.halo.presentation.onboarding.OnboardingUiState
+import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray300
@@ -155,6 +156,19 @@ fun BasicInfoStep(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
+        OnboardingBackButton(
+            onClick = {
+                onEvent(OnboardingUiEvent.BackClicked)
+            },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .statusBarsPadding()
+                .padding(
+                    start = 8.dp,
+                    top = 14.dp
+                )
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()

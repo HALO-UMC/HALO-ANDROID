@@ -35,18 +35,17 @@ fun HaloScaffold(
     val bottomNavRoutes = BottomNavItem.entries.map { it.route }
 
     /*
-     * 챕터 화면은 배경 이미지가 상태바 뒤까지 이어지는
-     * Edge-to-Edge 화면으로 구성합니다.
-     *
-     * 이 화면들에서는 Scaffold가 상태바 여백을 자동으로
-     * 추가하지 않도록 설정합니다.
+     * 챕터 화면은 Edge-to-Edge로 구성하고, 온보딩 화면은
+     * 각 단계에서 시스템 바 여백을 직접 관리합니다.
      */
-    val isChapterEdgeToEdgeRoute =
+    val isEdgeToEdgeRoute =
         currentRoute == Routes.CHAPTER_PROGRESS ||
-                currentRoute == Routes.CHAPTER_RESULT || currentRoute == Routes.SHOW_THEME
+            currentRoute == Routes.CHAPTER_RESULT ||
+            currentRoute == Routes.ONBOARDING ||
+            currentRoute == Routes.SHOW_THEME
 
     Scaffold(
-        contentWindowInsets = if (isChapterEdgeToEdgeRoute) {
+        contentWindowInsets = if (isEdgeToEdgeRoute) {
             WindowInsets(
                 left = 0,
                 top = 0,
