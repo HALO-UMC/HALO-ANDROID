@@ -16,16 +16,20 @@ data class DayRecord(
 
 /** 모달 '완성 스토리북' 섹션 항목 */
 data class DateCompletedStorybook(
-    val storybookId: Int,
+    val storybookId: Long,
     val title: String
 )
 
 /**
  * 모달 '장 기록중' 섹션 항목
  * 그 날에 완료한 장임
+ *
+ * [chapter] 는 화면에 보여줄 '몇 번째 장'인지(1~10)
+ * [chapterId] 는 그 장의 고유 id — 장 완료 결과 화면(chapter_result)으로 이동할 때 필요
  */
 data class DateCompletedChapter(
-    val storybookId: Int,
+    val storybookId: Long,
+    val chapterId: Long,  // 장 고유 id (이동용)
     val title: String,
-    val chapter: Int   // 그 날 완료한 장 번호
+    val chapter: Int      // 그 날 완료한 장 번호 (표시용)
 )

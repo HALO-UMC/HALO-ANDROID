@@ -19,21 +19,11 @@ class StorybookViewModel : BaseViewModel<StorybookUiState, StorybookUiEvent>(Sto
                 updateState { copy(selectedTab = event.tab) }
             }
 
-            is StorybookUiEvent.OnCustomStorybookClicked -> {
-                // TODO: 스토리북 상세(목차)로 navigation
-            }
-
-            is StorybookUiEvent.OnStorybookClicked -> {
-                // TODO: 스토리북 상세(목차)로 navigation
-            }
-
-            is StorybookUiEvent.OnContinueStorybookClicked -> {
-                // TODO: 해당 스토리북의 event.chapter 장(챕터 진행 화면)으로 navigation
-            }
-
-            is StorybookUiEvent.OnDoneStorybookClicked -> {
-                // TODO: 해당 스토리북의 테마함으로 navigation
-            }
+            // 아래 카드 클릭들은 화면 이동 이벤트 → StorybookScreen 이 NavGraph 콜백으로 처리
+            is StorybookUiEvent.OnCustomStorybookClicked,     // → 스토리북 상세(목차)
+            is StorybookUiEvent.OnStorybookClicked,           // → 스토리북 상세(목차)
+            is StorybookUiEvent.OnContinueStorybookClicked,   // → 스토리북 상세(목차)
+            is StorybookUiEvent.OnDoneStorybookClicked -> Unit // → 테마함
         }
     }
 
