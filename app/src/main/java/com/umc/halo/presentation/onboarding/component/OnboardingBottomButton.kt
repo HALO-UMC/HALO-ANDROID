@@ -23,11 +23,14 @@ fun OnboardingBottomButton(
     text: String,
     enabled: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    clickableWhenDisabled: Boolean = false
 ) {
+    val buttonEnabled = enabled || clickableWhenDisabled
+
     Button(
         onClick = onClick,
-        enabled = enabled,
+        enabled = buttonEnabled,
         modifier = modifier
             .fillMaxWidth()
             .height(54.dp),
@@ -37,8 +40,8 @@ fun OnboardingBottomButton(
             vertical = 8.dp
         ),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Primary500,
-            contentColor = White,
+            containerColor = if (enabled) Primary500 else Gray100,
+            contentColor = if (enabled) White else Gray400,
             disabledContainerColor = Gray100,
             disabledContentColor = Gray400
         )

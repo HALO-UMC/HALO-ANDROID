@@ -12,4 +12,7 @@ sealed interface LoginUiEvent : UiEvent {
     // 카카오/구글 로그인 SDK 모두 계정 선택 UI 를 띄울 Activity Context 를 필요로 하여 이벤트에 담아 전달함
     data class KakaoLoginClicked(val context: Context) : LoginUiEvent
     data class GoogleLoginClicked(val context: Context) : LoginUiEvent
+
+    // 약관동의로 이동을 처리한 뒤 1회성 신호를 내려 중복 이동 금지
+    data object NavigationHandled : LoginUiEvent
 }
