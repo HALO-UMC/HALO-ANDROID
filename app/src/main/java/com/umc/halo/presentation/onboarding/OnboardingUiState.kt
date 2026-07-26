@@ -4,7 +4,7 @@ internal const val MIN_NAME_LENGTH = 2
 internal const val MAX_NAME_LENGTH = 10
 
 private const val NAME_VALIDATION_MESSAGE =
-    "2~10자 이내의 한글/영어/숫자로 입력해주세요."
+    "닉네임 조건에 맞춰서 다시 입력해주세요!"
 
 private const val GOAL_LIMIT_MESSAGE =
     "두 개까지 선택이 가능해요."

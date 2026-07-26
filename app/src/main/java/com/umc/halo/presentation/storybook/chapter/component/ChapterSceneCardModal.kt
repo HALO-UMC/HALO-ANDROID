@@ -78,7 +78,7 @@ fun ChapterSceneCardModal(
             modifier = Modifier
                 .align(Alignment.Center)
                 .width(288.dp)
-                .height(470.dp)
+                .height(358.dp)
                 .clickable {}
         ) {
             ChapterModalCharacter(
@@ -93,7 +93,7 @@ fun ChapterSceneCardModal(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .width(288.dp)
-                    .height(385.dp),
+                    .height(273.dp),
                 shape = RoundedCornerShape(20.dp),
                 color = White
             ) {
@@ -158,7 +158,7 @@ private fun SceneCardGrid(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         sceneCards
-            .take(4)
+            .take(2)
             .chunked(2)
             .forEach { rowCards ->
                 Row(
@@ -203,7 +203,7 @@ private fun SceneCardConfirmButton(
 
     Box(
         modifier = Modifier
-            .width(88.dp)
+            .width(120.dp)
             .height(36.dp)
             .background(
                 color = backgroundColor,

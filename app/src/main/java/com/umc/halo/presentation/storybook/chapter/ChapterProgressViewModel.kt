@@ -357,6 +357,6 @@ class ChapterProgressViewModel :
                 title = "졸업",
                 imageUrl = null
             )
-        )
+        ).take(2)
     }
 }

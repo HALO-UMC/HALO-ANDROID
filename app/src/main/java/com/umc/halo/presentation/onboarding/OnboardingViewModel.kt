@@ -55,12 +55,6 @@ class OnboardingViewModel @Inject constructor() :
     }
 
     private fun updateName(input: String) {
-        val containsInvalidCharacter = input.any { character ->
-            !character.isAllowedNameCharacter()
-        }
-
-        val exceedsMaxLength = input.length > MAX_NAME_LENGTH
-
         /*
          * 허용되지 않은 문자는 실제 입력값에는 반영하지 않는다.
          * 10자를 초과한 문자도 입력값에는 반영하지 않는다.
@@ -71,24 +65,10 @@ class OnboardingViewModel @Inject constructor() :
             }
             .take(MAX_NAME_LENGTH)
 
-        val shouldShowError = when {
-            // 아무것도 입력하지 않은 초기 상태에서는 에러를 보여주지 않는다.
-            input.isEmpty() -> false
-
-            // 특수문자를 입력했거나 10자를 초과하려 한 경우
-            containsInvalidCharacter -> true
-            exceedsMaxLength -> true
-
-            // 허용된 문자이지만 아직 2자 미만인 경우
-            filteredName.length < MIN_NAME_LENGTH -> true
-
-            else -> false
-        }
-
         updateState {
             copy(
                 name = filteredName,
-                isNameErrorVisible = shouldShowError
+                isNameErrorVisible = false
             )
         }
     }
@@ -199,10 +179,18 @@ class OnboardingViewModel @Inject constructor() :
 
     private fun moveToNextStep() {
         updateState {
-            if (!isNextEnabled) {
-                this
-            } else {
-                copy(currentStep = currentStep.next())
+            when {
+                currentStep == OnboardingStep.NAME && !isNameValid -> {
+                    copy(isNameErrorVisible = true)
+                }
+
+                !isNextEnabled -> {
+                    this
+                }
+
+                else -> {
+                    copy(currentStep = currentStep.next())
+                }
             }
         }
     }

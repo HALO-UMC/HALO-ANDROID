@@ -3,7 +3,7 @@ package com.umc.halo.presentation.storybook.chapter.screen
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,14 +24,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.umc.halo.R
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.domain.model.storybook.ChapterSceneCard
 import com.umc.halo.presentation.component.HaloTopBar
@@ -256,8 +253,13 @@ private fun SceneRecordOptionButton(
         ) {
             when (method) {
                 ChapterSceneRecordMethod.PHOTO -> {
-                    CameraIcon(
-                        color = contentColor,
+                    SceneMethodIcon(
+                        resId = if (selected) {
+                            R.drawable.ic_storybook_photo_selected
+                        } else {
+                            R.drawable.ic_storybook_photo
+                        },
+                        contentDescription = text,
                         modifier = Modifier.size(
                             width = 34.dp,
                             height = 30.dp
@@ -266,10 +268,15 @@ private fun SceneRecordOptionButton(
                 }
 
                 ChapterSceneRecordMethod.SCENE_CARD -> {
-                    SceneCardIcon(
-                        color = contentColor,
+                    SceneMethodIcon(
+                        resId = if (selected) {
+                            R.drawable.ic_storybook_scene_card_selected
+                        } else {
+                            R.drawable.ic_storybook_scene_card
+                        },
+                        contentDescription = text,
                         modifier = Modifier.size(
-                            width = 40.dp,
+                            width = 41.dp,
                             height = 30.dp
                         )
                     )
@@ -288,105 +295,14 @@ private fun SceneRecordOptionButton(
 }
 
 @Composable
-private fun CameraIcon(
-    color: Color,
+private fun SceneMethodIcon(
+    resId: Int,
+    contentDescription: String,
     modifier: Modifier = Modifier
 ) {
-    Canvas(modifier = modifier) {
-        val strokeWidth = 2.dp.toPx()
-
-        drawRoundRect(
-            color = color,
-            topLeft = Offset(
-                x = size.width * 0.08f,
-                y = size.height * 0.28f
-            ),
-            size = Size(
-                width = size.width * 0.84f,
-                height = size.height * 0.58f
-            ),
-            cornerRadius = CornerRadius(
-                x = 5.dp.toPx(),
-                y = 5.dp.toPx()
-            ),
-            style = Stroke(width = strokeWidth)
-        )
-
-        drawRoundRect(
-            color = color,
-            topLeft = Offset(
-                x = size.width * 0.32f,
-                y = size.height * 0.12f
-            ),
-            size = Size(
-                width = size.width * 0.36f,
-                height = size.height * 0.22f
-            ),
-            cornerRadius = CornerRadius(
-                x = 4.dp.toPx(),
-                y = 4.dp.toPx()
-            ),
-            style = Stroke(width = strokeWidth)
-        )
-
-        drawCircle(
-            color = color,
-            radius = size.minDimension * 0.18f,
-            center = Offset(
-                x = size.width / 2f,
-                y = size.height * 0.58f
-            ),
-            style = Stroke(width = strokeWidth)
-        )
-    }
-}
-
-@Composable
-private fun SceneCardIcon(
-    color: Color,
-    modifier: Modifier = Modifier
-) {
-    Canvas(modifier = modifier) {
-        val strokeWidth = 3.dp.toPx()
-
-        drawRoundRect(
-            color = color,
-            topLeft = Offset(
-                x = size.width * 0.05f,
-                y = size.height * 0.12f
-            ),
-            size = Size(
-                width = size.width * 0.9f,
-                height = size.height * 0.76f
-            ),
-            cornerRadius = CornerRadius(
-                x = 5.dp.toPx(),
-                y = 5.dp.toPx()
-            ),
-            style = Stroke(width = strokeWidth)
-        )
-
-        drawCircle(
-            color = color,
-            radius = size.minDimension * 0.09f,
-            center = Offset(
-                x = size.width * 0.3f,
-                y = size.height * 0.35f
-            )
-        )
-
-        val path = Path().apply {
-            moveTo(size.width * 0.14f, size.height * 0.78f)
-            lineTo(size.width * 0.38f, size.height * 0.55f)
-            lineTo(size.width * 0.55f, size.height * 0.68f)
-            lineTo(size.width * 0.72f, size.height * 0.48f)
-            lineTo(size.width * 0.88f, size.height * 0.78f)
-        }
-
-        drawPath(
-            path = path,
-            color = color,
-            style = Stroke(width = strokeWidth)
-        )
-    }
+    Image(
+        painter = painterResource(id = resId),
+        contentDescription = contentDescription,
+        modifier = modifier
+    )
 }

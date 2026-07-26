@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.onboarding.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -18,9 +20,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.umc.halo.R
 import com.umc.halo.presentation.onboarding.OnboardingUiState
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.theme.Gray30
@@ -56,7 +61,7 @@ fun CompleteStep(
          *
          * 카드 개수가 바뀌어도 제목 위치는 움직이지 않는다.
          */
-        val titleTopPosition = maxHeight * 0.37f
+        val titleTopPosition = maxHeight * 0.23f
 
         /*
          * 선택 목록은 제목 영역과 별도로 배치한다.
@@ -65,7 +70,17 @@ fun CompleteStep(
          * "선택한 관계 방향" 영역이 더 아래로 내려간다.
          */
         val selectedSectionTopPosition =
-            titleTopPosition + 124.dp
+            titleTopPosition + 230.dp
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_orange_character),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = titleTopPosition + 71.dp)
+                .size(width = 113.dp, height = 131.dp)
+        )
 
         /*
          * 완료 안내 문구
@@ -90,18 +105,6 @@ fun CompleteStep(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "이제 HALO 와 함께 부모님과의 관계를\n한 장씩 기록해볼까요?",
-                style = HaloType.body01Regular.copy(
-                    fontSize = 16.sp,
-                    lineHeight = 23.2.sp,
-                    letterSpacing = (-0.16).sp
-                ),
-                color = Gray800,
-                textAlign = TextAlign.Center
-            )
         }
 
         /*
@@ -132,7 +135,7 @@ fun CompleteStep(
 
             selectedDirections.forEachIndexed { index, direction ->
                 if (index > 0) {
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
                 SelectedDirectionCard(
@@ -170,7 +173,7 @@ private fun SelectedDirectionCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(52.dp)
+            .height(44.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(Gray30)
             .padding(horizontal = 16.dp),
