@@ -13,6 +13,8 @@ data class MyPageUiState(
     val retentionNotificationEnabled: Boolean = true,
     val notificationHour: Int = 9,
     val notificationMinute: Int = 0,
+    val draftNotificationHour: Int = notificationHour,
+    val draftNotificationMinute: Int = notificationMinute,
     val isNotificationTimeConfigured: Boolean = false,
     val showNotificationTimeDialog: Boolean = false,
     val isEditingNotificationTime: Boolean = false,

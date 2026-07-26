@@ -24,10 +24,7 @@ class MyPageViewModel : BaseViewModel<MyPageUiState, MyPageUiEvent>(
 
             is MyPageUiEvent.AllNotificationsChanged -> updateState {
                 copy(
-                    allNotificationsEnabled = event.enabled,
-                    todayChapterNotificationEnabled = event.enabled,
-                    anniversaryNotificationEnabled = event.enabled,
-                    retentionNotificationEnabled = event.enabled
+                    allNotificationsEnabled = event.enabled
                 )
             }
 
@@ -59,7 +56,9 @@ class MyPageViewModel : BaseViewModel<MyPageUiState, MyPageUiEvent>(
                 if (allNotificationsEnabled) {
                     copy(
                         showNotificationTimeDialog = true,
-                        isEditingNotificationTime = !isNotificationTimeConfigured
+                        isEditingNotificationTime = !isNotificationTimeConfigured,
+                        draftNotificationHour = notificationHour,
+                        draftNotificationMinute = notificationMinute
                     )
                 } else {
                     this
@@ -68,42 +67,53 @@ class MyPageViewModel : BaseViewModel<MyPageUiState, MyPageUiEvent>(
 
             MyPageUiEvent.NotificationTimeEditClicked -> updateState {
                 if (allNotificationsEnabled) {
-                    copy(isEditingNotificationTime = true)
+                    copy(
+                        isEditingNotificationTime = true,
+                        draftNotificationHour = notificationHour,
+                        draftNotificationMinute = notificationMinute
+                    )
                 } else {
                     this
                 }
             }
 
             MyPageUiEvent.NotificationTimeDismissed -> updateState {
-                copy(showNotificationTimeDialog = false)
+                copy(
+                    showNotificationTimeDialog = false,
+                    isEditingNotificationTime = false,
+                    draftNotificationHour = notificationHour,
+                    draftNotificationMinute = notificationMinute
+                )
             }
 
             is MyPageUiEvent.NotificationHourChanged -> updateState {
-                copy(notificationHour = event.hour.coerceIn(0, 23))
+                copy(draftNotificationHour = event.hour.coerceIn(0, 23))
             }
 
             is MyPageUiEvent.NotificationMinuteChanged -> updateState {
-                copy(notificationMinute = event.minute.coerceIn(0, 59))
+                copy(draftNotificationMinute = event.minute.coerceIn(0, 59))
             }
 
             MyPageUiEvent.NotificationHourIncreased -> updateState {
-                copy(notificationHour = (notificationHour + 1) % 24)
+                copy(draftNotificationHour = (draftNotificationHour + 1) % 24)
             }
 
             MyPageUiEvent.NotificationHourDecreased -> updateState {
-                copy(notificationHour = (notificationHour + 23) % 24)
+                copy(draftNotificationHour = (draftNotificationHour + 23) % 24)
             }
 
             MyPageUiEvent.NotificationMinuteIncreased -> updateState {
-                copy(notificationMinute = (notificationMinute + 5) % 60)
+                copy(draftNotificationMinute = (draftNotificationMinute + 5) % 60)
             }
 
             MyPageUiEvent.NotificationMinuteDecreased -> updateState {
-                copy(notificationMinute = (notificationMinute + 55) % 60)
+                copy(draftNotificationMinute = (draftNotificationMinute + 55) % 60)
             }
 
             MyPageUiEvent.NotificationTimeConfirmed -> updateState {
                 copy(
+                    notificationHour = draftNotificationHour,
+                    notificationMinute = draftNotificationMinute,
                     isNotificationTimeConfigured = true,
                     showNotificationTimeDialog = false,
                     isEditingNotificationTime = false

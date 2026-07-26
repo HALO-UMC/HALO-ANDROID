@@ -26,6 +26,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -52,7 +56,17 @@ fun SystemVolumeSlider(
     BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
-            .height(30.dp),
+            .height(30.dp)
+            .semantics {
+                progressBarRangeInfo = ProgressBarRangeInfo(
+                    current = value.coerceIn(0f, 1f),
+                    range = 0f..1f
+                )
+                setProgress { targetValue ->
+                    onValueChange(targetValue.coerceIn(0f, 1f))
+                    true
+                }
+            },
         contentAlignment = Alignment.CenterStart
     ) {
         val sliderWidthPx = with(LocalDensity.current) { maxWidth.toPx() }

@@ -76,8 +76,8 @@ fun NotificationTimeDialog(
 
                 if (uiState.isEditingNotificationTime) {
                     NotificationTimeEditor(
-                        hour = uiState.notificationHour,
-                        minute = uiState.notificationMinute,
+                        hour = uiState.draftNotificationHour,
+                        minute = uiState.draftNotificationMinute,
                         onHourDecrease = {
                             onEvent(MyPageUiEvent.NotificationHourDecreased)
                         },

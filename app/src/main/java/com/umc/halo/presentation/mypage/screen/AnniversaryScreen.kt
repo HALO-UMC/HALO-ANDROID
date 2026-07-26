@@ -114,7 +114,7 @@ private fun AnniversaryListScreen(
     onEvent: (AnniversaryUiEvent) -> Unit,
     onBack: () -> Unit
 ) {
-    val actualSelectedIds = uiState.selectedIds.filter { it > 0 }.toSet()
+    val actualSelectedIds = uiState.selectedIds
 
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -155,13 +155,13 @@ private fun AnniversaryListScreen(
                     AnniversarySectionTitle("기념일 관리")
                     Spacer(Modifier.weight(1f))
                     AnniversaryPillButton(
-                        text = if (uiState.selectedIds.isEmpty()) "선택" else "삭제",
+                        text = if (uiState.isSelectionMode) "삭제" else "선택",
                         active = actualSelectedIds.isNotEmpty(),
                         onClick = {
-                            if (uiState.selectedIds.isEmpty()) {
-                                onEvent(AnniversaryUiEvent.SelectModeClicked)
-                            } else {
+                            if (uiState.isSelectionMode) {
                                 onEvent(AnniversaryUiEvent.DeleteSelectedClicked)
+                            } else {
+                                onEvent(AnniversaryUiEvent.SelectModeClicked)
                             }
                         }
                     )
@@ -172,7 +172,7 @@ private fun AnniversaryListScreen(
             items(uiState.personalItems, key = { it.id }) { item ->
                 AnniversaryListItem(
                     item = item,
-                    isSelectionMode = uiState.selectedIds.isNotEmpty(),
+                    isSelectionMode = uiState.isSelectionMode,
                     selected = item.id in actualSelectedIds,
                     highlighted = uiState.lastAddedId == item.id,
                     onClick = { onEvent(AnniversaryUiEvent.AnniversaryClicked(item.id)) }
@@ -181,7 +181,7 @@ private fun AnniversaryListScreen(
             }
         }
 
-        if (uiState.selectedIds.isEmpty()) {
+        if (!uiState.isSelectionMode) {
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -262,7 +262,7 @@ private fun UpcomingAnniversaryCard(
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = item.date.compactWithDayOfWeek("화"),
+                    text = item.date.compactWithDayOfWeek(),
                     style = HaloType.body03Regular.copy(fontSize = 13.sp),
                     color = Gray600
                 )
@@ -435,7 +435,7 @@ private fun AnniversaryDetailScreen(
             AnniversaryInputLabel("메모")
             Spacer(Modifier.height(12.dp))
             ReadOnlyBox(
-                text = anniversary.memo.ifBlank { "아버지 생신 챙겨드려야지!" },
+                text = anniversary.memo,
                 minHeight = 104.dp,
                 alignTop = true
             )

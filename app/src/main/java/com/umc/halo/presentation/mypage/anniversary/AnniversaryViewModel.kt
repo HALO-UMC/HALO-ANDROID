@@ -12,13 +12,16 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
             AnniversaryUiEvent.BackClicked -> handleBack()
             AnniversaryUiEvent.AddClicked -> openAdd()
             AnniversaryUiEvent.SelectModeClicked -> updateState {
-                copy(selectedIds = if (selectedIds.isEmpty()) setOf(-1L) else emptySet())
+                copy(
+                    isSelectionModeActive = !isSelectionModeActive,
+                    selectedIds = emptySet()
+                )
             }
 
             AnniversaryUiEvent.DeleteSelectedClicked -> deleteSelected()
 
             is AnniversaryUiEvent.AnniversaryClicked -> {
-                if (currentState.selectedIds.isNotEmpty()) {
+                if (currentState.isSelectionModeActive) {
                     toggleSelection(event.id)
                 } else {
                     openEdit(event.id)
@@ -77,6 +80,8 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
                 else -> copy(
                     mode = AnniversaryScreenMode.LIST,
                     openedItem = null,
+                    isSelectionModeActive = false,
+                    selectedIds = emptySet(),
                     form = AnniversaryFormState()
                 )
             }
@@ -88,6 +93,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
             copy(
                 mode = AnniversaryScreenMode.ADD,
                 openedItem = null,
+                isSelectionModeActive = false,
                 selectedIds = emptySet(),
                 form = AnniversaryFormState()
             )
@@ -100,6 +106,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
             copy(
                 mode = AnniversaryScreenMode.DETAIL,
                 openedItem = item,
+                isSelectionModeActive = false,
                 selectedIds = emptySet()
             )
         }
@@ -111,6 +118,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
             copy(
                 mode = AnniversaryScreenMode.EDIT,
                 openedItem = item,
+                isSelectionModeActive = false,
                 selectedIds = emptySet(),
                 form = AnniversaryFormState(
                     editingId = item.id,
@@ -128,14 +136,12 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
     }
 
     private fun toggleSelection(id: Long) {
-        if (id < 0) return
         updateState {
-            val changed = if (id in selectedIds) {
+            val next = if (id in selectedIds) {
                 selectedIds - id
             } else {
-                (selectedIds - -1L) + id
+                selectedIds + id
             }
-            val next = if (changed.none { it > 0 }) setOf(-1L) else changed
             copy(selectedIds = next)
         }
     }
@@ -144,10 +150,14 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
         updateState {
             val idsToDelete = selectedIds.filter { it > 0 }.toSet()
             if (idsToDelete.isEmpty()) {
-                copy(selectedIds = emptySet())
+                copy(
+                    isSelectionModeActive = false,
+                    selectedIds = emptySet()
+                )
             } else {
                 copy(
                     personalItems = personalItems.filterNot { it.id in idsToDelete },
+                    isSelectionModeActive = false,
                     selectedIds = emptySet(),
                     lastAddedId = null
                 )
@@ -194,6 +204,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
                 personalItems = nextItems,
                 openedItem = null,
                 form = AnniversaryFormState(),
+                isSelectionModeActive = false,
                 selectedIds = emptySet(),
                 lastAddedId = if (form.editingId == null) item.id else null
             )
