@@ -52,6 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umc.halo.R
 import com.umc.halo.domain.model.themebox.ContinueStorybook
@@ -59,7 +60,9 @@ import com.umc.halo.domain.model.themebox.Theme
 import com.umc.halo.presentation.component.ButtonState
 import com.umc.halo.presentation.component.ContinueStorybookCard
 import com.umc.halo.presentation.component.HaloMaterialButton
+import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.home.HomeUiEvent
+import com.umc.halo.presentation.home.HomeViewModel
 import com.umc.halo.presentation.home.custom_storybook.CustomStorybook
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray30
@@ -73,27 +76,40 @@ import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.White
 import kotlin.math.absoluteValue
 
+@Composable
+fun ThemeBoxRoute(
+    viewModel: ThemeBoxViewModel = hiltViewModel(),
+    onNavigateToStorybook: (Long) -> Unit
+) {
+    val state by viewModel.uiState.collectAsState()
 
+    ThemeBoxScreen(
+        state = state,
+        onEvent = { event ->
+            when (event) {
+                is ThemeBoxUiEvent.OnContinueStoryBookClicked -> {
+                    onNavigateToStorybook(event.storyBookId)
+                }
+
+                is ThemeBoxUiEvent.OnCustomizedStoryBookClicked -> {
+                    onNavigateToStorybook(event.storyBookId)
+                }
+            }
+        }
+    )
+}
 
 @Composable
 fun ThemeBoxScreen(
-    vm: ThemeBoxViewModel = viewModel()
+    state: ThemeBoxUiState,
+    onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
-    val state by vm.uiState.collectAsState()
-    
-    when (val uiState = state) {
+    when (state) {
         is ThemeBoxUiState.Filled -> {
-            ThemeBoxFilledScreen(uiState)
+            ThemeBoxFilledScreen(state)
         }
         is ThemeBoxUiState.Empty -> {
-            ThemeBoxEmptyScreen(uiState, vm::onEvent)
+            ThemeBoxEmptyScreen(state, onEvent)
         }
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun ThemeBoxPreview() {
-    ThemeBoxScreen()
 }

@@ -4,15 +4,33 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.umc.halo.presentation.storybook.chapter.ChapterResultRoute
+import com.umc.halo.presentation.storybook.chapter.ChapterProgressRoute
 import com.umc.halo.presentation.calendar.CalendarScreen
+import com.umc.halo.presentation.home.HomeRoute
 import com.umc.halo.presentation.home.HomeScreen
 import com.umc.halo.presentation.login.LoginRoute
+import com.umc.halo.presentation.mypage.AccountInfoRoute
+import com.umc.halo.presentation.mypage.AnniversaryRoute
+import com.umc.halo.presentation.mypage.NotificationSettingsRoute
+import com.umc.halo.presentation.mypage.SystemSettingsRoute
+import com.umc.halo.presentation.mypage.WithdrawRoute
+import com.umc.halo.presentation.mypage.screen.AccountManagementScreen
+import com.umc.halo.presentation.mypage.screen.MyPageScreen
+import com.umc.halo.presentation.mypage.screen.OpenLicenseScreen
+import com.umc.halo.presentation.mypage.screen.PrivacyPolicyScreen
+import com.umc.halo.presentation.mypage.screen.RelationshipInfoScreen
+import com.umc.halo.presentation.mypage.screen.TermsScreen
 import com.umc.halo.presentation.onboarding.OnboardingRoute
+import com.umc.halo.presentation.storybook.detail.StoryBookDetailRoute
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailScreen
 import com.umc.halo.presentation.storybook.list.StorybookScreen
 import com.umc.halo.presentation.terms.TermsRoute
+import com.umc.halo.presentation.themebox.ThemeBoxRoute
 import com.umc.halo.presentation.themebox.ThemeBoxScreen
 
 // NavHost + BottomBar 표시 여부 + 화면 route 연결
@@ -21,7 +39,6 @@ fun AppNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    // Route와 일치하는 화면 출력
     NavHost(
         navController = navController,
 
@@ -70,7 +87,13 @@ fun AppNavGraph(
         }
 
         composable(Routes.HOME) {
-            HomeScreen()
+            HomeRoute(
+                onNavigateToStorybook = { storybookId ->
+                    navController.navigate(Routes.storybookDetail(storybookId)) {
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(Routes.CALENDAR) {
@@ -95,28 +118,230 @@ fun AppNavGraph(
         }
 
         composable(Routes.THEME_BOX) {
-            ThemeBoxScreen()
+            ThemeBoxRoute(
+                onNavigateToStorybook = { storybookId ->
+                    navController.navigate(Routes.storybookDetail(storybookId)) {
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(Routes.STORYBOOK) {
-            //스토리북
             StorybookScreen()
         }
 
         composable(Routes.MYPAGE) {
-            Text(text = "MyPage")
+            MyPageScreen(
+                onNavigateToRelationshipInfo = {
+                    navController.navigate(Routes.MYPAGE_RELATIONSHIP_INFO) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToAnniversary = {
+                    navController.navigate(Routes.MYPAGE_ANNIVERSARY) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToSystemSettings = {
+                    navController.navigate(Routes.MYPAGE_SYSTEM_SETTINGS) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToNotificationSettings = {
+                    navController.navigate(Routes.MYPAGE_NOTIFICATION_SETTINGS) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToAccountManagement = {
+                    navController.navigate(Routes.MYPAGE_ACCOUNT_MANAGEMENT) {
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(Routes.MYPAGE_RELATIONSHIP_INFO) {
+            RelationshipInfoScreen(onBack = navController::popBackStack)
+        }
+
+        composable(Routes.MYPAGE_ANNIVERSARY) {
+            AnniversaryRoute(onBack = navController::popBackStack)
+        }
+
+        composable(Routes.MYPAGE_SYSTEM_SETTINGS) {
+            SystemSettingsRoute(onBack = navController::popBackStack)
+        }
+
+        composable(Routes.MYPAGE_NOTIFICATION_SETTINGS) {
+            NotificationSettingsRoute(onBack = navController::popBackStack)
+        }
+
+        composable(Routes.MYPAGE_ACCOUNT_MANAGEMENT) {
+            AccountManagementScreen(
+                onBack = navController::popBackStack,
+                onNavigateToAccountInfo = {
+                    navController.navigate(Routes.MYPAGE_ACCOUNT_INFO) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToOpenLicense = {
+                    navController.navigate(Routes.MYPAGE_OPEN_LICENSE) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToPrivacyPolicy = {
+                    navController.navigate(Routes.MYPAGE_PRIVACY_POLICY) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToTerms = {
+                    navController.navigate(Routes.MYPAGE_TERMS) {
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(Routes.MYPAGE_ACCOUNT_INFO) {
+            AccountInfoRoute(
+                onBack = navController::popBackStack,
+                onNavigateToWithdraw = {
+                    navController.navigate(Routes.MYPAGE_WITHDRAW) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToLogin = {
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(Routes.MYPAGE_WITHDRAW) {
+            WithdrawRoute(
+                onBack = navController::popBackStack,
+                onNavigateToLogin = {
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(Routes.MYPAGE_TERMS) {
+            TermsScreen(onBack = navController::popBackStack)
+        }
+
+        composable(Routes.MYPAGE_OPEN_LICENSE) {
+            OpenLicenseScreen(
+                onBack = navController::popBackStack,
+                onNavigateToAccountInfo = {
+                    navController.navigate(Routes.MYPAGE_ACCOUNT_INFO) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToPrivacyPolicy = {
+                    navController.navigate(Routes.MYPAGE_PRIVACY_POLICY) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToTerms = {
+                    navController.navigate(Routes.MYPAGE_TERMS) {
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(Routes.MYPAGE_PRIVACY_POLICY) {
+            PrivacyPolicyScreen(onBack = navController::popBackStack)
         }
 
         composable(Routes.STORYBOOK_DETAIL) {
-            StoryBookDetailScreen()
+            StoryBookDetailRoute(
+                onNavigateToChapterResult = { storybookId, chapterId ->
+                    navController.navigate(Routes.chapterResult(storybookId,chapterId)) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToChapterProgress = { storybookId, chapterId ->
+                    navController.navigate(Routes.chapterProgress(storybookId,chapterId)) {
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
-        composable(Routes.CHAPTER_PROGRESS) {
-            Text(text = "Chapter Progress")
+        composable(
+            route = Routes.CHAPTER_PROGRESS,
+            arguments = listOf(
+                navArgument("storybookId") {
+                    type = NavType.LongType
+                },
+                navArgument("chapterId") {
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+            val storybookId = backStackEntry.arguments
+                ?.getLong("storybookId")
+                ?: return@composable
+
+            val chapterId = backStackEntry.arguments
+                ?.getLong("chapterId")
+                ?: return@composable
+
+            ChapterProgressRoute(
+                storybookId = storybookId,
+                chapterId = chapterId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToResult = { resultStorybookId, resultChapterId ->
+                    navController.navigate(
+                        Routes.chapterResult(
+                            storybookId = resultStorybookId,
+                            chapterId = resultChapterId
+                        )
+                    )
+                }
+            )
         }
 
-        composable(Routes.CHAPTER_RESULT) {
-            Text(text = "Chapter Result")
+        composable(
+            route = Routes.CHAPTER_RESULT,
+            arguments = listOf(
+                navArgument("storybookId") {
+                    type = NavType.LongType
+                },
+                navArgument("chapterId") {
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+            val storybookId = backStackEntry.arguments
+                ?.getLong("storybookId")
+                ?: return@composable
+
+            val chapterId = backStackEntry.arguments
+                ?.getLong("chapterId")
+                ?: return@composable
+
+            ChapterResultRoute(
+                storybookId = storybookId,
+                chapterId = chapterId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

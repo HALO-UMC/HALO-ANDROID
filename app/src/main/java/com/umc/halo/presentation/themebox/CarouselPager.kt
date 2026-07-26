@@ -17,9 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.util.lerp
 import com.airbnb.lottie.model.FontCharacter
+import com.umc.halo.domain.model.themebox.Theme
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
+import com.umc.halo.domain.model.themebox.Theme
 import kotlin.math.absoluteValue
 
 

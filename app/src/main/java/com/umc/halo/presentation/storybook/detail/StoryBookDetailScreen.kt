@@ -22,8 +22,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umc.halo.presentation.component.HaloTopBar
+import com.umc.halo.presentation.home.HomeScreen
+import com.umc.halo.presentation.home.HomeUiEvent
+import com.umc.halo.presentation.home.HomeViewModel
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
@@ -33,7 +37,38 @@ import com.umc.halo.presentation.theme.HaloType
 private val ScreenPaddingHorizontal = 24.dp
 private val CoverPlaceholderColor = Gray100 // TODO: 실제 커버 이미지로 추후 교체
 
+@Composable
+fun StoryBookDetailRoute(
+    viewModel: StoryBookDetailViewModel = hiltViewModel(),
+    onNavigateToChapterProgress: (Long, Long) -> Unit,
+    onNavigateToChapterResult: (Long, Long) -> Unit
+) {
+    val state by viewModel.uiState.collectAsState()
 
+    StoryBookDetailScreen(
+        state = state,
+        onEvent = { event ->
+            fun navigate(storyBookId: Long, chapterId: Long) {
+                val chapter = state.storyBookIndex.firstOrNull { it.id == chapterId } ?: return
+                val isCompleted = chapter.isCompleted
+
+                if (isCompleted) {
+                    onNavigateToChapterResult(storyBookId, chapterId)
+                } else {
+                    onNavigateToChapterProgress(storyBookId, chapterId)
+                }
+            }
+
+            when (event) {
+                is StoryBookDetailUiEvent.OnClickStoryBookIndex ->
+                    navigate(event.storyBookId, event.chapterId)
+
+                is StoryBookDetailUiEvent.OnClickTodayStoryBook ->
+                    navigate(event.storyBookId, event.chapterId)
+            }
+        }
+    )
+}
 @Composable
 fun StoryBookDetailTopBar(
     vm: StoryBookDetailViewModel = viewModel()
@@ -48,10 +83,9 @@ fun StoryBookDetailTopBar(
 
 @Composable
 fun StoryBookDetailScreen(
-    vm: StoryBookDetailViewModel = viewModel()
+    state: StoryBookDetailUiState,
+    onEvent: (StoryBookDetailUiEvent) -> Unit
 ) {
-    val state by vm.uiState.collectAsState()
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -60,7 +94,7 @@ fun StoryBookDetailScreen(
         item {
             StoryBookIndexIntro(
                 state,
-                onEvent = vm::onEvent)
+                onEvent = onEvent)
 
             Spacer(Modifier.height(56.dp))
 
@@ -80,7 +114,8 @@ fun StoryBookDetailScreen(
             StoryBookIndex(
                 state.storyBookId,
                 item,
-                onEvent = vm::onEvent)
+                onEvent = onEvent
+            )
         }
     }
 }
@@ -147,15 +182,5 @@ fun StoryThemeIntro(
     }
 }
 
-
-
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun StoryBookDetailPreview() {
-    StoryBookDetailScreen()
-}
 
 
