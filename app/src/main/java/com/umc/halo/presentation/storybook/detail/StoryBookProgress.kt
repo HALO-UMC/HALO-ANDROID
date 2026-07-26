@@ -158,7 +158,7 @@ fun ProgressIndicator(
                 )
             }
         }
-        
+
         Box(
             modifier = Modifier
                 .height(27.dp)

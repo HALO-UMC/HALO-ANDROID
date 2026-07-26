@@ -45,7 +45,7 @@ fun AppNavGraph(
 
         // TODO: 테스트용 화면 시작점 = LOGIN
         // 실제 앱 시작점은 추후 Routes.SPLASH 로 변경 예정
-        startDestination = Routes.HOME,
+        startDestination = Routes.LOGIN,
 
         modifier = modifier
     ) {
