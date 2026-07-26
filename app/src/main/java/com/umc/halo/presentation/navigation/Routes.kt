@@ -4,6 +4,7 @@ object Routes {
     const val SPLASH = "splash"
     const val ONBOARDING = "onboarding"
     const val LOGIN = "login"
+    const val TERMS = "terms"
 
     // Bottom Navigation
     const val HOME = "home"
