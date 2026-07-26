@@ -192,7 +192,7 @@ private fun AnniversaryListScreen(
                     .clickable { onEvent(AnniversaryUiEvent.AddClicked) },
                 shape = RoundedCornerShape(100.dp),
                 color = Primary500,
-                shadowElevation = 10.dp
+                shadowElevation = 2.dp
             ) {
                 Row(
                     modifier = Modifier.padding(start = 18.dp, end = 18.dp, top = 10.dp, bottom = 10.dp),
