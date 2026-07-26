@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray200
@@ -47,11 +52,22 @@ private val KakaoLabel = Color(0xFF191919)       // 카카오 로고 라벨 색
 @Composable
 fun LoginRoute(
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel(),
+    onNavigateToTerms: () -> Unit = {}
 ) {
     // 카카오/구글 SDK 호출에 필요한 Activity Context
     val context = LocalContext.current
-    // 지금은 표시할 상태(isLoading)를 아직 UI 에 쓰지 않아 구독을 생략함
+    val uiState by viewModel.uiState.collectAsState()
+
+    // 로그인 성공(현재는 임시 트리거) → 약관동의로 이동
+    // TODO: 서버 연동 시 수정해야함
+    LaunchedEffect(uiState.navigateToTerms) {
+        if (uiState.navigateToTerms) {
+            onNavigateToTerms()
+            viewModel.onEvent(LoginUiEvent.NavigationHandled)
+        }
+    }
+
     LoginScreen(
         onKakaoClick = { viewModel.onEvent(LoginUiEvent.KakaoLoginClicked(context)) },
         onGoogleClick = { viewModel.onEvent(LoginUiEvent.GoogleLoginClicked(context)) },
@@ -60,7 +76,7 @@ fun LoginRoute(
 }
 
 /**
- * 온보딩 마지막 단계 - 소셜 로그인 화면
+ * 소셜 로그인 화면
  * onKakaoClick / onGoogleClick 버튼을 터치할 때 시그널을 외부로 보냄
  */
 @Composable
@@ -77,34 +93,44 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(Modifier.weight(2f))
+        // 위쪽 여백
+        Spacer(Modifier.weight(3f))
 
         Text(
-            text = "모두 준비되었어요!",
-            style = HaloType.heading01SemiBold,
-            color = Gray800
+            text = "가장 가까운 사람을 다시 알아가는 시간",
+            style = HaloType.body02Medium.copy(
+                lineHeight = 21.sp,
+                letterSpacing = (-0.28).sp
+            ),
+            color = Gray800,
+            textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.height(64.dp))
+        Spacer(Modifier.height(4.dp))
+
+        Text(
+            text = "HALO 시작해볼까요?",
+            style = HaloType.heading02Medium.copy(
+                fontSize = 24.sp,
+                lineHeight = 36.sp,
+                letterSpacing = (-0.48).sp
+            ),
+            color = Gray800,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(Modifier.height(40.dp))
 
         // 중앙 HALO 캐릭터
         Image(
             painter = painterResource(id = R.drawable.ic_login_character),
             contentDescription = null,          // 장식용 이미지라 null
             modifier = Modifier
-                .width(94.dp)
-                .height(110.dp)
+                .width(133.dp)
+                .height(155.dp)
         )
 
-        Spacer(Modifier.height(28.dp))
-
-        Text(
-            text = "당신의 이야기를\nHALO와 함께 시작해볼까요?",
-            style = HaloType.body01Medium,
-            color = Gray800,
-            textAlign = TextAlign.Center
-        )
-
+        // 캐릭터 ~ 버튼 여백
         Spacer(Modifier.weight(1f))
 
         // 카카오 로그인 버튼
@@ -125,21 +151,24 @@ fun LoginScreen(
             containerColor = Color.White,
             contentColor = Gray800,
             iconRes = R.drawable.ic_login_google_logo,
-            iconSize = 24.dp,
+            iconSize = 20.dp,       // 로고 파일이 여백 없는 G 글리프라 카카오와 같은 20dp
             border = BorderStroke(1.dp, Gray200),
             onClick = onGoogleClick
         )
 
-        Spacer(Modifier.height(17.dp))
+        Spacer(Modifier.height(36.dp))
 
         Text(
             text = "계속 진행하면 이용약관과 개인정보처리방침에 동의하게 됩니다.",
-            style = HaloType.caption01Medium,
+            style = HaloType.caption01Medium.copy(
+                lineHeight = 14.5.sp,
+                letterSpacing = (-0.1).sp
+            ),
             color = Gray400,
             textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.height(76.dp))
+        Spacer(Modifier.height(73.dp))
     }
 }
 
@@ -161,7 +190,7 @@ private fun SocialLoginButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(48.dp),
+            .height(54.dp),
         shape = RoundedCornerShape(30.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
@@ -173,14 +202,22 @@ private fun SocialLoginButton(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = iconRes),
-                contentDescription = null,          // 장식용 로고라 null
-                modifier = Modifier.size(iconSize)
-            )
+            Box(
+                modifier = Modifier.size(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = iconRes),
+                    contentDescription = null,      // 장식용 로고라 null
+                    modifier = Modifier.size(iconSize)
+                )
+            }
             Text(
                 text = text,
-                style = HaloType.body01Medium,
+                style = HaloType.body01Medium.copy(
+                    lineHeight = 23.2.sp,
+                    letterSpacing = (-0.16).sp
+                ),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f)
             )
