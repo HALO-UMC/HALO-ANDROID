@@ -87,14 +87,17 @@ fun StoryBookDetailRoute(
 }
 @Composable
 fun StoryBookDetailTopBar(
-    vm: StoryBookDetailViewModel = viewModel()
+    vm: StoryBookDetailViewModel = viewModel(),
+    onClick: () -> Unit
 ) {
     val state by vm.uiState.collectAsState()
 
     HaloTopBar(
         title = state.storyBookInfo.title,
-        showLeftIcon = false
-    )
+        showLeftIcon = true
+    ) {
+        onClick()
+    }
 }
 
 @Composable

@@ -64,7 +64,7 @@ fun HaloScaffold(
                 Routes.CALENDAR -> CalendarTopBar()
                 Routes.THEME_BOX -> HaloTopBar(title = "테마전시관", showLeftIcon = false)
                 Routes.STORYBOOK -> HaloTopBar(title = "HALO", showLeftIcon = false)
-                Routes.STORYBOOK_DETAIL -> StoryBookDetailTopBar()
+                Routes.STORYBOOK_DETAIL -> StoryBookDetailTopBar() {navController.popBackStack()}
             }
         },
 
