@@ -2,16 +2,21 @@ package com.umc.halo.presentation.onboarding
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -43,10 +48,13 @@ import com.umc.halo.presentation.onboarding.screen.CompleteStep
 import com.umc.halo.presentation.theme.Error
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray50
+import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
+import com.umc.halo.presentation.theme.Success
+import com.umc.halo.presentation.theme.White
 
 @Composable
 fun OnboardingRoute(
@@ -185,6 +193,9 @@ private fun NameInputStep(
                 onValueChange = { name ->
                     onEvent(OnboardingUiEvent.NameChanged(name))
                 },
+                onClearClick = {
+                    onEvent(OnboardingUiEvent.NameChanged(""))
+                },
                 placeholder = "이름을 입력하세요.",
                 isError = isNameError,
                 modifier = Modifier.padding(horizontal = 24.dp)
@@ -193,13 +204,20 @@ private fun NameInputStep(
             if (nameErrorMessage != null) {
                 Spacer(modifier = Modifier.height(6.dp))
 
-                Text(
-                    text = nameErrorMessage,
-                    style = HaloType.body03Regular,
-                    color = Error,
+                NameErrorGuide(
+                    message = nameErrorMessage,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)
+                )
+            } else {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                NameRequirementGuide(
+                    uiState = uiState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 44.dp)
                 )
             }
         }
@@ -210,6 +228,7 @@ private fun NameInputStep(
             onClick = {
                 onEvent(OnboardingUiEvent.NextClicked)
             },
+            clickableWhenDisabled = true,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .navigationBarsPadding()
@@ -226,6 +245,7 @@ private fun NameInputStep(
 private fun OnboardingNameTextField(
     value: String,
     onValueChange: (String) -> Unit,
+    onClearClick: () -> Unit,
     placeholder: String,
     isError: Boolean,
     modifier: Modifier = Modifier
@@ -263,23 +283,145 @@ private fun OnboardingNameTextField(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 24.dp),
-                    contentAlignment = Alignment.CenterStart
                 ) {
-                    if (value.isBlank()) {
-                        Text(
-                            text = placeholder,
-                            style = HaloType.body02Regular.copy(
-                                lineHeight = 20.3.sp,
-                                letterSpacing = (-0.14).sp
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(
+                                start = 24.dp,
+                                end = if (value.isNotEmpty()) 50.dp else 24.dp
                             ),
-                            color = Gray300
-                        )
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        if (value.isBlank()) {
+                            Text(
+                                text = placeholder,
+                                style = HaloType.body02Regular.copy(
+                                    lineHeight = 20.3.sp,
+                                    letterSpacing = (-0.14).sp
+                                ),
+                                color = Gray300
+                            )
+                        }
+
+                        innerTextField()
                     }
 
-                    innerTextField()
+                    if (value.isNotEmpty()) {
+                        Surface(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(end = 18.dp)
+                                .size(18.dp)
+                                .clickable(onClick = onClearClick),
+                            shape = CircleShape,
+                            color = Gray200
+                        ) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "×",
+                                    style = HaloType.caption01Medium.copy(
+                                        fontSize = 12.sp,
+                                        lineHeight = 12.sp
+                                    ),
+                                    color = White
+                                )
+                            }
+                        }
+                    }
                 }
             }
+        )
+    }
+}
+
+@Composable
+private fun NameRequirementGuide(
+    uiState: OnboardingUiState,
+    modifier: Modifier = Modifier
+) {
+    val hasInput = uiState.name.isNotEmpty()
+
+    Column(modifier = modifier) {
+        NameRequirementRow(
+            text = "최소 2자 ~ 최대 10자 이내",
+            isSatisfied = uiState.isNameLengthValid,
+            hasInput = hasInput
+        )
+        NameRequirementRow(
+            text = "한글/영어/숫자 조합 가능",
+            isSatisfied = uiState.isNameFormatValid,
+            hasInput = hasInput
+        )
+        NameRequirementRow(
+            text = "특수 문자 입력 불가능",
+            isSatisfied = uiState.isNameFormatValid,
+            hasInput = hasInput
+        )
+    }
+}
+
+@Composable
+private fun NameRequirementRow(
+    text: String,
+    isSatisfied: Boolean,
+    hasInput: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val textColor = if (hasInput && isSatisfied) Success else Gray300
+
+    Row(
+        modifier = modifier.height(15.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "✓",
+            modifier = Modifier.width(14.dp),
+            style = HaloType.caption01Medium.copy(
+                fontSize = 10.sp,
+                lineHeight = 14.5.sp
+            ),
+            color = textColor
+        )
+        Text(
+            text = text,
+            style = HaloType.caption01Medium.copy(
+                fontSize = 10.sp,
+                lineHeight = 14.5.sp
+            ),
+            color = textColor
+        )
+    }
+}
+
+@Composable
+private fun NameErrorGuide(
+    message: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.height(15.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "ⓘ",
+            modifier = Modifier.width(16.dp),
+            style = HaloType.caption01Medium.copy(
+                fontSize = 10.sp,
+                lineHeight = 14.5.sp
+            ),
+            color = Error
+        )
+        Text(
+            text = message,
+            style = HaloType.caption01Medium.copy(
+                fontSize = 10.sp,
+                lineHeight = 14.5.sp
+            ),
+            color = Error
         )
     }
 }
