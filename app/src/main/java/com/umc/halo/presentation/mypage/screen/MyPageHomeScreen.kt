@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.umc.halo.R
 import com.umc.halo.presentation.mypage.component.MyPageBrandTopBar
 import com.umc.halo.presentation.mypage.component.MyPageContainer
 import com.umc.halo.presentation.mypage.component.ProfileCard
@@ -82,10 +85,11 @@ private fun HomeMenuRow(
             color = Gray800,
             modifier = Modifier.weight(1f)
         )
-        Text(
-            text = ">",
-            style = HaloType.body01SemiBold.copy(fontSize = 18.sp),
-            color = Gray700
+        Icon(
+            painter = painterResource(id = R.drawable.ic_home_right_arrow),
+            contentDescription = null,
+            tint = Gray700,
+            modifier = Modifier.padding(end = 6.dp)
         )
     }
     HorizontalDivider(color = Gray100)
