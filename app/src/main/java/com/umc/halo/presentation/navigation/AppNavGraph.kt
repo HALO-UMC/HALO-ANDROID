@@ -4,8 +4,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.umc.halo.presentation.storybook.chapter.ChapterResultRoute
+import com.umc.halo.presentation.storybook.chapter.ChapterProgressRoute
 import com.umc.halo.presentation.calendar.CalendarScreen
 import com.umc.halo.presentation.home.HomeRoute
 import com.umc.halo.presentation.home.HomeScreen
@@ -23,14 +27,9 @@ fun AppNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    // Route와 일치하는 화면 출력
     NavHost(
         navController = navController,
-
-        // TODO: 온보딩 UI 확인용 임시 startDestination
-        // 나중에 로그인 흐름 연결할 때 Routes.LOGIN 또는 Routes.SPLASH로 다시 변경 예정
         startDestination = Routes.HOME,
-
         modifier = modifier
     ) {
         composable(Routes.SPLASH) {
@@ -95,7 +94,6 @@ fun AppNavGraph(
         }
 
         composable(Routes.STORYBOOK) {
-            //스토리북
             StorybookScreen()
         }
 
@@ -118,12 +116,68 @@ fun AppNavGraph(
             )
         }
 
-        composable(Routes.CHAPTER_PROGRESS) {
-            Text(text = "Chapter Progress")
+        composable(
+            route = Routes.CHAPTER_PROGRESS,
+            arguments = listOf(
+                navArgument("storybookId") {
+                    type = NavType.LongType
+                },
+                navArgument("chapterId") {
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+            val storybookId = backStackEntry.arguments
+                ?.getLong("storybookId")
+                ?: return@composable
+
+            val chapterId = backStackEntry.arguments
+                ?.getLong("chapterId")
+                ?: return@composable
+
+            ChapterProgressRoute(
+                storybookId = storybookId,
+                chapterId = chapterId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToResult = { resultStorybookId, resultChapterId ->
+                    navController.navigate(
+                        Routes.chapterResult(
+                            storybookId = resultStorybookId,
+                            chapterId = resultChapterId
+                        )
+                    )
+                }
+            )
         }
 
-        composable(Routes.CHAPTER_RESULT) {
-            Text(text = "Chapter Result")
+        composable(
+            route = Routes.CHAPTER_RESULT,
+            arguments = listOf(
+                navArgument("storybookId") {
+                    type = NavType.LongType
+                },
+                navArgument("chapterId") {
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+            val storybookId = backStackEntry.arguments
+                ?.getLong("storybookId")
+                ?: return@composable
+
+            val chapterId = backStackEntry.arguments
+                ?.getLong("chapterId")
+                ?: return@composable
+
+            ChapterResultRoute(
+                storybookId = storybookId,
+                chapterId = chapterId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
