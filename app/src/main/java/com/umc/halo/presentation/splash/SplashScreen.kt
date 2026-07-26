@@ -23,7 +23,7 @@ fun SplashRoute(
     onNavigateToLogin: () -> Unit
 ) {
     LaunchedEffect(Unit) {
-        delay(4000)
+        delay(5000)
 
         onNavigateToLogin()
     }
