@@ -38,6 +38,6 @@ data class MonthSummary(
  * 커버 이미지/테마 고유색은 서버 연동 후 확정 — 지금은 더미 데이터로
  */
 data class CompletedBook(
-    val id: Int,
+    val id: Long,
     val title: String
 )

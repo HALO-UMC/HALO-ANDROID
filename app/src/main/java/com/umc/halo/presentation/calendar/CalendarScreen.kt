@@ -37,13 +37,15 @@ import com.umc.halo.presentation.theme.White
 
 /**
  * 캘린더 화면 진입점
- * 화면 이동(스토리북/테마함)은 [onNavigateToStorybook]·[onNavigateToThemeBox] 콜백으로
+ * 화면 이동은 [onNavigateToStorybookList]·[onNavigateToThemeBox]·[onNavigateToChapterResult]
+ * 콜백으로 위임
  */
 @Composable
 fun CalendarScreen(
     vm: CalendarViewModel = viewModel(),
-    onNavigateToStorybook: () -> Unit = {},
-    onNavigateToThemeBox: () -> Unit = {}
+    onNavigateToStorybookList: () -> Unit = {},
+    onNavigateToThemeBox: () -> Unit = {},
+    onNavigateToChapterResult: (Long, Long) -> Unit = { _, _ -> }
 ) {
     val state by vm.uiState.collectAsState()
 
@@ -55,15 +57,20 @@ fun CalendarScreen(
                 // 모달에서 눌린 경우가 있어 먼저 모달을 닫음
                 CalendarUiEvent.OnStartRecordingClicked -> {           // 빈 모달 '시작하기' + 하단 '바로 시작하기'
                     vm.onEvent(CalendarUiEvent.OnDismissModal)
-                    onNavigateToStorybook()
+                    onNavigateToStorybookList()
                 }
                 is CalendarUiEvent.OnCompletedStorybookClicked -> {    // 모달 완성 스토리북 카드
                     vm.onEvent(CalendarUiEvent.OnDismissModal)
                     onNavigateToThemeBox()
                 }
+                // 모달 '장 기록중' 카드 → 그 장의 완료 결과 화면
+                is CalendarUiEvent.OnChapterClicked -> {
+                    vm.onEvent(CalendarUiEvent.OnDismissModal)
+                    onNavigateToChapterResult(event.storybookId, event.chapterId)
+                }
                 CalendarUiEvent.OnSummaryDetailClicked -> onNavigateToThemeBox()  // 하단 '자세히 보러가기'
 
-                // 그 외(달 이동·날짜 클릭·모달 닫기·장 기록중=기획 확정 대기)는 VM 이 상태로 처리
+                // 그 외(달 이동·날짜 클릭·모달 닫기)는 VM 이 상태로 처리
                 else -> vm.onEvent(event)
             }
         }
