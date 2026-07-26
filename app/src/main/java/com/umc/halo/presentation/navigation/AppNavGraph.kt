@@ -61,6 +61,9 @@ fun AppNavGraph(
 
         composable(Routes.ONBOARDING) {
             OnboardingRoute(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
                 onNavigateToHome = {
                     navController.navigate(Routes.HOME) {
                         popUpTo(Routes.ONBOARDING) {

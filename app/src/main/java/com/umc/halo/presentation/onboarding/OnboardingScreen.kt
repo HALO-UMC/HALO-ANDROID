@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.activity.compose.BackHandler
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.onboarding.screen.BasicInfoStep
 import com.umc.halo.presentation.onboarding.screen.GoalStep
@@ -60,6 +62,7 @@ import com.umc.halo.presentation.theme.White
 fun OnboardingRoute(
     modifier: Modifier = Modifier,
     viewModel: OnboardingViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit = {},
     onNavigateToHome: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -67,6 +70,7 @@ fun OnboardingRoute(
     OnboardingScreen(
         uiState = uiState,
         onEvent = viewModel::onEvent,
+        onNavigateBack = onNavigateBack,
         onNavigateToHome = onNavigateToHome,
         modifier = modifier
     )
@@ -76,14 +80,24 @@ fun OnboardingRoute(
 fun OnboardingScreen(
     uiState: OnboardingUiState,
     onEvent: (OnboardingUiEvent) -> Unit,
+    onNavigateBack: () -> Unit,
     onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val onBackClick = {
+        if (uiState.currentStep == OnboardingStep.NAME) {
+            onNavigateBack()
+        } else {
+            onEvent(OnboardingUiEvent.BackClicked)
+        }
+    }
+
     when (uiState.currentStep) {
         OnboardingStep.NAME -> {
             NameInputStep(
                 uiState = uiState,
                 onEvent = onEvent,
+                onBackClick = onBackClick,
                 modifier = modifier
             )
         }
@@ -99,6 +113,7 @@ fun OnboardingScreen(
         OnboardingStep.WELCOME -> {
             WelcomeStep(
                 userName = uiState.userName,
+                onBackClick = onBackClick,
                 onNextClick = {
                     onEvent(OnboardingUiEvent.NextClicked)
                 },
@@ -133,6 +148,7 @@ fun OnboardingScreen(
         OnboardingStep.COMPLETE -> {
             CompleteStep(
                 uiState = uiState,
+                onBackClick = onBackClick,
                 onStartClick = onNavigateToHome,
                 modifier = modifier
             )
@@ -144,16 +160,30 @@ fun OnboardingScreen(
 private fun NameInputStep(
     uiState: OnboardingUiState,
     onEvent: (OnboardingUiEvent) -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val nameErrorMessage = uiState.nameErrorMessage
     val isNameError = nameErrorMessage != null
+
+    BackHandler(onBack = onBackClick)
 
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
+        OnboardingBackButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .statusBarsPadding()
+                .padding(
+                    start = 8.dp,
+                    top = 14.dp
+                )
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()

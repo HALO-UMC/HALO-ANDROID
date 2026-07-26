@@ -36,12 +36,13 @@ import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.White
 
-// TODO: 재환이가 책등 이미지 머지하면 그것으로 교체
+// 책등 이미지(홈 책장과 같은 자산 사용 — 투명 배경)
+// 순서는 홈 HomeViewModel 의 번호와 동일: 1 오래전 당신 / 2 당신의 1호 팬 / 3 취향이 닿는 날 ...
 private val StorybookSpines = listOf(
-    R.drawable.img_storybook_01, R.drawable.img_storybook_02, R.drawable.img_storybook_03,
-    R.drawable.img_storybook_04, R.drawable.img_storybook_05, R.drawable.img_storybook_06,
-    R.drawable.img_storybook_07, R.drawable.img_storybook_08, R.drawable.img_storybook_09,
-    R.drawable.img_storybook_10
+    R.drawable.image_home_bookcase_1, R.drawable.image_home_bookcase_2, R.drawable.image_home_bookcase_3,
+    R.drawable.image_home_bookcase_4, R.drawable.image_home_bookcase_5, R.drawable.image_home_bookcase_6,
+    R.drawable.image_home_bookcase_7, R.drawable.image_home_bookcase_8, R.drawable.image_home_bookcase_9,
+    R.drawable.image_home_bookcase_10
 )
 private val ShelfHeight = 84.dp
 
