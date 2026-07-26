@@ -40,7 +40,8 @@ fun AppNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Routes.HOME,
+        // TODO: 온보딩 UI 확인 후 Routes.HOME 으로 되돌리기
+        startDestination = Routes.ONBOARDING,
         modifier = modifier
     ) {
         composable(Routes.SPLASH) {
