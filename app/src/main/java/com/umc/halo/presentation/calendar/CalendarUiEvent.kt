@@ -16,10 +16,13 @@ sealed interface CalendarUiEvent {
     data object OnStartRecordingClicked : CalendarUiEvent
 
     /** 모달 '완성 스토리북' 카드 클릭 → 테마함 */
-    data class OnCompletedStorybookClicked(val storybookId: Int) : CalendarUiEvent
+    data class OnCompletedStorybookClicked(val storybookId: Long) : CalendarUiEvent
 
-    /** 모달 '장 기록중'(그 날 완료한 장) 카드 클릭 → 스토리북 상세(완료) */
-    data class OnChapterClicked(val storybookId: Int, val chapter: Int) : CalendarUiEvent
+    /**
+     * 모달 '장 기록중'(그 날 완료한 장) 카드 클릭 → 그 장의 완료 결과 화면(chapter_result)
+     * 이동에는 장 고유 id 가 필요
+     */
+    data class OnChapterClicked(val storybookId: Long, val chapterId: Long) : CalendarUiEvent
 
     /** 하단 요약 '자세히 보러가기' → 테마함 */
     data object OnSummaryDetailClicked : CalendarUiEvent

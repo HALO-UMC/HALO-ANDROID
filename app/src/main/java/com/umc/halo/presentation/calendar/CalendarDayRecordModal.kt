@@ -111,7 +111,7 @@ fun CalendarDayRecordModal(
                                         onEvent(
                                             CalendarUiEvent.OnChapterClicked(
                                                 chapter.storybookId,
-                                                chapter.chapter
+                                                chapter.chapterId
                                             )
                                         )
                                     }
@@ -198,7 +198,7 @@ private fun CompletedCard(
     }
 }
 
-/** 장 기록중 카드 (제목 + "N장 기록을 완료했어요!" + >) → 클릭 시 스토리북 상세(완료) */
+/** 장 기록중 카드 (제목 + "N장 기록을 완료했어요!" + >) → 클릭 시 그 장의 완료 결과 화면 */
 @Composable
 private fun ChapterCard(
     item: DateCompletedChapter,

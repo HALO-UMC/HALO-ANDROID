@@ -34,33 +34,36 @@ class CalendarViewModel : BaseViewModel<CalendarUiState, CalendarUiEvent>(Calend
     private val previewEmptyState = false
 
     // 현재 월에만 존재하는 더미 기록(날짜 → 모달 내용)
-    // 빈 상태 미리보기(previewEmptyState)면 기록을 아예 비워 달력 마크·기록 모달도 안 뜨게 함.
+    // 빈 상태 미리보기(previewEmptyState)면 기록을 아예 비워 달력 마크·기록 모달도 안 뜨게 함
+    //
+    // chapterId 는 장 번호와 다른 값이라는 걸 드러내려고 (스토리북id * 100 + 장번호) 로 임의 부여
+    // 서버 연동 시 실제 장 id 로 대체
     private val dummyRecords: Map<Int, DayRecord> = if (previewEmptyState) emptyMap() else mapOf(
         9 to DayRecord(
             month = currentMonth, day = 9,
             completedChapters = listOf(
-                DateCompletedChapter(101, "오래전 당신", 6)
+                DateCompletedChapter(storybookId = 101, chapterId = 10106, title = "오래전 당신", chapter = 6)
             )
         ),
         10 to DayRecord(
             month = currentMonth, day = 10,
             completedStorybook = DateCompletedStorybook(201, "오래전 당신"),
             completedChapters = listOf(
-                DateCompletedChapter(101, "오래전 당신", 5),
-                DateCompletedChapter(102, "나란히 걷는 날", 5)
+                DateCompletedChapter(storybookId = 101, chapterId = 10105, title = "오래전 당신", chapter = 5),
+                DateCompletedChapter(storybookId = 102, chapterId = 10205, title = "나란히 걷는 날", chapter = 5)
             )
         ),
         11 to DayRecord(
             month = currentMonth, day = 11,
             completedChapters = listOf(
-                DateCompletedChapter(103, "가족의 온도", 3)
+                DateCompletedChapter(storybookId = 103, chapterId = 10303, title = "가족의 온도", chapter = 3)
             )
         ),
         19 to DayRecord(
             month = currentMonth, day = 19,
             completedStorybook = DateCompletedStorybook(202, "당신 사용 설명서"),
             completedChapters = listOf(
-                DateCompletedChapter(101, "오래전 당신", 7)
+                DateCompletedChapter(storybookId = 101, chapterId = 10107, title = "오래전 당신", chapter = 7)
             )
         )
     )
@@ -79,17 +82,11 @@ class CalendarViewModel : BaseViewModel<CalendarUiState, CalendarUiEvent>(Calend
 
             CalendarUiEvent.OnDismissModal -> updateState { copy(selectedRecord = null) }
 
-            // 아래 3개는 화면 이동 이벤트 → CalendarScreen 이 NavGraph 콜백으로 처리
+            // 아래 4개는 화면 이동 이벤트 → CalendarScreen 이 NavGraph 콜백으로 처리
             CalendarUiEvent.OnStartRecordingClicked,          // → 스토리북(전체탭)
             is CalendarUiEvent.OnCompletedStorybookClicked,   // → 테마함
-            CalendarUiEvent.OnSummaryDetailClicked -> Unit     // → 테마함
-
-            // 장 기록중 카드 → 스토리북 상세(완료)로 이동
-            // 대상 화면을 작업 중이라 아직 실제 이동은 stub — 화면 준비되면
-            // CalendarScreen 콜백(onNavigateToStorybookDetail)으로 승격 예정
-            is CalendarUiEvent.OnChapterClicked -> {
-                // TODO: 스토리북 상세(완료) 화면 준비되면 storybookId 로 이동
-            }
+            is CalendarUiEvent.OnChapterClicked,              // → 장 완료 결과 화면(chapter_result)
+            CalendarUiEvent.OnSummaryDetailClicked -> Unit    // → 테마함
         }
     }
 
