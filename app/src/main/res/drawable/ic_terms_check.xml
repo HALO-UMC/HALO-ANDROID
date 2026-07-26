@@ -1,0 +1,15 @@
+<!-- 약관동의 체크(✓) 아이콘 (Figma 원본 path M1 7 L6.25 13 L15 1)
+     stroke 기반이라 Compose Icon 의 tint 로 상태별 색을 입힌다 (미체크 Gray300 / 체크 Primary600) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="15dp"
+    android:viewportWidth="16"
+    android:viewportHeight="15">
+    <path
+        android:pathData="M1,7L6.25,13L15,1"
+        android:fillColor="#00000000"
+        android:strokeColor="#B3B3B3"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>
