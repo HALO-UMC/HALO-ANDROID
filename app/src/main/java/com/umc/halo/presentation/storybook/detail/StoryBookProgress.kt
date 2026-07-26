@@ -95,10 +95,18 @@ fun StoryBookProgressBar(
         Spacer(Modifier.height(9.dp))
     }
 
-    Row() {
-        Spacer(Modifier.fillMaxWidth(storyBookProgress.chapter/10f))
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        if (storyBookProgress.chapter <= 9) {
+            Spacer(Modifier.fillMaxWidth(storyBookProgress.chapter/10f))
 
-        ProgressIndicator(storyBookProgress)
+            ProgressIndicator(storyBookProgress, true)
+        } else {
+            Spacer(Modifier.weight(1f))
+
+            ProgressIndicator(storyBookProgress, false)
+        }
     }
 }
 
@@ -124,31 +132,33 @@ fun ProgressDivider(
 
 @Composable
 fun ProgressIndicator(
-    storyBookProgress: CurrentProgress
+    storyBookProgress: CurrentProgress,
+    applyOffset: Boolean
 ) {
     Column(
-        modifier = Modifier
-            .offset(x = (-22).dp)
+        modifier = if (applyOffset) Modifier.offset(x = (-22).dp) else Modifier
     ) {
-        Canvas(
-            modifier = Modifier
-                .width(12.dp)
-                .height(6.dp)
-                .align(Alignment.CenterHorizontally)
-        ) {
-            val path = Path().apply {
-                moveTo(size.width / 2, 0f)
-                lineTo(0f, size.height)
-                lineTo(size.width, size.height)
-                close()
+        if (applyOffset) {
+            Canvas(
+                modifier = Modifier
+                    .width(12.dp)
+                    .height(6.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                val path = Path().apply {
+                    moveTo(size.width / 2, 0f)
+                    lineTo(0f, size.height)
+                    lineTo(size.width, size.height)
+                    close()
+                }
+
+                drawPath(
+                    path = path,
+                    color = Primary500
+                )
             }
-
-            drawPath(
-                path = path,
-                color = Primary500
-            )
         }
-
+        
         Box(
             modifier = Modifier
                 .height(27.dp)
