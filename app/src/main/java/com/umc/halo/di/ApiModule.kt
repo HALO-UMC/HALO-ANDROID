@@ -1,6 +1,9 @@
 package com.umc.halo.di
 
 import com.umc.halo.data.remote.api.auth.AuthApi
+import com.umc.halo.data.remote.api.member.MemberApi
+import com.umc.halo.data.remote.api.onboarding.OnboardingApi
+import com.umc.halo.data.remote.api.terms.TermsApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,4 +23,19 @@ object ApiModule {
     @Singleton
     fun provideAuthApi(retrofit: Retrofit): AuthApi =
         retrofit.create(AuthApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMemberApi(retrofit: Retrofit): MemberApi =
+        retrofit.create(MemberApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideTermsApi(retrofit: Retrofit): TermsApi =
+        retrofit.create(TermsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideOnboardingApi(retrofit: Retrofit): OnboardingApi =
+        retrofit.create(OnboardingApi::class.java)
 }
