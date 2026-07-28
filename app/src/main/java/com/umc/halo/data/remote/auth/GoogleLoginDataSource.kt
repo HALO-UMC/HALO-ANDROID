@@ -1,12 +1,15 @@
 package com.umc.halo.data.remote.auth
 
 import android.content.Context
+import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.umc.halo.BuildConfig
+import com.umc.halo.domain.model.auth.LoginCancelledException
 import javax.inject.Inject
 
 /**
@@ -32,7 +35,12 @@ class GoogleLoginDataSource @Inject constructor() {
             .build()
 
         // 계정 선택 UI 표시
-        val response = credentialManager.getCredential(context = context, request = request)
+        // 사용자가 계정 선택 창을 닫으면 취소 예외가 오는데 카카오와 같은 예외로 통일해 던짐
+        val response = try {
+            credentialManager.getCredential(context = context, request = request)
+        } catch (e: GetCredentialCancellationException) {
+            throw LoginCancelledException(e)
+        }
 
         val credential = response.credential
         if (credential is CustomCredential &&
@@ -43,5 +51,17 @@ class GoogleLoginDataSource @Inject constructor() {
         }
 
         error("구글 로그인 실패: 알 수 없는 자격증명 타입(${credential.type})")
+    }
+
+    /**
+     * 기기에 남아있는 구글 자격증명 선택 기록을 지움 (회원 탈퇴 시 호출)
+     *
+     * 지우지 않으면 재가입할 때 계정 선택 창 없이 직전 계정으로 바로 붙움
+     */
+    suspend fun clearCredentialState(context: Context) {
+        runCatching {
+            CredentialManager.create(context)
+                .clearCredentialState(ClearCredentialStateRequest())
+        }
     }
 }

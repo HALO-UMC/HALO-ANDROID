@@ -1,12 +1,16 @@
 package com.umc.halo.presentation.login
 
+import com.umc.halo.domain.model.auth.AuthDestination
+
 /**
  * 로그인 화면의 상태
- * 실제 로그인 로직(소셜 SDK 연동)은 providerToken 종류 확정 및 서버 완성 후 추가 작업
  *
- * @param navigateToTerms 로그인 성공 후 약관동의 화면으로 이동해야 함을 알리는 1회성 신호
+ * @param isLoading    소셜 SDK 호출 ~ 서버 로그인이 끝날 때까지 true. 버튼 중복 탭을 막는 데 사용
+ * @param destination  로그인 성공 후 이동할 화면(약관/온보딩/홈). 이동 전까지만 채워지는 1회성 신호
+ * @param errorMessage 로그인 실패 안내 문구. 사용자가 직접 취소한 경우에는 채우지 않음
  */
 data class LoginUiState(
     val isLoading: Boolean = false,
-    val navigateToTerms: Boolean = false
+    val destination: AuthDestination? = null,
+    val errorMessage: String? = null
 )

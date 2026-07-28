@@ -19,7 +19,15 @@ data class MyPageUiState(
     val showNotificationTimeDialog: Boolean = false,
     val isEditingNotificationTime: Boolean = false,
     val showLogoutDialog: Boolean = false,
-    val showWithdrawDialog: Boolean = false
+    val showWithdrawDialog: Boolean = false,
+
+    // ---- 계정 처리 ----
+    /** 로그아웃/탈퇴 처리 중 (버튼 중복 탭 방지) */
+    val isProcessingAccountAction: Boolean = false,
+    /** 로그아웃/탈퇴가 끝나 로그인 화면으로 보내야 함을 알리는 1회성 신호 */
+    val navigateToLogin: Boolean = false,
+    /** 계정 처리 실패 안내 문구 */
+    val accountErrorMessage: String? = null
 ) : UiState
 
 fun MyPageUiState.formattedNotificationTime(): String {

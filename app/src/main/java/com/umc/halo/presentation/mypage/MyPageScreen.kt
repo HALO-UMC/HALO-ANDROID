@@ -1,9 +1,13 @@
 package com.umc.halo.presentation.mypage
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryScreenMode
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryUiEvent
@@ -18,7 +22,7 @@ import com.umc.halo.presentation.mypage.screen.WithdrawScreen
 fun SystemSettingsRoute(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MyPageViewModel = viewModel()
+    viewModel: MyPageViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -34,7 +38,7 @@ fun SystemSettingsRoute(
 fun NotificationSettingsRoute(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MyPageViewModel = viewModel()
+    viewModel: MyPageViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -52,16 +56,18 @@ fun AccountInfoRoute(
     onNavigateToWithdraw: () -> Unit,
     onNavigateToLogin: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MyPageViewModel = viewModel()
+    viewModel: MyPageViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // 로그아웃 처리(서버 + 토큰 삭제)가 끝난 뒤에 이동
+    AccountActionEffect(uiState = uiState, viewModel = viewModel, onNavigateToLogin = onNavigateToLogin)
 
     AccountInfoScreen(
         uiState = uiState,
         onEvent = viewModel::onEvent,
         onBack = onBack,
         onNavigateToWithdraw = onNavigateToWithdraw,
-        onNavigateToLogin = onNavigateToLogin,
         modifier = modifier
     )
 }
@@ -71,17 +77,45 @@ fun WithdrawRoute(
     onBack: () -> Unit,
     onNavigateToLogin: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MyPageViewModel = viewModel()
+    viewModel: MyPageViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // 탈퇴 처리(서버 계정 삭제 + 소셜 연결 해제)가 끝난 뒤에 이동
+    AccountActionEffect(uiState = uiState, viewModel = viewModel, onNavigateToLogin = onNavigateToLogin)
 
     WithdrawScreen(
         uiState = uiState,
         onEvent = viewModel::onEvent,
         onBack = onBack,
-        onNavigateToLogin = onNavigateToLogin,
         modifier = modifier
     )
+}
+
+/**
+ * 로그아웃/탈퇴 결과를 화면 이동과 안내로 연결하는 공통 처리
+ * (계정 정보 화면과 탈퇴 화면이 같은 방식이라 하나로 묶음)
+ */
+@Composable
+private fun AccountActionEffect(
+    uiState: MyPageUiState,
+    viewModel: MyPageViewModel,
+    onNavigateToLogin: () -> Unit
+) {
+    val context = LocalContext.current
+
+    LaunchedEffect(uiState.navigateToLogin) {
+        if (!uiState.navigateToLogin) return@LaunchedEffect
+        onNavigateToLogin()
+        viewModel.onEvent(MyPageUiEvent.AccountNavigationHandled)
+    }
+
+    LaunchedEffect(uiState.accountErrorMessage) {
+        val message = uiState.accountErrorMessage ?: return@LaunchedEffect
+        // TODO: 에러 표시 방식은 디자인 확정 후 교체
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        viewModel.onEvent(MyPageUiEvent.AccountErrorShown)
+    }
 }
 
 @Composable
