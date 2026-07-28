@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,14 +32,21 @@ import com.umc.halo.presentation.theme.Gray600
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 
+/**
+ * TODO(마이페이지 담당): onNavigateToLogin 파라미터를 제거함
+ *  탈퇴는 서버 계정 삭제 + 소셜 연결 해제가 필요해서 '탈퇴하기'가 WithdrawConfirmed 이벤트를 보내고
+ *  처리가 끝나면 WithdrawRoute 가 navigateToLogin 신호를 보고 이동시킴
+ *  (소셜 연결 해제에 Activity Context 가 필요해 이벤트에 담아 보냄)
+ */
 @Composable
 fun WithdrawScreen(
     uiState: MyPageUiState,
     onEvent: (MyPageUiEvent) -> Unit,
     onBack: () -> Unit,
-    onNavigateToLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     if (uiState.showWithdrawDialog) {
         ConfirmActionDialog(
             title = "정말 탈퇴하시겠어요?",
@@ -47,7 +55,7 @@ fun WithdrawScreen(
             onDismiss = {
                 onEvent(MyPageUiEvent.WithdrawDialogChanged(false))
             },
-            onConfirm = onNavigateToLogin
+            onConfirm = { onEvent(MyPageUiEvent.WithdrawConfirmed(context)) }
         )
     }
 
