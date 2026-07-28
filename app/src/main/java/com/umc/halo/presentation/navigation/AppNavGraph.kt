@@ -54,7 +54,12 @@ fun AppNavGraph(
         composable(Routes.SPLASH) {
             SplashRoute(
                 onNavigateToLogin = {
-                    navController.navigate(Routes.LOGIN)
+                    navController.navigate(Routes.LOGIN){
+                        popUpTo(Routes.SPLASH) {
+                            // 돌아가기 금지 (네비게이션 변경 이후 고치기)
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

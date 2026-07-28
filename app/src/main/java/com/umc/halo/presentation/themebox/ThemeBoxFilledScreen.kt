@@ -1,11 +1,13 @@
 package com.umc.halo.presentation.themebox
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +25,7 @@ import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray600
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
+import com.umc.halo.presentation.theme.Primary500
 
 @Composable
 fun ThemeBoxFilledScreen(
@@ -32,15 +35,16 @@ fun ThemeBoxFilledScreen(
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(Modifier.weight(6f))
+        Spacer(Modifier.weight(12f))
         //Spacer(Modifier.height(12.dp))
 
         ProgressBox(
-            Modifier.weight(22f),
+            Modifier.weight(35f),
             state.numberOfCharacter,
-            state.storyBookInProgress)
+            state.storyBookInProgress
+        )
 
-        Spacer(Modifier.weight(13f))
+        Spacer(Modifier.weight(18f))
         //Spacer(Modifier.height(26.dp))
 
         ThemeBox(
@@ -48,7 +52,7 @@ fun ThemeBoxFilledScreen(
             state.themeList
         )
 
-        Spacer(Modifier.weight(30f))
+        Spacer(Modifier.weight(15f))
         //Spacer(Modifier.height(60.dp))
 
         HaloMaterialButton(
@@ -78,7 +82,6 @@ fun ProgressBox(
         modifier
             .padding(10.dp)
             .fillMaxWidth(14/20f)
-            .height(IntrinsicSize.Min)
     ) {
         Column(
             Modifier.weight(1f),

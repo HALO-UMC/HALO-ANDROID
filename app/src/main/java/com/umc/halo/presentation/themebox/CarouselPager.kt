@@ -48,7 +48,7 @@ fun CarouselPager(
         )
 
         HorizontalPager(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             state = pagerState,
             contentPadding = PaddingValues(horizontal = horizontalPadding),
             pageSpacing = pageSpacing
