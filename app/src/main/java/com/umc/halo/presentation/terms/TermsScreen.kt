@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.terms
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,18 +22,21 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.R
+import com.umc.halo.domain.model.auth.AuthDestination
 import com.umc.halo.domain.model.terms.TermsAgreement
 import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
@@ -50,23 +54,44 @@ import com.umc.halo.presentation.theme.White
 /**
  * 약관동의 화면 진입점
  *
- * - [onBack] : 상단바 뒤로가기 (약관동의 메인 → 이전 화면인 로그인 화면)
- * - [onNavigateToOnboarding] : '다음' 버튼 (약관 동의 완료 → 온보딩 화면)
+ * 이동은 두 방향
+ * - [onNavigateToOnboarding] : '다음'(동의 내역 저장 성공) → 온보딩
+ * - [onNavigateToLogin] : 상단바 뒤로가기 → 로그아웃 후 로그인
+ *
+ *
+ * 자동 로그인(스플래시)으로 약관에 바로 들어온 경우에는 백스택에 로그인 화면이 없으므로
+ * 뒤로가기를 popBackStack 이 아니라 명시적 이동으로 처리
  */
 @Composable
 fun TermsRoute(
     modifier: Modifier = Modifier,
-    viewModel: TermsViewModel = viewModel(),
-    onBack: () -> Unit = {},
+    viewModel: TermsViewModel = hiltViewModel(),
+    onNavigateToLogin: () -> Unit = {},
     onNavigateToOnboarding: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState.destination) {
+        when (uiState.destination ?: return@LaunchedEffect) {
+            AuthDestination.ONBOARDING -> onNavigateToOnboarding()
+            AuthDestination.LOGIN -> onNavigateToLogin()
+            // 약관 화면에서 이 두 곳으로 갈 일은 없음
+            AuthDestination.TERMS, AuthDestination.HOME -> Unit
+        }
+        viewModel.onEvent(TermsUiEvent.NavigationHandled)
+    }
+
+    LaunchedEffect(uiState.errorMessage) {
+        val message = uiState.errorMessage ?: return@LaunchedEffect
+        // TODO: 에러 표시 방식은 디자인 확정 후 교체
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        viewModel.onEvent(TermsUiEvent.ErrorShown)
+    }
 
     TermsScreen(
         uiState = uiState,
         onEvent = viewModel::onEvent,
-        onBack = onBack,
-        onNavigateToOnboarding = onNavigateToOnboarding,
         modifier = modifier
     )
 }
@@ -79,8 +104,6 @@ fun TermsRoute(
 fun TermsScreen(
     uiState: TermsUiState,
     onEvent: (TermsUiEvent) -> Unit,
-    onBack: () -> Unit,
-    onNavigateToOnboarding: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val selectedTerm = uiState.selectedTerm
@@ -94,8 +117,8 @@ fun TermsScreen(
         TermsAgreementContent(
             uiState = uiState,
             onEvent = onEvent,
-            onBack = onBack,
-            onNext = onNavigateToOnboarding,
+            onBack = { onEvent(TermsUiEvent.BackClicked) },
+            onNext = { onEvent(TermsUiEvent.NextClicked) },
             modifier = modifier
         )
     } else {
@@ -155,6 +178,9 @@ private fun TermsAgreementContent(
 
             Spacer(Modifier.height(18.dp))
 
+            // TODO: 디자인에 [필수]/[선택] 표기가 없어 서버의 isRequired 를 화면에 표시하지 않음
+            //  ('다음' 활성 조건에는 이미 반영되어 있음 = 필수 약관만 검사)
+            //  표기 방식이 확정되면 term.required 로 배지를 붙이면 됨
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 uiState.terms.forEach { term ->
                     TermsRow(
@@ -324,11 +350,12 @@ private fun TermsRow(
 
 // ---- Preview ----
 
+// 서버 응답과 같은 구성 (termId 1~3 필수 / 4 선택)
 private val previewTerms = listOf(
-    TermsAgreement("t1", "개인정보 동의"),
-    TermsAgreement("t2", "개인정보 동의"),
-    TermsAgreement("t3", "개인정보 동의"),
-    TermsAgreement("t4", "개인정보 동의")
+    TermsAgreement(1L, "서비스 이용약관 동의"),
+    TermsAgreement(2L, "개인정보 처리방침 동의"),
+    TermsAgreement(3L, "콘텐츠 보관 및 활용 안내 확인"),
+    TermsAgreement(4L, "마케팅 정보 수신 동의", required = false)
 )
 
 @Preview(showBackground = true, showSystemUi = true, name = "약관동의 - 미동의")
@@ -337,9 +364,7 @@ private fun TermsScreenEmptyPreview() {
     HaloTheme {
         TermsScreen(
             uiState = TermsUiState(terms = previewTerms),
-            onEvent = {},
-            onBack = {},
-            onNavigateToOnboarding = {}
+            onEvent = {}
         )
     }
 }
@@ -353,9 +378,7 @@ private fun TermsScreenAgreedPreview() {
                 terms = previewTerms,
                 agreedIds = previewTerms.map { it.id }.toSet()
             ),
-            onEvent = {},
-            onBack = {},
-            onNavigateToOnboarding = {}
+            onEvent = {}
         )
     }
 }
@@ -373,11 +396,9 @@ private fun TermsDetailPreview() {
                         detailContent = "내용을 적어주세요~".repeat(30)
                     )
                 },
-                selectedTermId = "t1"
+                selectedTermId = 1L
             ),
-            onEvent = {},
-            onBack = {},
-            onNavigateToOnboarding = {}
+            onEvent = {}
         )
     }
 }
