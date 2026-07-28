@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import java.util.Locale
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
+import com.umc.halo.domain.model.storybook.TodayStoryBook
 import com.umc.halo.presentation.component.ButtonState
 import com.umc.halo.presentation.component.HaloMaterialButton
 import com.umc.halo.presentation.theme.Gray100

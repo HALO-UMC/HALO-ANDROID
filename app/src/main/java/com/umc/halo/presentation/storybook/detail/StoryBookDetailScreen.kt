@@ -1,6 +1,5 @@
 package com.umc.halo.presentation.storybook.detail
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,12 +22,13 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umc.halo.domain.model.home.CurrentProgress
+import com.umc.halo.domain.model.storybook.StoryBookInfo
+import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.storybook.list.StorybookBadge
 import com.umc.halo.presentation.storybook.list.StorybookCard
@@ -67,10 +67,9 @@ fun StoryBookDetailRoute(
                     navigate(event.storyBookId, event.chapterId)
 
                 is StoryBookDetailUiEvent.OnClickTodayStoryBook -> {
-                    if (state.storyBookInfo.isCompleted) {
-                        onNavigateToShowTheme(event.storyBookId)
-                    } else {
-                        onNavigateToChapterProgress(event.storyBookId, event.chapterId)
+                    when (state.storyBookProgress) {
+                        is StorybookProgress.Done -> onNavigateToShowTheme(event.storyBookId)
+                        is StorybookProgress.InProgress -> onNavigateToChapterProgress(event.storyBookId, event.chapterId)
                     }
                 }
 
@@ -167,7 +166,7 @@ private val StoryThemeIntroPadding = 12.dp
 @Composable
 fun StoryThemeIntro(
     storyBookInfo: StoryBookInfo,
-    storyBookProgress: CurrentProgress
+    storyBookProgress: StorybookProgress
 ) {
     Column(
         modifier = Modifier
@@ -201,10 +200,9 @@ fun StoryThemeIntro(
             StorybookCard(
                 title = storyBookInfo.title,
                 subtitle = "",
-                badge = if (storyBookInfo.isCompleted) {
-                    StorybookBadge.Done
-                } else {
-                    StorybookBadge.InProgress(storyBookProgress.chapter)
+                badge = when (storyBookProgress) {
+                    is StorybookProgress.Done ->  StorybookBadge.Done
+                    is StorybookProgress.InProgress -> StorybookBadge.InProgress(storyBookProgress.chapter)
                 },
                 modifier = Modifier.fillMaxSize()
             )

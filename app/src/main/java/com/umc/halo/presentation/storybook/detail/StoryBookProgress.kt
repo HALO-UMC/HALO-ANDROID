@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.CurrentProgress
+import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.Gray700
@@ -34,28 +35,55 @@ import com.umc.halo.presentation.theme.Primary500
 
 @Composable
 fun StoryBookProgress(
-    storyBookProgress: CurrentProgress
+    storyBookProgress: StorybookProgress
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 6.dp)
     ) {
-        Text(
-            text = progressString(storyBookProgress.chapter), // 상황에 따라 문구 변경 필요
-            style = HaloType.body02Regular,
-            color = Gray700
-        )
+        when (storyBookProgress) {
+            is StorybookProgress.InProgress -> {
+                val completedChapter = storyBookProgress.chapter - 1 // 완료된 챕터 ( 진행중인 챕터 - 1 )
 
-        Spacer(Modifier.height(19.dp))
+                if (storyBookProgress.chapter == 1) {
+                    Text(
+                        text = "아직 첫 장을 펼치지 않았어요",
+                        style = HaloType.body02Regular,
+                        color = Gray700
+                    )
+                } else {
+                    Text(
+                        text = progressString(completedChapter),
+                        style = HaloType.body02Regular,
+                        color = Gray700
+                    )
+                }
 
-        StoryBookProgressBar(storyBookProgress)
+                Spacer(Modifier.height(19.dp))
+
+                StoryBookProgressBar(completedChapter)
+            }
+
+            is StorybookProgress.Done -> {
+                Text(
+                    text = "모든 페이지를 완성했어요!",
+                    style = HaloType.body02Regular,
+                    color = Gray700
+                )
+
+                Spacer(Modifier.height(19.dp))
+
+                StoryBookProgressBar(10)
+            }
+        }
+
     }
 }
 
 @Composable
 fun StoryBookProgressBar(
-    storyBookProgress: CurrentProgress
+    completedChapter: Int
 ) {
     Column(
         modifier = Modifier
@@ -79,7 +107,7 @@ fun StoryBookProgressBar(
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(storyBookProgress.chapter/10f) // 나누기 n배 (임시: 3)
+                    .fillMaxWidth(completedChapter/10f) // 나누기 n배 (임시: 3)
                     .border(
                         width = 0.dp,
                         color = Color.Transparent,
@@ -98,14 +126,14 @@ fun StoryBookProgressBar(
     Row(
         modifier = Modifier.fillMaxWidth()
     ) {
-        if (storyBookProgress.chapter <= 9) {
-            Spacer(Modifier.fillMaxWidth(storyBookProgress.chapter/10f))
+        if (completedChapter <= 9) {
+            Spacer(Modifier.fillMaxWidth(completedChapter/10f))
 
-            ProgressIndicator(storyBookProgress, true)
+            ProgressIndicator(completedChapter, true)
         } else {
             Spacer(Modifier.weight(1f))
 
-            ProgressIndicator(storyBookProgress, false)
+            ProgressIndicator(completedChapter, false)
         }
     }
 }
@@ -132,7 +160,7 @@ fun ProgressDivider(
 
 @Composable
 fun ProgressIndicator(
-    storyBookProgress: CurrentProgress,
+    completedChapter: Int,
     applyOffset: Boolean
 ) {
     Column(
@@ -174,7 +202,7 @@ fun ProgressIndicator(
                 )
         ) {
             Text(
-                text = "${storyBookProgress.chapter*10}%",
+                text = "${completedChapter*10}%",
                 style = HaloType.body03Regular,
                 color = Primary30,
                 modifier = Modifier
