@@ -5,6 +5,7 @@ import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import com.umc.halo.domain.model.auth.LoginCancelledException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -25,6 +26,10 @@ class KakaoLoginDataSource @Inject constructor() {
         // 로그인 결과 공통 처리: 성공 시 idToken 을 코루틴 결과로 반환
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             when {
+                // 사용자가 카카오계정(웹) 로그인 창을 닫은 경우도 취소로 통일
+                error is ClientError && error.reason == ClientErrorCause.Cancelled ->
+                    cont.resumeWithException(LoginCancelledException(error))
+
                 error != null -> cont.resumeWithException(error)
                 token?.idToken != null -> cont.resume(token.idToken!!)
                 else -> cont.resumeWithException(
@@ -37,9 +42,9 @@ class KakaoLoginDataSource @Inject constructor() {
             // 카카오톡 앱으로 로그인
             UserApiClient.instance.loginWithKakaoTalk(context) { token, error ->
                 when {
-                    // 사용자가 카카오톡 로그인 화면에서 직접 취소한 경우 실패 처리
+                    // 사용자가 카카오톡 로그인 화면에서 직접 취소한 경우 (에러 메시지를 띄우지 않기 위해 구분)
                     error is ClientError && error.reason == ClientErrorCause.Cancelled ->
-                        cont.resumeWithException(error)
+                        cont.resumeWithException(LoginCancelledException(error))
 
                     // 그 외 오류면 카카오계정(웹) 로그인으로 fallback
                     error != null ->
@@ -52,5 +57,14 @@ class KakaoLoginDataSource @Inject constructor() {
             // 카카오계정(웹)으로 로그인
             UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
         }
+    }
+
+    /**
+     * 카카오 계정 연결 해제 (회원 탈퇴 시 호출)
+     *
+     * 해제하지 않으면 재가입할 때 계정 선택 없이 이전 계정으로 바로 붙음
+     */
+    suspend fun unlink() = suspendCancellableCoroutine { cont ->
+        UserApiClient.instance.unlink { cont.resume(Unit) }
     }
 }
