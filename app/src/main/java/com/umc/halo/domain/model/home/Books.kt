@@ -20,11 +20,14 @@ data class Books(
     val isCompleted: Boolean // 오늘자 스토리북 완료 여부
 )
 
+/**
+ * 책장 클릭 시 띄워지는 '스토리북으로 이동하기' 정보
+ */
 data class StartStorybook(
     val storybookId: Long = 0,
     val title: String = "void",
     val subtitle: String = "void",
-    val tag: String = "void",
+    val tag: String = "void", // 상단 태그
     val currentProgress: Int = 0,
     val isCompleted: Boolean = false
 )

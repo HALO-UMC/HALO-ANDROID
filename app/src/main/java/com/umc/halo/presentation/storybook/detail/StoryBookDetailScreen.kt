@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.umc.halo.domain.model.home.CurrentProgress
 import com.umc.halo.domain.model.storybook.StoryBookInfo
 import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.presentation.component.HaloTopBar

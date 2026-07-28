@@ -1,6 +1,5 @@
 package com.umc.halo.presentation.themebox
 
-import com.umc.halo.domain.model.home.CurrentProgress
 import com.umc.halo.domain.model.storybook.CustomStorybook
 import com.umc.halo.domain.model.themebox.ContinueStorybook
 import com.umc.halo.domain.model.themebox.Theme

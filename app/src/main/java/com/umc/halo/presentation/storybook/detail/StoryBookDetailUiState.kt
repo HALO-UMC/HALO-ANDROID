@@ -1,6 +1,5 @@
 package com.umc.halo.presentation.storybook.detail
 
-import com.umc.halo.domain.model.home.CurrentProgress
 import com.umc.halo.domain.model.storybook.StoryBookIndex
 import com.umc.halo.domain.model.storybook.StoryBookInfo
 import com.umc.halo.domain.model.storybook.StorybookProgress

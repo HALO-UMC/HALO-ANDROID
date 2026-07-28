@@ -24,7 +24,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
-import com.umc.halo.domain.model.home.CurrentProgress
 import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray50

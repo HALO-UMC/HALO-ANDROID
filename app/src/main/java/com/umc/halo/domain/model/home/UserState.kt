@@ -7,8 +7,3 @@ sealed interface UserState {
     data object FTU: UserState
     data object RU: UserState
 }
-
-data class CurrentProgress(
-    val theme: Int,
-    val chapter: Int
-) // Storybook의 StorybookProgress로 변경 예정
