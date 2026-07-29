@@ -50,23 +50,7 @@ fun AppNavGraph(
 
 
 
-        composable(Routes.THEME_BOX) {
-            ThemeBoxRoute(
-                onNavigateToStorybook = { storybookId ->
-                    navController.navigate(Routes.storybookDetail(storybookId)) {
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
 
-        composable(Routes.SHOW_THEME) {
-            ShowThemeRoute(
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
 
 
 

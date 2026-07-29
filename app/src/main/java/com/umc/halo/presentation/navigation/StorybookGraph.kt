@@ -10,6 +10,7 @@ import com.umc.halo.presentation.storybook.chapter.ChapterProgressRoute
 import com.umc.halo.presentation.storybook.chapter.ChapterResultRoute
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailRoute
 import com.umc.halo.presentation.storybook.list.StorybookScreen
+import com.umc.halo.presentation.themebox.show_theme.ShowThemeRoute
 
 fun NavGraphBuilder.storybookGraph(
     navController: NavController
@@ -122,6 +123,14 @@ fun NavGraphBuilder.storybookGraph(
                         }
                         launchSingleTop = true
                     }
+                }
+            )
+        }
+
+        composable(Routes.SHOW_THEME) {
+            ShowThemeRoute(
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }
