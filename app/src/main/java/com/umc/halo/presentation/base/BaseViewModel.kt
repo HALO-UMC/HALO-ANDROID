@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.base
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

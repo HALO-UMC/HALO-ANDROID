@@ -1,7 +1,7 @@
 package com.umc.halo.domain.model.storybook
 
 /**
- * 스토리북 목록 화면에서 사용하는 도메인 모델
+ * 스토리북 목록 화면, 홈 화면, 테마보관함 화면에서 사용하는 도메인 모델
  * 사용자 맞춤 스토리북 추천 카드
  * 온보딩에서 고른 관계 방향 태그를 기반으로 추천되며 전체 탭에서만 2개 노출
  */
@@ -55,3 +55,4 @@ data class InProgressStorybook(
     val currentChapter: Int,  // "N장 진행중" 책갈피에 표시
     val isWaiting: Boolean     // 오늘 분량 완료
 )
+

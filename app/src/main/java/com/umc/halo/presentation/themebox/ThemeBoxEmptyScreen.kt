@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.domain.model.themebox.ContinueStorybook
 import com.umc.halo.presentation.component.ContinueStorybookCard
-import com.umc.halo.presentation.home.custom_storybook.CustomStorybook
+import com.umc.halo.presentation.component.CustomStorybook
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800

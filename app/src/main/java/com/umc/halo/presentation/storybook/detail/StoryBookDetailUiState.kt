@@ -1,18 +1,17 @@
 package com.umc.halo.presentation.storybook.detail
 
-import com.umc.halo.domain.model.home.CurrentProgress
+import com.umc.halo.domain.model.storybook.StoryBookIndex
+import com.umc.halo.domain.model.storybook.StoryBookInfo
+import com.umc.halo.domain.model.storybook.StorybookProgress
+import com.umc.halo.domain.model.storybook.TodayStoryBook
 
 data class StoryBookDetailUiState(
     val storyBookId: Long = 0,
     val storyBookInfo: StoryBookInfo = StoryBookInfo(
         title = "void",
-        storyBookIntro = "void",
-        isCompleted = false
+        storyBookIntro = "void"
     ),
-    val storyBookProgress: CurrentProgress = CurrentProgress(
-        theme = 0,
-        chapter = 0
-    ),
+    val storyBookProgress: StorybookProgress = StorybookProgress.InProgress(1),
     val todayStoryBookInfo: TodayStoryBook = TodayStoryBook(
         id = 1,
         title = "나와 같은 나이었던 시절",
@@ -22,27 +21,5 @@ data class StoryBookDetailUiState(
     ),
     val storyBookIndex: List<StoryBookIndex> = emptyList(),
     val showDialog: Boolean = false
-
 )
 
-data class StoryBookInfo(
-    val title: String,
-    val storyBookIntro: String,
-    val isCompleted: Boolean
-)
-
-data class StoryBookIndex(
-    val id: Long,
-    val title: String,
-    val subTitle: String,
-    val isLocked: Boolean,
-    val isCompleted: Boolean
-)
-
-data class TodayStoryBook(
-    val id: Long,
-    val title: String,
-    val tag: String,
-    val isLocked: Boolean,
-    val isCompleted: Boolean
-)

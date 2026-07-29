@@ -31,9 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
-import com.umc.halo.domain.model.home.ProgressState
 import com.umc.halo.domain.model.home.StartStorybook
-import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.theme.Black
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray500
