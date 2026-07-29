@@ -23,28 +23,28 @@ object HaloType {
         fontFamily = Pretendard,
         fontWeight = FontWeight.Bold,
         fontSize = 32.sp,
-        lineHeight = 44.8.sp
+        lineHeight = lineHeight(32,150)
     )
 
     val title01SemiBold = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.SemiBold,
         fontSize = 32.sp,
-        lineHeight = 44.8.sp
+        lineHeight = lineHeight(32,150)
     )
 
     val title02Bold = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Bold,
         fontSize = 28.sp,
-        lineHeight = 39.2.sp
+        lineHeight = lineHeight(28,150)
     )
 
     val title02SemiBold = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.SemiBold,
         fontSize = 28.sp,
-        lineHeight = 39.2.sp
+        lineHeight = lineHeight(28,150)
     )
 
     // -- Heading --
@@ -52,14 +52,14 @@ object HaloType {
         fontFamily = Pretendard,
         fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
-        lineHeight = 33.6.sp
+        lineHeight = lineHeight(24,150)
     )
 
     val heading01SemiBold = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp,
-        lineHeight = 33.6.sp
+        lineHeight = lineHeight(24,150)
     )
 
     // 온보딩 제목처럼 Regular와 SemiBold가 섞이는 경우 사용하는 스타일
@@ -67,7 +67,7 @@ object HaloType {
         fontFamily = Pretendard,
         fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
-        lineHeight = 36.sp,
+        lineHeight = lineHeight(24,150),
         letterSpacing = (-0.48).sp
     )
 
@@ -75,35 +75,35 @@ object HaloType {
         fontFamily = Pretendard,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
-        lineHeight = 28.sp
+        lineHeight = lineHeight(20,150)
     )
 
     val heading02SemiBold = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp,
-        lineHeight = 28.sp
+        lineHeight = lineHeight(20,150)
     )
 
     val heading02Medium = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
-        lineHeight = 28.sp
+        lineHeight = lineHeight(20,150)
     )
 
     val heading03SemiBold = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp,
-        lineHeight = 25.2.sp
+        lineHeight = lineHeight(18,150)
     )
 
     val heading03Medium = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Medium,
         fontSize = 18.sp,
-        lineHeight = 25.2.sp
+        lineHeight = lineHeight(18,150)
     )
 
     // -- Body --
@@ -111,56 +111,56 @@ object HaloType {
         fontFamily = Pretendard,
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
-        lineHeight = 22.4.sp
+        lineHeight = lineHeight(16,145)
     )
 
     val body01Medium = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
-        lineHeight = 22.4.sp
+        lineHeight = lineHeight(16,145)
     )
 
     val body01Regular = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-        lineHeight = 22.4.sp
+        lineHeight = lineHeight(16,145)
     )
 
     val body02SemiBold = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.SemiBold,
         fontSize = 14.sp,
-        lineHeight = 19.6.sp
+        lineHeight = lineHeight(14,145)
     )
 
     val body02Medium = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
-        lineHeight = 19.6.sp
+        lineHeight = lineHeight(14,145)
     )
 
     val body02Regular = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        lineHeight = 19.6.sp
+        lineHeight = lineHeight(14,145)
     )
 
     val body03Medium = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
-        lineHeight = 16.8.sp
+        lineHeight = lineHeight(12,145)
     )
 
     val body03Regular = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
-        lineHeight = 16.8.sp
+        lineHeight = lineHeight(12,145)
     )
 
     // -- Caption --
@@ -168,27 +168,36 @@ object HaloType {
         fontFamily = Pretendard,
         fontWeight = FontWeight.Medium,
         fontSize = 10.sp,
-        lineHeight = 14.sp
+        lineHeight = lineHeight(10,145)
     )
 
     val caption01Regular = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Normal,
         fontSize = 10.sp,
-        lineHeight = 14.sp
+        lineHeight = lineHeight(10,145)
     )
 
     val caption02Medium = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Medium,
         fontSize = 8.sp,
-        lineHeight = 11.2.sp
+        lineHeight = lineHeight(8,145)
     )
 
     val caption02Regular = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.Normal,
         fontSize = 8.sp,
-        lineHeight = 11.2.sp
+        lineHeight = lineHeight(8,145)
     )
 }
+
+
+/**
+ * 행간 수치 계산
+ * @param fontSize 폰트 크기,
+ * @param percent 행간 수치 퍼센테이지 (%)
+ */
+private fun lineHeight(fontSize: Int, percent: Int) =
+    (fontSize * percent / 100f).sp
