@@ -1,15 +1,29 @@
 package com.umc.halo.presentation.terms
 
-import com.umc.halo.domain.model.terms.TermsAgreement
+import androidx.lifecycle.viewModelScope
+import com.umc.halo.domain.model.auth.AuthDestination
+import com.umc.halo.domain.repository.auth.AuthRepository
+import com.umc.halo.domain.repository.terms.TermsRepository
 import com.umc.halo.presentation.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * 약관동의 화면 ViewModel
  *
- * 서버 연동 전까지 더미 약관 목록
- * 네트워크 연동 시 약관 목록/전문을 API 로 받아오면서 Repository 를 주입하고 @HiltViewModel 로 승격
+ * 약관 목록은 서버에서 받아오고(필수/선택 구분 포함) '다음'을 누르면 동의 내역을 서버에 저장
+ * 저장이 성공해야 온보딩으로 넘어감 (저장 실패 상태로 넘어가면 다음 실행 때 약관이 다시 뜸)
  */
-class TermsViewModel : BaseViewModel<TermsUiState, TermsUiEvent>(TermsUiState()) {
+@HiltViewModel
+class TermsViewModel @Inject constructor(
+    private val termsRepository: TermsRepository,
+    private val authRepository: AuthRepository
+) : BaseViewModel<TermsUiState, TermsUiEvent>(TermsUiState()) {
+
+    init {
+        loadTerms()
+    }
 
     override fun onEvent(event: TermsUiEvent) {
         when (event) {
@@ -43,52 +57,70 @@ class TermsViewModel : BaseViewModel<TermsUiState, TermsUiEvent>(TermsUiState())
                     selectedTermId = null
                 )
             }
+
+            TermsUiEvent.NextClicked -> submitAgreements()
+            TermsUiEvent.BackClicked -> cancelSignUp()
+
+            TermsUiEvent.NavigationHandled -> updateState { copy(destination = null) }
+            TermsUiEvent.ErrorShown -> updateState { copy(errorMessage = null) }
         }
     }
 
-    init {
-        // [더미] 세부 약관 4개 — 서버 연동 시 API 응답으로 교체
-        updateState { copy(terms = dummyTerms) }
+    private fun loadTerms() {
+        viewModelScope.launch {
+            updateState { copy(isLoading = true) }
+
+            runCatching { termsRepository.getTerms() }
+                .onSuccess { terms -> updateState { copy(terms = terms) } }
+                .onFailure { updateState { copy(errorMessage = LOAD_FAILED_MESSAGE) } }
+
+            updateState { copy(isLoading = false) }
+        }
+    }
+
+    /**
+     * 동의 내역 저장
+     * 동의한 것만 보내는 게 아니라 약관 전체를 동의 여부와 함께 보냄
+     */
+    private fun submitAgreements() {
+        if (currentState.isSubmitting) return
+
+        viewModelScope.launch {
+            updateState { copy(isSubmitting = true, errorMessage = null) }
+
+            val agreements = currentState.terms.associate { term ->
+                term.id to (term.id in currentState.agreedIds)
+            }
+            val success = runCatching { termsRepository.agreeTerms(agreements) }
+                .getOrDefault(false)
+
+            updateState {
+                if (success) {
+                    copy(isSubmitting = false, destination = AuthDestination.ONBOARDING)
+                } else {
+                    copy(isSubmitting = false, errorMessage = SUBMIT_FAILED_MESSAGE)
+                }
+            }
+        }
+    }
+
+    /**
+     * 상단바 뒤로가기 = 가입 중단
+     *
+     * 이 시점에는 서버 토큰을 이미 받았지만 아직 약관에 동의하지 않은 상태
+     * 토큰만 남겨두고 로그인 화면으로 돌아가면 '로그인은 됐는데 로그인 화면'인 상태가 되므로
+     * 로그아웃해서 처음부터 다시 시작
+     */
+    private fun cancelSignUp() {
+        viewModelScope.launch {
+            authRepository.logout()
+            updateState { copy(destination = AuthDestination.LOGIN) }
+        }
     }
 
     private companion object {
-        // 상세 화면 본문 더미 (실제 약관 전문으로 교체 예정)
-        private const val DUMMY_CONTENT =
-            "더미 데이터입니다."
-
-        val dummyTerms = listOf(
-            TermsAgreement(
-                id = "terms_of_service",
-                title = "개인정보 동의",
-                required = true,
-                lastUpdated = "26.06.13",
-                detailHeading = "개인정보 약관",
-                detailContent = DUMMY_CONTENT
-            ),
-            TermsAgreement(
-                id = "privacy_policy",
-                title = "개인정보 동의",
-                required = true,
-                lastUpdated = "26.06.13",
-                detailHeading = "개인정보 약관",
-                detailContent = DUMMY_CONTENT
-            ),
-            TermsAgreement(
-                id = "location_terms",
-                title = "개인정보 동의",
-                required = true,
-                lastUpdated = "26.06.13",
-                detailHeading = "개인정보 약관",
-                detailContent = DUMMY_CONTENT
-            ),
-            TermsAgreement(
-                id = "marketing_terms",
-                title = "개인정보 동의",
-                required = true,
-                lastUpdated = "26.06.13",
-                detailHeading = "개인정보 약관",
-                detailContent = DUMMY_CONTENT
-            )
-        )
+        // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
+        const val LOAD_FAILED_MESSAGE = "약관을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
+        const val SUBMIT_FAILED_MESSAGE = "약관 동의 저장에 실패했어요. 잠시 후 다시 시도해 주세요."
     }
 }

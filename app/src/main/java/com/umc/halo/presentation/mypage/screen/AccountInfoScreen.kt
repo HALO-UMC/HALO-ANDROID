@@ -19,13 +19,18 @@ import com.umc.halo.presentation.mypage.component.MyPageContainer
 import com.umc.halo.presentation.mypage.component.MyPageTopBar
 import com.umc.halo.presentation.mypage.component.SectionTitle
 
+/**
+ * TODO(마이페이지 담당): onNavigateToLogin 파라미터를 제거함
+ *  로그아웃은 이제 화면 이동만 하는 게 아니라 서버 호출 + 토큰 삭제가 필요해서
+ *  '로그아웃 하기'가 LogoutConfirmed 이벤트를 보내고 처리가 끝나면
+ *  AccountInfoRoute 가 navigateToLogin 신호를 보고 이동시킴
+ */
 @Composable
 fun AccountInfoScreen(
     uiState: MyPageUiState,
     onEvent: (MyPageUiEvent) -> Unit,
     onBack: () -> Unit,
     onNavigateToWithdraw: () -> Unit,
-    onNavigateToLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (uiState.showLogoutDialog) {
@@ -36,7 +41,7 @@ fun AccountInfoScreen(
             onDismiss = {
                 onEvent(MyPageUiEvent.LogoutDialogChanged(false))
             },
-            onConfirm = onNavigateToLogin
+            onConfirm = { onEvent(MyPageUiEvent.LogoutConfirmed) }
         )
     }
 

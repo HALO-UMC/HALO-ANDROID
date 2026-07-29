@@ -3,9 +3,11 @@ package com.umc.halo.data.repository.auth
 import com.umc.halo.core.datastore.TokenDataStore
 import com.umc.halo.data.remote.api.auth.AuthApi
 import com.umc.halo.data.remote.dto.request.auth.LoginRequest
+import com.umc.halo.data.remote.dto.request.auth.ReissueRequest
 import com.umc.halo.domain.model.auth.LoginResult
 import com.umc.halo.domain.model.auth.SocialProvider
 import com.umc.halo.domain.repository.auth.AuthRepository
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 /**
@@ -35,9 +37,35 @@ class AuthRepositoryImpl @Inject constructor(
         tokenDataStore.saveTokens(result.accessToken, result.refreshToken)
 
         // DTO → 도메인 변환
+        // isNewUser 는 화면 분기에 쓰지 않음
         return LoginResult(
             isNewUser = result.isNewUser,
             onboardingCompleted = result.onboardingCompleted
         )
+    }
+
+    override suspend fun reissue(): Boolean {
+        val refreshToken = tokenDataStore.refreshTokenFlow.first()
+        if (refreshToken.isNullOrBlank()) return false
+
+        // 만료(AUTH401_2)·네트워크 오류 모두 '자동 로그인 실패'로 같게 처리
+        val result = runCatching { authApi.reissue(ReissueRequest(refreshToken)) }
+            .getOrNull()
+            ?.takeIf { it.isSuccess }
+            ?.result
+
+        if (result == null) {
+            tokenDataStore.clear()
+            return false
+        }
+
+        tokenDataStore.saveTokens(result.accessToken, result.refreshToken)
+        return true
+    }
+
+    override suspend fun logout() {
+        // 서버 무효화는 실패해도 무시(토큰 만료 등)
+        runCatching { authApi.logout() }
+        tokenDataStore.clear()
     }
 }

@@ -1,6 +1,8 @@
 package com.umc.halo.di
 
 import com.umc.halo.BuildConfig
+import com.umc.halo.core.network.AuthInterceptor
+import com.umc.halo.core.network.TokenAuthenticator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,8 +20,11 @@ import javax.inject.Singleton
  *   예) class XxxApiService @Inject constructor(retrofit: Retrofit)
  *
  * baseUrl 은 BuildConfig.BASE_URL(= local.properties 의 BASE_URL) 을 사용
- * 서버 주소가 아직 없어 local.properties 에 값이 없으면 build.gradle 의 placeholder(localhost)가 들어감
- * 실제 API 서비스(Api 인터페이스)와 DTO 는 서버 명세 확정 후 각 도메인에서 추가함
+ *
+ * 인증 처리는 두 단계로 나뉜다
+ *   - AuthInterceptor    : 모든 요청에 Authorization 헤더를 붙임
+ *   - TokenAuthenticator : 401(토큰 만료)이 오면 재발급 후 그 요청을 자동 재시도
+ * 따라서 각 Api 인터페이스는 토큰을 신경 쓰지 않아도 됨
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -35,15 +40,23 @@ object NetworkModule {
             } else {
                 HttpLoggingInterceptor.Level.NONE
             }
+            // Bearer 토큰이 Logcat 에 그대로 찍히지 않도록 마스킹 처리
+            redactHeader("Authorization")
+            redactHeader("Cookie")
         }
 
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor
+        loggingInterceptor: HttpLoggingInterceptor,
+        authInterceptor: AuthInterceptor,
+        tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient =
         OkHttpClient.Builder()
+            // 순서 주의: 인증 헤더를 먼저 붙여야 로깅에도 (가려진 채로) 함께 남음
+            .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
+            .authenticator(tokenAuthenticator)
             .build()
 
     @Provides
