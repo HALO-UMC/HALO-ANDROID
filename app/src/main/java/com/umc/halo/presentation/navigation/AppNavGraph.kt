@@ -102,16 +102,6 @@ fun AppNavGraph(
             )
         }
 
-        composable(Routes.HOME) {
-            HomeRoute(
-                onNavigateToStorybook = { storybookId ->
-                    navController.navigate(Routes.storybookDetail(storybookId)) {
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
-
         composable(Routes.CALENDAR) {
             CalendarScreen(
                 // 캘린더 → 스토리북(전체탭) / 테마함
