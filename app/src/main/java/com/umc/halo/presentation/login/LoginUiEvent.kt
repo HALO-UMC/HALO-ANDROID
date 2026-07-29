@@ -13,6 +13,9 @@ sealed interface LoginUiEvent : UiEvent {
     data class KakaoLoginClicked(val context: Context) : LoginUiEvent
     data class GoogleLoginClicked(val context: Context) : LoginUiEvent
 
-    // 약관동의로 이동을 처리한 뒤 1회성 신호를 내려 중복 이동 금지
+    // 화면 이동을 처리한 뒤 1회성 신호를 내려 중복 이동 금지
     data object NavigationHandled : LoginUiEvent
+
+    // 에러 안내를 표시한 뒤 신호를 내려 중복 표시 금지
+    data object ErrorShown : LoginUiEvent
 }
