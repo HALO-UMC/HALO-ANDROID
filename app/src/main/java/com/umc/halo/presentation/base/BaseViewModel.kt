@@ -18,7 +18,7 @@ abstract class BaseViewModel<STATE,EVENT>(initialState: STATE): ViewModel() {
     protected val currentState: STATE //현재 UI 상태 저장 변수
         get() = _uiState.value
 
-    protected fun updateState(reducer: @Composable STATE.() -> STATE) { //UI 상태 업데이트 함수
+    protected fun updateState(reducer: STATE.() -> STATE) { //UI 상태 업데이트 함수
         _uiState.update { currentState.reducer() }
     }
 
