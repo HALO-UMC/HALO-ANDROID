@@ -14,6 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.umc.halo.presentation.navigation.BottomNavItem
+import com.umc.halo.presentation.theme.HaloType
 
 
 @Composable
@@ -63,8 +64,8 @@ fun BottomNav(
                             MaterialTheme.colorScheme.primary
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant
-                        }
-                        //fontFamily = 폰트 추가 필요
+                        },
+                        style = HaloType.body03Medium
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(

@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navigation
 import com.umc.halo.presentation.storybook.chapter.ChapterResultRoute
 import com.umc.halo.presentation.storybook.chapter.ChapterProgressRoute
 import com.umc.halo.presentation.calendar.CalendarScreen
@@ -44,9 +45,20 @@ fun AppNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Routes.SPLASH,
+        startDestination = Graphs.HOME,
         modifier = modifier
     ) {
+        authGraph(navController)
 
+        navigation(
+            route = Graphs.MAIN,
+            startDestination = Graphs.HOME
+        ) {
+            homeGraph(navController)
+            calenderGraph(navController)
+            storybookGraph(navController)
+            themeBoxGraph(navController)
+            mypageGraph(navController)
+        }
     }
 }
