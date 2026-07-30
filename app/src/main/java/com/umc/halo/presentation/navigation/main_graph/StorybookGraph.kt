@@ -24,10 +24,7 @@ fun NavGraphBuilder.storybookGraph(
         route = Graphs.STORYBOOK,
         startDestination = Routes.STORYBOOK
     ) {
-        Log.d("NAV", "storybook start = ${Routes.STORYBOOK}")
-
         composable(Routes.STORYBOOK) {
-            Log.d("NAV", "storybook composable")
             StorybookScreen(
                 // 맞춤카드 및 시작전, 진행중 스토리북 카드 -> 스토리북 상세(목차)
                 onNavigateToStorybookDetail = { storybookId ->
