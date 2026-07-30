@@ -13,8 +13,8 @@ fun NavGraphBuilder.themeBoxGraph(
     navController: NavController
 ) {
     navigation(
-        route = Graphs.STORYBOOK,
-        startDestination = Routes.STORYBOOK
+        route = Graphs.THEME_BOX,
+        startDestination = Routes.THEME_BOX
     ) {
         composable(Routes.THEME_BOX) {
             ThemeBoxRoute(
