@@ -8,7 +8,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun ThemeBoxRoute(
     viewModel: ThemeBoxViewModel = hiltViewModel(),
-    onNavigateToStorybook: (Long) -> Unit
+    onNavigateToStorybook: (Long) -> Unit,
+    onNavigateToShowTheme: (Long) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -23,6 +24,14 @@ fun ThemeBoxRoute(
                 is ThemeBoxUiEvent.OnCustomizedStoryBookClicked -> {
                     onNavigateToStorybook(event.storyBookId)
                 }
+
+                is ThemeBoxUiEvent.OnShowThemeClicked -> {
+                    onNavigateToShowTheme(event.storyBookId)
+                }
+
+                is ThemeBoxUiEvent.OnPagerChanged -> {
+                    viewModel.onEvent(event)
+                }
             }
         }
     )
@@ -35,7 +44,7 @@ fun ThemeBoxScreen(
 ) {
     when (state) {
         is ThemeBoxUiState.Filled -> {
-            ThemeBoxFilledScreen(state)
+            ThemeBoxFilledScreen(state, onEvent)
         }
         is ThemeBoxUiState.Empty -> {
             ThemeBoxEmptyScreen(state, onEvent)

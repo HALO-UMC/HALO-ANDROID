@@ -5,4 +5,6 @@ import com.umc.halo.presentation.home.HomeUiEvent
 sealed interface ThemeBoxUiEvent {
     data class OnContinueStoryBookClicked(val storyBookId: Long): ThemeBoxUiEvent
     data class OnCustomizedStoryBookClicked(val storyBookId: Long): ThemeBoxUiEvent
+    data class OnShowThemeClicked(val storyBookId: Long): ThemeBoxUiEvent
+    data class OnPagerChanged(val page: Int): ThemeBoxUiEvent
 }

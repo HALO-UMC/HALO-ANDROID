@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -23,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.umc.halo.R
 import com.umc.halo.domain.model.themebox.Theme
+import com.umc.halo.presentation.home.HomeUiEvent
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
@@ -32,7 +35,8 @@ import kotlin.math.absoluteValue
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun CarouselPager(
-    themeList: List<Theme>
+    themeList: List<Theme>,
+    onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth()
@@ -70,6 +74,17 @@ fun CarouselPager(
                 stop = 1f,
                 fraction = 1f - pageOffset.coerceIn(0f, 1f)
             )
+
+            // 초기 페이지 입력
+            onEvent(ThemeBoxUiEvent.OnPagerChanged(page))
+
+            // 페이지 변동 시 페이지 입력
+            LaunchedEffect(pagerState) {
+                snapshotFlow { pagerState.currentPage }
+                    .collect { page ->
+                        onEvent(ThemeBoxUiEvent.OnPagerChanged(page))
+                    }
+            }
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally

@@ -59,6 +59,14 @@ fun NavGraphBuilder.storybookGraph(
                     navController.navigate(Routes.showTheme(storybookId)) {
                         launchSingleTop = true
                     }
+                },
+                onNavigateToBack = {
+                    navController.navigate(Routes.STORYBOOK) {
+                        launchSingleTop = true
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
