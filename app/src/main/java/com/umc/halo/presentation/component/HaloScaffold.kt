@@ -41,6 +41,16 @@ fun HaloScaffold(
 
     val screenRoute = currentDestination?.route
 
+    val hideBottomBarRoutes = listOf(
+        Routes.STORYBOOK_DETAIL,
+        Routes.CHAPTER_PROGRESS,
+        Routes.CHAPTER_RESULT,
+        Routes.SHOW_THEME
+    )
+
+    val showBottomBar =
+        graphRoute != null && screenRoute !in hideBottomBarRoutes
+
     /*
      * 챕터 화면은 Edge-to-Edge로 구성하고, 온보딩 화면은
      * 각 단계에서 시스템 바 여백을 직접 관리합니다.
@@ -69,14 +79,14 @@ fun HaloScaffold(
                 Routes.HOME -> HaloTopBar(title = "HALO", showLeftIcon = false)
                 //Routes.MYPAGE -> MyPageTopBar()
                 Routes.CALENDAR -> CalendarTopBar()
-                Routes.THEME_BOX -> HaloTopBar(title = "테마전시관", showLeftIcon = false)
+                Routes.THEME_BOX -> HaloTopBar(title = "테마함", showLeftIcon = false)
                 Routes.STORYBOOK -> HaloTopBar(title = "HALO", showLeftIcon = false)
                 Routes.STORYBOOK_DETAIL -> StoryBookDetailTopBar() {navController.popBackStack()}
             }
         },
 
         bottomBar = {
-            if (graphRoute != null) {
+            if (showBottomBar) {
                 Column {
                     Box(
                         modifier = Modifier
