@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.navigation.main_graph
 
+import android.util.Log
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -17,11 +18,16 @@ import com.umc.halo.presentation.themebox.show_theme.ShowThemeRoute
 fun NavGraphBuilder.storybookGraph(
     navController: NavController
 ) {
+    Log.d("NAV", "storybookGraph registered")
+
     navigation(
         route = Graphs.STORYBOOK,
         startDestination = Routes.STORYBOOK
     ) {
+        Log.d("NAV", "storybook start = ${Routes.STORYBOOK}")
+
         composable(Routes.STORYBOOK) {
+            Log.d("NAV", "storybook composable")
             StorybookScreen(
                 // 맞춤카드 및 시작전, 진행중 스토리북 카드 -> 스토리북 상세(목차)
                 onNavigateToStorybookDetail = { storybookId ->
@@ -31,7 +37,7 @@ fun NavGraphBuilder.storybookGraph(
                 },
                 // 완료 카드 -> 테마함 (하단바 탭이라 하단바와 같은 백스택 옵션으로 전환)
                 onNavigateToThemeBox = {
-                    navController.navigate(Routes.THEME_BOX) {
+                    navController.navigate(Graphs.THEME_BOX) {
                         launchSingleTop = true
                         restoreState = true
                         popUpTo(navController.graph.startDestinationId) { saveState = true }
