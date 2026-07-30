@@ -43,7 +43,8 @@ fun StoryBookDetailRoute(
     viewModel: StoryBookDetailViewModel = hiltViewModel(),
     onNavigateToChapterProgress: (Long, Long) -> Unit,
     onNavigateToChapterResult: (Long, Long) -> Unit,
-    onNavigateToShowTheme: (Long) -> Unit
+    onNavigateToShowTheme: (Long) -> Unit,
+    onNavigateToBack: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -79,6 +80,10 @@ fun StoryBookDetailRoute(
                 is StoryBookDetailUiEvent.OnClickDismissDialog -> {
                     viewModel.onEvent(event)
                 }
+
+                is StoryBookDetailUiEvent.OnclickBackArrow -> {
+                    onNavigateToBack()
+                }
             }
         }
     )
@@ -105,6 +110,10 @@ fun StoryBookDetailScreen(
 ) {
     if (state.showDialog) {
         StoryBookDetailAlert(onEvent)
+    }
+
+    StoryBookDetailTopBar() {
+        onEvent(StoryBookDetailUiEvent.OnclickBackArrow)
     }
 
     LazyColumn(

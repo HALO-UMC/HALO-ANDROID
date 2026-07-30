@@ -59,6 +59,9 @@ fun NavGraphBuilder.storybookGraph(
                     navController.navigate(Routes.showTheme(storybookId)) {
                         launchSingleTop = true
                     }
+                },
+                onNavigateToBack = {
+                    navController.popBackStack()
                 }
             )
         }

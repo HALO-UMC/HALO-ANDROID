@@ -6,4 +6,6 @@ sealed interface StoryBookDetailUiEvent {
 
     data object OnClickOpenDialog: StoryBookDetailUiEvent
     data object OnClickDismissDialog: StoryBookDetailUiEvent
+
+    data object OnclickBackArrow: StoryBookDetailUiEvent
 }

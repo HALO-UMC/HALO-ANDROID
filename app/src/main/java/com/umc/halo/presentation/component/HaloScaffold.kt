@@ -60,7 +60,8 @@ fun HaloScaffold(
                             screenRoute == Routes.ONBOARDING ||
                             screenRoute == Routes.TERMS ||
                             screenRoute == Routes.SHOW_THEME ||
-                            screenRoute == Routes.SPLASH
+                            screenRoute == Routes.SPLASH ||
+                            screenRoute == Routes.STORYBOOK_DETAIL
 
     Scaffold(
         contentWindowInsets = if (isEdgeToEdgeRoute) {
@@ -81,7 +82,6 @@ fun HaloScaffold(
                 Routes.CALENDAR -> CalendarTopBar()
                 Routes.THEME_BOX -> HaloTopBar(title = "테마함", showLeftIcon = false)
                 Routes.STORYBOOK -> HaloTopBar(title = "HALO", showLeftIcon = false)
-                Routes.STORYBOOK_DETAIL -> StoryBookDetailTopBar() {navController.popBackStack()}
             }
         },
 
