@@ -4,6 +4,8 @@
 
     <!-- 네트워크(로그인 API·카카오 SDK) 사용 권한 부여 -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 푸시 알림 권한 부여 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".HaloApplication"
@@ -15,6 +17,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HALO">
+        <service
+            android:name=".notification.HaloFirebaseMessagingService"
+            android:exported="false">
+
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+
+        </service>
         <activity
             android:name=".MainActivity"
             android:exported="true"
