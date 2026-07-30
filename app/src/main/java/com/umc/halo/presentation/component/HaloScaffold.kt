@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.umc.halo.presentation.calendar.CalendarTopBar
@@ -30,21 +31,26 @@ fun HaloScaffold(
     content: @Composable (PaddingValues) -> Unit
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    val currentDestination = navBackStackEntry?.destination
 
     val bottomNavRoutes = BottomNavItem.entries.map { it.route }
+
+    val graphRoute = currentDestination?.hierarchy
+        ?.firstOrNull { it.route in bottomNavRoutes }
+        ?.route
+
+    val screenRoute = currentDestination?.route
 
     /*
      * 챕터 화면은 Edge-to-Edge로 구성하고, 온보딩 화면은
      * 각 단계에서 시스템 바 여백을 직접 관리합니다.
      */
-    val isEdgeToEdgeRoute =
-        currentRoute == Routes.CHAPTER_PROGRESS ||
-            currentRoute == Routes.CHAPTER_RESULT ||
-            currentRoute == Routes.ONBOARDING ||
-            currentRoute == Routes.TERMS ||
-            currentRoute == Routes.SHOW_THEME ||
-                currentRoute == Routes.SPLASH
+    val isEdgeToEdgeRoute = screenRoute == Routes.CHAPTER_PROGRESS ||
+                            screenRoute == Routes.CHAPTER_RESULT ||
+                            screenRoute == Routes.ONBOARDING ||
+                            screenRoute == Routes.TERMS ||
+                            screenRoute == Routes.SHOW_THEME ||
+                            screenRoute == Routes.SPLASH
 
     Scaffold(
         contentWindowInsets = if (isEdgeToEdgeRoute) {
@@ -59,7 +65,7 @@ fun HaloScaffold(
         },
 
         topBar = {
-            when(currentRoute) {
+            when(screenRoute) {
                 Routes.HOME -> HaloTopBar(title = "HALO", showLeftIcon = false)
                 //Routes.MYPAGE -> MyPageTopBar()
                 Routes.CALENDAR -> CalendarTopBar()
@@ -70,7 +76,7 @@ fun HaloScaffold(
         },
 
         bottomBar = {
-            if (currentRoute in bottomNavRoutes) {
+            if (graphRoute != null) {
                 Column {
                     Box(
                         modifier = Modifier
@@ -88,7 +94,7 @@ fun HaloScaffold(
 
                     BottomNav(
                         navController = navController,
-                        currentRoute = currentRoute
+                        currentRoute = graphRoute
                     )
                 }
             }

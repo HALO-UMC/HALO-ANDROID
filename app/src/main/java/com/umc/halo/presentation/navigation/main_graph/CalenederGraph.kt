@@ -1,11 +1,12 @@
-package com.umc.halo.presentation.navigation
+package com.umc.halo.presentation.navigation.main_graph
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.umc.halo.presentation.calendar.CalendarScreen
-import kotlin.math.round
+import com.umc.halo.presentation.navigation.Graphs
+import com.umc.halo.presentation.navigation.Routes
 
 fun NavGraphBuilder.calenderGraph(
     navController: NavController
@@ -19,14 +20,14 @@ fun NavGraphBuilder.calenderGraph(
                 // 캘린더 → 스토리북(전체탭) / 테마함
                 // 하단바와 같은 백스택 옵션으로 전환
                 onNavigateToStorybookList = {
-                    navController.navigate(Routes.STORYBOOK) {
+                    navController.navigate(Graphs.STORYBOOK) {
                         launchSingleTop = true
                         restoreState = true
                         popUpTo(navController.graph.startDestinationId) { saveState = true }
                     }
                 },
                 onNavigateToThemeBox = {
-                    navController.navigate(Routes.THEME_BOX) {
+                    navController.navigate(Graphs.THEME_BOX) {
                         launchSingleTop = true
                         restoreState = true
                         popUpTo(navController.graph.startDestinationId) { saveState = true }
