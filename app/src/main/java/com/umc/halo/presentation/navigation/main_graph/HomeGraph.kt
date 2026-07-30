@@ -24,5 +24,21 @@ fun NavGraphBuilder.homeGraph(
                 }
             )
         }
+
+        composable(Routes.STORYBOOK_DETAIL) {
+
+        }
+
+        composable(Routes.CHAPTER_PROGRESS) {
+
+        }
+
+        composable(Routes.CHAPTER_RESULT) {
+
+        }
+
+        composable(Routes.THEME_BOX) {
+
+        }
     }
 }

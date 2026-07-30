@@ -6,7 +6,15 @@ import com.umc.halo.presentation.base.BaseViewModel
 
 class ThemeBoxViewModel: BaseViewModel<ThemeBoxUiState, ThemeBoxUiEvent>(ThemeBoxUiState.Empty.FTU()) {
     override fun onEvent(event: ThemeBoxUiEvent) {
-        TODO("Not yet implemented")
+        when (event) {
+            is ThemeBoxUiEvent.OnPagerChanged -> {
+                updateState {
+                    ThemeBoxUiState.Filled(currentStorybookId = event.page.toLong())
+                }
+            }
+
+            else -> Unit
+        }
     }
 
     init {

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.umc.halo.domain.model.themebox.Theme
 import com.umc.halo.presentation.component.ButtonState
 import com.umc.halo.presentation.component.HaloMaterialButton
+import com.umc.halo.presentation.home.HomeUiEvent
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray600
 import com.umc.halo.presentation.theme.Gray800
@@ -29,7 +30,8 @@ import com.umc.halo.presentation.theme.Primary500
 
 @Composable
 fun ThemeBoxFilledScreen(
-    state: ThemeBoxUiState.Filled
+    state: ThemeBoxUiState.Filled,
+    onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
     Column(
         Modifier.fillMaxSize(),
@@ -49,7 +51,8 @@ fun ThemeBoxFilledScreen(
 
         ThemeBox(
             Modifier.weight(190f),
-            state.themeList
+            state.themeList,
+            onEvent
         )
 
         Spacer(Modifier.weight(15f))
@@ -64,7 +67,9 @@ fun ThemeBoxFilledScreen(
                 .aspectRatio(52f/9f),
             style = HaloType.body01SemiBold
         ) {
-            //네비게이션
+            if (state.currentStorybookId != null) {
+                onEvent(ThemeBoxUiEvent.OnShowThemeClicked(state.currentStorybookId))
+            }
         }
 
         Spacer(Modifier.weight(13f))
@@ -133,12 +138,13 @@ fun ProgressBox(
 @Composable
 fun ThemeBox(
     modifier: Modifier = Modifier,
-    themeList: List<Theme>
+    themeList: List<Theme>,
+    onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
     Box(
         modifier
             .fillMaxWidth()
     ) {
-        CarouselPager(themeList)
+        CarouselPager(themeList, onEvent)
     }
 }
