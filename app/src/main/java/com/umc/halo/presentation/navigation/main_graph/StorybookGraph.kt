@@ -1,4 +1,4 @@
-package com.umc.halo.presentation.navigation
+package com.umc.halo.presentation.navigation.main_graph
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -6,6 +6,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.umc.halo.presentation.navigation.Graphs
+import com.umc.halo.presentation.navigation.Routes
 import com.umc.halo.presentation.storybook.chapter.ChapterProgressRoute
 import com.umc.halo.presentation.storybook.chapter.ChapterResultRoute
 import com.umc.halo.presentation.storybook.detail.StoryBookDetailRoute

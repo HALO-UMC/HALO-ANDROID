@@ -36,7 +36,7 @@ fun NavGraphBuilder.authGraph(
                 onNavigateToLogin = { navigateInAuthFlow(Routes.LOGIN) },
                 onNavigateToTerms = { navigateInAuthFlow(Routes.TERMS) },
                 onNavigateToOnboarding = { navigateInAuthFlow(Routes.ONBOARDING) },
-                onNavigateToHome = { navigateInAuthFlow(Routes.HOME) }
+                onNavigateToHome = { navigateInAuthFlow(Graphs.MAIN) }
             )
         }
 
@@ -49,7 +49,7 @@ fun NavGraphBuilder.authGraph(
                         navController.popBackStack()
                     }
                 },
-                onNavigateToHome = { navigateInAuthFlow(Routes.HOME) }
+                onNavigateToHome = { navigateInAuthFlow(Graphs.MAIN) }
             )
         }
 
@@ -58,7 +58,7 @@ fun NavGraphBuilder.authGraph(
             LoginRoute(
                 onNavigateToTerms = { navigateInAuthFlow(Routes.TERMS) },
                 onNavigateToOnboarding = { navigateInAuthFlow(Routes.ONBOARDING) },
-                onNavigateToHome = { navigateInAuthFlow(Routes.HOME) }
+                onNavigateToHome = { navigateInAuthFlow(Graphs.MAIN) }
             )
         }
 

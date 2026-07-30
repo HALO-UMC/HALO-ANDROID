@@ -1,10 +1,12 @@
-package com.umc.halo.presentation.navigation
+package com.umc.halo.presentation.navigation.main_graph
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.umc.halo.presentation.home.HomeRoute
+import com.umc.halo.presentation.navigation.Graphs
+import com.umc.halo.presentation.navigation.Routes
 
 fun NavGraphBuilder.homeGraph(
     navController: NavController

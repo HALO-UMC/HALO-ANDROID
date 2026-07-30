@@ -1,4 +1,4 @@
-package com.umc.halo.presentation.navigation
+package com.umc.halo.presentation.navigation.main_graph
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -15,6 +15,8 @@ import com.umc.halo.presentation.mypage.screen.OpenLicenseScreen
 import com.umc.halo.presentation.mypage.screen.PrivacyPolicyScreen
 import com.umc.halo.presentation.mypage.screen.RelationshipInfoScreen
 import com.umc.halo.presentation.mypage.screen.TermsScreen
+import com.umc.halo.presentation.navigation.Graphs
+import com.umc.halo.presentation.navigation.Routes
 
 fun NavGraphBuilder.mypageGraph(
     navController: NavController
