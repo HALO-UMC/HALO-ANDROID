@@ -49,7 +49,12 @@ fun NavGraphBuilder.homeGraph(
                     }
                 },
                 onNavigateToBack = {
-                    navController.popBackStack()
+                    navController.navigate(Routes.HOME) {
+                        launchSingleTop = true
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
