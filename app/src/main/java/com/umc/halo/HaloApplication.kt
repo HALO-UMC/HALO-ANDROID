@@ -1,6 +1,9 @@
 package com.umc.halo
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 import com.kakao.sdk.common.KakaoSdk
 import dagger.hilt.android.HiltAndroidApp
 
@@ -17,5 +20,19 @@ class HaloApplication : Application() {
 
         // 카카오 SDK 초기화 (앱 실행 시 1회) — 네이티브 앱 키는 local.properties → BuildConfig 로 주입
         KakaoSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
+
+        // 푸시 알림 채널 설정
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "default",
+                "기본 알림",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+
+            val notificationManager =
+                getSystemService(NotificationManager::class.java)
+
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 }
