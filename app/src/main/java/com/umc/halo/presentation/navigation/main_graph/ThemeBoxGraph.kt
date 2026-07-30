@@ -22,6 +22,11 @@ fun NavGraphBuilder.themeBoxGraph(
                     navController.navigate(Routes.storybookDetail(storybookId)) {
                         launchSingleTop = true
                     }
+                },
+                onNavigateToShowTheme = { storybookId ->
+                    navController.navigate(Routes.showTheme(storybookId)) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
