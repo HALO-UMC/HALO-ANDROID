@@ -112,40 +112,42 @@ fun StoryBookDetailScreen(
         StoryBookDetailAlert(onEvent)
     }
 
-    StoryBookDetailTopBar() {
-        onEvent(StoryBookDetailUiEvent.OnclickBackArrow)
-    }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = ScreenPaddingHorizontal)
-    ) {
-        item {
-            StoryBookIndexIntro(
-                state,
-                onEvent = onEvent)
-
-            Spacer(Modifier.height(56.dp))
-
-            Text(
-                text = "이야기의 차례",
-                style = HaloType.body01SemiBold,
-                color = Gray800
-            )
-
-            Spacer(Modifier.height(18.dp))
+    Column {
+        StoryBookDetailTopBar() {
+            onEvent(StoryBookDetailUiEvent.OnclickBackArrow)
         }
 
-        items(
-            items = state.storyBookIndex,
-            key = { item -> item.id }
-        ) { item ->
-            StoryBookIndex(
-                state.storyBookId,
-                item,
-                onEvent = onEvent
-            )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = ScreenPaddingHorizontal)
+        ) {
+            item {
+                StoryBookIndexIntro(
+                    state,
+                    onEvent = onEvent)
+
+                Spacer(Modifier.height(56.dp))
+
+                Text(
+                    text = "이야기의 차례",
+                    style = HaloType.body01SemiBold,
+                    color = Gray800
+                )
+
+                Spacer(Modifier.height(18.dp))
+            }
+
+            items(
+                items = state.storyBookIndex,
+                key = { item -> item.id }
+            ) { item ->
+                StoryBookIndex(
+                    state.storyBookId,
+                    item,
+                    onEvent = onEvent
+                )
+            }
         }
     }
 }
