@@ -61,6 +61,9 @@ fun HomeRoute(
     }
 
     LaunchedEffect(Unit) {
+        //화면 불러오기
+        viewModel.getHome()
+
         //알림 권한 허용
         if (
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -157,7 +160,7 @@ fun HomeScreenContents(
                 ) {
                     append("${state.userInfo.name}님 ")
                 }
-                append("반가워요!,\n${state.greetingMessage}")
+                append("안녕하세요!,\n스토리북 작성을 시작해보세요!")
             },
             style = HaloType.heading03Medium,
             modifier = Modifier.padding(horizontal = 24.dp),

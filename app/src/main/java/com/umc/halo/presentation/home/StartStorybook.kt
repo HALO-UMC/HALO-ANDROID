@@ -114,7 +114,7 @@ fun ContentsOverlay(
         )
         {
             Text(
-                text = "테마 ${item.currentProgress + 1}장은\n'내일 다시' 참여할 수 있어요!",
+                text = "테마 ${item.currentProgress}장은\n'내일 다시' 참여할 수 있어요!",
                 style = HaloType.body01Medium,
                 color = Gray600,
                 modifier = Modifier
@@ -164,7 +164,7 @@ fun StartStorybookContents(
         ) {
             Spacer(Modifier.weight(2.5f))
 
-            if (item.currentProgress == 0) {
+            if (item.isFirst) {
                 Text(
                     text = item.tag,
                     style = HaloType.body03Regular,
@@ -189,7 +189,7 @@ fun StartStorybookContents(
                 color = Gray500
             )
 
-            if (item.currentProgress != 0) {
+            if (!item.isFirst) {
                 Spacer(Modifier.weight(5f))
 
                 Text(

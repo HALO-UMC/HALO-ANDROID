@@ -9,7 +9,8 @@ data class CustomStorybook(
     val id: Long,
     val tag: String,       // 추천 이유 태그 (예: "대화가 어색한 당신을 위한")
     val title: String,     // 스토리북 제목 (예: "오래전 당신")
-    val subtitle: String   // 부제 (예: "가족과의 만남")
+    val subtitle: String,   // 부제 (예: "가족과의 만남")
+    val imageUrl: String   // 이미지 url
 )
 
 /**

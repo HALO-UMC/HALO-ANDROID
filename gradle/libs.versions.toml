@@ -23,6 +23,7 @@ googleid = "1.2.0"
 coreSplashscreen = "1.0.1"
 googleServices = "4.5.0"
 firebaseBom = "34.16.0"
+coil = "2.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -73,6 +74,9 @@ googleid = { group = "com.google.android.libraries.identity.googleid", name = "g
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+
+# Image Load - Coil
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

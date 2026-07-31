@@ -2,6 +2,8 @@ package com.umc.halo.data.repository.home
 
 import com.umc.halo.data.remote.api.home.HomeApi
 import com.umc.halo.data.remote.dto.response.home.HomeResponse
+import com.umc.halo.domain.model.home.BookStatus
+import com.umc.halo.domain.model.home.Bookshelf
 import com.umc.halo.domain.model.home.HomeResult
 import com.umc.halo.domain.model.home.HomeStatus
 import com.umc.halo.domain.model.storybook.CustomStorybook
@@ -31,13 +33,22 @@ private fun HomeResponse.toDomain() = HomeResult(
             currentChapterOrder = it.currentChapterOrder.toLong()
         )
     },
-    startStorybookList = bookshelf,
+    bookShelfList = bookshelf.map {
+        Bookshelf(
+            storybookId = it.storybookId,
+            title = it.title,
+            themeOrder = it.themeOrder,
+            spineColor = it.spineColor,
+            status = BookStatus.from(it.status)
+        )
+    },
     customStorybookList = recommendedStorybooks.map {
         CustomStorybook(
             id = it.storybookId,
             tag = it.recommendationReasonText,
             title = it.title,
-            subtitle = it.shortDescription
+            subtitle = it.shortDescription,
+            imageUrl = it.imageUrl
         )
     }
 )
