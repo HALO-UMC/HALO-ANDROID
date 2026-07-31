@@ -280,8 +280,6 @@ private fun CustomStorybookSection(
                 CustomStorybookCard(
                     item = item,
                     modifier = Modifier.fillMaxWidth(),
-                    // [임시] 커버 더미 — 실제 커버 연동 시 제거
-                    coverRes = if (index == 0) R.drawable.ic_storybook_customsection_dummy else null,
                     onClick = { onClick(item.id) }
                 )
             }
