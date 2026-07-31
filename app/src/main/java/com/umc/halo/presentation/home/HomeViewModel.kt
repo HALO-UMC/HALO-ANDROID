@@ -8,9 +8,13 @@ import com.umc.halo.domain.model.home.UserInfo
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.domain.model.storybook.CustomStorybook
 import com.umc.halo.domain.model.themebox.ContinueStorybook
+import com.umc.halo.domain.repository.home.HomeRepository
 import com.umc.halo.presentation.base.BaseViewModel
+import javax.inject.Inject
 
-class HomeViewModel: BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
+class HomeViewModel @Inject constructor(
+    homeRepository: HomeRepository
+): BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
 
     override fun onEvent(event: HomeUiEvent) {
         when (event) {

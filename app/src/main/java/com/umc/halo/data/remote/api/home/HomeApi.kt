@@ -9,5 +9,5 @@ interface HomeApi {
 
     //홈화면 정보 불러오기
     @GET("/api/v1/home")
-    suspend fun home(): BaseResponse<HomeResponse>
+    suspend fun getHome(): BaseResponse<HomeResponse>
 }
