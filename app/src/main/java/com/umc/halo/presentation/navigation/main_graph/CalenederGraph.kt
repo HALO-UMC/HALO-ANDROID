@@ -26,14 +26,14 @@ fun NavGraphBuilder.calenderGraph(
                     navController.navigate(Graphs.STORYBOOK) {
                         launchSingleTop = true
                         restoreState = true
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        popUpTo(Graphs.MAIN) { saveState = true }
                     }
                 },
                 onNavigateToThemeBox = {
                     navController.navigate(Graphs.THEME_BOX) {
                         launchSingleTop = true
                         restoreState = true
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        popUpTo(Graphs.MAIN) { saveState = true }
                     }
                 },
                 // 모달 '장 기록중' 카드 → 그 장의 완료 결과 화면

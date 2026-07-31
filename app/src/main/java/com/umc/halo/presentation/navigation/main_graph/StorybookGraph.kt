@@ -37,7 +37,7 @@ fun NavGraphBuilder.storybookGraph(
                     navController.navigate(Graphs.THEME_BOX) {
                         launchSingleTop = true
                         restoreState = true
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        popUpTo(Graphs.MAIN) { saveState = true }
                     }
                 }
             )

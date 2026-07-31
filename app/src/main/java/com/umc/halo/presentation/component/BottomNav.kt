@@ -1,6 +1,5 @@
 package com.umc.halo.presentation.component
 
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -13,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.umc.halo.presentation.navigation.BottomNavItem
+import com.umc.halo.presentation.navigation.Graphs
 import com.umc.halo.presentation.theme.HaloType
 
 
@@ -41,7 +40,7 @@ fun BottomNav(
                         //---백스택 관리
                         launchSingleTop = true
                         restoreState = true
-                        popUpTo(navController.graph.findStartDestination().id) {
+                        popUpTo(Graphs.MAIN) {
                             saveState = true
                         }
                     }
