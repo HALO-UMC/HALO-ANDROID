@@ -1,7 +1,6 @@
 package com.umc.halo.presentation.component
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
+import coil.compose.AsyncImage
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +31,7 @@ import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.White
+import org.jetbrains.annotations.Async
 
 /**
  * 맞춤 스토리북 카드
@@ -42,7 +42,6 @@ import com.umc.halo.presentation.theme.White
 fun CustomStorybookCard(
     item: CustomStorybook,
     modifier: Modifier = Modifier,
-    @DrawableRes coverRes: Int? = null,
     onClick: () -> Unit
 ) {
     val shape = RoundedCornerShape(16.dp)
@@ -56,7 +55,6 @@ fun CustomStorybookCard(
         horizontalArrangement = Arrangement.spacedBy(18.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // 커버 이미지 — 서버 연동 후 실제 이미지로 교체
         Box(
             modifier = Modifier
                 .width(75.dp)
@@ -64,14 +62,12 @@ fun CustomStorybookCard(
                 .clip(RoundedCornerShape(8.dp))
                 .background(Gray50)
         ) {
-            if (coverRes != null) {
-                Image(
-                    painter = painterResource(coverRes),
-                    contentDescription = null,      // 장식용 이미지라 null
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.matchParentSize()
-                )
-            }
+            AsyncImage(
+                model = item.imageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize()
+            )
         }
 
         Row(
