@@ -68,7 +68,7 @@ fun NavGraphBuilder.calenderGraph(
                 storybookId = storybookId,
                 chapterId = chapterId,
                 onNavigateBack = {
-                    navController.popBackStack()
+                    navController.popBackStackIfCurrent(Routes.CHAPTER_RESULT)
                 }
             )
         }

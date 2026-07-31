@@ -17,14 +17,13 @@ import com.umc.halo.presentation.navigation.BottomNavItem
 import com.umc.halo.presentation.navigation.Graphs
 import com.umc.halo.presentation.theme.HaloType
 
-
 @Composable
 fun BottomNav(
     navController: NavHostController,
     currentRoute: String?
 ) {
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface, //BottomNav 배경 색
+        containerColor = MaterialTheme.colorScheme.surface,
         modifier = Modifier.padding(
             top = 8.dp,
             start = 10.dp,
@@ -33,22 +32,25 @@ fun BottomNav(
         )
     ) {
         BottomNavItem.entries.forEach { item ->
+            val selected = currentRoute == item.route
+
             NavigationBarItem(
-                selected = currentRoute == item.route,
+                selected = selected,
                 onClick = {
-                    navController.navigate(item.route) {
-                        //---백스택 관리
-                        launchSingleTop = true
-                        restoreState = true
-                        popUpTo(Graphs.MAIN) {
-                            saveState = true
+                    if (!selected) {
+                        navController.navigate(item.route) {
+                            launchSingleTop = true
+                            restoreState = true
+                            popUpTo(Graphs.MAIN) {
+                                saveState = true
+                            }
                         }
                     }
                 },
                 icon = {
                     Icon(
                         painter = painterResource(
-                            id = if (currentRoute == item.route) {
+                            id = if (selected) {
                                 item.selectedIcon
                             } else {
                                 item.unselectedIcon
@@ -61,7 +63,7 @@ fun BottomNav(
                 label = {
                     Text(
                         text = item.label,
-                        color = if (currentRoute == item.route) {
+                        color = if (selected) {
                             MaterialTheme.colorScheme.primary
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant
@@ -70,7 +72,7 @@ fun BottomNav(
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = Color.Transparent //인디케이터 투명화
+                    indicatorColor = Color.Transparent
                 )
             )
         }

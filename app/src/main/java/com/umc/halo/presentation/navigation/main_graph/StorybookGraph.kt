@@ -61,7 +61,7 @@ fun NavGraphBuilder.storybookGraph(
                     }
                 },
                 onNavigateToBack = {
-                    navController.popBackStack()
+                    navController.popBackStackIfCurrent(Routes.STORYBOOK_DETAIL)
                 }
             )
         }
@@ -89,7 +89,7 @@ fun NavGraphBuilder.storybookGraph(
                 storybookId = storybookId,
                 chapterId = chapterId,
                 onNavigateBack = {
-                    navController.popBackStack()
+                    navController.popBackStackIfCurrent(Routes.CHAPTER_PROGRESS)
                 },
                 onNavigateToResult = { resultStorybookId, resultChapterId ->
                     navController.navigate(
@@ -125,11 +125,13 @@ fun NavGraphBuilder.storybookGraph(
                 storybookId = storybookId,
                 chapterId = chapterId,
                 onNavigateBack = {
-                    navController.navigate(Routes.storybookDetail(storybookId)) {
-                        popUpTo(Routes.storybookDetail(storybookId)) {
-                            inclusive = false
+                    navController.navigateIfCurrent(Routes.CHAPTER_RESULT) {
+                        navigate(Routes.storybookDetail(storybookId)) {
+                            popUpTo(Routes.storybookDetail(storybookId)) {
+                                inclusive = false
+                            }
+                            launchSingleTop = true
                         }
-                        launchSingleTop = true
                     }
                 }
             )
@@ -138,7 +140,7 @@ fun NavGraphBuilder.storybookGraph(
         composable(Routes.SHOW_THEME) {
             ShowThemeRoute(
                 onNavigateBack = {
-                    navController.popBackStack()
+                    navController.popBackStackIfCurrent(Routes.SHOW_THEME)
                 }
             )
         }

@@ -45,16 +45,6 @@ fun HaloScaffold(
 
     val screenRoute = currentDestination?.route
 
-    val hideBottomBarRoutes = listOf(
-        Routes.STORYBOOK_DETAIL,
-        Routes.CHAPTER_PROGRESS,
-        Routes.CHAPTER_RESULT,
-        Routes.SHOW_THEME
-    )
-
-    val showBottomBar =
-        graphRoute != null && screenRoute !in hideBottomBarRoutes
-
     val mainRootRoutes = listOf(
         Routes.HOME,
         Routes.CALENDAR,
@@ -62,6 +52,10 @@ fun HaloScaffold(
         Routes.THEME_BOX,
         Routes.MYPAGE
     )
+
+    val showBottomBar =
+        graphRoute != null && screenRoute in mainRootRoutes
+
     var showExitDialog by remember { mutableStateOf(false) }
 
     BackHandler(enabled = screenRoute in mainRootRoutes) {
