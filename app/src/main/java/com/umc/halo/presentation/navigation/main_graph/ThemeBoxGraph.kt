@@ -21,8 +21,23 @@ fun NavGraphBuilder.themeBoxGraph(
         route = Graphs.THEME_BOX,
         startDestination = Routes.THEME_BOX
     ) {
-        composable(Routes.THEME_BOX) {
+        composable(
+            route = Routes.THEME_BOX,
+            arguments = listOf(
+                navArgument("storybookId") {
+                    type = NavType.LongType
+                    // 선택 인자라 기본값이 필요
+                    defaultValue = Routes.NO_STORYBOOK_ID
+                }
+            )
+        ) { backStackEntry ->
+            // 기본값(-1)이면 '지정 없음' → 첫 번째 테마부터
+            val initialStorybookId = backStackEntry.arguments
+                ?.getLong("storybookId")
+                ?.takeIf { it != Routes.NO_STORYBOOK_ID }
+
             ThemeBoxRoute(
+                initialStorybookId = initialStorybookId,
                 onNavigateToStorybook = { storybookId ->
                     navController.navigate(Routes.storybookDetail(storybookId)) {
                         launchSingleTop = true

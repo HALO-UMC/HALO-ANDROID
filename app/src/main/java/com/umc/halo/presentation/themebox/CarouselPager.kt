@@ -35,6 +35,7 @@ import kotlin.math.absoluteValue
 @Composable
 fun CarouselPager(
     themeList: List<Theme>,
+    initialStorybookId: Long? = null,
     onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
     if (themeList.isEmpty()) {
@@ -45,7 +46,11 @@ fun CarouselPager(
         modifier = Modifier.fillMaxWidth()
     ) {
         val middle = Int.MAX_VALUE / 2
-        val initialPage = middle - (middle % themeList.size)
+        // 특정 스토리북으로 진입한 경우 그 테마부터 보여줌(없거나 못 찾으면 첫 번째)
+        val targetIndex = themeList
+            .indexOfFirst { it.storybookId == initialStorybookId }
+            .coerceAtLeast(0)
+        val initialPage = middle - (middle % themeList.size) + targetIndex
         val baseWidth = maxWidth
         val horizontalPadding = baseWidth * 0.2f
         val pageSpacing = baseWidth * 0.04f

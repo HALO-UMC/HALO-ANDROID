@@ -9,7 +9,8 @@ object Routes {
     // Bottom Navigation
     const val HOME = "home"
     const val CALENDAR = "calendar"
-    const val THEME_BOX = "theme_box"
+    // 테마함에서 사용하는 스토리북ID (선택 인자)
+    const val THEME_BOX = "theme_box?storybookId={storybookId}"
     const val STORYBOOK = "storybook"
     const val MYPAGE = "mypage"
 
@@ -54,4 +55,14 @@ object Routes {
         storybookId: Long
     ): String =
         "show_theme/$storybookId"
+
+    /**
+     * 테마함 이동 경로.
+     * @param storybookId 지정하면 그 스토리북의 테마부터 보여준다. null 이면 기본 위치(첫 번째 테마).
+     */
+    fun themeBox(storybookId: Long? = null): String =
+        if (storybookId == null) "theme_box" else "theme_box?storybookId=$storybookId"
+
+    /** 테마함 진입 시 '지정 없음'을 뜻하는 storybookId 기본값 */
+    const val NO_STORYBOOK_ID = -1L
 }

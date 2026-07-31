@@ -37,14 +37,16 @@ import com.umc.halo.presentation.theme.White
 
 /**
  * 캘린더 화면 진입점
- * 화면 이동은 [onNavigateToStorybookList]·[onNavigateToThemeBox]·[onNavigateToChapterResult]
- * 콜백으로 위임
+ * 화면 이동은 [onNavigateToStorybookList]·[onNavigateToThemeBox]·[onNavigateToThemeBoxStorybook]
+ * [onNavigateToChapterResult] 콜백으로 위임
+ *
  */
 @Composable
 fun CalendarScreen(
     vm: CalendarViewModel = viewModel(),
     onNavigateToStorybookList: () -> Unit = {},
     onNavigateToThemeBox: () -> Unit = {},
+    onNavigateToThemeBoxStorybook: (Long) -> Unit = {},
     onNavigateToChapterResult: (Long, Long) -> Unit = { _, _ -> }
 ) {
     val state by vm.uiState.collectAsState()
@@ -59,9 +61,10 @@ fun CalendarScreen(
                     vm.onEvent(CalendarUiEvent.OnDismissModal)
                     onNavigateToStorybookList()
                 }
-                is CalendarUiEvent.OnCompletedStorybookClicked -> {    // 모달 완성 스토리북 카드
+                // 모달 완성 스토리북 카드 → 테마함의 해당 스토리북
+                is CalendarUiEvent.OnCompletedStorybookClicked -> {
                     vm.onEvent(CalendarUiEvent.OnDismissModal)
-                    onNavigateToThemeBox()
+                    onNavigateToThemeBoxStorybook(event.storybookId)
                 }
                 // 모달 '장 기록중' 카드 → 그 장의 완료 결과 화면
                 is CalendarUiEvent.OnChapterClicked -> {
