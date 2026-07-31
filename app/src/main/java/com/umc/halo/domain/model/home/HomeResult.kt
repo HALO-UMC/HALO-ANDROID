@@ -32,7 +32,7 @@ data class Bookshelf(
     val storybookId: Long,
     val title: String,
     val themeOrder: Int,
-    val spineColor: String,
+    val spineColor: String?,
     val status: BookStatus
 )
 

@@ -158,7 +158,7 @@ fun HomeScreenContents(
                 withStyle(
                     style = SpanStyle(color = Primary500)
                 ) {
-                    append("${state.userInfo.name}님 ")
+                    append("${state.userInfo.name} ")
                 }
                 append("안녕하세요!,\n스토리북 작성을 시작해보세요!")
             },

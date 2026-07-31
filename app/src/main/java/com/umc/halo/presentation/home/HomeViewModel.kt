@@ -13,9 +13,11 @@ import com.umc.halo.domain.model.storybook.CustomStorybook
 import com.umc.halo.domain.model.themebox.ContinueStorybook
 import com.umc.halo.domain.repository.home.HomeRepository
 import com.umc.halo.presentation.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository
 ): BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
