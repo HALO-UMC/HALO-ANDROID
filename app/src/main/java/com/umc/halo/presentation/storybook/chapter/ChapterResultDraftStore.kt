@@ -28,7 +28,7 @@ object ChapterResultDraftStore {
             questions = chapter.questions,
             answers = state.questionAnswers,
             selectedSceneCard = state.selectedSceneCard,
-            selectedImageUri = state.selectedImageUri,
+            selectedImageUri = state.selectedSceneImageUri,
             mood = mood
         )
     }
