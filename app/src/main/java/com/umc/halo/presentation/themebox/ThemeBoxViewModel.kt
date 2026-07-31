@@ -10,11 +10,12 @@ class ThemeBoxViewModel: BaseViewModel<ThemeBoxUiState, ThemeBoxUiEvent>(ThemeBo
             is ThemeBoxUiEvent.OnPagerChanged -> {
                 updateState {
                     val filledState = this as? ThemeBoxUiState.Filled ?: return@updateState this
-                    val themeCount = filledState.themeList.size
-                    val currentStorybookId = if (themeCount == 0) {
+                    val themeList = filledState.themeList
+                    // 실제 목록 위치로 되돌려 그 테마의 스토리북 id 를 읽음
+                    val currentStorybookId = if (themeList.isEmpty()) {
                         null
                     } else {
-                        (Math.floorMod(event.page, themeCount) + 1).toLong()
+                        themeList[Math.floorMod(event.page, themeList.size)].storybookId
                     }
 
                     filledState.copy(currentStorybookId = currentStorybookId)
@@ -30,11 +31,12 @@ class ThemeBoxViewModel: BaseViewModel<ThemeBoxUiState, ThemeBoxUiEvent>(ThemeBo
             ThemeBoxUiState.Filled(
                 numberOfCharacter = 4,
                 storyBookInProgress = 3,
+                // [임시] 더미 — storybookId 는 캘린더 더미의 완성 스토리북 id와 맞춰둠
                 themeList = listOf(
-                    Theme("테마 1", "오래전 당신", "가족과의 만남"),
-                    Theme("테마 2","당신 사용 설명서", "부제"),
-                    Theme("테마 3","가족의 온도", "부제"),
-                    Theme("테마 4","취향이 닿는 날", "부제")
+                    Theme(201, "테마 1", "오래전 당신", "가족과의 만남"),
+                    Theme(202, "테마 2","당신 사용 설명서", "부제"),
+                    Theme(203, "테마 3","가족의 온도", "부제"),
+                    Theme(204, "테마 4","취향이 닿는 날", "부제")
                 )
             )
 //            ThemeBoxUiState.Empty.FTU(
