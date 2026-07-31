@@ -36,6 +36,13 @@ fun NavGraphBuilder.calenderGraph(
                         popUpTo(Graphs.MAIN) { saveState = true }
                     }
                 },
+                // 모달 완성 스토리북 → 테마함의 그 스토리북
+                onNavigateToThemeBoxStorybook = { storybookId ->
+                    navController.navigate(Routes.themeBox(storybookId)) {
+                        launchSingleTop = true
+                        popUpTo(Graphs.MAIN) { saveState = true }
+                    }
+                },
                 // 모달 '장 기록중' 카드 → 그 장의 완료 결과 화면
                 onNavigateToChapterResult = { storybookId, chapterId ->
                     navController.navigate(Routes.chapterResult(storybookId, chapterId)) {
