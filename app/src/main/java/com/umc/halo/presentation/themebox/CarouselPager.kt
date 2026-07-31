@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.umc.halo.R
 import com.umc.halo.domain.model.themebox.Theme
-import com.umc.halo.presentation.home.HomeUiEvent
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
@@ -38,6 +37,10 @@ fun CarouselPager(
     themeList: List<Theme>,
     onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
+    if (themeList.isEmpty()) {
+        return
+    }
+
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -51,13 +54,20 @@ fun CarouselPager(
             initialPage = initialPage
         )
 
+        LaunchedEffect(pagerState, themeList.size) {
+            snapshotFlow { pagerState.currentPage }
+                .collect { page ->
+                    onEvent(ThemeBoxUiEvent.OnPagerChanged(page))
+                }
+        }
+
         HorizontalPager(
             modifier = Modifier.fillMaxSize(),
             state = pagerState,
             contentPadding = PaddingValues(horizontal = horizontalPadding),
             pageSpacing = pageSpacing
         ) { page ->
-            val item = themeList[page % themeList.size]
+            val item = themeList[Math.floorMod(page, themeList.size)]
 
             val pageOffset = (
                     (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
@@ -74,17 +84,6 @@ fun CarouselPager(
                 stop = 1f,
                 fraction = 1f - pageOffset.coerceIn(0f, 1f)
             )
-
-            // 초기 페이지 입력
-            onEvent(ThemeBoxUiEvent.OnPagerChanged(page))
-
-            // 페이지 변동 시 페이지 입력
-            LaunchedEffect(pagerState) {
-                snapshotFlow { pagerState.currentPage }
-                    .collect { page ->
-                        onEvent(ThemeBoxUiEvent.OnPagerChanged(page))
-                    }
-            }
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally

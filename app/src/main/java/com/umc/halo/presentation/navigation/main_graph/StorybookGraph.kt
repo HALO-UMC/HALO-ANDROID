@@ -37,7 +37,7 @@ fun NavGraphBuilder.storybookGraph(
                     navController.navigate(Graphs.THEME_BOX) {
                         launchSingleTop = true
                         restoreState = true
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        popUpTo(Graphs.MAIN) { saveState = true }
                     }
                 }
             )
@@ -61,12 +61,7 @@ fun NavGraphBuilder.storybookGraph(
                     }
                 },
                 onNavigateToBack = {
-                    navController.navigate(Routes.STORYBOOK) {
-                        launchSingleTop = true
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                    }
+                    navController.popBackStackIfCurrent(Routes.STORYBOOK_DETAIL)
                 }
             )
         }
@@ -94,7 +89,7 @@ fun NavGraphBuilder.storybookGraph(
                 storybookId = storybookId,
                 chapterId = chapterId,
                 onNavigateBack = {
-                    navController.popBackStack()
+                    navController.popBackStackIfCurrent(Routes.CHAPTER_PROGRESS)
                 },
                 onNavigateToResult = { resultStorybookId, resultChapterId ->
                     navController.navigate(
@@ -130,11 +125,13 @@ fun NavGraphBuilder.storybookGraph(
                 storybookId = storybookId,
                 chapterId = chapterId,
                 onNavigateBack = {
-                    navController.navigate(Routes.storybookDetail(storybookId)) {
-                        popUpTo(Routes.storybookDetail(storybookId)) {
-                            inclusive = false
+                    navController.navigateIfCurrent(Routes.CHAPTER_RESULT) {
+                        navigate(Routes.storybookDetail(storybookId)) {
+                            popUpTo(Routes.storybookDetail(storybookId)) {
+                                inclusive = false
+                            }
+                            launchSingleTop = true
                         }
-                        launchSingleTop = true
                     }
                 }
             )
@@ -143,7 +140,7 @@ fun NavGraphBuilder.storybookGraph(
         composable(Routes.SHOW_THEME) {
             ShowThemeRoute(
                 onNavigateBack = {
-                    navController.popBackStack()
+                    navController.popBackStackIfCurrent(Routes.SHOW_THEME)
                 }
             )
         }

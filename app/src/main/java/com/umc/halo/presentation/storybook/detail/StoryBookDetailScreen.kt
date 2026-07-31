@@ -25,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umc.halo.domain.model.storybook.StoryBookInfo
 import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.presentation.component.HaloTopBar
@@ -90,13 +89,11 @@ fun StoryBookDetailRoute(
 }
 @Composable
 fun StoryBookDetailTopBar(
-    vm: StoryBookDetailViewModel = viewModel(),
+    title: String,
     onClick: () -> Unit
 ) {
-    val state by vm.uiState.collectAsState()
-
     HaloTopBar(
-        title = state.storyBookInfo.title,
+        title = title,
         showLeftIcon = true
     ) {
         onClick()
@@ -113,7 +110,9 @@ fun StoryBookDetailScreen(
     }
 
     Column {
-        StoryBookDetailTopBar() {
+        StoryBookDetailTopBar(
+            title = state.storyBookInfo.title
+        ) {
             onEvent(StoryBookDetailUiEvent.OnclickBackArrow)
         }
 

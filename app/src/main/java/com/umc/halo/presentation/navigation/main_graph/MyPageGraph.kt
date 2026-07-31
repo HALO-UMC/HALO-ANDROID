@@ -1,14 +1,18 @@
 package com.umc.halo.presentation.navigation.main_graph
 
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.umc.halo.presentation.mypage.AccountInfoRoute
 import com.umc.halo.presentation.mypage.AnniversaryRoute
+import com.umc.halo.presentation.mypage.MyPageViewModel
 import com.umc.halo.presentation.mypage.NotificationSettingsRoute
 import com.umc.halo.presentation.mypage.SystemSettingsRoute
 import com.umc.halo.presentation.mypage.WithdrawRoute
+import com.umc.halo.presentation.mypage.anniversary.AnniversaryViewModel
 import com.umc.halo.presentation.mypage.screen.AccountManagementScreen
 import com.umc.halo.presentation.mypage.screen.MyPageScreen
 import com.umc.halo.presentation.mypage.screen.OpenLicenseScreen
@@ -56,24 +60,44 @@ fun NavGraphBuilder.mypageGraph(
         }
 
         composable(Routes.MYPAGE_RELATIONSHIP_INFO) {
-            RelationshipInfoScreen(onBack = navController::popBackStack)
+            RelationshipInfoScreen(
+                onBack = { navController.popBackStackIfCurrent(Routes.MYPAGE_RELATIONSHIP_INFO) }
+            )
         }
 
         composable(Routes.MYPAGE_ANNIVERSARY) {
-            AnniversaryRoute(onBack = navController::popBackStack)
+            val parentEntry = navController.getBackStackEntry(Graphs.MYPAGE)
+            val anniversaryViewModel: AnniversaryViewModel = viewModel(parentEntry)
+
+            AnniversaryRoute(
+                onBack = { navController.popBackStackIfCurrent(Routes.MYPAGE_ANNIVERSARY) },
+                viewModel = anniversaryViewModel
+            )
         }
 
         composable(Routes.MYPAGE_SYSTEM_SETTINGS) {
-            SystemSettingsRoute(onBack = navController::popBackStack)
+            val parentEntry = navController.getBackStackEntry(Graphs.MYPAGE)
+            val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
+
+            SystemSettingsRoute(
+                onBack = { navController.popBackStackIfCurrent(Routes.MYPAGE_SYSTEM_SETTINGS) },
+                viewModel = myPageViewModel
+            )
         }
 
         composable(Routes.MYPAGE_NOTIFICATION_SETTINGS) {
-            NotificationSettingsRoute(onBack = navController::popBackStack)
+            val parentEntry = navController.getBackStackEntry(Graphs.MYPAGE)
+            val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
+
+            NotificationSettingsRoute(
+                onBack = { navController.popBackStackIfCurrent(Routes.MYPAGE_NOTIFICATION_SETTINGS) },
+                viewModel = myPageViewModel
+            )
         }
 
         composable(Routes.MYPAGE_ACCOUNT_MANAGEMENT) {
             AccountManagementScreen(
-                onBack = navController::popBackStack,
+                onBack = { navController.popBackStackIfCurrent(Routes.MYPAGE_ACCOUNT_MANAGEMENT) },
                 onNavigateToAccountInfo = {
                     navController.navigate(Routes.MYPAGE_ACCOUNT_INFO) {
                         launchSingleTop = true
@@ -93,8 +117,12 @@ fun NavGraphBuilder.mypageGraph(
         }
 
         composable(Routes.MYPAGE_ACCOUNT_INFO) {
+            val parentEntry = navController.getBackStackEntry(Graphs.MYPAGE)
+            val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
+
             AccountInfoRoute(
-                onBack = navController::popBackStack,
+                onBack = { navController.popBackStackIfCurrent(Routes.MYPAGE_ACCOUNT_INFO) },
+                viewModel = myPageViewModel,
                 onNavigateToWithdraw = {
                     navController.navigate(Routes.MYPAGE_WITHDRAW) {
                         launchSingleTop = true
@@ -112,8 +140,12 @@ fun NavGraphBuilder.mypageGraph(
         }
 
         composable(Routes.MYPAGE_WITHDRAW) {
+            val parentEntry = navController.getBackStackEntry(Graphs.MYPAGE)
+            val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
+
             WithdrawRoute(
-                onBack = navController::popBackStack,
+                onBack = { navController.popBackStackIfCurrent(Routes.MYPAGE_WITHDRAW) },
+                viewModel = myPageViewModel,
                 onNavigateToLogin = {
                     navController.navigate(Routes.LOGIN) {
                         popUpTo(navController.graph.id) {
@@ -126,12 +158,14 @@ fun NavGraphBuilder.mypageGraph(
         }
 
         composable(Routes.MYPAGE_TERMS) {
-            TermsScreen(onBack = navController::popBackStack)
+            TermsScreen(
+                onBack = { navController.popBackStackIfCurrent(Routes.MYPAGE_TERMS) }
+            )
         }
 
         composable(Routes.MYPAGE_OPEN_LICENSE) {
             OpenLicenseScreen(
-                onBack = navController::popBackStack,
+                onBack = { navController.popBackStackIfCurrent(Routes.MYPAGE_OPEN_LICENSE) },
                 onNavigateToAccountInfo = {
                     navController.navigate(Routes.MYPAGE_ACCOUNT_INFO) {
                         launchSingleTop = true
@@ -151,7 +185,9 @@ fun NavGraphBuilder.mypageGraph(
         }
 
         composable(Routes.MYPAGE_PRIVACY_POLICY) {
-            PrivacyPolicyScreen(onBack = navController::popBackStack)
+            PrivacyPolicyScreen(
+                onBack = { navController.popBackStackIfCurrent(Routes.MYPAGE_PRIVACY_POLICY) }
+            )
         }
     }
 }

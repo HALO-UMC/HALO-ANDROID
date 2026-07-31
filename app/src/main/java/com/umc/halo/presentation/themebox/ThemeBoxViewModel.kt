@@ -9,7 +9,15 @@ class ThemeBoxViewModel: BaseViewModel<ThemeBoxUiState, ThemeBoxUiEvent>(ThemeBo
         when (event) {
             is ThemeBoxUiEvent.OnPagerChanged -> {
                 updateState {
-                    ThemeBoxUiState.Filled(currentStorybookId = event.page.toLong())
+                    val filledState = this as? ThemeBoxUiState.Filled ?: return@updateState this
+                    val themeCount = filledState.themeList.size
+                    val currentStorybookId = if (themeCount == 0) {
+                        null
+                    } else {
+                        (Math.floorMod(event.page, themeCount) + 1).toLong()
+                    }
+
+                    filledState.copy(currentStorybookId = currentStorybookId)
                 }
             }
 

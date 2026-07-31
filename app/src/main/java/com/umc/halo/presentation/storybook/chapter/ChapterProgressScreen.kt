@@ -234,6 +234,7 @@ private fun ChapterProgressScreen(
                 selectedMood = state.selectedMood,
                 onBackClick = handleBack,
                 onCompleteClick = {
+                    ChapterResultDraftStore.save(state)
                     onNavigateToResult(
                         chapter.storybookId,
                         chapter.id

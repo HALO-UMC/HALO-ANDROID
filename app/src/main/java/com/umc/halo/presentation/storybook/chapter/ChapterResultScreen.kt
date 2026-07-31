@@ -42,6 +42,7 @@ import com.umc.halo.domain.model.storybook.ChapterSceneCard
 import com.umc.halo.domain.model.storybook.ChapterStatus
 import com.umc.halo.presentation.storybook.chapter.component.ChapterImagePlaceholder
 import com.umc.halo.presentation.storybook.chapter.component.ChapterSceneCardImage
+import com.umc.halo.presentation.storybook.chapter.component.rememberSelectedImageBitmap
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray50
@@ -62,7 +63,8 @@ private data class ChapterResultUiModel(
     val backgroundImageResId: Int?,
     val questions: List<String>,
     val answers: List<String>,
-    val sceneCard: ChapterSceneCard,
+    val sceneCard: ChapterSceneCard?,
+    val selectedImageUri: String?,
     val sceneCardImageResId: Int?,
     val mood: ChapterMood
 )
@@ -74,7 +76,10 @@ fun ChapterResultRoute(
     onNavigateBack: () -> Unit
 ) {
     val result = remember(storybookId, chapterId) {
-        createDummyChapterResult(
+        ChapterResultDraftStore.get(
+            storybookId = storybookId,
+            chapterId = chapterId
+        )?.toUiModel() ?: createDummyChapterResult(
             storybookId = storybookId,
             chapterId = chapterId
         )
@@ -134,6 +139,7 @@ private fun ChapterResultScreen(
 
             ResultSceneSection(
                 sceneCard = result.sceneCard,
+                selectedImageUri = result.selectedImageUri,
                 imageResId = result.sceneCardImageResId
             )
 
@@ -345,9 +351,12 @@ private fun ResultQuestionAnswer(
 
 @Composable
 private fun ResultSceneSection(
-    sceneCard: ChapterSceneCard,
+    sceneCard: ChapterSceneCard?,
+    selectedImageUri: String?,
     imageResId: Int?
 ) {
+    val selectedImageBitmap = rememberSelectedImageBitmap(selectedImageUri)
+
     ResultSectionTitle(
         number = "02",
         title = "장면 확인하기"
@@ -358,17 +367,36 @@ private fun ResultSceneSection(
     if (imageResId != null) {
         Image(
             painter = painterResource(id = imageResId),
-            contentDescription = sceneCard.title,
+            contentDescription = sceneCard?.title ?: "선택한 장면",
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(312f / 294f)
                 .clip(RoundedCornerShape(10.dp)),
             contentScale = ContentScale.Crop
         )
-    } else {
+    } else if (selectedImageBitmap != null) {
+        Image(
+            bitmap = selectedImageBitmap,
+            contentDescription = "선택한 사진",
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(312f / 294f)
+                .clip(RoundedCornerShape(10.dp)),
+            contentScale = ContentScale.Crop
+        )
+    } else if (sceneCard != null) {
         ChapterSceneCardImage(
             card = sceneCard,
             cornerRadius = 10.dp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(312f / 294f)
+                .clip(RoundedCornerShape(10.dp))
+        )
+    } else {
+        ChapterImagePlaceholder(
+            imageUrl = null,
+            showLabel = true,
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(312f / 294f)
@@ -514,21 +542,28 @@ private fun createDummyChapterResult(
 
     return ChapterResultUiModel(
         chapter = chapter,
-        backgroundImageResId = R.drawable.mock_storybook_theme_bg,
+        backgroundImageResId = null,
         questions = listOf(
             "부모님의 어릴 적 꿈은 무엇이었나요?",
             "부모님이 어릴적 좋아했던 것은 무엇이었나요?",
             "자주 하던 일은 무엇이었나요?"
         ),
         answers = listOf("", "", ""),
-        sceneCard = ChapterSceneCard(
-            id = 4L,
-            storybookId = storybookId,
-            chapterId = chapterId,
-            title = "졸업",
-            imageUrl = null
-        ),
-        sceneCardImageResId = R.drawable.mock_storybook_scene_card,
+        sceneCard = null,
+        selectedImageUri = null,
+        sceneCardImageResId = null,
         mood = ChapterMood.THOUGHTFUL
     )
 }
+
+private fun ChapterResultDraft.toUiModel(): ChapterResultUiModel =
+    ChapterResultUiModel(
+        chapter = chapter,
+        backgroundImageResId = null,
+        questions = questions,
+        answers = answers,
+        sceneCard = selectedSceneCard,
+        selectedImageUri = selectedImageUri,
+        sceneCardImageResId = null,
+        mood = mood
+    )
