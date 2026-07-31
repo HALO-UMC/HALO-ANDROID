@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.mypage
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -125,6 +126,14 @@ fun AnniversaryRoute(
     viewModel: AnniversaryViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    BackHandler {
+        if (uiState.mode == AnniversaryScreenMode.LIST) {
+            onBack()
+        } else {
+            viewModel.onEvent(AnniversaryUiEvent.BackClicked)
+        }
+    }
 
     AnniversaryScreen(
         uiState = uiState,

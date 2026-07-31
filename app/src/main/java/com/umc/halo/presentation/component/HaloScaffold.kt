@@ -1,5 +1,7 @@
 package com.umc.halo.presentation.component
 
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -21,15 +26,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.umc.halo.presentation.calendar.CalendarTopBar
 import com.umc.halo.presentation.navigation.BottomNavItem
 import com.umc.halo.presentation.navigation.Routes
-import com.umc.halo.presentation.storybook.detail.StoryBookDetailTopBar
-import com.umc.halo.presentation.themebox.show_theme.ShowThemeTopBar
-import okhttp3.Route
 
 @Composable
 fun HaloScaffold(
     navController: NavHostController,
     content: @Composable (PaddingValues) -> Unit
 ) {
+    val activity = LocalActivity.current
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
@@ -50,6 +53,32 @@ fun HaloScaffold(
 
     val showBottomBar =
         graphRoute != null && screenRoute !in hideBottomBarRoutes
+
+    val mainRootRoutes = listOf(
+        Routes.HOME,
+        Routes.CALENDAR,
+        Routes.STORYBOOK,
+        Routes.THEME_BOX,
+        Routes.MYPAGE
+    )
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = screenRoute in mainRootRoutes) {
+        showExitDialog = true
+    }
+
+    if (showExitDialog) {
+        ConfirmActionDialog(
+            title = "앱을 종료하시겠습니까?",
+            description = "확인을 누르면 HALO가 종료됩니다.",
+            buttonText = "종료",
+            onDismiss = { showExitDialog = false },
+            onConfirm = {
+                showExitDialog = false
+                activity?.finish()
+            }
+        )
+    }
 
     /*
      * 챕터 화면은 Edge-to-Edge로 구성하고, 온보딩 화면은

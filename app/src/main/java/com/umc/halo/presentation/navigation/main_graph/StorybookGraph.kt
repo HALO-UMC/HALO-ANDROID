@@ -61,12 +61,7 @@ fun NavGraphBuilder.storybookGraph(
                     }
                 },
                 onNavigateToBack = {
-                    navController.navigate(Routes.STORYBOOK) {
-                        launchSingleTop = true
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                    }
+                    navController.popBackStack()
                 }
             )
         }

@@ -2,11 +2,14 @@ package com.umc.halo.presentation.navigation.main_graph
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.umc.halo.presentation.calendar.CalendarScreen
 import com.umc.halo.presentation.navigation.Graphs
 import com.umc.halo.presentation.navigation.Routes
+import com.umc.halo.presentation.storybook.chapter.ChapterResultRoute
 
 fun NavGraphBuilder.calenderGraph(
     navController: NavController
@@ -38,6 +41,34 @@ fun NavGraphBuilder.calenderGraph(
                     navController.navigate(Routes.chapterResult(storybookId, chapterId)) {
                         launchSingleTop = true
                     }
+                }
+            )
+        }
+
+        composable(
+            route = Routes.CHAPTER_RESULT,
+            arguments = listOf(
+                navArgument("storybookId") {
+                    type = NavType.LongType
+                },
+                navArgument("chapterId") {
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+            val storybookId = backStackEntry.arguments
+                ?.getLong("storybookId")
+                ?: return@composable
+
+            val chapterId = backStackEntry.arguments
+                ?.getLong("chapterId")
+                ?: return@composable
+
+            ChapterResultRoute(
+                storybookId = storybookId,
+                chapterId = chapterId,
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }

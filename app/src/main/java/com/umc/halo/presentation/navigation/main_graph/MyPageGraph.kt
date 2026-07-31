@@ -1,14 +1,19 @@
 package com.umc.halo.presentation.navigation.main_graph
 
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.umc.halo.presentation.mypage.AccountInfoRoute
 import com.umc.halo.presentation.mypage.AnniversaryRoute
+import com.umc.halo.presentation.mypage.MyPageViewModel
 import com.umc.halo.presentation.mypage.NotificationSettingsRoute
 import com.umc.halo.presentation.mypage.SystemSettingsRoute
 import com.umc.halo.presentation.mypage.WithdrawRoute
+import com.umc.halo.presentation.mypage.anniversary.AnniversaryViewModel
 import com.umc.halo.presentation.mypage.screen.AccountManagementScreen
 import com.umc.halo.presentation.mypage.screen.MyPageScreen
 import com.umc.halo.presentation.mypage.screen.OpenLicenseScreen
@@ -60,15 +65,39 @@ fun NavGraphBuilder.mypageGraph(
         }
 
         composable(Routes.MYPAGE_ANNIVERSARY) {
-            AnniversaryRoute(onBack = navController::popBackStack)
+            val parentEntry = remember(navController) {
+                navController.getBackStackEntry(Graphs.MYPAGE)
+            }
+            val anniversaryViewModel: AnniversaryViewModel = viewModel(parentEntry)
+
+            AnniversaryRoute(
+                onBack = navController::popBackStack,
+                viewModel = anniversaryViewModel
+            )
         }
 
         composable(Routes.MYPAGE_SYSTEM_SETTINGS) {
-            SystemSettingsRoute(onBack = navController::popBackStack)
+            val parentEntry = remember(navController) {
+                navController.getBackStackEntry(Graphs.MYPAGE)
+            }
+            val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
+
+            SystemSettingsRoute(
+                onBack = navController::popBackStack,
+                viewModel = myPageViewModel
+            )
         }
 
         composable(Routes.MYPAGE_NOTIFICATION_SETTINGS) {
-            NotificationSettingsRoute(onBack = navController::popBackStack)
+            val parentEntry = remember(navController) {
+                navController.getBackStackEntry(Graphs.MYPAGE)
+            }
+            val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
+
+            NotificationSettingsRoute(
+                onBack = navController::popBackStack,
+                viewModel = myPageViewModel
+            )
         }
 
         composable(Routes.MYPAGE_ACCOUNT_MANAGEMENT) {
@@ -93,8 +122,14 @@ fun NavGraphBuilder.mypageGraph(
         }
 
         composable(Routes.MYPAGE_ACCOUNT_INFO) {
+            val parentEntry = remember(navController) {
+                navController.getBackStackEntry(Graphs.MYPAGE)
+            }
+            val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
+
             AccountInfoRoute(
                 onBack = navController::popBackStack,
+                viewModel = myPageViewModel,
                 onNavigateToWithdraw = {
                     navController.navigate(Routes.MYPAGE_WITHDRAW) {
                         launchSingleTop = true
@@ -112,8 +147,14 @@ fun NavGraphBuilder.mypageGraph(
         }
 
         composable(Routes.MYPAGE_WITHDRAW) {
+            val parentEntry = remember(navController) {
+                navController.getBackStackEntry(Graphs.MYPAGE)
+            }
+            val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
+
             WithdrawRoute(
                 onBack = navController::popBackStack,
+                viewModel = myPageViewModel,
                 onNavigateToLogin = {
                     navController.navigate(Routes.LOGIN) {
                         popUpTo(navController.graph.id) {
