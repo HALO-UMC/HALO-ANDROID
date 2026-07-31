@@ -31,6 +31,7 @@ import com.umc.halo.presentation.theme.Primary500
 @Composable
 fun ThemeBoxFilledScreen(
     state: ThemeBoxUiState.Filled,
+    initialStorybookId: Long? = null,
     onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
     Column(
@@ -52,6 +53,7 @@ fun ThemeBoxFilledScreen(
         ThemeBox(
             Modifier.weight(190f),
             state.themeList,
+            initialStorybookId,
             onEvent
         )
 
@@ -139,12 +141,13 @@ fun ProgressBox(
 fun ThemeBox(
     modifier: Modifier = Modifier,
     themeList: List<Theme>,
+    initialStorybookId: Long? = null,
     onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
     Box(
         modifier
             .fillMaxWidth()
     ) {
-        CarouselPager(themeList, onEvent)
+        CarouselPager(themeList, initialStorybookId, onEvent)
     }
 }
