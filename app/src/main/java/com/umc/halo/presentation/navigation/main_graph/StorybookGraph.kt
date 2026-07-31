@@ -32,11 +32,10 @@ fun NavGraphBuilder.storybookGraph(
                         launchSingleTop = true
                     }
                 },
-                // 완료 카드 -> 테마함 (하단바 탭이라 하단바와 같은 백스택 옵션으로 전환)
-                onNavigateToThemeBox = {
-                    navController.navigate(Graphs.THEME_BOX) {
+                // 완료 카드 -> 테마함의 그 스토리북
+                onNavigateToThemeBox = { storybookId ->
+                    navController.navigate(Routes.themeBox(storybookId)) {
                         launchSingleTop = true
-                        restoreState = true
                         popUpTo(Graphs.MAIN) { saveState = true }
                     }
                 }

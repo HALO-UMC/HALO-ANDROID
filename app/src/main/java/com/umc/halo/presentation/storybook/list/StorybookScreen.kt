@@ -65,12 +65,14 @@ private val ThemeSectionSpacing = 48.dp          // 테마 섹션 ↔ 테마 섹
  * 스토리북 목록 화면 진입점
  *
  * 화면 이동은 [onNavigateToStorybookDetail]·[onNavigateToThemeBox] 콜백으로 위임
+ *
+ * @param onNavigateToThemeBox 완료한 스토리북 → 테마함. 그 스토리북의 테마를 펼쳐서 열어야 하므로 id 를 넘김
  */
 @Composable
 fun StorybookScreen(
     vm: StorybookViewModel = viewModel(),
     onNavigateToStorybookDetail: (Long) -> Unit = {},
-    onNavigateToThemeBox: () -> Unit = {}
+    onNavigateToThemeBox: (Long) -> Unit = {}
 ) {
     val state by vm.uiState.collectAsState()
 
@@ -88,8 +90,9 @@ fun StorybookScreen(
                 is StorybookUiEvent.OnContinueStorybookClicked ->
                     onNavigateToStorybookDetail(event.storybookId)
 
-                // 완료한 책은 테마함으로
-                is StorybookUiEvent.OnDoneStorybookClicked -> onNavigateToThemeBox()
+                // 완료한 책은 테마함의 해당 스토리북으로 (완료 탭 카드 + 전체 탭 '완료' 배지 카드 공통)
+                is StorybookUiEvent.OnDoneStorybookClicked ->
+                    onNavigateToThemeBox(event.storybookId)
 
                 // 그 외(탭 전환)는 VM 이 상태로 처리
                 else -> vm.onEvent(event)
