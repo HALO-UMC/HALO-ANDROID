@@ -19,11 +19,16 @@ sealed interface CalendarUiEvent {
     data class OnCompletedStorybookClicked(val storybookId: Long) : CalendarUiEvent
 
     /**
-     * 모달 '장 기록중'(그 날 완료한 장) 카드 클릭 → 그 장의 완료 결과 화면(chapter_result)
-     * 이동에는 장 고유 id 가 필요
+     * 모달 '장 기록중' 카드 클릭 → 그 장의 완료 결과 화면(chapter_result)으로 이동
+     *
+     *  서버는 장의 고유 id 를 주지 않고 순서([chapterOrder], 1~10)만 주기에 같은 방식으로 구현
+     *  TODO :'완료된 장 다시보기' API(GET /api/v1/member-chapters/{memberChapterId})가 연동되면 실제 id 로 바꿔야 함
      */
-    data class OnChapterClicked(val storybookId: Long, val chapterId: Long) : CalendarUiEvent
+    data class OnChapterClicked(val storybookId: Long, val chapterOrder: Int) : CalendarUiEvent
 
     /** 하단 요약 '자세히 보러가기' → 테마함 */
     data object OnSummaryDetailClicked : CalendarUiEvent
+
+    /** 에러 문구를 화면에 표시 */
+    data object ErrorShown : CalendarUiEvent
 }

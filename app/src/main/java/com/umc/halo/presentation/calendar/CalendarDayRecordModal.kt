@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import java.util.Locale
 import com.umc.halo.R
 import com.umc.halo.domain.model.calendar.DateCompletedChapter
 import com.umc.halo.domain.model.calendar.DateCompletedStorybook
@@ -42,12 +44,17 @@ import com.umc.halo.presentation.theme.White
 
 /**
  * 날짜 클릭 시 뜨는 기록 모달
+ * - isLoading == true         : 서버에서 그 날 기록을 불러오는 중
  * - record.hasRecord == true  : (완성 스토리북) + (장 기록중 리스트)
  * - record.hasRecord == false : "아직 기록이 없어요!" + '시작하기' CTA
+ *
  */
 @Composable
 fun CalendarDayRecordModal(
-    record: DayRecord,
+    month: Int,
+    day: Int,
+    record: DayRecord?,
+    isLoading: Boolean,
     onEvent: (CalendarUiEvent) -> Unit
 ) {
     Dialog(
@@ -71,7 +78,7 @@ fun CalendarDayRecordModal(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = String.format("%02d월 %02d일 기록", record.month, record.day),
+                    text = String.format(Locale.US, "%02d월 %02d일 기록", month, day),
                     style = HaloType.body01SemiBold,
                     color = Gray800,
                     modifier = Modifier.weight(1f)
@@ -86,17 +93,28 @@ fun CalendarDayRecordModal(
                 )
             }
 
-            if (record.hasRecord) {
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Primary500)
+                }
+            } else if (record != null && record.hasRecord) {
                 // 완성 스토리북(있으면 먼저)
-                record.completedStorybook?.let { completed ->
+                if (record.completedStorybooks.isNotEmpty()) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text("완성 스토리북", style = HaloType.body02SemiBold, color = Gray800)
-                        CompletedCard(
-                            item = completed,
-                            onClick = {
-                                onEvent(CalendarUiEvent.OnCompletedStorybookClicked(completed.storybookId))
-                            }
-                        )
+                        record.completedStorybooks.forEach { completed ->
+                            CompletedCard(
+                                item = completed,
+                                onClick = {
+                                    onEvent(CalendarUiEvent.OnCompletedStorybookClicked(completed.storybookId))
+                                }
+                            )
+                        }
                     }
                 }
                 // 장 기록중(그 날 완료한 장, 최신순)
@@ -111,7 +129,7 @@ fun CalendarDayRecordModal(
                                         onEvent(
                                             CalendarUiEvent.OnChapterClicked(
                                                 chapter.storybookId,
-                                                chapter.chapterId
+                                                chapter.chapterOrder
                                             )
                                         )
                                     }
@@ -222,7 +240,7 @@ private fun ChapterCard(
         ) {
             Text(item.title, style = HaloType.body01SemiBold, color = Gray800)
             Text(
-                "${item.chapter}장 기록을 완료했어요!",
+                "${item.chapterOrder}장 기록을 완료했어요!",
                 style = HaloType.body03Regular,
                 color = Gray500
             )
