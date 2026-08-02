@@ -3,14 +3,14 @@ package com.umc.halo.data.remote.dto.response.themebox
 data class ThemeBoxResponse(
     val stats: ThemeBoxStatsResponse,
     val storybooks: List<CompletedStorybookResponse>,
+    val currentStorybookId: Long?,
     val inProgressStorybooks: List<InProgressStorybookResponse>,
     val recommendedStorybooks: List<RecommendedStorybookResponse>
 )
 
 data class ThemeBoxStatsResponse(
     val collectedCharacterCount: Int,
-    val inProgressStorybookCount: Int,
-    val currentStorybookId: Long?
+    val inProgressStorybookCount: Int
 )
 
 data class CompletedStorybookResponse(

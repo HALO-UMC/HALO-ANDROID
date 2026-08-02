@@ -19,7 +19,7 @@ class StorybookDetailRepositoryImpl @Inject constructor(
         val response = storybookDetailApi.getStorybookDetail(storybookId)
 
         return response.result?.toDomain()
-            ?: throw IllegalStateException("Home data is null")
+            ?: throw IllegalStateException("storybook data is null")
     }
 }
 

@@ -1,10 +1,19 @@
 package com.umc.halo.presentation.themebox
 
+import androidx.lifecycle.viewModelScope
 import com.umc.halo.domain.model.storybook.CustomStorybook
 import com.umc.halo.domain.model.themebox.Theme
+import com.umc.halo.domain.repository.themebox.ThemeBoxRepository
 import com.umc.halo.presentation.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import java.nio.file.Files.copy
+import javax.inject.Inject
 
-class ThemeBoxViewModel: BaseViewModel<ThemeBoxUiState, ThemeBoxUiEvent>(ThemeBoxUiState.Empty.FTU()) {
+@HiltViewModel
+class ThemeBoxViewModel @Inject constructor(
+    private val themeBoxRepository: ThemeBoxRepository
+): BaseViewModel<ThemeBoxUiState, ThemeBoxUiEvent>(ThemeBoxUiState.Empty.FTU()) {
     override fun onEvent(event: ThemeBoxUiEvent) {
         when (event) {
             is ThemeBoxUiEvent.OnPagerChanged -> {
@@ -26,30 +35,30 @@ class ThemeBoxViewModel: BaseViewModel<ThemeBoxUiState, ThemeBoxUiEvent>(ThemeBo
         }
     }
 
-    init {
-        updateState {
-            ThemeBoxUiState.Filled(
-                numberOfCharacter = 4,
-                storyBookInProgress = 3,
-                // [임시] 더미 — storybookId 는 캘린더 더미의 완성 스토리북 id와 맞춰둠
-                themeList = listOf(
-                    Theme(201, "테마 1", "오래전 당신", "가족과의 만남"),
-                    Theme(202, "테마 2","당신 사용 설명서", "부제"),
-                    Theme(203, "테마 3","가족의 온도", "부제"),
-                    Theme(204, "테마 4","취향이 닿는 날", "부제")
-                )
-            )
-//            ThemeBoxUiState.Empty.FTU(
-//                customStorybookList = listOf(
-//                    CustomStorybook(1, "대화가 어색한 당신을 위한", "오래전 당신", "가족과의 만남"),
-//                    CustomStorybook(2,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
-//                    CustomStorybook(3,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남"),
-//                    CustomStorybook(4,"대화가 어색한 당신을 위한","오래전 당신","가족과의 만남")
-//                )
-//            )
-//            ThemeBoxUiState.Empty.RU(
-//
-//            )
+    fun getThemeBox() {
+        viewModelScope.launch {
+            val themeBox = themeBoxRepository.getThemeBox()
+
+            _uiState.value =
+                if (themeBox.numberOfCharacter != 0) {
+                    ThemeBoxUiState.Filled(
+                        numberOfCharacter = themeBox.numberOfCharacter,
+                        storyBookInProgress = themeBox.storyBookInProgress,
+                        themeList = themeBox.themeList,
+                        currentStorybookId = themeBox.currentStorybookId
+                    )
+                } else {
+                    if (themeBox.storyBookInProgress == 0) {
+                        ThemeBoxUiState.Empty.FTU(
+                            customStorybookList = themeBox.customStorybookList
+                        )
+                    } else {
+                        ThemeBoxUiState.Empty.RU(
+                            continueStorybookList = themeBox.continueStorybookList
+                        )
+                    }
+                }
         }
     }
+
 }

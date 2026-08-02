@@ -12,7 +12,8 @@ data class Theme(
     val storybookId: Long, // 이 테마에 해당하는 스토리북 id
     val character: String,
     val title: String,
-    val subTitle: String
+    val subTitle: String,
+    val imageUrl: String
 )
 
 data class ThemeBoxResult(
