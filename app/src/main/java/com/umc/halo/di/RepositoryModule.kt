@@ -46,6 +46,9 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCalendarRepository(impl: CalendarRepositoryImpl): CalendarRepository
+
+    @Binds
+    @Singleton
     abstract fun bindHomeRepository(impl: HomeRepositoryImpl): HomeRepository
 
     @Binds

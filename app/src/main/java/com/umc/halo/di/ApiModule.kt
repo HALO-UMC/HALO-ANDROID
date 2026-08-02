@@ -46,6 +46,9 @@ object ApiModule {
     @Singleton
     fun provideCalendarApi(retrofit: Retrofit): CalendarApi =
         retrofit.create(CalendarApi::class.java)
+
+    @Provides
+    @Singleton
     fun provideHomeApi(retrofit: Retrofit): HomeApi =
         retrofit.create(HomeApi::class.java)
 
