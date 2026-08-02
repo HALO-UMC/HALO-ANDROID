@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.umc.halo.R
 import com.umc.halo.domain.model.storybook.StoryBookIndex
 import com.umc.halo.presentation.theme.Gray100
@@ -58,11 +59,11 @@ fun StoryBookIndex(
                     .clip(RoundedCornerShape(10.dp))
                     .background(CoverPlaceholderColor)
             ) {
-                Image(
-                    painter = painterResource(R.drawable.image_storybook_detail_ex_2),
+                AsyncImage(
+                    model = item.imageUrl,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize()
-                ) // 추가 이미지 들어가야함
+                )
             }
 
             Spacer(Modifier.fillMaxWidth(11f/312f))

@@ -59,15 +59,22 @@ fun NavGraphBuilder.themeBoxGraph(
             )
         }
 
-        composable(Routes.STORYBOOK_DETAIL) {
+        composable(
+            route = Routes.STORYBOOK_DETAIL,
+            arguments = listOf(
+                navArgument("storybookId") {
+                    type = NavType.LongType
+                }
+            )
+        ) {
             StoryBookDetailRoute(
                 onNavigateToChapterResult = { storybookId, chapterId ->
-                    navController.navigate(Routes.chapterResult(storybookId, chapterId)) {
+                    navController.navigate(Routes.chapterResult(storybookId,chapterId)) {
                         launchSingleTop = true
                     }
                 },
                 onNavigateToChapterProgress = { storybookId, chapterId ->
-                    navController.navigate(Routes.chapterProgress(storybookId, chapterId)) {
+                    navController.navigate(Routes.chapterProgress(storybookId,chapterId)) {
                         launchSingleTop = true
                     }
                 },

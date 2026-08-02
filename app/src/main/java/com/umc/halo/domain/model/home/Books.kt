@@ -26,8 +26,8 @@ data class Books(
 data class StartStorybook(
     val storybookId: Long = 0,
     val title: String = "void",
-    val subtitle: String = "void",
     val tag: String = "void", // 상단 태그
     val currentProgress: Int = 0,
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
+    val isFirst: Boolean = false
 )

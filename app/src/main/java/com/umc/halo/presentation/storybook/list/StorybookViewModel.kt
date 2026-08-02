@@ -32,10 +32,6 @@ class StorybookViewModel : BaseViewModel<StorybookUiState, StorybookUiEvent>(Sto
         updateState {
             copy(
                 userName = "주연",
-                customStorybooks = listOf(
-                    CustomStorybook(1, "대화가 어색한 당신을 위한", "오래전 당신", "가족과의 만남"),
-                    CustomStorybook(2, "부모님을 더 알고싶은 당신을 위한", "취향이 닿는 날", "취향을 나누는 시간")
-                ),
                 themes = listOf(
                     StorybookTheme(
                         id = 1,

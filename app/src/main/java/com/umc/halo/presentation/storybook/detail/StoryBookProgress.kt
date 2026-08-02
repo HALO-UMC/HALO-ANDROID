@@ -43,9 +43,9 @@ fun StoryBookProgress(
     ) {
         when (storyBookProgress) {
             is StorybookProgress.InProgress -> {
-                val completedChapter = storyBookProgress.chapter - 1 // 완료된 챕터 ( 진행중인 챕터 - 1 )
+                val completedChapter = storyBookProgress.chapter
 
-                if (storyBookProgress.chapter == 1) {
+                if (storyBookProgress.chapter + 1 == 1) {
                     Text(
                         text = "아직 첫 장을 펼치지 않았어요",
                         style = HaloType.body02Regular,
