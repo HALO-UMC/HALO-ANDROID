@@ -9,7 +9,7 @@ sealed interface ThemeBoxUiState{
         val numberOfCharacter: Int = 0,
         val storyBookInProgress: Int = 0,
         val themeList: List<Theme> = emptyList(),
-        val currentStorybookId: Long? = null,
+        val currentStorybookId: Long? = null
     ): ThemeBoxUiState
 
     sealed interface Empty : ThemeBoxUiState {
