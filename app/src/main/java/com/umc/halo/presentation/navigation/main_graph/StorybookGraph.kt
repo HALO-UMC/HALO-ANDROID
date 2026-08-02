@@ -42,7 +42,14 @@ fun NavGraphBuilder.storybookGraph(
             )
         }
 
-        composable(Routes.STORYBOOK_DETAIL) {
+        composable(
+            route = Routes.STORYBOOK_DETAIL,
+            arguments = listOf(
+                navArgument("storybookId") {
+                    type = NavType.LongType
+                }
+            )
+        ) {
             StoryBookDetailRoute(
                 onNavigateToChapterResult = { storybookId, chapterId ->
                     navController.navigate(Routes.chapterResult(storybookId,chapterId)) {
