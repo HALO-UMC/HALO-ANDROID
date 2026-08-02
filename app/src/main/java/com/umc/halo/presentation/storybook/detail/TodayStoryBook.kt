@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import java.util.Locale
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.umc.halo.R
 import com.umc.halo.domain.model.storybook.TodayStoryBook
 import com.umc.halo.presentation.component.ButtonState
@@ -44,7 +45,7 @@ fun TodayStoryBook(
             .padding(16.dp)
     ) {
         Text(
-            text = if (todayStoryBook.isCompleted) "테마 감상하기" else if (todayStoryBook.isLocked) "내일 펼칠 장명" else "오늘 펼칠 장면",
+            text = if (todayStoryBook.isCompleted) "테마 감상하기" else if (todayStoryBook.isLocked) "내일 펼칠 장면" else "오늘 펼칠 장면",
             style = HaloType.body01SemiBold,
             color = Gray800
         )
@@ -58,11 +59,11 @@ fun TodayStoryBook(
                 .clip(RoundedCornerShape(20.dp))
                 .background(CoverPlaceholderColor)
         ) {
-            Image(
-                painter = painterResource(R.drawable.image_storybook_detail_ex_3),
+            AsyncImage(
+                model = todayStoryBook.imageUrl,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize()
-            ) //추가 이미지 들어가야 함
+            )
         }
 
         Spacer(Modifier.height(18.dp))
