@@ -13,17 +13,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import android.widget.Toast
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import java.util.Calendar
 import com.umc.halo.domain.model.calendar.CalendarDay
 import com.umc.halo.domain.model.calendar.CompletedBook
@@ -43,13 +46,22 @@ import com.umc.halo.presentation.theme.White
  */
 @Composable
 fun CalendarScreen(
-    vm: CalendarViewModel = viewModel(),
+    vm: CalendarViewModel = hiltViewModel(),
     onNavigateToStorybookList: () -> Unit = {},
     onNavigateToThemeBox: () -> Unit = {},
     onNavigateToThemeBoxStorybook: (Long) -> Unit = {},
     onNavigateToChapterResult: (Long, Long) -> Unit = { _, _ -> }
 ) {
     val state by vm.uiState.collectAsState()
+    val context = LocalContext.current
+
+    // 조회 실패 안내
+    // TODO: 표시 방식은 디자인 확정 후 교체 (지금은 토스트)
+    LaunchedEffect(state.errorMessage) {
+        val message = state.errorMessage ?: return@LaunchedEffect
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        vm.onEvent(CalendarUiEvent.ErrorShown)
+    }
 
     CalendarContent(
         state = state,
@@ -67,9 +79,10 @@ fun CalendarScreen(
                     onNavigateToThemeBoxStorybook(event.storybookId)
                 }
                 // 모달 '장 기록중' 카드 → 그 장의 완료 결과 화면
+                // 서버가 장 고유 id 를 안 줘서 장 순서를 chapterId 자리에 넘긴다 (CalendarUiEvent 주석 참고)
                 is CalendarUiEvent.OnChapterClicked -> {
                     vm.onEvent(CalendarUiEvent.OnDismissModal)
-                    onNavigateToChapterResult(event.storybookId, event.chapterId)
+                    onNavigateToChapterResult(event.storybookId, event.chapterOrder.toLong())
                 }
                 CalendarUiEvent.OnSummaryDetailClicked -> onNavigateToThemeBox()  // 하단 '자세히 보러가기'
 
@@ -125,8 +138,15 @@ private fun CalendarContent(
         }
 
         // 날짜 클릭 시 기록 모달(오버레이)
-        state.selectedRecord?.let { record ->
-            CalendarDayRecordModal(record = record, onEvent = onEvent)
+        // 서버 응답을 기다리는 동안에도 모달은 떠 있고 안쪽만 로딩으로 표시
+        state.selectedDay?.let { day ->
+            CalendarDayRecordModal(
+                month = state.month,
+                day = day,
+                record = state.selectedRecord,
+                isLoading = state.isDayRecordLoading,
+                onEvent = onEvent
+            )
         }
     }
 }
@@ -189,9 +209,9 @@ private fun CalendarScreenFullPreview() {
                     completedCount = 3,
                     inProgressCount = 1,
                     completedBooks = listOf(
-                        CompletedBook(1, "오래전 당신"),
-                        CompletedBook(2, "당신 사용 설명서"),
-                        CompletedBook(3, "가족의 온도")
+                        CompletedBook(1),
+                        CompletedBook(2),
+                        CompletedBook(3)
                     )
                 )
             ),
