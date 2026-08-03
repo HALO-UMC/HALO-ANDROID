@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.mypage.MyPageUiEvent
 import com.umc.halo.presentation.mypage.MyPageUiState
@@ -76,20 +75,14 @@ fun WithdrawScreen(
             ) {
                 Text(
                     text = "정말 탈퇴하시겠어요?",
-                    style = HaloType.heading02SemiBold.copy(
-                        fontSize = 24.sp,
-                        lineHeight = 36.sp
-                    ),
+                    style = HaloType.heading01SemiBold,
                     color = Gray800,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = "회원 탈퇴 시 계정 정보와 진행 중인 스토리북, 저장된 모든 기록이 삭제되며, 삭제된 데이터는 복구할 수 없어요.",
-                    style = HaloType.body02Regular.copy(
-                        fontSize = 14.sp,
-                        lineHeight = 20.3.sp
-                    ),
+                    style = HaloType.body02Regular,
                     color = Gray600,
                     modifier = Modifier.fillMaxWidth()
                 )

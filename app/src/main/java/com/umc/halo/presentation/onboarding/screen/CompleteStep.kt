@@ -26,7 +26,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.onboarding.OnboardingUiState
 import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
@@ -113,11 +112,7 @@ fun CompleteStep(
         ) {
             Text(
                 text = "모든 준비가 끝났어요!",
-                style = HaloType.heading01Regular.copy(
-                    fontSize = 24.sp,
-                    lineHeight = 36.sp,
-                    letterSpacing = (-0.48).sp
-                ),
+                style = HaloType.heading01Regular,
                 color = Gray800,
                 textAlign = TextAlign.Center
             )
@@ -140,11 +135,7 @@ fun CompleteStep(
         ) {
             Text(
                 text = "선택한 관계 방향",
-                style = HaloType.body01SemiBold.copy(
-                    fontSize = 16.sp,
-                    lineHeight = 23.2.sp,
-                    letterSpacing = (-0.16).sp
-                ),
+                style = HaloType.body01SemiBold,
                 color = Gray800
             )
 
@@ -198,11 +189,7 @@ private fun SelectedDirectionCard(
     ) {
         Text(
             text = text,
-            style = HaloType.body02Medium.copy(
-                fontSize = 14.sp,
-                lineHeight = 20.3.sp,
-                letterSpacing = (-0.14).sp
-            ),
+            style = HaloType.body02Medium,
             color = Gray700
         )
     }

@@ -300,9 +300,7 @@ private fun OnboardingNameTextField(
             onValueChange = onValueChange,
             singleLine = true,
             textStyle = HaloType.body02Regular.copy(
-                color = Gray800,
-                lineHeight = 20.3.sp,
-                letterSpacing = (-0.14).sp
+                color = Gray800
             ),
             cursorBrush = SolidColor(Primary500),
             keyboardOptions = KeyboardOptions(
@@ -326,10 +324,7 @@ private fun OnboardingNameTextField(
                         if (value.isBlank()) {
                             Text(
                                 text = placeholder,
-                                style = HaloType.body02Regular.copy(
-                                    lineHeight = 20.3.sp,
-                                    letterSpacing = (-0.14).sp
-                                ),
+                                style = HaloType.body02Regular,
                                 color = Gray300
                             )
                         }
@@ -410,18 +405,12 @@ private fun NameRequirementRow(
         Text(
             text = "✓",
             modifier = Modifier.width(14.dp),
-            style = HaloType.caption01Medium.copy(
-                fontSize = 10.sp,
-                lineHeight = 14.5.sp
-            ),
+            style = HaloType.caption01Medium,
             color = textColor
         )
         Text(
             text = text,
-            style = HaloType.caption01Medium.copy(
-                fontSize = 10.sp,
-                lineHeight = 14.5.sp
-            ),
+            style = HaloType.caption01Medium,
             color = textColor
         )
     }
@@ -439,18 +428,12 @@ private fun NameErrorGuide(
         Text(
             text = "ⓘ",
             modifier = Modifier.width(16.dp),
-            style = HaloType.caption01Medium.copy(
-                fontSize = 10.sp,
-                lineHeight = 14.5.sp
-            ),
+            style = HaloType.caption01Medium,
             color = Error
         )
         Text(
             text = message,
-            style = HaloType.caption01Medium.copy(
-                fontSize = 10.sp,
-                lineHeight = 14.5.sp
-            ),
+            style = HaloType.caption01Medium,
             color = Error
         )
     }

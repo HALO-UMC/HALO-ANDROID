@@ -287,7 +287,7 @@ private fun DialogPrimaryButton(
     ) {
         Text(
             text = text,
-            style = HaloType.body02SemiBold.copy(fontSize = 14.sp)
+            style = HaloType.body02SemiBold
         )
     }
 }

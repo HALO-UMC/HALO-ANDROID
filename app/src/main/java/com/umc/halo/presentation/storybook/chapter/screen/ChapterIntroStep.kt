@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomAction
@@ -86,10 +85,7 @@ fun ChapterIntroStep(
 
                 Text(
                     text = chapter.title,
-                    style = HaloType.body01SemiBold.copy(
-                        fontSize = 20.sp,
-                        lineHeight = 30.sp
-                    ),
+                    style = HaloType.heading02SemiBold,
                     color = Gray800
                 )
 

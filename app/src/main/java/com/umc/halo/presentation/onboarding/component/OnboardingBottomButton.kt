@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.HaloType
@@ -48,10 +47,7 @@ fun OnboardingBottomButton(
     ) {
         Text(
             text = text,
-            style = HaloType.body01SemiBold.copy(
-                lineHeight = 23.2.sp,
-                letterSpacing = (-0.16).sp
-            )
+            style = HaloType.body01SemiBold
         )
     }
 }

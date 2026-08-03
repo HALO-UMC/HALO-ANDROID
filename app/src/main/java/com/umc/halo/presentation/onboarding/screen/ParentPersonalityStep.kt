@@ -35,7 +35,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.onboarding.MAX_PARENT_PERSONALITY_COUNT
 import com.umc.halo.presentation.onboarding.OnboardingUiEvent
@@ -159,11 +158,7 @@ fun ParentPersonalityStep(
 
                 Text(
                     text = titleText,
-                    style = HaloType.heading01Regular.copy(
-                        fontSize = 20.sp,
-                        lineHeight = 30.sp,
-                        letterSpacing = (-0.2).sp
-                    ),
+                    style = HaloType.heading02Regular,
                     color = Gray800
                 )
 
@@ -171,11 +166,7 @@ fun ParentPersonalityStep(
 
                 Text(
                     text = "해당되는 항목을 모두 선택해주세요. (최대 3개).",
-                    style = HaloType.body03Regular.copy(
-                        fontSize = 12.sp,
-                        lineHeight = 17.4.sp,
-                        letterSpacing = (-0.12).sp
-                    ),
+                    style = HaloType.body03Regular,
                     color = Gray400
                 )
 
@@ -188,11 +179,7 @@ fun ParentPersonalityStep(
 
                     Text(
                         text = group.title,
-                        style = HaloType.body02Medium.copy(
-                            fontSize = 14.sp,
-                            lineHeight = 20.3.sp,
-                            letterSpacing = (-0.14).sp
-                        ),
+                        style = HaloType.body02Medium,
                         color = Gray700
                     )
 
@@ -258,11 +245,7 @@ fun ParentPersonalityStep(
 
                     Text(
                         text = "태그는 최대 3개까지 선택할 수 있어요.",
-                        style = HaloType.body03Regular.copy(
-                            fontSize = 12.sp,
-                            lineHeight = 17.4.sp,
-                            letterSpacing = (-0.12).sp
-                        ),
+                        style = HaloType.body03Regular,
                         color = Error
                     )
                 }

@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.presentation.component.HaloTopBar
@@ -179,10 +178,7 @@ private fun ChapterMoodHeader(
 
         Text(
             text = "지금까지 기록하며\n느낀 감정을 선택해볼까요?",
-            style = HaloType.body01SemiBold.copy(
-                fontSize = 18.sp,
-                lineHeight = 26.sp
-            ),
+            style = HaloType.heading03SemiBold,
             color = MoodTitleColor
         )
 

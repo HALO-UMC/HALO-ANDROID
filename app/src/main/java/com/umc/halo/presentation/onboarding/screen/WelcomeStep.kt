@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
@@ -105,11 +104,7 @@ fun WelcomeStep(
                     start = 21.dp,
                     end = 21.dp
                 ),
-            style = HaloType.heading01Regular.copy(
-                lineHeight = 36.sp,
-                letterSpacing = (-0.48).sp,
-                textAlign = TextAlign.Center
-            ),
+            style = HaloType.heading01Regular.copy(textAlign = TextAlign.Center),
             color = Gray800
         )
 
@@ -133,11 +128,7 @@ fun WelcomeStep(
                     start = 21.dp,
                     end = 21.dp
                 ),
-            style = HaloType.body01Regular.copy(
-                lineHeight = 23.2.sp,
-                letterSpacing = (-0.16).sp,
-                textAlign = TextAlign.Center
-            ),
+            style = HaloType.body01Regular.copy(textAlign = TextAlign.Center),
             color = Gray800
         )
 
