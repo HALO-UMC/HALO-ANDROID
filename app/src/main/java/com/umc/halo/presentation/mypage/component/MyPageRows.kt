@@ -85,6 +85,7 @@ fun ProfileCard() {
                     style = HaloType.heading02SemiBold,
                     color = Gray800
                 )
+                Spacer(Modifier.height(2.dp))
                 Text(
                     text = "2003.09.25",
                     style = HaloType.body02Regular,

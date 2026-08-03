@@ -372,7 +372,6 @@ private fun BirthDateSelectionRow(
     ) {
         BirthDateWheelField(
             value = selectedYear,
-            placeholder = "0000",
             unit = "년",
             options = yearOptions,
             onValueSelected = onYearSelected,
@@ -383,7 +382,6 @@ private fun BirthDateSelectionRow(
 
         BirthDateWheelField(
             value = selectedMonth,
-            placeholder = "0",
             unit = "월",
             options = monthOptions,
             onValueSelected = onMonthSelected,
@@ -394,7 +392,6 @@ private fun BirthDateSelectionRow(
 
         BirthDateWheelField(
             value = selectedDay,
-            placeholder = "0",
             unit = "일",
             options = dayOptions,
             onValueSelected = onDaySelected,
@@ -406,7 +403,6 @@ private fun BirthDateSelectionRow(
 @Composable
 private fun BirthDateWheelField(
     value: Int?,
-    placeholder: String,
     unit: String,
     options: List<Int>,
     onValueSelected: (Int) -> Unit,
@@ -415,10 +411,11 @@ private fun BirthDateWheelField(
     HaloNumberWheelField(
         selectedValue = value,
         values = options,
-        placeholder = placeholder,
+        placeholder = "",
         unit = unit,
         onValueSelected = onValueSelected,
         modifier = modifier,
+        usePlaceholder = false,
         valueFormatter = { selected ->
             if (unit == "년") {
                 selected.toString().padStart(4, '0')

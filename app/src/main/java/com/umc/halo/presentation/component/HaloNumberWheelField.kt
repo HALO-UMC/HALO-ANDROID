@@ -16,7 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,6 +87,7 @@ fun HaloNumberWheelField(
     val isScrolling by remember {
         derivedStateOf { listState.isScrollInProgress }
     }
+    var hasScrollStarted by remember { mutableStateOf(false) }
 
     LaunchedEffect(selectedIndex) {
         if (!listState.isScrollInProgress &&
@@ -101,7 +104,9 @@ fun HaloNumberWheelField(
         snapshotFlow { listState.isScrollInProgress }
             .distinctUntilChanged()
             .collect { scrolling ->
-                if (!scrolling) {
+                if (scrolling) {
+                    hasScrollStarted = true
+                } else if (hasScrollStarted) {
                     val shouldAdvance = listState.firstVisibleItemScrollOffset > itemHeightPx / 2
                     val targetIndex = (
                             listState.firstVisibleItemIndex +
@@ -117,6 +122,7 @@ fun HaloNumberWheelField(
 
                     val valueIndex = targetIndex.toWheelValueIndex(wheelValues.size)
                     wheelValues[valueIndex]?.let(onValueSelected)
+                    hasScrollStarted = false
                 }
             }
     }
