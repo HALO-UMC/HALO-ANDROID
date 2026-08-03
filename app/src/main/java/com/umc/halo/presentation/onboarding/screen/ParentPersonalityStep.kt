@@ -92,7 +92,7 @@ fun ParentPersonalityStep(
                 )
             )
 
-            Spacer(modifier = Modifier.height(47.dp))
+            Spacer(modifier = Modifier.height(31.dp))
 
             /*
              * 뒤로 가기 영역도 진행 바 아래에 고정한다.
@@ -186,7 +186,8 @@ fun ParentPersonalityStep(
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        maxItemsInEachRow = 4
                     ) {
                         group.options.forEach { personality ->
                             val isSelected =

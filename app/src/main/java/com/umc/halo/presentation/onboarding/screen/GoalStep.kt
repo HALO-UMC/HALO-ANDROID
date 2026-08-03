@@ -86,7 +86,7 @@ fun GoalStep(
                 )
             )
 
-            Spacer(modifier = Modifier.height(47.dp))
+            Spacer(modifier = Modifier.height(31.dp))
 
             /*
              * 이전 화면으로 이동하는 버튼

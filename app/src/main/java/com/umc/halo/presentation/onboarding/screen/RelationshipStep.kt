@@ -113,7 +113,7 @@ fun RelationshipStep(
                 )
             )
 
-            Spacer(modifier = Modifier.height(47.dp))
+            Spacer(modifier = Modifier.height(31.dp))
 
             /*
              * 이전 버튼 영역
