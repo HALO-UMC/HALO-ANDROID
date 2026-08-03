@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -29,6 +30,7 @@ import com.umc.halo.domain.model.storybook.StoryBookIndex
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.HaloType
+import com.umc.halo.presentation.theme.White
 
 
 private val CoverPlaceholderColor = Gray100 // TODO: 실제 커버 이미지로 추후 교체
@@ -62,8 +64,19 @@ fun StoryBookIndex(
                 AsyncImage(
                     model = item.imageUrl,
                     contentDescription = null,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(10.dp)),
+                    contentScale = ContentScale.FillBounds
                 )
+
+                if (item.isLocked) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(Color.White.copy(alpha = 0.4f))
+                    )
+                }
             }
 
             Spacer(Modifier.fillMaxWidth(11f/312f))
