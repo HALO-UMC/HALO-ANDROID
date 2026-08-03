@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,7 +30,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.onboarding.GOAL_OPTIONS
 import com.umc.halo.presentation.onboarding.OnboardingUiEvent
@@ -69,7 +67,6 @@ fun GoalStep(
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .widthIn(max = 360.dp)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .statusBarsPadding()
@@ -84,12 +81,12 @@ fun GoalStep(
                 totalStep = 3,
                 modifier = Modifier.padding(
                     start = 20.dp,
-                    top = 14.dp,
+                    top = 3.dp,
                     end = 20.dp
                 )
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(31.dp))
 
             /*
              * 이전 화면으로 이동하는 버튼
@@ -119,7 +116,7 @@ fun GoalStep(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(19.dp))
 
             Column(
                 modifier = Modifier.padding(horizontal = 24.dp)
@@ -140,23 +137,15 @@ fun GoalStep(
 
                 Text(
                     text = titleText,
-                    style = HaloType.heading01Regular.copy(
-                        fontSize = 20.sp,
-                        lineHeight = 30.sp,
-                        letterSpacing = (-0.2).sp
-                    ),
+                    style = HaloType.heading02Regular,
                     color = Gray800
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "해당되는 항목을 모두 선택해주세요. (최대 2개).",
-                    style = HaloType.body03Regular.copy(
-                        fontSize = 12.sp,
-                        lineHeight = 17.4.sp,
-                        letterSpacing = (-0.12).sp
-                    ),
+                    text = "해당되는 항목을 선택해주세요.",
+                    style = HaloType.body03Regular,
                     color = Gray400
                 )
 
@@ -167,11 +156,7 @@ fun GoalStep(
 
                     Text(
                         text = limitMessage,
-                        style = HaloType.body03Regular.copy(
-                            fontSize = 12.sp,
-                            lineHeight = 17.4.sp,
-                            letterSpacing = (-0.12).sp
-                        ),
+                        style = HaloType.body03Regular,
                         color = Error
                     )
                 }
@@ -209,7 +194,6 @@ fun GoalStep(
             },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .widthIn(max = 360.dp)
                 .fillMaxWidth()
                 .navigationBarsPadding()
                 .padding(
@@ -252,11 +236,7 @@ private fun GoalOptionCard(
     ) {
         Text(
             text = text,
-            style = HaloType.body02Medium.copy(
-                fontSize = 14.sp,
-                lineHeight = 20.3.sp,
-                letterSpacing = (-0.14).sp
-            ),
+            style = HaloType.body02Medium,
             color = textColor
         )
     }

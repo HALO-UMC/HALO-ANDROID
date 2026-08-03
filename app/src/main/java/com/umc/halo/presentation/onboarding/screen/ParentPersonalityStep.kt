@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -35,7 +34,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.onboarding.MAX_PARENT_PERSONALITY_COUNT
 import com.umc.halo.presentation.onboarding.OnboardingUiEvent
@@ -77,7 +75,6 @@ fun ParentPersonalityStep(
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .widthIn(max = 360.dp)
                 .fillMaxSize()
                 .statusBarsPadding()
         ) {
@@ -90,12 +87,12 @@ fun ParentPersonalityStep(
                 totalStep = 3,
                 modifier = Modifier.padding(
                     start = 20.dp,
-                    top = 14.dp,
+                    top = 3.dp,
                     end = 20.dp
                 )
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(31.dp))
 
             /*
              * 뒤로 가기 영역도 진행 바 아래에 고정한다.
@@ -139,7 +136,7 @@ fun ParentPersonalityStep(
                     .padding(
                         start = 24.dp,
                         end = 24.dp,
-                        top = 8.dp,
+                        top = 19.dp,
                         bottom = 24.dp
                     )
             ) {
@@ -159,11 +156,7 @@ fun ParentPersonalityStep(
 
                 Text(
                     text = titleText,
-                    style = HaloType.heading01Regular.copy(
-                        fontSize = 20.sp,
-                        lineHeight = 30.sp,
-                        letterSpacing = (-0.2).sp
-                    ),
+                    style = HaloType.heading02Regular,
                     color = Gray800
                 )
 
@@ -171,37 +164,30 @@ fun ParentPersonalityStep(
 
                 Text(
                     text = "해당되는 항목을 모두 선택해주세요. (최대 3개).",
-                    style = HaloType.body03Regular.copy(
-                        fontSize = 12.sp,
-                        lineHeight = 17.4.sp,
-                        letterSpacing = (-0.12).sp
-                    ),
+                    style = HaloType.body03Regular,
                     color = Gray400
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(33.dp))
 
                 PARENT_PERSONALITY_GROUPS.forEachIndexed { index, group ->
                     if (index > 0) {
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
                     }
 
                     Text(
                         text = group.title,
-                        style = HaloType.body02Medium.copy(
-                            fontSize = 14.sp,
-                            lineHeight = 20.3.sp,
-                            letterSpacing = (-0.14).sp
-                        ),
+                        style = HaloType.body02SemiBold,
                         color = Gray700
                     )
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        maxItemsInEachRow = 4
                     ) {
                         group.options.forEach { personality ->
                             val isSelected =
@@ -258,11 +244,7 @@ fun ParentPersonalityStep(
 
                     Text(
                         text = "태그는 최대 3개까지 선택할 수 있어요.",
-                        style = HaloType.body03Regular.copy(
-                            fontSize = 12.sp,
-                            lineHeight = 17.4.sp,
-                            letterSpacing = (-0.12).sp
-                        ),
+                        style = HaloType.body03Regular,
                         color = Error
                     )
                 }

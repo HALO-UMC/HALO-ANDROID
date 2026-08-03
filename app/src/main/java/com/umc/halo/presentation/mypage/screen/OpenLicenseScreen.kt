@@ -22,9 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.mypage.component.MyPageContainer
 import com.umc.halo.presentation.mypage.component.MyPageTopBar
@@ -78,10 +76,7 @@ fun OpenLicenseScreen(
         ) {
             Text(
                 text = "HALO 는 오픈소스 라이브러리를 사용합니다.\n각 라이브러리의 라이선스 전문은 아래에서 확인하실 수 있습니다.",
-                style = HaloType.body03Regular.copy(
-                    fontSize = 12.sp,
-                    lineHeight = 17.4.sp
-                ),
+                style = HaloType.body03Regular,
                 color = Gray500
             )
 
@@ -129,20 +124,13 @@ private fun OpenLicenseRow(
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
                     text = item.name,
-                    style = HaloType.body02SemiBold.copy(
-                        fontSize = 14.sp,
-                        lineHeight = 20.3.sp,
-                        fontWeight = FontWeight.SemiBold
-                    ),
+                    style = HaloType.body02SemiBold,
                     color = Gray800
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
                     text = item.version,
-                    style = HaloType.body03Regular.copy(
-                        fontSize = 12.sp,
-                        lineHeight = 17.4.sp
-                    ),
+                    style = HaloType.body03Regular,
                     color = Gray500
                 )
             }
@@ -151,10 +139,7 @@ private fun OpenLicenseRow(
 
             Text(
                 text = item.description,
-                style = HaloType.body03Regular.copy(
-                    fontSize = 12.sp,
-                    lineHeight = 17.4.sp
-                ),
+                style = HaloType.body03Regular,
                 color = Gray500
             )
         }

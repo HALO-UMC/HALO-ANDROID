@@ -201,7 +201,7 @@ private fun AnniversaryListScreen(
                 ) {
                     Text(
                         text = "일정 추가",
-                        style = HaloType.body02Medium.copy(fontSize = 16.sp),
+                        style = HaloType.body01Medium,
                         color = White,
                         maxLines = 1
                     )
@@ -211,7 +211,7 @@ private fun AnniversaryListScreen(
                     ) {
                         Text(
                             text = "+",
-                            style = HaloType.heading03SemiBold.copy(fontSize = 24.sp),
+                            style = HaloType.heading01SemiBold,
                             color = White,
                             textAlign = TextAlign.Center
                         )
@@ -255,7 +255,7 @@ private fun UpcomingAnniversaryCard(
                 Spacer(Modifier.height(12.dp))
                 Text(
                     text = item.title,
-                    style = HaloType.body01SemiBold.copy(fontSize = 18.sp),
+                    style = HaloType.heading03SemiBold,
                     color = Gray800,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -295,7 +295,7 @@ private fun AnniversaryListItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = item.title,
-                    style = HaloType.body02SemiBold.copy(fontSize = 16.sp),
+                    style = HaloType.body01SemiBold,
                     color = if (selected || highlighted) Primary600 else Gray800
                 )
                 Spacer(Modifier.height(4.dp))
@@ -464,7 +464,7 @@ private fun AnniversaryCalendar(
             )
             Text(
                 text = "${form.visibleYear}년 ${form.visibleMonth}월",
-                style = HaloType.body02Medium.copy(fontSize = 16.sp),
+                style = HaloType.body01Medium,
                 color = Gray600,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -556,7 +556,7 @@ private fun CalendarGrid(
                         ) {
                             Text(
                                 text = if (day == 0) "" else day.toString(),
-                                style = HaloType.body03Regular.copy(fontSize = 14.sp),
+                                style = HaloType.body02Regular,
                                 color = if (selected) White else Gray600
                             )
                         }
@@ -642,7 +642,7 @@ private fun AnniversaryDateField(
         ) {
             Text(
                 text = form.date?.formatted() ?: "날짜를 선택해주세요.",
-                style = HaloType.body03Regular.copy(fontSize = 14.sp),
+                style = HaloType.body02Regular,
                 color = if (form.date == null) Gray300 else Gray800,
                 modifier = Modifier.weight(1f)
             )
@@ -692,10 +692,7 @@ private fun AnniversaryTextField(
                 value = value,
                 onValueChange = onValueChange,
                 singleLine = singleLine,
-                textStyle = HaloType.body03Regular.copy(
-                    fontSize = 14.sp,
-                    color = Gray800
-                ).toTextStyle(),
+                textStyle = HaloType.body02Regular.copy(color = Gray800).toTextStyle(),
                 modifier = Modifier.fillMaxWidth()
             )
             if (value.isEmpty()) {
@@ -729,7 +726,7 @@ private fun ReadOnlyBox(
         ) {
             Text(
                 text = text,
-                style = HaloType.body03Regular.copy(fontSize = 14.sp),
+                style = HaloType.body02Regular,
                 color = Gray800,
                 modifier = Modifier.weight(1f)
             )
@@ -757,7 +754,7 @@ private fun AnniversarySectionTitle(text: String) {
 private fun AnniversaryInputLabel(text: String) {
     Text(
         text = text,
-        style = HaloType.body02SemiBold.copy(fontSize = 16.sp),
+        style = HaloType.body01SemiBold,
         color = Gray800
     )
 }

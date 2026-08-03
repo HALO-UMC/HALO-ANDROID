@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray400
@@ -58,16 +57,13 @@ fun ConfirmActionDialog(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = title,
-                            style = HaloType.body01SemiBold.copy(fontSize = 16.sp),
+                            style = HaloType.body01SemiBold,
                             color = Gray800
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
                             text = description,
-                            style = HaloType.caption01Regular.copy(
-                                fontSize = 10.sp,
-                                lineHeight = 14.5.sp
-                            ),
+                            style = HaloType.caption01Regular,
                             color = Gray600
                         )
                     }
@@ -99,7 +95,7 @@ fun ConfirmActionDialog(
                 ) {
                     Text(
                         text = buttonText,
-                        style = HaloType.body02SemiBold.copy(fontSize = 14.sp)
+                        style = HaloType.body02SemiBold
                     )
                 }
             }

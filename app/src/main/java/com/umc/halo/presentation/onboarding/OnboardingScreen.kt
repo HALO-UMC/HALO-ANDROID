@@ -283,8 +283,8 @@ private fun OnboardingNameTextField(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
-        shape = RoundedCornerShape(18.dp),
+            .height(54.dp),
+        shape = RoundedCornerShape(16.dp),
         color = Gray30,
         border = BorderStroke(
             width = 1.dp,
@@ -300,9 +300,7 @@ private fun OnboardingNameTextField(
             onValueChange = onValueChange,
             singleLine = true,
             textStyle = HaloType.body02Regular.copy(
-                color = Gray800,
-                lineHeight = 20.3.sp,
-                letterSpacing = (-0.14).sp
+                color = Gray800
             ),
             cursorBrush = SolidColor(Primary500),
             keyboardOptions = KeyboardOptions(
@@ -326,10 +324,7 @@ private fun OnboardingNameTextField(
                         if (value.isBlank()) {
                             Text(
                                 text = placeholder,
-                                style = HaloType.body02Regular.copy(
-                                    lineHeight = 20.3.sp,
-                                    letterSpacing = (-0.14).sp
-                                ),
+                                style = HaloType.body02Regular,
                                 color = Gray300
                             )
                         }
@@ -341,7 +336,7 @@ private fun OnboardingNameTextField(
                         Surface(
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
-                                .padding(end = 18.dp)
+                                .padding(end = 24.dp)
                                 .size(18.dp)
                                 .clickable(onClick = onClearClick),
                             shape = CircleShape,
@@ -410,18 +405,12 @@ private fun NameRequirementRow(
         Text(
             text = "✓",
             modifier = Modifier.width(14.dp),
-            style = HaloType.caption01Medium.copy(
-                fontSize = 10.sp,
-                lineHeight = 14.5.sp
-            ),
+            style = HaloType.caption01Medium,
             color = textColor
         )
         Text(
             text = text,
-            style = HaloType.caption01Medium.copy(
-                fontSize = 10.sp,
-                lineHeight = 14.5.sp
-            ),
+            style = HaloType.caption01Medium,
             color = textColor
         )
     }
@@ -439,18 +428,12 @@ private fun NameErrorGuide(
         Text(
             text = "ⓘ",
             modifier = Modifier.width(16.dp),
-            style = HaloType.caption01Medium.copy(
-                fontSize = 10.sp,
-                lineHeight = 14.5.sp
-            ),
+            style = HaloType.caption01Medium,
             color = Error
         )
         Text(
             text = message,
-            style = HaloType.caption01Medium.copy(
-                fontSize = 10.sp,
-                lineHeight = 14.5.sp
-            ),
+            style = HaloType.caption01Medium,
             color = Error
         )
     }

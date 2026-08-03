@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.storybook.chapter.component.ChapterAnswerTextField
@@ -135,10 +134,7 @@ private fun ChapterQuestionHeader(
 
         Text(
             text = "오늘의 한 페이지를 채워볼까요?",
-            style = HaloType.body01SemiBold.copy(
-                fontSize = 18.sp,
-                lineHeight = 26.sp
-            ),
+            style = HaloType.heading03SemiBold,
             color = QuestionTitleColor
         )
 

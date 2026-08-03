@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,7 +30,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.onboarding.OnboardingUiEvent
 import com.umc.halo.presentation.onboarding.OnboardingUiState
@@ -97,7 +95,6 @@ fun RelationshipStep(
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .widthIn(max = 360.dp)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .statusBarsPadding()
@@ -111,12 +108,12 @@ fun RelationshipStep(
                 totalStep = 3,
                 modifier = Modifier.padding(
                     start = 20.dp,
-                    top = 14.dp,
+                    top = 3.dp,
                     end = 20.dp
                 )
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(31.dp))
 
             /*
              * 이전 버튼 영역
@@ -146,7 +143,7 @@ fun RelationshipStep(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(19.dp))
 
             Column(
                 modifier = Modifier.padding(horizontal = 24.dp)
@@ -167,11 +164,7 @@ fun RelationshipStep(
 
                 Text(
                     text = titleText,
-                    style = HaloType.heading01Regular.copy(
-                        fontSize = 20.sp,
-                        lineHeight = 30.sp,
-                        letterSpacing = (-0.2).sp
-                    ),
+                    style = HaloType.heading02Regular,
                     color = Gray800
                 )
 
@@ -179,11 +172,7 @@ fun RelationshipStep(
 
                 Text(
                     text = "지금 우리의 관계와 가장 가까운 것을 골라주세요.",
-                    style = HaloType.body03Regular.copy(
-                        fontSize = 12.sp,
-                        lineHeight = 17.4.sp,
-                        letterSpacing = (-0.12).sp
-                    ),
+                    style = HaloType.body03Regular,
                     color = Gray400
                 )
 
@@ -223,7 +212,6 @@ fun RelationshipStep(
             },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .widthIn(max = 360.dp)
                 .fillMaxWidth()
                 .navigationBarsPadding()
                 .padding(
@@ -274,11 +262,7 @@ private fun RelationshipOptionCard(
     ) {
         Text(
             text = option.title,
-            style = HaloType.body02Medium.copy(
-                fontSize = 14.sp,
-                lineHeight = 20.3.sp,
-                letterSpacing = (-0.14).sp
-            ),
+            style = HaloType.body02Medium,
             color = titleColor
         )
 
@@ -286,11 +270,7 @@ private fun RelationshipOptionCard(
 
         Text(
             text = option.description,
-            style = HaloType.body03Regular.copy(
-                fontSize = 10.sp,
-                lineHeight = 14.5.sp,
-                letterSpacing = (-0.1).sp
-            ),
+            style = HaloType.caption01Regular,
             color = descriptionColor,
             maxLines = 1
         )

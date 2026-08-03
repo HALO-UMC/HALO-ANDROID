@@ -27,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.domain.model.storybook.ChapterSceneCard
@@ -195,10 +194,7 @@ private fun ChapterSceneHeader(
 
         Text(
             text = "오늘의 장면을 남겨볼까요?",
-            style = HaloType.body01SemiBold.copy(
-                fontSize = 18.sp,
-                lineHeight = 26.sp
-            ),
+            style = HaloType.heading03SemiBold,
             color = SceneTitleColor
         )
 

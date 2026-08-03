@@ -35,7 +35,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.domain.model.storybook.ChapterSceneCard
@@ -229,9 +228,7 @@ private fun ChapterResultHero(
 
                 Text(
                     text = chapter.title,
-                    style = HaloType.heading02SemiBold.copy(
-                        lineHeight = 30.sp
-                    ),
+                    style = HaloType.heading02SemiBold,
                     color = White
                 )
 
@@ -239,9 +236,7 @@ private fun ChapterResultHero(
 
                 Text(
                     text = chapter.description,
-                    style = HaloType.body02Regular.copy(
-                        lineHeight = 20.sp
-                    ),
+                    style = HaloType.body02Regular,
                     color = White
                 )
             }

@@ -37,17 +37,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.presentation.onboarding.Gender
 import com.umc.halo.presentation.onboarding.OnboardingUiEvent
 import com.umc.halo.presentation.onboarding.OnboardingUiState
 import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
-import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.Gray30
+import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary600
@@ -185,7 +184,7 @@ fun BasicInfoStep(
                 keyword = "성별"
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             GenderSelectionRow(
                 selectedGender = uiState.selectedGender,
@@ -196,7 +195,7 @@ fun BasicInfoStep(
                 }
             )
 
-            Spacer(modifier = Modifier.height(56.dp))
+            Spacer(modifier = Modifier.height(61.dp))
 
             OnboardingQuestionTitle(
                 stepNumber = "02",
@@ -204,7 +203,7 @@ fun BasicInfoStep(
                 keyword = "생년월일"
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             BirthDateSelectionRow(
                 selectedYear = uiState.birthYear,
@@ -261,10 +260,7 @@ private fun OnboardingQuestionTitle(
     ) {
         Text(
             text = stepNumber,
-            style = HaloType.body01Medium.copy(
-                lineHeight = 23.2.sp,
-                letterSpacing = (-0.16).sp
-            ),
+            style = HaloType.body01Medium,
             color = Gray800
         )
 
@@ -284,11 +280,7 @@ private fun OnboardingQuestionTitle(
 
         Text(
             text = questionText,
-            style = HaloType.heading02Medium.copy(
-                fontWeight = FontWeight.Normal,
-                lineHeight = 30.sp,
-                letterSpacing = (-0.2).sp
-            ),
+            style = HaloType.heading02Regular,
             color = Gray800
         )
     }
@@ -342,7 +334,7 @@ private fun GenderSelectionButton(
                 color = if (selected) {
                     Primary50
                 } else {
-                    Gray100
+                    Gray50
                 }
             )
             .selectable(
@@ -355,15 +347,9 @@ private fun GenderSelectionButton(
         Text(
             text = text,
             style = if (selected) {
-                HaloType.body01SemiBold.copy(
-                    lineHeight = 23.2.sp,
-                    letterSpacing = (-0.16).sp
-                )
+                HaloType.body01SemiBold
             } else {
-                HaloType.body01Medium.copy(
-                    lineHeight = 23.2.sp,
-                    letterSpacing = (-0.16).sp
-                )
+                HaloType.body01Medium
             },
             color = if (selected) {
                 Primary600
@@ -470,10 +456,7 @@ private fun BirthDateDropdownField(
 
                         else -> value.toString()
                     },
-                    style = HaloType.body02Medium.copy(
-                        lineHeight = 20.3.sp,
-                        letterSpacing = (-0.14).sp
-                    ),
+                    style = HaloType.body02Medium,
                     color = if (value == null) {
                         Gray300
                     } else {
@@ -485,10 +468,7 @@ private fun BirthDateDropdownField(
 
                 Text(
                     text = unit,
-                    style = HaloType.body02Medium.copy(
-                        lineHeight = 20.3.sp,
-                        letterSpacing = (-0.14).sp
-                    ),
+                    style = HaloType.body02Medium,
                     color = Gray800
                 )
             }

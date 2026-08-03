@@ -1,7 +1,6 @@
 package com.umc.halo.presentation.onboarding.screen
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,16 +20,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.umc.halo.R
+import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
+import com.lottiefiles.dotlottie.core.util.DotLottieSource
 import com.umc.halo.presentation.onboarding.OnboardingUiState
 import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.theme.Gray30
+import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
@@ -87,16 +88,16 @@ fun CompleteStep(
          * "선택한 관계 방향" 영역이 더 아래로 내려간다.
          */
         val selectedSectionTopPosition =
-            titleTopPosition + 230.dp
+            titleTopPosition + 257.dp
 
-        Image(
-            painter = painterResource(id = R.drawable.ic_orange_character),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
+        DotLottieAnimation(
+            source = DotLottieSource.Asset(ONBOARDING_CHARACTER_LOTTIE),
+            autoplay = true,
+            loop = true,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = titleTopPosition + 71.dp)
-                .size(width = 113.dp, height = 131.dp)
+                .padding(top = titleTopPosition + 63.dp)
+                .size(width = 130.dp, height = 151.dp)
         )
 
         /*
@@ -105,19 +106,22 @@ fun CompleteStep(
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .widthIn(max = 360.dp)
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
                 .padding(top = titleTopPosition),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "모든 준비가 끝났어요!",
-                style = HaloType.heading01Regular.copy(
-                    fontSize = 24.sp,
-                    lineHeight = 36.sp,
-                    letterSpacing = (-0.48).sp
-                ),
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(fontWeight = FontWeight.Medium)
+                    ) {
+                        append("모든 준비")
+                    }
+
+                    append("가 끝났어요!")
+                },
+                style = HaloType.heading01Regular,
                 color = Gray800,
                 textAlign = TextAlign.Center
             )
@@ -133,30 +137,25 @@ fun CompleteStep(
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .widthIn(max = 360.dp)
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
                 .padding(top = selectedSectionTopPosition)
         ) {
             Text(
                 text = "선택한 관계 방향",
-                style = HaloType.body01SemiBold.copy(
-                    fontSize = 16.sp,
-                    lineHeight = 23.2.sp,
-                    letterSpacing = (-0.16).sp
-                ),
-                color = Gray800
+                style = HaloType.body02SemiBold,
+                color = Gray500
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             selectedDirections.forEachIndexed { index, direction ->
                 if (index > 0) {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(11.dp))
                 }
 
                 SelectedDirectionCard(
-                    text = direction
+                    text = direction.withSentencePeriod()
                 )
             }
         }
@@ -170,7 +169,6 @@ fun CompleteStep(
             onClick = onStartClick,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .widthIn(max = 360.dp)
                 .fillMaxWidth()
                 .navigationBarsPadding()
                 .padding(
@@ -190,7 +188,7 @@ private fun SelectedDirectionCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(44.dp)
+            .height(52.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(Gray30)
             .padding(horizontal = 16.dp),
@@ -198,12 +196,22 @@ private fun SelectedDirectionCard(
     ) {
         Text(
             text = text,
-            style = HaloType.body02Medium.copy(
-                fontSize = 14.sp,
-                lineHeight = 20.3.sp,
-                letterSpacing = (-0.14).sp
-            ),
+            style = HaloType.body02Medium,
             color = Gray700
         )
     }
 }
+
+private fun String.withSentencePeriod(): String {
+    return if (
+        endsWith(".") ||
+        endsWith("!") ||
+        endsWith("?")
+    ) {
+        this
+    } else {
+        "$this."
+    }
+}
+
+private const val ONBOARDING_CHARACTER_LOTTIE = "onboarding_charactermotion1.lottie"
