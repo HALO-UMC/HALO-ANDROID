@@ -33,7 +33,7 @@ fun AccountManagementScreen(
             Spacer(Modifier.height(8.dp))
             MenuRow(title = "오픈 라이선스", onClick = onNavigateToOpenLicense)
             Spacer(Modifier.height(8.dp))
-            MenuRow(title = "이용 약관", onClick = onNavigateToTerms)
+            MenuRow(title = "이용 약관", onClick = onNavigateToTerms, showDivider = false)
         }
     }
 }

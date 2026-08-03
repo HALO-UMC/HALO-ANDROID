@@ -105,13 +105,15 @@ fun MenuRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     titleColor: Color = Gray800,
-    verticalPadding: Dp = 18.dp
+    verticalPadding: Dp = 18.dp,
+    contentHorizontalPadding: Dp = 0.dp,
+    showDivider: Boolean = true
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = verticalPadding),
+            .padding(horizontal = contentHorizontalPadding, vertical = verticalPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -132,7 +134,9 @@ fun MenuRow(
             )
         }
     }
-    HorizontalDivider(color = Gray100)
+    if (showDivider) {
+        HorizontalDivider(color = Gray100)
+    }
 }
 
 @Composable
@@ -218,12 +222,15 @@ fun HaloSwitch(
 @Composable
 fun InfoRow(
     label: String,
-    value: String
+    value: String,
+    showDivider: Boolean = true,
+    verticalPadding: Dp = 18.dp,
+    contentHorizontalPadding: Dp = 0.dp
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 18.dp),
+            .padding(horizontal = contentHorizontalPadding, vertical = verticalPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -246,7 +253,9 @@ fun InfoRow(
             modifier = Modifier.weight(1.1f)
         )
     }
-    HorizontalDivider(color = Gray100)
+    if (showDivider) {
+        HorizontalDivider(color = Gray100)
+    }
 }
 
 @Composable

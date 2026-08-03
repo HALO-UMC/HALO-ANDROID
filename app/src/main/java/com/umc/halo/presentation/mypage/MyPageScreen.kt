@@ -107,8 +107,8 @@ private fun AccountActionEffect(
 
     LaunchedEffect(uiState.navigateToLogin) {
         if (!uiState.navigateToLogin) return@LaunchedEffect
-        onNavigateToLogin()
         viewModel.onEvent(MyPageUiEvent.AccountNavigationHandled)
+        onNavigateToLogin()
     }
 
     LaunchedEffect(uiState.accountErrorMessage) {

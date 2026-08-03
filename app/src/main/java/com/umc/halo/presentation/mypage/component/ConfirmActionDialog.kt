@@ -49,7 +49,7 @@ fun ConfirmActionDialog(
             Column(
                 modifier = Modifier.padding(
                     start = 24.dp,
-                    top = 18.dp,
+                    top = 24.dp,
                     end = 24.dp,
                     bottom = 18.dp
                 )

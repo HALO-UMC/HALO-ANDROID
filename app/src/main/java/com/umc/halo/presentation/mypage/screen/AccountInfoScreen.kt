@@ -19,6 +19,9 @@ import com.umc.halo.presentation.mypage.component.MyPageContainer
 import com.umc.halo.presentation.mypage.component.MyPageTopBar
 import com.umc.halo.presentation.mypage.component.SectionTitle
 
+private val AccountInfoContentIndent = 24.dp
+private val AccountInfoRowPadding = 22.dp
+
 /**
  * TODO(마이페이지 담당): onNavigateToLogin 파라미터를 제거함
  *  로그아웃은 이제 화면 이동만 하는 게 아니라 서버 호출 + 토큰 삭제가 필요해서
@@ -57,22 +60,60 @@ fun AccountInfoScreen(
         ) {
             SectionTitle("계정 정보")
             Spacer(Modifier.height(18.dp))
-            InfoRow(label = "닉네임", value = "난혁")
-            InfoRow(label = "로그인 방식", value = "카카오 로그인")
-            InfoRow(label = "이메일", value = "kimjooyeon038@gmail.com")
-            InfoRow(label = "계정 생성일", value = "2026.06.28")
+            Column {
+                InfoRow(
+                    label = "닉네임",
+                    value = "난혁",
+                    verticalPadding = AccountInfoRowPadding,
+                    contentHorizontalPadding = AccountInfoContentIndent
+                )
+                InfoRow(
+                    label = "로그인 방식",
+                    value = "카카오 로그인",
+                    verticalPadding = AccountInfoRowPadding,
+                    contentHorizontalPadding = AccountInfoContentIndent
+                )
+                InfoRow(
+                    label = "이메일",
+                    value = "kimjooyeon038@gmail.com",
+                    verticalPadding = AccountInfoRowPadding,
+                    contentHorizontalPadding = AccountInfoContentIndent
+                )
+                InfoRow(
+                    label = "계정 생성일",
+                    value = "2026.06.28",
+                    showDivider = false,
+                    verticalPadding = AccountInfoRowPadding,
+                    contentHorizontalPadding = AccountInfoContentIndent
+                )
+            }
 
             Spacer(Modifier.height(48.dp))
             SectionTitle("서비스 이용 정보")
             Spacer(Modifier.height(18.dp))
-            InfoRow(label = "알림 상태", value = "수신 중")
-            MenuRow(
-                title = "로그 아웃",
-                onClick = {
-                    onEvent(MyPageUiEvent.LogoutDialogChanged(true))
-                }
-            )
-            MenuRow(title = "회원 탈퇴", onClick = onNavigateToWithdraw)
+            Column {
+                InfoRow(
+                    label = "알림 상태",
+                    value = "수신 중",
+                    verticalPadding = AccountInfoRowPadding,
+                    contentHorizontalPadding = AccountInfoContentIndent
+                )
+                MenuRow(
+                    title = "로그 아웃",
+                    onClick = {
+                        onEvent(MyPageUiEvent.LogoutDialogChanged(true))
+                    },
+                    verticalPadding = AccountInfoRowPadding,
+                    contentHorizontalPadding = AccountInfoContentIndent
+                )
+                MenuRow(
+                    title = "회원 탈퇴",
+                    onClick = onNavigateToWithdraw,
+                    showDivider = false,
+                    verticalPadding = AccountInfoRowPadding,
+                    contentHorizontalPadding = AccountInfoContentIndent
+                )
+            }
         }
     }
 }

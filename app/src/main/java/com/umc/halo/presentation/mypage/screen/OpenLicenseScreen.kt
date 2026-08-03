@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.presentation.mypage.component.MyPageContainer
@@ -81,7 +82,7 @@ fun OpenLicenseScreen(
                 color = Gray500
             )
 
-            Spacer(Modifier.height(33.dp))
+            Spacer(Modifier.height(34.dp))
 
             openLicenseItems.forEachIndexed { index, item ->
                 OpenLicenseRow(
@@ -90,6 +91,7 @@ fun OpenLicenseScreen(
                 )
 
                 if (index < openLicenseItems.lastIndex) {
+                    Spacer(Modifier.height(10.dp))
                     HorizontalDivider(
                         color = Gray100
                     )
@@ -108,14 +110,14 @@ private fun OpenLicenseRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(54.dp)
+            .height(84.dp)
             .clickable(onClick = onClick)
             .padding(horizontal = 24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(36.dp)
+                .size(48.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(Gray200)
         )
@@ -127,13 +129,16 @@ private fun OpenLicenseRow(
                 Text(
                     text = item.name,
                     style = HaloType.body02SemiBold,
-                    color = Gray800
+                    color = Gray800,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
                     text = item.version,
                     style = HaloType.body03Regular,
-                    color = Gray500
+                    color = Gray500,
+                    maxLines = 1
                 )
             }
 
@@ -142,15 +147,22 @@ private fun OpenLicenseRow(
             Text(
                 text = item.description,
                 style = HaloType.body03Regular,
-                color = Gray500
+                color = Gray500,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
-        Icon(
-            painter = painterResource(id = R.drawable.ic_common_chevron_right),
-            contentDescription = null,
-            tint = Gray700,
-            modifier = Modifier.size(8.dp, 12.dp)
-        )
+        Box(
+            modifier = Modifier.size(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_common_chevron_right),
+                contentDescription = null,
+                tint = Gray700,
+                modifier = Modifier.size(8.dp, 12.dp)
+            )
+        }
     }
 }
