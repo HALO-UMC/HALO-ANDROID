@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.storybook.list
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,8 +20,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,11 +31,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.umc.halo.R
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.domain.model.storybook.CustomStorybook
+import com.umc.halo.domain.model.storybook.InProgressStorybook
 import com.umc.halo.domain.model.storybook.Storybook
 import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.domain.model.storybook.StorybookTheme
@@ -70,11 +75,25 @@ private val ThemeSectionSpacing = 48.dp          // 테마 섹션 ↔ 테마 섹
  */
 @Composable
 fun StorybookScreen(
-    vm: StorybookViewModel = viewModel(),
+    vm: StorybookViewModel = hiltViewModel(),
     onNavigateToStorybookDetail: (Long) -> Unit = {},
     onNavigateToThemeBox: (Long) -> Unit = {}
 ) {
     val state by vm.uiState.collectAsState()
+    val context = LocalContext.current
+
+    // 화면이 보일 때마다 조회
+    LaunchedEffect(Unit) {
+        vm.onEvent(StorybookUiEvent.OnScreenShown)
+    }
+
+    // 조회 실패 안내
+    // TODO: 표시 방식은 디자인 확정 후 교체 (지금은 토스트)
+    LaunchedEffect(state.errorMessage) {
+        val message = state.errorMessage ?: return@LaunchedEffect
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        vm.onEvent(StorybookUiEvent.ErrorShown)
+    }
 
     StorybookContent(
         state = state,
@@ -94,7 +113,7 @@ fun StorybookScreen(
                 is StorybookUiEvent.OnDoneStorybookClicked ->
                     onNavigateToThemeBox(event.storybookId)
 
-                // 그 외(탭 전환)는 VM 이 상태로 처리
+                // 그 외(탭 전환·조회)는 VM 이 상태로 처리
                 else -> vm.onEvent(event)
             }
         }
@@ -120,40 +139,94 @@ private fun StorybookContent(
 
         Spacer(Modifier.height(24.dp))
 
-        when (state.selectedTab) {
-            StorybookTab.ALL -> StorybookAllList(state = state, onEvent = onEvent)
+        when {
+            state.isLoading -> StorybookLoading()
 
-            StorybookTab.IN_PROGRESS -> StorybookGridSection(
-                title = "진행중인 스토리북",
-                items = state.inProgressStorybooks,
-                key = { it.id }
-            ) { book, cardModifier ->
-                StorybookCard(
-                    title = book.title,
-                    subtitle = book.subtitle,
-                    modifier = cardModifier,
-                    badge = StorybookBadge.InProgress(book.currentChapter),
-                    isWaiting = book.isWaiting,
-                    onClick = {
-                        onEvent(StorybookUiEvent.OnContinueStorybookClicked(book.id))
-                    }
-                )
-            }
+            state.hasLoadFailed -> StorybookLoadFailed(
+                onRetry = { onEvent(StorybookUiEvent.OnRetryClicked) }
+            )
 
-            StorybookTab.DONE -> StorybookGridSection(
-                title = "완료한 스토리북",
-                items = state.doneStorybooks,
-                key = { it.id }
-            ) { book, cardModifier ->
-                StorybookCard(
-                    title = book.title,
-                    subtitle = book.subtitle,
-                    modifier = cardModifier,
-                    badge = StorybookBadge.Done,
-                    onClick = { onEvent(StorybookUiEvent.OnDoneStorybookClicked(book.id)) }
-                )
+            else -> when (state.selectedTab) {
+                StorybookTab.ALL -> StorybookAllList(state = state, onEvent = onEvent)
+
+                StorybookTab.IN_PROGRESS -> StorybookGridSection(
+                    title = "진행중인 스토리북",
+                    items = state.inProgressStorybooks,
+                    key = { it.id }
+                ) { book, cardModifier ->
+                    StorybookCard(
+                        title = book.title,
+                        subtitle = book.subtitle,
+                        modifier = cardModifier,
+                        coverUrl = book.imageUrl,
+                        badge = StorybookBadge.InProgress(book.currentChapter),
+                        isWaiting = book.isWaiting,
+                        onClick = {
+                            onEvent(StorybookUiEvent.OnContinueStorybookClicked(book.id))
+                        }
+                    )
+                }
+
+                StorybookTab.DONE -> StorybookGridSection(
+                    title = "완료한 스토리북",
+                    items = state.doneStorybooks,
+                    key = { it.id }
+                ) { book, cardModifier ->
+                    StorybookCard(
+                        title = book.title,
+                        subtitle = book.subtitle,
+                        modifier = cardModifier,
+                        coverUrl = book.imageUrl,
+                        badge = StorybookBadge.Done,
+                        onClick = { onEvent(StorybookUiEvent.OnDoneStorybookClicked(book.id)) }
+                    )
+                }
             }
         }
+    }
+}
+
+/**
+ * 첫 조회 중
+ * TODO: 로딩 표현은 디자인에 없어 임시
+ */
+@Composable
+private fun StorybookLoading() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = Primary500)
+    }
+}
+
+/**
+ * 조회 실패 + 보여줄 목록도 없는 상태
+ * TODO: 문구·버튼 모양은 디자인 확정 후 교체
+ */
+@Composable
+private fun StorybookLoadFailed(onRetry: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "스토리북을 불러오지 못했어요.",
+            style = HaloType.body02Regular,
+            color = Gray700,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(12.dp))
+        Text(
+            text = "다시 시도",
+            style = HaloType.body02Medium,
+            color = Primary500,
+            modifier = Modifier
+                .clip(RoundedCornerShape(100.dp))
+                .clickable { onRetry() }
+                .padding(horizontal = 20.dp, vertical = 8.dp)
+        )
     }
 }
 
@@ -239,13 +312,13 @@ private fun StorybookAllList(
         // 상황별 테마 섹션들 (섹션 사이 간격이 맞춤 섹션과 달라 앞쪽에 간격을 붙임)
         itemsIndexed(
             items = state.themes,
-            key = { _, theme -> theme.id }
+            // 서버가 섹션 id 를 주지 않아 상황 태그를 식별자로 사용
+            key = { _, theme -> theme.title }
         ) { index, theme ->
             Column {
                 if (index > 0) Spacer(Modifier.height(ThemeSectionSpacing))
                 StorybookThemeSection(
                     theme = theme,
-                    isFirstSection = index == 0,
                     onCardClick = { book -> onEvent(book.toClickEvent()) }
                 )
             }
@@ -264,7 +337,8 @@ private fun CustomStorybookSection(
 ) {
     Column(modifier = Modifier.padding(horizontal = HorizontalPadding)) {
         Text(
-            text = "${userName}님 맞춤 스토리북",
+            // 이름 조회에 실패했을 때 "님 맞춤 스토리북" 으로 보이지 않도록
+            text = if (userName.isBlank()) "맞춤 스토리북" else "${userName}님 맞춤 스토리북",
             style = HaloType.body01SemiBold,
             color = SectionTitleColor
         )
@@ -279,7 +353,7 @@ private fun CustomStorybookSection(
 
         // 맞춤 카드를 세로로 배치
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items.forEachIndexed { index, item ->
+            items.forEach { item ->
                 CustomStorybookCard(
                     item = item,
                     modifier = Modifier.fillMaxWidth(),
@@ -292,13 +366,10 @@ private fun CustomStorybookSection(
 
 /**
  * 상황별 테마 섹션
- *
- * @param isFirstSection [임시] 커버 더미를 첫 섹션 첫 카드에만 넣기 위한 표시
  */
 @Composable
 private fun StorybookThemeSection(
     theme: StorybookTheme,
-    isFirstSection: Boolean,
     onCardClick: (Storybook) -> Unit
 ) {
     Column {
@@ -323,17 +394,12 @@ private fun StorybookThemeSection(
                 itemsIndexed(
                     items = theme.storybooks,
                     key = { _, book -> book.id }
-                ) { index, book ->
+                ) { _, book ->
                     StorybookCard(
                         title = book.title,
                         subtitle = book.subtitle,
                         modifier = Modifier.width(cardWidth),
-                        // [임시] 커버 더미 — 실제 커버 연동 시 제거
-                        coverRes = if (isFirstSection && index == 0) {
-                            R.drawable.ic_storybook_themesection_dummy
-                        } else {
-                            null
-                        },
+                        coverUrl = book.imageUrl,
                         badge = book.progress?.toStorybookBadge(),  // 책갈피
                         onClick = { onCardClick(book) }
                     )
@@ -412,10 +478,58 @@ private fun Storybook.toClickEvent(): StorybookUiEvent = when (progress) {
     StorybookProgress.Done -> StorybookUiEvent.OnDoneStorybookClicked(id)
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = true, name = "스토리북 - 전체")
 @Composable
-private fun StorybookScreenPreview() {
+private fun StorybookAllTabPreview() {
     HaloTheme {
-        StorybookScreen()
+        StorybookContent(state = previewState(StorybookTab.ALL), onEvent = {})
     }
 }
+
+@Preview(showBackground = true, showSystemUi = true, name = "스토리북 - 진행중")
+@Composable
+private fun StorybookInProgressTabPreview() {
+    HaloTheme {
+        StorybookContent(state = previewState(StorybookTab.IN_PROGRESS), onEvent = {})
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true, name = "스토리북 - 완료")
+@Composable
+private fun StorybookDoneTabPreview() {
+    HaloTheme {
+        StorybookContent(state = previewState(StorybookTab.DONE), onEvent = {})
+    }
+}
+
+private fun previewState(tab: StorybookTab) = StorybookUiState(
+    userName = "주연",
+    selectedTab = tab,
+    customStorybooks = listOf(
+        CustomStorybook(1, "어색하지 않게 이야기하고 싶은 당신에게", "오래전 당신", "부모가 아닌 한 사람의 시간", ""),
+        CustomStorybook(2, "부모님을 더 알고 싶은 당신에게", "당신 사용설명서", "가족과의 만남", "")
+    ),
+    themes = listOf(
+        StorybookTheme(
+            title = "어색하지 않게 이야기하고 싶어요",
+            storybooks = listOf(
+                Storybook(1, "오래전 당신", "부모가 아닌 한 사람의 시간", progress = StorybookProgress.InProgress(4)),
+                Storybook(8, "한 장의 가족사진", "가족과의 만남", progress = StorybookProgress.Done)
+            )
+        ),
+        StorybookTheme(
+            title = "부모님을 더 알고 싶어요",
+            storybooks = listOf(
+                Storybook(3, "가족의 온도", "가족과의 만남"),
+                Storybook(2, "당신 사용설명서", "가족과의 만남")
+            )
+        )
+    ),
+    inProgressStorybooks = listOf(
+        InProgressStorybook(1, "오래전 당신", "가족과의 만남", currentChapter = 4, isWaiting = false),
+        InProgressStorybook(3, "가족의 온도", "가족과의 만남", currentChapter = 2, isWaiting = true)
+    ),
+    doneStorybooks = listOf(
+        Storybook(8, "한 장의 가족사진", "가족과의 만남", progress = StorybookProgress.Done)
+    )
+)
