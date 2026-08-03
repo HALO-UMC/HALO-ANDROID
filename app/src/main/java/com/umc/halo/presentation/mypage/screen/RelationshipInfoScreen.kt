@@ -2,7 +2,8 @@ package com.umc.halo.presentation.mypage.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,6 +29,7 @@ import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.Primary600
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RelationshipInfoScreen(
     onBack: () -> Unit,
@@ -48,40 +50,48 @@ fun RelationshipInfoScreen(
                 style = HaloType.body01Medium,
                 color = Gray800
             )
-            Spacer(Modifier.height(12.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                maxItemsInEachRow = 3
+            ) {
                 TagChip("낙천적인")
                 TagChip("온화한")
                 TagChip("사교적인")
             }
 
+            Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider(
-                color = Gray100,
-                modifier = Modifier.padding(vertical = 22.dp)
+                color = Gray100
             )
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = "부모님과 나의 관계는?",
                 style = HaloType.body01Medium,
                 color = Gray800
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             RelationshipAnswerCard(
                 title = "대체로 좋은 편이에요",
                 description = "일상적인 안부를 나누며 서로를 존중해요"
             )
 
+            Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider(
-                color = Gray100,
-                modifier = Modifier.padding(vertical = 22.dp)
+                color = Gray100
             )
+            Spacer(modifier = Modifier.height(48.dp))
 
             Text(
                 text = "어떤 사이가 되고 싶나요?",
                 style = HaloType.body01Medium,
                 color = Gray800
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             RelationshipAnswerCard(
                 title = "같이 보내는 시간을 만들고 싶어요",
                 description = null
@@ -98,9 +108,9 @@ private fun TagChip(text: String) {
     ) {
         Text(
             text = text,
-            style = HaloType.body03Medium,
+            style = HaloType.body02Medium,
             color = Primary500,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
     }
 }
