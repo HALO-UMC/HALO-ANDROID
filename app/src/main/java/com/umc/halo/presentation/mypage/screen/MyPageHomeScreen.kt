@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.mypage.component.MyPageBrandTopBar
 import com.umc.halo.presentation.mypage.component.MyPageContainer
@@ -48,18 +47,18 @@ fun MyPageScreen(
                 .padding(bottom = 24.dp)
         ) {
             SectionTitle("내 정보")
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(16.dp))
             ProfileCard()
 
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(28.dp))
             SectionTitle("추가 기능")
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(8.dp))
             HomeMenuRow(title = "관계 정보", onClick = onNavigateToRelationshipInfo)
             HomeMenuRow(title = "기념일 관리", onClick = onNavigateToAnniversary)
 
             Spacer(Modifier.height(24.dp))
             SectionTitle("기본 설정")
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(8.dp))
             HomeMenuRow(title = "시스템 설정", onClick = onNavigateToSystemSettings)
             HomeMenuRow(title = "알림 설정", onClick = onNavigateToNotificationSettings)
             HomeMenuRow(title = "계정 관리", onClick = onNavigateToAccountManagement)
@@ -81,7 +80,7 @@ private fun HomeMenuRow(
     ) {
         Text(
             text = title,
-            style = HaloType.body02Medium.copy(fontSize = 15.sp),
+            style = HaloType.body02Medium,
             color = Gray800,
             modifier = Modifier.weight(1f)
         )

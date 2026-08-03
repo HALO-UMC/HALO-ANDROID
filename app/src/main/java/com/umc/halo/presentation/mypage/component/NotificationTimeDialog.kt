@@ -1,17 +1,18 @@
 package com.umc.halo.presentation.mypage.component
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -20,25 +21,28 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.umc.halo.R
 import com.umc.halo.presentation.mypage.MyPageUiEvent
 import com.umc.halo.presentation.mypage.MyPageUiState
 import com.umc.halo.presentation.mypage.formattedNotificationTime
 import com.umc.halo.presentation.theme.Gray30
+import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray400
-import com.umc.halo.presentation.theme.Gray500
-import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.Primary600
 import com.umc.halo.presentation.theme.White
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun NotificationTimeDialog(
@@ -54,15 +58,15 @@ fun NotificationTimeDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .widthIn(max = 308.dp),
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(16.dp),
             color = White
         ) {
             Column(
                 modifier = Modifier.padding(
                     start = 24.dp,
-                    top = 18.dp,
+                    top = 24.dp,
                     end = 24.dp,
-                    bottom = 18.dp
+                    bottom = 24.dp
                 )
             ) {
                 DialogHeader(
@@ -72,23 +76,17 @@ fun NotificationTimeDialog(
                     }
                 )
 
-                Spacer(Modifier.height(22.dp))
+                Spacer(Modifier.height(18.dp))
 
                 if (uiState.isEditingNotificationTime) {
                     NotificationTimeEditor(
                         hour = uiState.draftNotificationHour,
                         minute = uiState.draftNotificationMinute,
-                        onHourDecrease = {
-                            onEvent(MyPageUiEvent.NotificationHourDecreased)
+                        onHourChange = {
+                            onEvent(MyPageUiEvent.NotificationHourChanged(it))
                         },
-                        onHourIncrease = {
-                            onEvent(MyPageUiEvent.NotificationHourIncreased)
-                        },
-                        onMinuteDecrease = {
-                            onEvent(MyPageUiEvent.NotificationMinuteDecreased)
-                        },
-                        onMinuteIncrease = {
-                            onEvent(MyPageUiEvent.NotificationMinuteIncreased)
+                        onMinuteChange = {
+                            onEvent(MyPageUiEvent.NotificationMinuteChanged(it))
                         }
                     )
                 } else {
@@ -100,7 +98,7 @@ fun NotificationTimeDialog(
                     )
                 }
 
-                Spacer(Modifier.height(26.dp))
+                Spacer(Modifier.height(48.dp))
 
                 DialogPrimaryButton(
                     text = "완료",
@@ -122,20 +120,20 @@ private fun DialogHeader(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = "설정한 시간에 알림을 보내드려요!",
-                style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
+                style = HaloType.body01SemiBold,
                 color = Gray800
             )
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(2.dp))
             Text(
                 text = "현재 알림 발송 시각 : $timeText",
-                style = HaloType.caption01Medium.copy(fontSize = 11.5.sp),
-                color = Primary500
+                style = HaloType.body03Regular,
+                color = Primary600
             )
         }
 
         IconButton(
             onClick = onClose,
-            modifier = Modifier.size(32.dp)
+            modifier = Modifier.size(24.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_common_close),
@@ -150,32 +148,30 @@ private fun DialogHeader(
 private fun NotificationTimeEditor(
     hour: Int,
     minute: Int,
-    onHourDecrease: () -> Unit,
-    onHourIncrease: () -> Unit,
-    onMinuteDecrease: () -> Unit,
-    onMinuteIncrease: () -> Unit
+    onHourChange: (Int) -> Unit,
+    onMinuteChange: (Int) -> Unit
 ) {
     Column {
         Text(
             text = "설정 시간",
-            style = HaloType.caption01Medium.copy(fontSize = 10.5.sp),
-            color = Gray700
+            style = HaloType.body02SemiBold,
+            color = Gray800
         )
-        Spacer(Modifier.height(10.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            TimeStepperBox(
+        Spacer(Modifier.height(12.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            TimeWheelBox(
                 value = hour.toString().padStart(2, '0'),
+                selectedValue = hour,
+                values = 0..23,
                 label = "시",
-                onDecrease = onHourDecrease,
-                onIncrease = onHourIncrease,
-                modifier = Modifier.weight(1f)
+                onValueChange = onHourChange
             )
-            TimeStepperBox(
+            TimeWheelBox(
                 value = minute.toString().padStart(2, '0'),
+                selectedValue = minute,
+                values = 0..59,
                 label = "분",
-                onDecrease = onMinuteDecrease,
-                onIncrease = onMinuteIncrease,
-                modifier = Modifier.weight(1f)
+                onValueChange = onMinuteChange
             )
         }
     }
@@ -189,10 +185,10 @@ private fun NotificationTimeSummary(
     Column {
         Text(
             text = "설정 시간",
-            style = HaloType.caption01Medium.copy(fontSize = 10.5.sp),
-            color = Gray700
+            style = HaloType.body02SemiBold,
+            color = Gray800
         )
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(12.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -201,7 +197,7 @@ private fun NotificationTimeSummary(
         ) {
             Text(
                 text = timeText,
-                style = HaloType.body01SemiBold.copy(fontSize = 17.sp),
+                style = HaloType.body01SemiBold,
                 color = Primary600,
                 modifier = Modifier.weight(1f)
             )
@@ -220,51 +216,81 @@ private fun NotificationTimeSummary(
 }
 
 @Composable
-private fun TimeStepperBox(
+private fun TimeWheelBox(
     value: String,
+    selectedValue: Int,
+    values: IntRange,
     label: String,
-    onDecrease: () -> Unit,
-    onIncrease: () -> Unit,
-    modifier: Modifier = Modifier
+    onValueChange: (Int) -> Unit
 ) {
+    val valueList = remember(values) { values.toList() }
+    val selectedIndex = valueList.indexOf(selectedValue).coerceAtLeast(0)
+    val listState = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex)
+    val itemHeight = 58.dp
+    val itemHeightPx = with(LocalDensity.current) { itemHeight.toPx() }
+
+    LaunchedEffect(selectedIndex) {
+        if (!listState.isScrollInProgress && listState.firstVisibleItemIndex != selectedIndex) {
+            listState.scrollToItem(selectedIndex)
+        }
+    }
+
+    LaunchedEffect(listState, valueList) {
+        snapshotFlow { listState.isScrollInProgress }
+            .distinctUntilChanged()
+            .collect { isScrolling ->
+                if (!isScrolling) {
+                    val shouldAdvance = listState.firstVisibleItemScrollOffset > itemHeightPx / 2
+                    val targetIndex = (listState.firstVisibleItemIndex + if (shouldAdvance) 1 else 0)
+                        .coerceIn(valueList.indices)
+                    if (listState.firstVisibleItemIndex != targetIndex ||
+                        listState.firstVisibleItemScrollOffset != 0
+                    ) {
+                        listState.animateScrollToItem(targetIndex)
+                    }
+                    onValueChange(valueList[targetIndex])
+                }
+            }
+    }
+
     Surface(
-        modifier = modifier.height(54.dp),
-        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .width(100.dp)
+            .height(itemHeight),
+        shape = RoundedCornerShape(18.dp),
         color = Gray30
     ) {
-        Row(
+        LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Gray30)
-                .padding(horizontal = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxHeight()
         ) {
-            Text(
-                text = "-",
-                style = HaloType.body02Medium.copy(fontSize = 15.sp),
-                color = Gray500,
-                modifier = Modifier.clickable(onClick = onDecrease)
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = value,
-                    style = HaloType.body02Medium.copy(fontSize = 15.sp),
-                    color = Gray500
-                )
-                Spacer(Modifier.size(10.dp))
-                Text(
-                    text = label,
-                    style = HaloType.body02Medium.copy(fontSize = 15.sp),
-                    color = Gray700
-                )
+            items(valueList.size) { index ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(itemHeight)
+                        .padding(horizontal = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = if (valueList[index] == selectedValue) {
+                            value
+                        } else {
+                            valueList[index].toString().padStart(2, '0')
+                        },
+                        style = HaloType.body02Medium,
+                        color = Gray300
+                    )
+                    Text(
+                        text = label,
+                        style = HaloType.body02Medium,
+                        color = Gray800
+                    )
+                }
             }
-            Text(
-                text = "+",
-                style = HaloType.body02Medium.copy(fontSize = 15.sp),
-                color = Gray500,
-                modifier = Modifier.clickable(onClick = onIncrease)
-            )
         }
     }
 }

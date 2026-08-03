@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray100
-import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray400
@@ -50,7 +49,7 @@ import com.umc.halo.presentation.theme.White
 fun SectionTitle(text: String) {
     Text(
         text = text,
-        style = HaloType.body01SemiBold.copy(fontSize = 17.sp),
+        style = HaloType.body01SemiBold,
         color = Gray800
     )
 }
@@ -63,30 +62,29 @@ fun ProfileCard() {
         color = Gray30
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
                 shape = CircleShape,
                 color = White,
-                modifier = Modifier.size(58.dp)
+                modifier = Modifier.size(72.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_orange_character),
                     contentDescription = null,
-                    modifier = Modifier.padding(9.dp)
+                    modifier = Modifier.padding(12.dp)
                 )
             }
 
-            Spacer(Modifier.width(18.dp))
+            Spacer(Modifier.width(12.dp))
 
             Column {
                 Text(
                     text = "주현AB",
-                    style = HaloType.heading03SemiBold.copy(fontSize = 19.sp),
+                    style = HaloType.heading02SemiBold,
                     color = Gray800
                 )
-                Spacer(Modifier.height(4.dp))
                 Text(
                     text = "2003.09.25",
                     style = HaloType.body02Regular,
@@ -113,7 +111,7 @@ fun MenuRow(
     ) {
         Text(
             text = title,
-            style = HaloType.body02Medium.copy(fontSize = 15.sp),
+            style = HaloType.body02Medium,
             color = titleColor,
             modifier = Modifier.weight(1f)
         )
@@ -143,14 +141,14 @@ fun SettingSwitchRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
+                style = HaloType.body02SemiBold,
                 color = if (enabled) Gray800 else Gray400
             )
             if (description != null) {
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(2.dp))
                 Text(
                     text = description,
-                    style = HaloType.caption01Medium.copy(fontSize = 10.5.sp),
+                    style = HaloType.body03Regular,
                     color = if (enabled) Gray500 else Gray300
                 )
             }
@@ -172,7 +170,7 @@ fun HaloSwitch(
     enabled: Boolean = true
 ) {
     val thumbOffset by animateDpAsState(
-        targetValue = if (checked) 18.dp else 2.dp,
+        targetValue = if (checked) 21.dp else 3.dp,
         label = "haloSwitchThumb"
     )
 
@@ -180,7 +178,7 @@ fun HaloSwitch(
         modifier = modifier
             .width(42.dp)
             .height(24.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(100.dp))
             .background(
                 when {
                     !enabled -> Gray100
@@ -199,7 +197,7 @@ fun HaloSwitch(
         Box(
             modifier = Modifier
                 .offset(x = thumbOffset)
-                .size(20.dp)
+                .size(18.dp)
                 .clip(CircleShape)
                 .background(if (checked && enabled) White else Gray300)
         )
@@ -245,16 +243,15 @@ fun TimeSettingCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
             .clip(RoundedCornerShape(4.dp))
             .background(if (enabled) com.umc.halo.presentation.theme.Primary30 else Gray30)
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 14.dp),
+            .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = timeText,
-            style = HaloType.body03Medium.copy(fontSize = 11.5.sp),
+            style = HaloType.body02Regular,
             color = if (enabled) com.umc.halo.presentation.theme.Primary600 else Gray400,
             modifier = Modifier.weight(1f)
         )
@@ -262,7 +259,7 @@ fun TimeSettingCard(
             painter = painterResource(id = R.drawable.ic_home_right_arrow),
             contentDescription = null,
             tint = if (enabled) com.umc.halo.presentation.theme.Primary600 else Gray300,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(24.dp)
         )
     }
 }

@@ -71,7 +71,7 @@ fun SystemVolumeSlider(
     ) {
         val sliderWidthPx = with(LocalDensity.current) { maxWidth.toPx() }
         val coercedValue = value.coerceIn(0f, 1f)
-        val thumbSize = 12.dp
+        val thumbSize = 14.dp
         val trackWidth = maxWidth
 
         Box(
@@ -93,14 +93,14 @@ fun SystemVolumeSlider(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(3.dp)
+                    .height(4.dp)
                     .clip(RoundedCornerShape(100.dp))
                     .background(Gray200)
             )
             Box(
                 modifier = Modifier
                     .fillMaxWidth(coercedValue)
-                    .height(3.dp)
+                    .height(4.dp)
                     .clip(RoundedCornerShape(100.dp))
                     .background(Gray600)
             )
@@ -125,28 +125,28 @@ fun TrackRow(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
+            .height(56.dp)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(16.dp),
         color = White
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 10.dp),
+            modifier = Modifier.padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(38.dp)
+                    .size(40.dp)
                     .clip(CircleShape)
                     .background(Primary100)
             )
-            Spacer(Modifier.width(14.dp))
+            Spacer(Modifier.width(12.dp))
             Text(
                 text = buildAnnotatedString {
                     withStyle(
                         SpanStyle(
-                            fontSize = 14.5.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
                         )
                     ) {
                         append(title)
@@ -154,8 +154,8 @@ fun TrackRow(
                     append("  ")
                     withStyle(
                         SpanStyle(
-                            fontSize = 10.5.sp,
-                            fontWeight = FontWeight.Medium
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Normal
                         )
                     ) {
                         append("Track 01")
@@ -175,7 +175,7 @@ fun TrackRow(
                 ),
                 contentDescription = null,
                 tint = if (selected) Primary600 else Gray800,
-                modifier = Modifier.size(26.dp)
+                modifier = Modifier.size(24.dp)
             )
         }
     }
