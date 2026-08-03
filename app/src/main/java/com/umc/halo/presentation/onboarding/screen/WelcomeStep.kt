@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,15 +22,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.umc.halo.R
+import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
+import com.lottiefiles.dotlottie.core.util.DotLottieSource
 import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.theme.Gray800
@@ -108,14 +106,14 @@ fun WelcomeStep(
             color = Gray800
         )
 
-        Image(
-            painter = painterResource(id = R.drawable.ic_orange_character),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
+        DotLottieAnimation(
+            source = DotLottieSource.Asset(ONBOARDING_CHARACTER_LOTTIE),
+            autoplay = true,
+            loop = true,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 274.dp)
-                .size(width = 132.dp, height = 154.dp)
+                .padding(top = 266.dp)
+                .size(width = 152.dp, height = 177.dp)
         )
 
         Text(
@@ -124,7 +122,7 @@ fun WelcomeStep(
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
                 .padding(
-                    top = 446.dp,
+                    top = 454.dp,
                     start = 21.dp,
                     end = 21.dp
                 ),
@@ -160,3 +158,5 @@ fun WelcomeStep(
         }
     }
 }
+
+private const val ONBOARDING_CHARACTER_LOTTIE = "onboarding_charactermotion1.lottie"

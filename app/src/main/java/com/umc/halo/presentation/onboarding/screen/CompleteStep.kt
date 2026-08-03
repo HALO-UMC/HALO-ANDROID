@@ -1,7 +1,6 @@
 package com.umc.halo.presentation.onboarding.screen
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -21,15 +20,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.umc.halo.R
+import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
+import com.lottiefiles.dotlottie.core.util.DotLottieSource
 import com.umc.halo.presentation.onboarding.OnboardingUiState
 import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
@@ -92,14 +90,14 @@ fun CompleteStep(
         val selectedSectionTopPosition =
             titleTopPosition + 257.dp
 
-        Image(
-            painter = painterResource(id = R.drawable.ic_orange_character),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
+        DotLottieAnimation(
+            source = DotLottieSource.Asset(ONBOARDING_CHARACTER_LOTTIE),
+            autoplay = true,
+            loop = true,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = titleTopPosition + 71.dp)
-                .size(width = 113.dp, height = 131.dp)
+                .padding(top = titleTopPosition + 63.dp)
+                .size(width = 130.dp, height = 151.dp)
         )
 
         /*
@@ -215,3 +213,5 @@ private fun String.withSentencePeriod(): String {
         "$this."
     }
 }
+
+private const val ONBOARDING_CHARACTER_LOTTIE = "onboarding_charactermotion1.lottie"
