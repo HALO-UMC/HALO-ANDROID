@@ -10,6 +10,7 @@ import com.umc.halo.presentation.calendar.CalendarScreen
 import com.umc.halo.presentation.navigation.Graphs
 import com.umc.halo.presentation.navigation.Routes
 import com.umc.halo.presentation.storybook.chapter.ChapterResultRoute
+import com.umc.halo.presentation.themebox.show_theme.ShowThemeRoute
 
 fun NavGraphBuilder.calenderGraph(
     navController: NavController
@@ -77,6 +78,17 @@ fun NavGraphBuilder.calenderGraph(
                 onNavigateBack = {
                     navController.popBackStackIfCurrent(Routes.CHAPTER_RESULT)
                 }
+            )
+        }
+
+        composable(
+            route = Routes.SHOW_THEME,
+            arguments = listOf(
+                navArgument("storybookId") { type = NavType.LongType }
+            )
+        ) {
+            ShowThemeRoute(
+                onNavigateBack = { navController.popBackStackIfCurrent(Routes.SHOW_THEME) }
             )
         }
     }
