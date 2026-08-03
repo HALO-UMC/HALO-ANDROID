@@ -49,15 +49,14 @@ import com.umc.halo.presentation.theme.Primary600
 fun GoalStep(
     uiState: OnboardingUiState,
     onEvent: (OnboardingUiEvent) -> Unit,
+    onSystemBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     /*
      * 기기 시스템 뒤로가기 버튼을 눌렀을 때도
      * 현재 관계 선택 단계로 이동한다.
      */
-    BackHandler {
-        onEvent(OnboardingUiEvent.BackClicked)
-    }
+    BackHandler(onBack = onSystemBack)
 
     Box(
         modifier = modifier

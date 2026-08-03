@@ -53,6 +53,7 @@ import com.umc.halo.presentation.theme.HaloType
 fun ParentPersonalityStep(
     uiState: OnboardingUiState,
     onEvent: (OnboardingUiEvent) -> Unit,
+    onSystemBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showLimitMessage by rememberSaveable {
@@ -63,9 +64,7 @@ fun ParentPersonalityStep(
      * 기기 시스템 뒤로가기 버튼을 눌렀을 때도
      * 온보딩 이전 단계로 이동한다.
      */
-    BackHandler {
-        onEvent(OnboardingUiEvent.BackClicked)
-    }
+    BackHandler(onBack = onSystemBack)
 
     Box(
         modifier = modifier

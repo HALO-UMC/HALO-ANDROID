@@ -56,6 +56,7 @@ import java.util.Calendar
 fun BasicInfoStep(
     uiState: OnboardingUiState,
     onEvent: (OnboardingUiEvent) -> Unit,
+    onSystemBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val today = remember {
@@ -146,9 +147,7 @@ fun BasicInfoStep(
     }
 
     // 시스템 뒤로가기 버튼을 누르면 이름 입력 화면으로 돌아간다.
-    BackHandler {
-        onEvent(OnboardingUiEvent.BackClicked)
-    }
+    BackHandler(onBack = onSystemBack)
 
     Box(
         modifier = modifier
