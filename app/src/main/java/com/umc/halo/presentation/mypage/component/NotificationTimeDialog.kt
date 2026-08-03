@@ -4,15 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -21,20 +18,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.umc.halo.R
+import com.umc.halo.presentation.component.HaloNumberWheelField
 import com.umc.halo.presentation.mypage.MyPageUiEvent
 import com.umc.halo.presentation.mypage.MyPageUiState
 import com.umc.halo.presentation.mypage.formattedNotificationTime
-import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray800
@@ -42,7 +35,6 @@ import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.Primary600
 import com.umc.halo.presentation.theme.White
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun NotificationTimeDialog(
@@ -164,14 +156,12 @@ private fun NotificationTimeEditor(
         Spacer(Modifier.height(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             TimeWheelBox(
-                value = hour.toString().padStart(2, '0'),
                 selectedValue = hour,
                 values = 0..23,
                 label = "시",
                 onValueChange = onHourChange
             )
             TimeWheelBox(
-                value = minute.toString().padStart(2, '0'),
                 selectedValue = minute,
                 values = 0..59,
                 label = "분",
@@ -221,82 +211,26 @@ private fun NotificationTimeSummary(
 
 @Composable
 private fun TimeWheelBox(
-    value: String,
     selectedValue: Int,
     values: IntRange,
     label: String,
     onValueChange: (Int) -> Unit
 ) {
-    val valueList = remember(values) { values.toList() }
-    val selectedIndex = valueList.indexOf(selectedValue).coerceAtLeast(0)
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex)
-    val itemHeight = 58.dp
-    val itemHeightPx = with(LocalDensity.current) { itemHeight.toPx() }
-
-    LaunchedEffect(selectedIndex) {
-        if (!listState.isScrollInProgress && listState.firstVisibleItemIndex != selectedIndex) {
-            listState.scrollToItem(selectedIndex)
-        }
-    }
-
-    LaunchedEffect(listState, valueList) {
-        snapshotFlow { listState.isScrollInProgress }
-            .distinctUntilChanged()
-            .collect { isScrolling ->
-                if (!isScrolling) {
-                    val shouldAdvance = listState.firstVisibleItemScrollOffset > itemHeightPx / 2
-                    val targetIndex = (listState.firstVisibleItemIndex + if (shouldAdvance) 1 else 0)
-                        .coerceIn(valueList.indices)
-                    if (listState.firstVisibleItemIndex != targetIndex ||
-                        listState.firstVisibleItemScrollOffset != 0
-                    ) {
-                        listState.animateScrollToItem(targetIndex)
-                    }
-                    onValueChange(valueList[targetIndex])
-                }
-            }
-    }
-
-    Surface(
+    HaloNumberWheelField(
+        selectedValue = selectedValue,
+        values = values.toList(),
+        placeholder = "00",
+        unit = label,
+        onValueSelected = onValueChange,
         modifier = Modifier
             .width(100.dp)
-            .height(itemHeight),
-        shape = RoundedCornerShape(18.dp),
-        color = Gray30
-    ) {
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        ) {
-            items(valueList.size) { index ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(itemHeight)
-                        .padding(horizontal = 24.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = if (valueList[index] == selectedValue) {
-                            value
-                        } else {
-                            valueList[index].toString().padStart(2, '0')
-                        },
-                        style = HaloType.body02Medium,
-                        color = Gray300
-                    )
-                    Text(
-                        text = label,
-                        style = HaloType.body02Medium,
-                        color = Gray800
-                    )
-                }
-            }
-        }
-    }
+            .height(58.dp),
+        valueFormatter = { it.toString().padStart(2, '0') },
+        fieldHeight = 58.dp,
+        cornerRadius = 18.dp,
+        usePlaceholder = false,
+        circular = true
+    )
 }
 
 @Composable

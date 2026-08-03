@@ -167,6 +167,16 @@ fun ParentPersonalityStep(
                     color = Gray400
                 )
 
+                if (showLimitMessage) {
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = "태그는 최대 3개까지 선택할 수 있어요.",
+                        style = HaloType.body03Regular,
+                        color = Error
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(33.dp))
 
                 PARENT_PERSONALITY_GROUPS.forEachIndexed { index, group ->
@@ -236,16 +246,6 @@ fun ParentPersonalityStep(
                             )
                         }
                     }
-                }
-
-                if (showLimitMessage) {
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "태그는 최대 3개까지 선택할 수 있어요.",
-                        style = HaloType.body03Regular,
-                        color = Error
-                    )
                 }
             }
 

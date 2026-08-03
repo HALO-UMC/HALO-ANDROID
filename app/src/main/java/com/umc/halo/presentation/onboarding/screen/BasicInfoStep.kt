@@ -2,7 +2,6 @@ package com.umc.halo.presentation.onboarding.screen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -18,15 +16,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,17 +29,15 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.umc.halo.presentation.component.HaloNumberWheelField
 import com.umc.halo.presentation.onboarding.Gender
 import com.umc.halo.presentation.onboarding.OnboardingUiEvent
 import com.umc.halo.presentation.onboarding.OnboardingUiState
 import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
-import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
-import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary50
@@ -146,7 +138,7 @@ fun BasicInfoStep(
         }
     }
 
-    // 시스템 뒤로가기 버튼을 누르면 이름 입력 화면으로 돌아간다.
+    // 시스템 뒤로가기 버튼은 온보딩 이탈 확인 모달을 띄운다.
     BackHandler(onBack = onSystemBack)
 
     Box(
@@ -183,7 +175,7 @@ fun BasicInfoStep(
                 keyword = "성별"
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             GenderSelectionRow(
                 selectedGender = uiState.selectedGender,
@@ -194,7 +186,7 @@ fun BasicInfoStep(
                 }
             )
 
-            Spacer(modifier = Modifier.height(61.dp))
+            Spacer(modifier = Modifier.height(63.dp))
 
             OnboardingQuestionTitle(
                 stepNumber = "02",
@@ -202,7 +194,7 @@ fun BasicInfoStep(
                 keyword = "생년월일"
             )
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             BirthDateSelectionRow(
                 selectedYear = uiState.birthYear,
@@ -262,6 +254,8 @@ private fun OnboardingQuestionTitle(
             style = HaloType.body01Medium,
             color = Gray800
         )
+
+        Spacer(modifier = Modifier.height(4.dp))
 
         val questionText = buildAnnotatedString {
             append("${userName}님의 ")
@@ -376,36 +370,33 @@ private fun BirthDateSelectionRow(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        BirthDateDropdownField(
+        BirthDateWheelField(
             value = selectedYear,
             placeholder = "0000",
             unit = "년",
             options = yearOptions,
-            fieldWidth = 116.dp,
             onValueSelected = onYearSelected,
             modifier = Modifier.weight(116f)
         )
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        BirthDateDropdownField(
+        BirthDateWheelField(
             value = selectedMonth,
             placeholder = "0",
             unit = "월",
             options = monthOptions,
-            fieldWidth = 90.dp,
             onValueSelected = onMonthSelected,
             modifier = Modifier.weight(90f)
         )
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        BirthDateDropdownField(
+        BirthDateWheelField(
             value = selectedDay,
             placeholder = "0",
             unit = "일",
             options = dayOptions,
-            fieldWidth = 90.dp,
             onValueSelected = onDaySelected,
             modifier = Modifier.weight(90f)
         )
@@ -413,92 +404,29 @@ private fun BirthDateSelectionRow(
 }
 
 @Composable
-private fun BirthDateDropdownField(
+private fun BirthDateWheelField(
     value: Int?,
     placeholder: String,
     unit: String,
     options: List<Int>,
-    fieldWidth: Dp,
     onValueSelected: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isExpanded by remember {
-        mutableStateOf(false)
-    }
-
-    Box(
-        modifier = modifier
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(68.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Gray30)
-                .clickable(
-                    role = Role.Button,
-                    onClick = {
-                        isExpanded = true
-                    }
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = when {
-                        value == null -> placeholder
-                        unit == "년" -> value
-                            .toString()
-                            .padStart(4, '0')
-
-                        else -> value.toString()
-                    },
-                    style = HaloType.body02Medium,
-                    color = if (value == null) {
-                        Gray300
-                    } else {
-                        Gray800
-                    }
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    text = unit,
-                    style = HaloType.body02Medium,
-                    color = Gray800
-                )
+    HaloNumberWheelField(
+        selectedValue = value,
+        values = options,
+        placeholder = placeholder,
+        unit = unit,
+        onValueSelected = onValueSelected,
+        modifier = modifier,
+        valueFormatter = { selected ->
+            if (unit == "년") {
+                selected.toString().padStart(4, '0')
+            } else {
+                selected.toString()
             }
         }
-
-        DropdownMenu(
-            expanded = isExpanded,
-            onDismissRequest = {
-                isExpanded = false
-            },
-            modifier = Modifier
-                .width(fieldWidth)
-                .heightIn(max = 280.dp)
-        ) {
-            options.forEach { option ->
-                androidx.compose.material3.DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = "$option$unit",
-                            style = HaloType.body02Medium,
-                            color = Gray800
-                        )
-                    },
-                    onClick = {
-                        onValueSelected(option)
-                        isExpanded = false
-                    }
-                )
-            }
-        }
-    }
+    )
 }
 
 private fun calculateMaximumSelectableDay(
