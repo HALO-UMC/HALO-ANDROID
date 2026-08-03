@@ -283,8 +283,8 @@ private fun OnboardingNameTextField(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
-        shape = RoundedCornerShape(18.dp),
+            .height(54.dp),
+        shape = RoundedCornerShape(16.dp),
         color = Gray30,
         border = BorderStroke(
             width = 1.dp,
@@ -336,7 +336,7 @@ private fun OnboardingNameTextField(
                         Surface(
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
-                                .padding(end = 18.dp)
+                                .padding(end = 24.dp)
                                 .size(18.dp)
                                 .clickable(onClick = onClearClick),
                             shape = CircleShape,

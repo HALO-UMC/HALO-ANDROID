@@ -100,7 +100,7 @@ fun WelcomeStep(
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
                 .padding(
-                    top = 169.dp,
+                    top = 189.dp,
                     start = 21.dp,
                     end = 21.dp
                 ),
@@ -114,7 +114,7 @@ fun WelcomeStep(
             contentScale = ContentScale.Fit,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 255.dp)
+                .padding(top = 274.dp)
                 .size(width = 132.dp, height = 154.dp)
         )
 
@@ -124,7 +124,7 @@ fun WelcomeStep(
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
                 .padding(
-                    top = 426.dp,
+                    top = 446.dp,
                     start = 21.dp,
                     end = 21.dp
                 ),
