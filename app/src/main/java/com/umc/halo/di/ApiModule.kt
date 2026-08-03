@@ -7,6 +7,7 @@ import com.umc.halo.data.remote.api.member.MemberApi
 import com.umc.halo.data.remote.api.onboarding.OnboardingApi
 import com.umc.halo.data.remote.api.storybook.StorybookDetailApi
 import com.umc.halo.data.remote.api.terms.TermsApi
+import com.umc.halo.data.remote.api.themebox.ThemeBoxApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,4 +57,9 @@ object ApiModule {
     @Singleton
     fun provideStorybookDetailApi(retrofit: Retrofit): StorybookDetailApi =
         retrofit.create(StorybookDetailApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideThemeBoxApi(retrofit: Retrofit): ThemeBoxApi =
+        retrofit.create(ThemeBoxApi::class.java)
 }

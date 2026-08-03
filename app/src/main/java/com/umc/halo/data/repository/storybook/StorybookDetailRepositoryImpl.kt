@@ -19,7 +19,7 @@ class StorybookDetailRepositoryImpl @Inject constructor(
         val response = storybookDetailApi.getStorybookDetail(storybookId)
 
         return response.result?.toDomain()
-            ?: throw IllegalStateException("Home data is null")
+            ?: throw IllegalStateException("storybook data is null")
     }
 }
 
@@ -37,7 +37,7 @@ private fun StorybookDetailResponse.toDomain() = StorybookDetailResult(
             title = it.title,
             subTitle = it.shortDescription,
             description = it.description,
-            imageUrl = it.imageUrl,
+            imageUrl = it.shortImageUrl,
             isLocked = lockedStatusStringIntoBoolean(it.status),
             isCompleted = completeStatusStringIntoBoolean(it.status)
         )

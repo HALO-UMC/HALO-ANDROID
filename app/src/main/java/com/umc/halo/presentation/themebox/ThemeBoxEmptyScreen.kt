@@ -38,7 +38,6 @@ fun ThemeBoxEmptyScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp)
     ) {
         Spacer(Modifier.height(24.dp))
 
@@ -99,7 +98,9 @@ fun ContinueStorybook(
     continueStorybookList: List<ContinueStorybook>,
     onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
-    LazyColumn() {
+    LazyColumn(
+        Modifier.padding(horizontal = 24.dp)
+    ) {
         item {
             Text(
                 text = "진행중인 스토리북 이어하기",

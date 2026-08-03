@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.themebox
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -16,6 +17,10 @@ fun ThemeBoxRoute(
     onNavigateToStorybook: (Long) -> Unit,
     onNavigateToShowTheme: (Long) -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.getThemeBox()
+    }
+
     val state by viewModel.uiState.collectAsState()
 
     ThemeBoxScreen(
