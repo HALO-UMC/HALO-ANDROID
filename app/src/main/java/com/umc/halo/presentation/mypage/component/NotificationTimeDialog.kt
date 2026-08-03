@@ -71,6 +71,7 @@ fun NotificationTimeDialog(
             ) {
                 DialogHeader(
                     timeText = uiState.formattedNotificationTime(),
+                    showCurrentTime = uiState.isEditingNotificationTime,
                     onClose = {
                         onEvent(MyPageUiEvent.NotificationTimeDismissed)
                     }
@@ -114,6 +115,7 @@ fun NotificationTimeDialog(
 @Composable
 private fun DialogHeader(
     timeText: String,
+    showCurrentTime: Boolean,
     onClose: () -> Unit
 ) {
     Row(verticalAlignment = Alignment.Top) {
@@ -123,12 +125,14 @@ private fun DialogHeader(
                 style = HaloType.body01SemiBold,
                 color = Gray800
             )
-            Spacer(Modifier.height(2.dp))
-            Text(
-                text = "현재 알림 발송 시각 : $timeText",
-                style = HaloType.body03Regular,
-                color = Primary600
-            )
+            if (showCurrentTime) {
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = "현재 알림 발송 시각 : $timeText",
+                    style = HaloType.body03Regular,
+                    color = Primary600
+                )
+            }
         }
 
         IconButton(
@@ -185,14 +189,14 @@ private fun NotificationTimeSummary(
     Column {
         Text(
             text = "설정 시간",
-            style = HaloType.body02SemiBold,
+            style = HaloType.body03Regular,
             color = Gray800
         )
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(4.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp),
+                .height(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -206,9 +210,9 @@ private fun NotificationTimeSummary(
                 modifier = Modifier.size(36.dp)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_mypage_edit),
+                    painter = painterResource(id = R.drawable.ic_mypage_edit_pencil),
                     contentDescription = "시간 수정",
-                    tint = Gray400
+                    tint = Gray300
                 )
             }
         }

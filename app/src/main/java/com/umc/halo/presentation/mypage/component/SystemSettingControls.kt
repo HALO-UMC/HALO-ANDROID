@@ -140,7 +140,7 @@ fun TrackRow(
                     .clip(CircleShape)
                     .background(Primary100)
             )
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(10.dp))
             Text(
                 text = buildAnnotatedString {
                     withStyle(

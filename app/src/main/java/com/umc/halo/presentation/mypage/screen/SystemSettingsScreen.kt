@@ -45,7 +45,8 @@ fun SystemSettingsScreen(
                 checked = uiState.bgmEnabled,
                 onCheckedChange = {
                     onEvent(MyPageUiEvent.BgmEnabledChanged(it))
-                }
+                },
+                titleStyle = HaloType.body01SemiBold
             )
 
             if (uiState.bgmEnabled) {
@@ -105,7 +106,7 @@ fun SystemSettingsScreen(
                                 }
                             )
                             if (index < tracks.lastIndex) {
-                                Spacer(Modifier.height(12.dp))
+                                Spacer(Modifier.height(8.dp))
                             }
                         }
                     }
