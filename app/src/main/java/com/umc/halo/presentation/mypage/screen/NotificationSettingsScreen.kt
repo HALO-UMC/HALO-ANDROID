@@ -47,7 +47,7 @@ fun NotificationSettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
-                .padding(top = 34.dp)
+                .padding(top = 24.dp)
         ) {
             SettingSwitchRow(
                 title = "전체 알림 설정",
@@ -59,7 +59,7 @@ fun NotificationSettingsScreen(
 
             HorizontalDivider(
                 color = Gray100,
-                modifier = Modifier.padding(top = 20.dp)
+                modifier = Modifier.padding(top = 24.dp)
             )
 
             Column(
@@ -100,24 +100,27 @@ fun NotificationSettingsScreen(
                 title = "오늘의 장 알림",
                 checked = uiState.todayChapterNotificationEnabled,
                 enabled = uiState.allNotificationsEnabled,
+                modifier = Modifier.padding(vertical = 18.dp),
                 onCheckedChange = {
                     onEvent(MyPageUiEvent.TodayChapterNotificationChanged(it))
                 }
             )
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(2.dp))
             SettingSwitchRow(
                 title = "기념일 알림",
                 checked = uiState.anniversaryNotificationEnabled,
                 enabled = uiState.allNotificationsEnabled,
+                modifier = Modifier.padding(vertical = 18.dp),
                 onCheckedChange = {
                     onEvent(MyPageUiEvent.AnniversaryNotificationChanged(it))
                 }
             )
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(2.dp))
             SettingSwitchRow(
                 title = "리텐션 알림",
                 checked = uiState.retentionNotificationEnabled,
                 enabled = uiState.allNotificationsEnabled,
+                modifier = Modifier.padding(vertical = 18.dp),
                 onCheckedChange = {
                     onEvent(MyPageUiEvent.RetentionNotificationChanged(it))
                 }

@@ -1,6 +1,8 @@
 package com.umc.halo.presentation.mypage.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import com.umc.halo.presentation.component.HaloNumberWheelField
 import com.umc.halo.presentation.mypage.MyPageUiEvent
 import com.umc.halo.presentation.mypage.MyPageUiState
 import com.umc.halo.presentation.mypage.formattedNotificationTime
+import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray800
@@ -46,6 +48,11 @@ fun NotificationTimeDialog(
             onEvent(MyPageUiEvent.NotificationTimeDismissed)
         }
     ) {
+        val confirmEnabled = !uiState.isEditingNotificationTime ||
+                uiState.isNotificationTimeConfigured ||
+                uiState.draftNotificationHour != uiState.notificationHour ||
+                uiState.draftNotificationMinute != uiState.notificationMinute
+
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -69,7 +76,15 @@ fun NotificationTimeDialog(
                     }
                 )
 
-                Spacer(Modifier.height(18.dp))
+                Spacer(
+                    Modifier.height(
+                        if (uiState.isEditingNotificationTime) {
+                            18.dp
+                        } else {
+                            24.dp
+                        }
+                    )
+                )
 
                 if (uiState.isEditingNotificationTime) {
                     NotificationTimeEditor(
@@ -95,6 +110,7 @@ fun NotificationTimeDialog(
 
                 DialogPrimaryButton(
                     text = "완료",
+                    enabled = confirmEnabled,
                     onClick = {
                         onEvent(MyPageUiEvent.NotificationTimeConfirmed)
                     }
@@ -110,7 +126,11 @@ private fun DialogHeader(
     showCurrentTime: Boolean,
     onClose: () -> Unit
 ) {
-    Row(verticalAlignment = Alignment.Top) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.Top
+    ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = "설정한 시간에 알림을 보내드려요!",
@@ -127,14 +147,17 @@ private fun DialogHeader(
             }
         }
 
-        IconButton(
-            onClick = onClose,
-            modifier = Modifier.size(24.dp)
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .clickable(onClick = onClose),
+            contentAlignment = Alignment.Center
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_common_close),
                 contentDescription = "닫기",
-                tint = Gray400
+                tint = Gray400,
+                modifier = Modifier.size(24.dp)
             )
         }
     }
@@ -147,7 +170,7 @@ private fun NotificationTimeEditor(
     onHourChange: (Int) -> Unit,
     onMinuteChange: (Int) -> Unit
 ) {
-    Column {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = "설정 시간",
             style = HaloType.body02SemiBold,
@@ -176,7 +199,7 @@ private fun NotificationTimeSummary(
     timeText: String,
     onEditClick: () -> Unit
 ) {
-    Column {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = "설정 시간",
             style = HaloType.body03Regular,
@@ -191,18 +214,21 @@ private fun NotificationTimeSummary(
         ) {
             Text(
                 text = timeText,
-                style = HaloType.body01SemiBold,
+                style = HaloType.body01Medium,
                 color = Primary600,
                 modifier = Modifier.weight(1f)
             )
-            IconButton(
-                onClick = onEditClick,
-                modifier = Modifier.size(36.dp)
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable(onClick = onEditClick),
+                contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_mypage_edit_pencil),
                     contentDescription = "시간 수정",
-                    tint = Gray300
+                    tint = Gray300,
+                    modifier = Modifier.size(15.dp)
                 )
             }
         }
@@ -236,17 +262,21 @@ private fun TimeWheelBox(
 @Composable
 private fun DialogPrimaryButton(
     text: String,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     Button(
         onClick = onClick,
+        enabled = enabled,
         modifier = Modifier
             .fillMaxWidth()
             .height(42.dp),
         shape = RoundedCornerShape(30.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Primary500,
-            contentColor = White
+            contentColor = White,
+            disabledContainerColor = Gray100,
+            disabledContentColor = Gray300
         )
     ) {
         Text(

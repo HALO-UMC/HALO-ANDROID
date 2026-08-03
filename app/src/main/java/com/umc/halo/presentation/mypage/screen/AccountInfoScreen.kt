@@ -53,7 +53,7 @@ fun AccountInfoScreen(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(top = 36.dp, bottom = 32.dp)
+                .padding(top = 25.dp, bottom = 32.dp)
         ) {
             SectionTitle("계정 정보")
             Spacer(Modifier.height(18.dp))
@@ -62,7 +62,7 @@ fun AccountInfoScreen(
             InfoRow(label = "이메일", value = "kimjooyeon038@gmail.com")
             InfoRow(label = "계정 생성일", value = "2026.06.28")
 
-            Spacer(Modifier.height(36.dp))
+            Spacer(Modifier.height(48.dp))
             SectionTitle("서비스 이용 정보")
             Spacer(Modifier.height(18.dp))
             InfoRow(label = "알림 상태", value = "수신 중")

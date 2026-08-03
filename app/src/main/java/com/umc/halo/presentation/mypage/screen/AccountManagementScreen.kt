@@ -1,7 +1,9 @@
 package com.umc.halo.presentation.mypage.screen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,10 +27,12 @@ fun AccountManagementScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
-                .padding(top = 38.dp)
+                .padding(top = 28.dp)
         ) {
             MenuRow(title = "계정 정보", onClick = onNavigateToAccountInfo)
+            Spacer(Modifier.height(8.dp))
             MenuRow(title = "오픈 라이선스", onClick = onNavigateToOpenLicense)
+            Spacer(Modifier.height(8.dp))
             MenuRow(title = "이용 약관", onClick = onNavigateToTerms)
         }
     }

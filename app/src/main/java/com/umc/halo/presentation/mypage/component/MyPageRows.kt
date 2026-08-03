@@ -32,6 +32,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray100
@@ -43,6 +44,8 @@ import com.umc.halo.presentation.theme.Gray600
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
+import com.umc.halo.presentation.theme.Primary30
+import com.umc.halo.presentation.theme.Primary600
 import com.umc.halo.presentation.theme.White
 
 @Composable
@@ -101,13 +104,14 @@ fun MenuRow(
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    titleColor: Color = Gray800
+    titleColor: Color = Gray800,
+    verticalPadding: Dp = 18.dp
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .padding(vertical = verticalPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -116,12 +120,17 @@ fun MenuRow(
             color = titleColor,
             modifier = Modifier.weight(1f)
         )
-        Icon(
-            painter = painterResource(id = R.drawable.ic_common_chevron_right),
-            contentDescription = null,
-            tint = Gray700,
-            modifier = Modifier.size(8.dp, 12.dp)
-        )
+        Box(
+            modifier = Modifier.size(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_common_chevron_right),
+                contentDescription = null,
+                tint = Gray700,
+                modifier = Modifier.size(8.dp, 12.dp)
+            )
+        }
     }
     HorizontalDivider(color = Gray100)
 }
@@ -214,7 +223,7 @@ fun InfoRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .padding(vertical = 18.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -230,7 +239,7 @@ fun InfoRow(
             } else {
                 HaloType.body02Regular
             },
-            color = Gray700,
+            color = Gray800,
             textAlign = TextAlign.End,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -250,7 +259,7 @@ fun TimeSettingCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
-            .background(if (enabled) com.umc.halo.presentation.theme.Primary30 else Gray30)
+            .background(if (enabled) Primary30 else Gray30)
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -258,15 +267,20 @@ fun TimeSettingCard(
         Text(
             text = timeText,
             style = HaloType.body02Regular,
-            color = if (enabled) com.umc.halo.presentation.theme.Primary600 else Gray400,
+            color = if (enabled) Primary600 else Gray400,
             modifier = Modifier.weight(1f)
         )
-        Icon(
-            painter = painterResource(id = R.drawable.ic_common_chevron_right),
-            contentDescription = null,
-            tint = if (enabled) Gray700 else Gray300,
-            modifier = Modifier.size(8.dp, 12.dp)
-        )
+        Box(
+            modifier = Modifier.size(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_common_chevron_right),
+                contentDescription = null,
+                tint = if (enabled) Primary600 else Gray300,
+                modifier = Modifier.size(8.dp, 12.dp)
+            )
+        }
     }
 }
 
