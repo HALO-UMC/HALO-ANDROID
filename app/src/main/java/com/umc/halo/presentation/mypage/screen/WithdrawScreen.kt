@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.presentation.mypage.MyPageUiEvent
@@ -75,7 +76,7 @@ fun WithdrawScreen(
             ) {
                 Text(
                     text = "정말 탈퇴하시겠어요?",
-                    style = HaloType.heading01Medium,
+                    style = HaloType.heading01Regular.copy(fontWeight = FontWeight.Medium),
                     color = Gray800,
                     modifier = Modifier.fillMaxWidth()
                 )
