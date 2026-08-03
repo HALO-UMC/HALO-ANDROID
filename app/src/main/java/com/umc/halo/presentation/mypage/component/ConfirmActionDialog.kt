@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray400
-import com.umc.halo.presentation.theme.Gray600
+import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
@@ -64,7 +64,7 @@ fun ConfirmActionDialog(
                         Text(
                             text = description,
                             style = HaloType.caption01Regular,
-                            color = Gray600
+                            color = Gray700
                         )
                     }
 

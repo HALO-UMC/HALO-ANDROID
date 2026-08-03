@@ -65,6 +65,7 @@ import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary30
+import com.umc.halo.presentation.theme.Primary100
 import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.Primary600
@@ -766,15 +767,15 @@ private fun AnniversaryPillButton(
     onClick: () -> Unit
 ) {
     Surface(
-        shape = RoundedCornerShape(20.dp),
-        color = if (active) Primary50 else Gray30,
+        shape = RoundedCornerShape(100.dp),
+        color = if (active) Primary100 else Gray30,
         modifier = Modifier.clickable(onClick = onClick)
     ) {
         Text(
             text = text,
-            style = HaloType.body03Medium.copy(fontSize = 13.sp),
-            color = if (active) Primary600 else Gray500,
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+            style = if (active) HaloType.body02Medium else HaloType.body02Regular,
+            color = if (active) Primary500 else Gray500,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
         )
     }
 }

@@ -116,7 +116,7 @@ private fun RelationshipAnswerCard(
         colors = CardDefaults.cardColors(containerColor = Primary50)
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 13.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Text(
                 text = title,
@@ -127,7 +127,7 @@ private fun RelationshipAnswerCard(
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = description,
-                    style = HaloType.caption01Medium,
+                    style = HaloType.caption01Regular,
                     color = Primary400
                 )
             }

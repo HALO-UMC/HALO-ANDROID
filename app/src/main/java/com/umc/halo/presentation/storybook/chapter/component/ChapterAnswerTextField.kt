@@ -13,16 +13,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
-import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray300
+import com.umc.halo.presentation.theme.Gray30
+import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
-
-private val AnswerFieldBackground = Color(0xFFFAFAFA)
 
 @Composable
 fun ChapterAnswerTextField(
@@ -49,12 +47,12 @@ fun ChapterAnswerTextField(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
-                        color = AnswerFieldBackground,
+                        color = Gray30,
                         shape = shape
                     )
                     .border(
                         width = 1.dp,
-                        color = Gray100,
+                        color = Gray50,
                         shape = shape
                     )
                     .padding(horizontal = 24.dp),
