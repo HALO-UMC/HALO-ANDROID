@@ -36,7 +36,7 @@ fun AccountInfoScreen(
     if (uiState.showLogoutDialog) {
         ConfirmActionDialog(
             title = "정말 로그아웃하시겠습니까?",
-            description = "현재 계정에서 로그아웃 되며 재로그인이 필요해요.",
+            description = "현재 계정에서 로그아웃 되며 재 로그인이 필요해요.",
             buttonText = "로그아웃 하기",
             onDismiss = {
                 onEvent(MyPageUiEvent.LogoutDialogChanged(false))
@@ -53,18 +53,18 @@ fun AccountInfoScreen(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(top = 30.dp, bottom = 32.dp)
+                .padding(top = 36.dp, bottom = 32.dp)
         ) {
             SectionTitle("계정 정보")
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(18.dp))
             InfoRow(label = "닉네임", value = "난혁")
             InfoRow(label = "로그인 방식", value = "카카오 로그인")
             InfoRow(label = "이메일", value = "kimjooyeon038@gmail.com")
             InfoRow(label = "계정 생성일", value = "2026.06.28")
 
-            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.height(36.dp))
             SectionTitle("서비스 이용 정보")
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(18.dp))
             InfoRow(label = "알림 상태", value = "수신 중")
             MenuRow(
                 title = "로그 아웃",

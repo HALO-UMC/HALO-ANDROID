@@ -42,7 +42,7 @@ fun ConfirmActionDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .widthIn(max = 308.dp),
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(16.dp),
             color = White
         ) {
             Column(

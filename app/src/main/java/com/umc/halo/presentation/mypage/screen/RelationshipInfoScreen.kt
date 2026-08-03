@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.presentation.mypage.component.MyPageContainer
 import com.umc.halo.presentation.mypage.component.MyPageTopBar
 import com.umc.halo.presentation.theme.Gray100
@@ -42,11 +41,11 @@ fun RelationshipInfoScreen(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(top = 22.dp, bottom = 32.dp)
+                .padding(top = 35.dp, bottom = 32.dp)
         ) {
             Text(
                 text = "부모님의 성격/성향",
-                style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
+                style = HaloType.body01Medium,
                 color = Gray800
             )
             Spacer(Modifier.height(12.dp))
@@ -63,7 +62,7 @@ fun RelationshipInfoScreen(
 
             Text(
                 text = "부모님과 나의 관계는?",
-                style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
+                style = HaloType.body01Medium,
                 color = Gray800
             )
             Spacer(Modifier.height(12.dp))
@@ -79,7 +78,7 @@ fun RelationshipInfoScreen(
 
             Text(
                 text = "어떤 사이가 되고 싶나요?",
-                style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
+                style = HaloType.body01Medium,
                 color = Gray800
             )
             Spacer(Modifier.height(12.dp))
@@ -99,9 +98,9 @@ private fun TagChip(text: String) {
     ) {
         Text(
             text = text,
-            style = HaloType.body03Medium.copy(fontSize = 13.sp),
+            style = HaloType.body03Medium,
             color = Primary500,
-            modifier = Modifier.padding(horizontal = 11.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)
         )
     }
 }
@@ -113,7 +112,7 @@ private fun RelationshipAnswerCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Primary50)
     ) {
         Column(
@@ -121,14 +120,14 @@ private fun RelationshipAnswerCard(
         ) {
             Text(
                 text = title,
-                style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
+                style = HaloType.body02Medium,
                 color = Primary600
             )
             if (description != null) {
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = description,
-                    style = HaloType.caption01Medium.copy(fontSize = 10.5.sp),
+                    style = HaloType.caption01Medium,
                     color = Primary400
                 )
             }

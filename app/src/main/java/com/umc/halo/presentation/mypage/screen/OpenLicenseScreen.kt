@@ -41,17 +41,17 @@ private data class OpenLicenseItem(
 private val openLicenseItems = listOf(
     OpenLicenseItem(
         name = "AndroidX Core KTX",
-        version = "1.12",
+        version = "1.1.2",
         description = "The android,,~"
     ),
     OpenLicenseItem(
         name = "AndroidX Core KTX",
-        version = "1.12",
+        version = "1.1.2",
         description = "The android,,~"
     ),
     OpenLicenseItem(
         name = "AndroidX Core KTX",
-        version = "1.12",
+        version = "1.1.2",
         description = "The android,,~"
     )
 )
@@ -72,7 +72,7 @@ fun OpenLicenseScreen(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(top = 52.dp, bottom = 32.dp)
+                .padding(top = 34.dp, bottom = 32.dp)
         ) {
             Text(
                 text = "HALO 는 오픈소스 라이브러리를 사용합니다.\n각 라이브러리의 라이선스 전문은 아래에서 확인하실 수 있습니다.",
@@ -80,7 +80,7 @@ fun OpenLicenseScreen(
                 color = Gray500
             )
 
-            Spacer(Modifier.height(38.dp))
+            Spacer(Modifier.height(33.dp))
 
             openLicenseItems.forEachIndexed { index, item ->
                 OpenLicenseRow(
@@ -90,9 +90,9 @@ fun OpenLicenseScreen(
 
                 if (index < openLicenseItems.lastIndex) {
                     HorizontalDivider(
-                        color = Gray100,
-                        modifier = Modifier.padding(vertical = 24.dp)
+                        color = Gray100
                     )
+                    Spacer(Modifier.height(10.dp))
                 }
             }
         }
@@ -107,8 +107,9 @@ private fun OpenLicenseRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(39.dp)
-            .clickable(onClick = onClick),
+            .height(54.dp)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -118,7 +119,7 @@ private fun OpenLicenseRow(
                 .background(Gray200)
         )
 
-        Spacer(Modifier.width(16.dp))
+        Spacer(Modifier.width(12.dp))
 
         Column(modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.Bottom) {

@@ -32,7 +32,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray300
@@ -111,7 +110,7 @@ fun MenuRow(
     ) {
         Text(
             text = title,
-            style = HaloType.body02Medium,
+            style = HaloType.body02SemiBold,
             color = titleColor,
             modifier = Modifier.weight(1f)
         )
@@ -217,13 +216,17 @@ fun InfoRow(
     ) {
         Text(
             text = label,
-            style = HaloType.body02Medium.copy(fontSize = 15.sp),
+            style = HaloType.body02SemiBold,
             color = Gray800,
             modifier = Modifier.weight(0.9f)
         )
         Text(
             text = value,
-            style = HaloType.body03Regular.copy(fontSize = 12.5.sp),
+            style = if (value.length > 12) {
+                HaloType.body03Regular
+            } else {
+                HaloType.body02Regular
+            },
             color = Gray700,
             textAlign = TextAlign.End,
             maxLines = 1,
@@ -269,29 +272,13 @@ fun WarningLine(text: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 5.dp),
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Surface(
-            shape = CircleShape,
-            color = Gray500,
-            modifier = Modifier.size(12.dp)
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Text(
-                    text = "!",
-                    style = HaloType.caption02Medium,
-                    color = White
-                )
-            }
-        }
-
-        Spacer(Modifier.width(6.dp))
-
         Text(
             text = text,
-            style = HaloType.body03Regular.copy(fontSize = 12.5.sp),
-            color = Gray600
+            style = HaloType.body01Regular,
+            color = Gray500
         )
     }
 }
