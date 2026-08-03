@@ -1,6 +1,5 @@
 package com.umc.halo.presentation.onboarding.component
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.HaloType
@@ -49,14 +47,6 @@ fun OnboardingChoiceChip(
         } else {
             Gray50
         },
-        border = if (selected) {
-            BorderStroke(
-                width = 1.dp,
-                color = Primary500
-            )
-        } else {
-            null
-        }
     ) {
         Box(
             modifier = Modifier.padding(horizontal = 10.dp),
@@ -64,12 +54,7 @@ fun OnboardingChoiceChip(
         ) {
             Text(
                 text = text,
-                style = HaloType.body03Regular.copy(
-                    fontSize = 12.sp,
-                    lineHeight = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    letterSpacing = 0.sp
-                ),
+                style = HaloType.body03Regular.copy(fontWeight = FontWeight.Medium),
                 color = if (selected) {
                     Primary500
                 } else {

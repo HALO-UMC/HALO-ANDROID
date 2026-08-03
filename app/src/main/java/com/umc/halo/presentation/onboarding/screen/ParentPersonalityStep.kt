@@ -89,12 +89,12 @@ fun ParentPersonalityStep(
                 totalStep = 3,
                 modifier = Modifier.padding(
                     start = 20.dp,
-                    top = 14.dp,
+                    top = 3.dp,
                     end = 20.dp
                 )
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(47.dp))
 
             /*
              * 뒤로 가기 영역도 진행 바 아래에 고정한다.
@@ -138,7 +138,7 @@ fun ParentPersonalityStep(
                     .padding(
                         start = 24.dp,
                         end = 24.dp,
-                        top = 8.dp,
+                        top = 19.dp,
                         bottom = 24.dp
                     )
             ) {
@@ -170,25 +170,25 @@ fun ParentPersonalityStep(
                     color = Gray400
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(33.dp))
 
                 PARENT_PERSONALITY_GROUPS.forEachIndexed { index, group ->
                     if (index > 0) {
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
                     }
 
                     Text(
                         text = group.title,
-                        style = HaloType.body02Medium,
+                        style = HaloType.body02SemiBold,
                         color = Gray700
                     )
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         group.options.forEach { personality ->
                             val isSelected =

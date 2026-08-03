@@ -110,12 +110,12 @@ fun RelationshipStep(
                 totalStep = 3,
                 modifier = Modifier.padding(
                     start = 20.dp,
-                    top = 14.dp,
+                    top = 3.dp,
                     end = 20.dp
                 )
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(47.dp))
 
             /*
              * 이전 버튼 영역
@@ -145,7 +145,7 @@ fun RelationshipStep(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(19.dp))
 
             Column(
                 modifier = Modifier.padding(horizontal = 24.dp)

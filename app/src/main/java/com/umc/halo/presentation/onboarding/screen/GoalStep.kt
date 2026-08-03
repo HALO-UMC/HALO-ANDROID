@@ -83,12 +83,12 @@ fun GoalStep(
                 totalStep = 3,
                 modifier = Modifier.padding(
                     start = 20.dp,
-                    top = 14.dp,
+                    top = 3.dp,
                     end = 20.dp
                 )
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(47.dp))
 
             /*
              * 이전 화면으로 이동하는 버튼
@@ -118,7 +118,7 @@ fun GoalStep(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(19.dp))
 
             Column(
                 modifier = Modifier.padding(horizontal = 24.dp)
@@ -146,7 +146,7 @@ fun GoalStep(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "해당되는 항목을 모두 선택해주세요. (최대 2개).",
+                    text = "해당되는 항목을 선택해주세요.",
                     style = HaloType.body03Regular,
                     color = Gray400
                 )

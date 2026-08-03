@@ -24,13 +24,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.presentation.onboarding.OnboardingUiState
 import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.theme.Gray30
+import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
@@ -86,7 +91,7 @@ fun CompleteStep(
          * "선택한 관계 방향" 영역이 더 아래로 내려간다.
          */
         val selectedSectionTopPosition =
-            titleTopPosition + 230.dp
+            titleTopPosition + 257.dp
 
         Image(
             painter = painterResource(id = R.drawable.ic_orange_character),
@@ -111,7 +116,15 @@ fun CompleteStep(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "모든 준비가 끝났어요!",
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(fontWeight = FontWeight.Medium)
+                    ) {
+                        append("모든 준비")
+                    }
+
+                    append("가 끝났어요!")
+                },
                 style = HaloType.heading01Regular,
                 color = Gray800,
                 textAlign = TextAlign.Center
@@ -135,19 +148,19 @@ fun CompleteStep(
         ) {
             Text(
                 text = "선택한 관계 방향",
-                style = HaloType.body01SemiBold,
-                color = Gray800
+                style = HaloType.body02SemiBold,
+                color = Gray500
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             selectedDirections.forEachIndexed { index, direction ->
                 if (index > 0) {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(11.dp))
                 }
 
                 SelectedDirectionCard(
-                    text = direction
+                    text = direction.withSentencePeriod()
                 )
             }
         }
@@ -181,7 +194,7 @@ private fun SelectedDirectionCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(44.dp)
+            .height(52.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(Gray30)
             .padding(horizontal = 16.dp),
@@ -192,5 +205,17 @@ private fun SelectedDirectionCard(
             style = HaloType.body02Medium,
             color = Gray700
         )
+    }
+}
+
+private fun String.withSentencePeriod(): String {
+    return if (
+        endsWith(".") ||
+        endsWith("!") ||
+        endsWith("?")
+    ) {
+        this
+    } else {
+        "$this."
     }
 }
