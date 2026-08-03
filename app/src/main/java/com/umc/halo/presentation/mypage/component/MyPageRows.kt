@@ -116,10 +116,10 @@ fun MenuRow(
             modifier = Modifier.weight(1f)
         )
         Icon(
-            painter = painterResource(id = R.drawable.ic_home_right_arrow),
+            painter = painterResource(id = R.drawable.ic_common_chevron_right),
             contentDescription = null,
             tint = Gray700,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(8.dp, 12.dp)
         )
     }
     HorizontalDivider(color = Gray100)
@@ -261,10 +261,10 @@ fun TimeSettingCard(
             modifier = Modifier.weight(1f)
         )
         Icon(
-            painter = painterResource(id = R.drawable.ic_home_right_arrow),
+            painter = painterResource(id = R.drawable.ic_common_chevron_right),
             contentDescription = null,
-            tint = if (enabled) com.umc.halo.presentation.theme.Primary600 else Gray300,
-            modifier = Modifier.size(24.dp)
+            tint = if (enabled) Gray700 else Gray300,
+            modifier = Modifier.size(8.dp, 12.dp)
         )
     }
 }

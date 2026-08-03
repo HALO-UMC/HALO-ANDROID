@@ -455,7 +455,7 @@ private fun AnniversaryCalendar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_common_backward_arrow),
+                painter = painterResource(id = R.drawable.ic_common_chevron_left),
                 contentDescription = null,
                 tint = Gray500,
                 modifier = Modifier
@@ -470,7 +470,7 @@ private fun AnniversaryCalendar(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
             Icon(
-                painter = painterResource(id = R.drawable.ic_home_right_arrow),
+                painter = painterResource(id = R.drawable.ic_common_chevron_right),
                 contentDescription = null,
                 tint = Gray500,
                 modifier = Modifier
@@ -656,11 +656,11 @@ private fun AnniversaryDateField(
                 Spacer(Modifier.width(12.dp))
             }
             Icon(
-                painter = painterResource(id = R.drawable.ic_home_right_arrow),
+                painter = painterResource(id = R.drawable.ic_common_chevron_right),
                 contentDescription = null,
                 tint = Gray400,
                 modifier = Modifier
-                    .size(18.dp)
+                    .size(8.dp, 12.dp)
                     .graphicsLayer(rotationZ = if (form.isCalendarExpanded) -90f else 90f)
             )
         }
@@ -803,10 +803,10 @@ private fun CalendarTypeChip(
 @Composable
 private fun RightChevron(tint: Color) {
     Icon(
-        painter = painterResource(id = R.drawable.ic_home_right_arrow),
+        painter = painterResource(id = R.drawable.ic_common_chevron_right),
         contentDescription = null,
         tint = tint,
-        modifier = Modifier.size(20.dp)
+        modifier = Modifier.size(8.dp, 12.dp)
     )
 }
 

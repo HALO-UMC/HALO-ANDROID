@@ -133,11 +133,11 @@ fun RelationshipStep(
                 ) {
                     Icon(
                         painter = painterResource(
-                            id = R.drawable.ic_chevron_left
+                            id = R.drawable.ic_common_chevron_left
                         ),
                         contentDescription = "이전 화면",
                         tint = Gray800,
-                        modifier = Modifier.size(21.dp)
+                        modifier = Modifier.size(8.dp, 12.dp)
                     )
                 }
             }

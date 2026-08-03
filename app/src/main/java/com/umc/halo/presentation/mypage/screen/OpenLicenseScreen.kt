@@ -29,6 +29,7 @@ import com.umc.halo.presentation.mypage.component.MyPageTopBar
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray500
+import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 
@@ -146,10 +147,10 @@ private fun OpenLicenseRow(
         }
 
         Icon(
-            painter = painterResource(id = R.drawable.ic_home_right_arrow),
+            painter = painterResource(id = R.drawable.ic_common_chevron_right),
             contentDescription = null,
-            tint = Gray800,
-            modifier = Modifier.size(24.dp)
+            tint = Gray700,
+            modifier = Modifier.size(8.dp, 12.dp)
         )
     }
 }
