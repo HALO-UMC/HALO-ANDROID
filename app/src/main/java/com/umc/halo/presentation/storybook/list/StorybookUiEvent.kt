@@ -7,6 +7,17 @@ sealed interface StorybookUiEvent {
     // 전체/진행중/완료 탭 전환
     data class OnTabSelected(val tab: StorybookTab) : StorybookUiEvent
 
+    /**
+     * 화면이 보이기 시작 → 목록 조회
+     */
+    data object OnScreenShown : StorybookUiEvent
+
+    // 조회 실패 화면의 '다시 시도'
+    data object OnRetryClicked : StorybookUiEvent
+
+    // 실패 토스트를 띄운 뒤 소비 (같은 메시지가 다시 뜨지 않도록)
+    data object ErrorShown : StorybookUiEvent
+
     // 맞춤 스토리북 카드 클릭 → 스토리북 상세(목차)
     data class OnCustomStorybookClicked(val storybookId: Long) : StorybookUiEvent
 

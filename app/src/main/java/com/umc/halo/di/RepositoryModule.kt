@@ -6,6 +6,7 @@ import com.umc.halo.data.repository.home.HomeRepositoryImpl
 import com.umc.halo.data.repository.member.MemberRepositoryImpl
 import com.umc.halo.data.repository.onboarding.OnboardingRepositoryImpl
 import com.umc.halo.data.repository.storybook.StorybookDetailRepositoryImpl
+import com.umc.halo.data.repository.storybook.StorybookRepositoryImpl
 import com.umc.halo.data.repository.terms.TermsRepositoryImpl
 import com.umc.halo.data.repository.themebox.ThemeBoxRepositoryImpl
 import com.umc.halo.domain.repository.auth.AuthRepository
@@ -14,6 +15,7 @@ import com.umc.halo.domain.repository.home.HomeRepository
 import com.umc.halo.domain.repository.member.MemberRepository
 import com.umc.halo.domain.repository.onboarding.OnboardingRepository
 import com.umc.halo.domain.repository.storybook.StorybookDetailRepository
+import com.umc.halo.domain.repository.storybook.StorybookRepository
 import com.umc.halo.domain.repository.terms.TermsRepository
 import com.umc.halo.domain.repository.themebox.ThemeBoxRepository
 import dagger.Binds
@@ -60,4 +62,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindThemeBoxRepository(impl: ThemeBoxRepositoryImpl): ThemeBoxRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindStorybookRepository(impl: StorybookRepositoryImpl): StorybookRepository
 }

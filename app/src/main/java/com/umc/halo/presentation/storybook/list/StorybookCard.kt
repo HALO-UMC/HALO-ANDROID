@@ -1,7 +1,5 @@
 package com.umc.halo.presentation.storybook.list
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -22,11 +20,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
@@ -76,7 +74,7 @@ sealed interface StorybookBadge {
  * 크기는 호출부가 [modifier]로 지정
  * 세로 비율은 내부에서 [CardAspectRatio]로 잠그므로 폭만 정해주면 됨
  *
- * @param coverRes 커버 이미지. null이면 회색 플레이스홀더
+ * @param coverUrl 서버가 준 커버 이미지 URL. null·빈 문자열이면 회색 플레이스홀더
  * @param badge null이면 배지 없음(전체 탭). 진행중/완료 탭은 각각 [StorybookBadge]를 넘김
  * @param isWaiting true면 오늘 분량 완료 상태 → 카드를 어둡게 하고 안내 문구 표시 + 클릭 비활성화
  * @param onClick null이거나 isWaiting=true면 클릭되지 않음
@@ -86,7 +84,7 @@ fun StorybookCard(
     title: String,
     subtitle: String,
     modifier: Modifier = Modifier,
-    @DrawableRes coverRes: Int? = null,
+    coverUrl: String? = null,
     badge: StorybookBadge? = null,
     isWaiting: Boolean = false,
     onClick: (() -> Unit)? = null
@@ -112,9 +110,9 @@ fun StorybookCard(
                     .weight(CoverWeight)
                     .background(CoverPlaceholderColor)
             ) {
-                if (coverRes != null) {
-                    Image(
-                        painter = painterResource(coverRes),
+                if (!coverUrl.isNullOrBlank()) {
+                    AsyncImage(
+                        model = coverUrl,
                         contentDescription = null,      // 장식용 이미지라 null
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.matchParentSize()
