@@ -38,7 +38,7 @@ fun SystemSettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
-                .padding(top = 34.dp)
+                .padding(top = 28.dp)
         ) {
             SettingSwitchRow(
                 title = "배경음악",
@@ -46,11 +46,12 @@ fun SystemSettingsScreen(
                 onCheckedChange = {
                     onEvent(MyPageUiEvent.BgmEnabledChanged(it))
                 },
+                modifier = Modifier.padding(vertical = 18.dp),
                 titleStyle = HaloType.body01SemiBold
             )
 
             if (uiState.bgmEnabled) {
-                Spacer(Modifier.height(28.dp))
+                Spacer(Modifier.height(18.dp))
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
@@ -77,7 +78,7 @@ fun SystemSettingsScreen(
                     }
                 }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(18.dp))
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),

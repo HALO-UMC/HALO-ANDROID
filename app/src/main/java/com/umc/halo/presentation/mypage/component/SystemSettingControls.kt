@@ -30,12 +30,7 @@ import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray200
@@ -56,7 +51,7 @@ fun SystemVolumeSlider(
     BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
-            .height(30.dp)
+            .height(14.dp)
             .semantics {
                 progressBarRangeInfo = ProgressBarRangeInfo(
                     current = value.coerceIn(0f, 1f),
@@ -77,7 +72,7 @@ fun SystemVolumeSlider(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(30.dp)
+                .height(14.dp)
                 .pointerInput(sliderWidthPx) {
                     detectDragGestures(
                         onDragStart = { offset ->
@@ -142,41 +137,28 @@ fun TrackRow(
             )
             Spacer(Modifier.width(10.dp))
             Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        SpanStyle(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    ) {
-                        append(title)
-                    }
-                    append("  ")
-                    withStyle(
-                        SpanStyle(
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    ) {
-                        append("Track 01")
-                    }
-                },
+                text = title,
                 style = HaloType.body02Medium,
                 color = if (selected) Primary600 else Gray700,
                 modifier = Modifier.weight(1f)
             )
-            Icon(
-                painter = painterResource(
-                    id = if (playing) {
-                        R.drawable.ic_home_bgmplayer_pause
-                    } else {
-                        R.drawable.ic_home_bgmplayer_play
-                    }
-                ),
-                contentDescription = null,
-                tint = if (selected) Primary600 else Gray800,
-                modifier = Modifier.size(24.dp)
-            )
+            Box(
+                modifier = Modifier.size(40.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(
+                        id = if (playing) {
+                            R.drawable.ic_home_bgmplayer_pause
+                        } else {
+                            R.drawable.ic_home_bgmplayer_play
+                        }
+                    ),
+                    contentDescription = null,
+                    tint = if (selected) Primary600 else Gray800,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }
