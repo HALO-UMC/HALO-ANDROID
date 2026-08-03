@@ -12,7 +12,8 @@ data class StorybookDetailResponse(
 data class Chapter(
     val chapterOrder: Int,
     val title: String,
-    val imageUrl: String,
+    val shortImageUrl: String,
+    val longImageUrl: String,
     val shortDescription: String,
     val description: String,
     val status: String

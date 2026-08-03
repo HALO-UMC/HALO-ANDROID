@@ -37,7 +37,7 @@ private fun StorybookDetailResponse.toDomain() = StorybookDetailResult(
             title = it.title,
             subTitle = it.shortDescription,
             description = it.description,
-            imageUrl = it.imageUrl,
+            imageUrl = it.shortImageUrl,
             isLocked = lockedStatusStringIntoBoolean(it.status),
             isCompleted = completeStatusStringIntoBoolean(it.status)
         )
