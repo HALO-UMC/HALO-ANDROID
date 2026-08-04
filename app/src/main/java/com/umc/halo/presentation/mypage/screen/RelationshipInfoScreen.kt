@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.umc.halo.presentation.mypage.component.MyPageContainer
 import com.umc.halo.presentation.mypage.component.MyPageTopBar
 import com.umc.halo.presentation.theme.Gray100
@@ -33,6 +34,10 @@ import com.umc.halo.presentation.theme.Primary600
 @Composable
 fun RelationshipInfoScreen(
     onBack: () -> Unit,
+    personalityTags: List<String> = listOf("낙천적인", "온화한", "사교적인"),
+    currentRelationshipTitle: String = "대체로 좋은 편이에요",
+    currentRelationshipDescription: String? = "일상적인 안부를 나누며 서로를 존중해요",
+    desiredRelationshipTitle: String = "같이 보내는 시간을 만들고 싶어요",
     modifier: Modifier = Modifier
 ) {
     MyPageContainer(modifier = modifier) {
@@ -58,9 +63,9 @@ fun RelationshipInfoScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 maxItemsInEachRow = 3
             ) {
-                TagChip("낙천적인")
-                TagChip("온화한")
-                TagChip("사교적인")
+                personalityTags.forEach { tag ->
+                    TagChip(tag)
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -76,15 +81,15 @@ fun RelationshipInfoScreen(
             )
             Spacer(modifier = Modifier.height(12.dp))
             RelationshipAnswerCard(
-                title = "대체로 좋은 편이에요",
-                description = "일상적인 안부를 나누며 서로를 존중해요"
+                title = currentRelationshipTitle,
+                description = currentRelationshipDescription
             )
 
             Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider(
                 color = Gray100
             )
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = "어떤 사이가 되고 싶나요?",
@@ -93,7 +98,7 @@ fun RelationshipInfoScreen(
             )
             Spacer(modifier = Modifier.height(12.dp))
             RelationshipAnswerCard(
-                title = "같이 보내는 시간을 만들고 싶어요",
+                title = desiredRelationshipTitle,
                 description = null
             )
         }
@@ -130,14 +135,20 @@ private fun RelationshipAnswerCard(
         ) {
             Text(
                 text = title,
-                style = HaloType.body02Medium,
+                style = HaloType.body02Medium.copy(
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp
+                ),
                 color = Primary600
             )
             if (description != null) {
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = description,
-                    style = HaloType.caption01Regular,
+                    style = HaloType.caption01Regular.copy(
+                        fontSize = 10.sp,
+                        lineHeight = 14.sp
+                    ),
                     color = Primary400
                 )
             }
