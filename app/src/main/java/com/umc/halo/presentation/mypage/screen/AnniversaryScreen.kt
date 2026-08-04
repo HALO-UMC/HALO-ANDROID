@@ -1,12 +1,13 @@
 package com.umc.halo.presentation.mypage.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +22,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.umc.halo.R
+import com.umc.halo.presentation.component.haloCardShadow
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryCalendarType
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryDate
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryFormState
@@ -54,14 +56,11 @@ import com.umc.halo.presentation.mypage.component.MyPageContainer
 import com.umc.halo.presentation.mypage.component.MyPageTopBar
 import com.umc.halo.presentation.mypage.component.PrimaryActionButton
 import com.umc.halo.presentation.theme.Gray100
-import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray500
-import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.Gray600
-import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary30
@@ -71,6 +70,8 @@ import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.Primary600
 import com.umc.halo.presentation.theme.White
 import java.util.Calendar
+
+private val AnniversaryBadgeGreen = Color(0xFF14B86A)
 
 @Composable
 fun AnniversaryScreen(
@@ -123,7 +124,7 @@ private fun AnniversaryListScreen(
             contentPadding = androidx.compose.foundation.layout.PaddingValues(
                 start = 24.dp,
                 end = 24.dp,
-                bottom = 116.dp
+                bottom = 148.dp
             )
         ) {
             item {
@@ -135,10 +136,13 @@ private fun AnniversaryListScreen(
 
             item {
                 LazyRow(
+                    contentPadding = PaddingValues(vertical = 2.dp),
                     horizontalArrangement = Arrangement.spacedBy(18.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(112.dp)
                 ) {
-                    items(uiState.upcomingItems) { item ->
+                    items(uiState.visibleUpcomingItems) { item ->
                         UpcomingAnniversaryCard(
                             item = item,
                             onClick = { onEvent(AnniversaryUiEvent.UpcomingClicked(item.id)) }
@@ -186,17 +190,16 @@ private fun AnniversaryListScreen(
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 24.dp, bottom = 38.dp)
-                    .navigationBarsPadding()
+                    .padding(end = 28.dp, bottom = 60.dp)
                     .width(121.dp)
-                    .height(54.dp)
+                    .height(44.dp)
                     .clickable { onEvent(AnniversaryUiEvent.AddClicked) },
                 shape = RoundedCornerShape(100.dp),
                 color = Primary500,
                 shadowElevation = 2.dp
             ) {
                 Row(
-                    modifier = Modifier.padding(start = 18.dp, end = 18.dp, top = 10.dp, bottom = 10.dp),
+                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
@@ -212,7 +215,10 @@ private fun AnniversaryListScreen(
                     ) {
                         Text(
                             text = "+",
-                            style = HaloType.heading01SemiBold,
+                            style = HaloType.heading01SemiBold.copy(
+                                fontSize = 32.sp,
+                                lineHeight = 24.sp
+                            ),
                             color = White,
                             textAlign = TextAlign.Center
                         )
@@ -228,14 +234,16 @@ private fun UpcomingAnniversaryCard(
     item: AnniversaryItem,
     onClick: () -> Unit
 ) {
+    val shape = RoundedCornerShape(16.dp)
+
     Surface(
         modifier = Modifier
             .width(168.dp)
             .height(108.dp)
+            .haloCardShadow(shape)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        color = White,
-        border = BorderStroke(1.dp, Gray50)
+        shape = shape,
+        color = White
     ) {
         Row(
             modifier = Modifier.padding(start = 18.dp, end = 18.dp, top = 12.dp, bottom = 12.dp),
@@ -261,7 +269,7 @@ private fun UpcomingAnniversaryCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(2.dp))
                 Text(
                     text = item.date.compactWithDayOfWeek(),
                     style = HaloType.body03Regular.copy(fontSize = 13.sp),
@@ -299,12 +307,16 @@ private fun AnniversaryListItem(
                     style = HaloType.body01SemiBold,
                     color = if (selected || highlighted) Primary600 else Gray800
                 )
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(2.dp))
                 Text(
                     text = item.date.compactWithDayOfWeek(),
                     style = HaloType.caption01Medium.copy(fontSize = 11.5.sp),
                     color = if (selected || highlighted) Primary600 else Gray600
                 )
+            }
+            if (highlighted && !isSelectionMode) {
+                AddedAnniversaryBadge()
+                Spacer(Modifier.width(28.dp))
             }
             if (isSelectionMode) {
                 Text(
@@ -316,6 +328,30 @@ private fun AnniversaryListItem(
                 RightChevron(tint = Gray500)
             }
         }
+    }
+}
+
+@Composable
+private fun AddedAnniversaryBadge() {
+    Surface(
+        modifier = Modifier
+            .size(38.dp)
+            .shadow(
+                elevation = 4.dp,
+                shape = CircleShape,
+                clip = false,
+                ambientColor = Color(0x33000000),
+                spotColor = Color(0x33000000)
+            ),
+        shape = CircleShape,
+        color = White,
+        border = BorderStroke(4.dp, AnniversaryBadgeGreen)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_orange_character),
+            contentDescription = null,
+            modifier = Modifier.padding(7.dp)
+        )
     }
 }
 

@@ -101,7 +101,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
     }
 
     private fun openDetail(id: Long) {
-        val item = currentState.upcomingItems.firstOrNull { it.id == id } ?: return
+        val item = currentState.visibleUpcomingItems.firstOrNull { it.id == id } ?: return
         updateState {
             copy(
                 mode = AnniversaryScreenMode.DETAIL,

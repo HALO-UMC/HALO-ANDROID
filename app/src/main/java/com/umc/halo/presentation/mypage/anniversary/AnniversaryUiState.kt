@@ -83,11 +83,27 @@ data class AnniversaryUiState(
     val selectedIds: Set<Long> = emptySet(),
     val lastAddedId: Long? = null,
     val openedItem: AnniversaryItem? = null,
-    val form: AnniversaryFormState = AnniversaryFormState()
+    val form: AnniversaryFormState = AnniversaryFormState(),
+    val today: AnniversaryDate = currentAnniversaryDate()
 ) : UiState {
     val isSelectionMode: Boolean
         get() = isSelectionModeActive
+
+    val visibleUpcomingItems: List<AnniversaryItem>
+        get() = (upcomingItems + personalItems)
+            .mapNotNull { item ->
+                val daysUntil = item.date.daysUntilNextOccurrence(today)
+                if (daysUntil in 0..7) {
+                    item.copy(dDayLabel = daysUntil.toDdayLabel())
+                } else {
+                    null
+                }
+            }
+            .distinctBy { it.id }
+            .sortedBy { it.date.daysUntilNextOccurrence(today) }
 }
+
+private const val MILLIS_PER_DAY = 24L * 60L * 60L * 1000L
 
 private fun currentCalendarYear(): Int =
     Calendar.getInstance().get(Calendar.YEAR)
@@ -95,24 +111,67 @@ private fun currentCalendarYear(): Int =
 private fun currentCalendarMonth(): Int =
     Calendar.getInstance().get(Calendar.MONTH) + 1
 
-private val defaultUpcomingAnniversaries = listOf(
-    AnniversaryItem(
-        id = 101,
-        title = "아버지 생신",
-        date = AnniversaryDate(2026, 6, 16),
-        dDayLabel = "D-DAY",
-        memo = "아버지 생신 챙겨드려야지!",
-        isOfficial = true
-    ),
-    AnniversaryItem(
-        id = 102,
-        title = "어머니 생신",
-        date = AnniversaryDate(2026, 7, 28),
-        dDayLabel = "D-7",
-        memo = "어머니랑 여행을 가기로 한 날",
-        isOfficial = true
+private fun currentAnniversaryDate(): AnniversaryDate {
+    val calendar = Calendar.getInstance()
+    return AnniversaryDate(
+        year = calendar.get(Calendar.YEAR),
+        month = calendar.get(Calendar.MONTH) + 1,
+        day = calendar.get(Calendar.DAY_OF_MONTH)
     )
-)
+}
+
+private fun AnniversaryDate.daysUntilNextOccurrence(from: AnniversaryDate): Int {
+    val fromCalendar = Calendar.getInstance().apply {
+        clear()
+        set(from.year, from.month - 1, from.day)
+    }
+    val targetCalendar = Calendar.getInstance().apply {
+        clear()
+        set(from.year, month - 1, day)
+    }
+
+    if (targetCalendar.before(fromCalendar)) {
+        targetCalendar.add(Calendar.YEAR, 1)
+    }
+
+    return ((targetCalendar.timeInMillis - fromCalendar.timeInMillis) / MILLIS_PER_DAY).toInt()
+}
+
+private fun AnniversaryDate.plusDays(days: Int): AnniversaryDate {
+    val calendar = Calendar.getInstance().apply {
+        clear()
+        set(year, month - 1, day)
+        add(Calendar.DAY_OF_MONTH, days)
+    }
+    return AnniversaryDate(
+        year = calendar.get(Calendar.YEAR),
+        month = calendar.get(Calendar.MONTH) + 1,
+        day = calendar.get(Calendar.DAY_OF_MONTH)
+    )
+}
+
+private fun Int.toDdayLabel(): String =
+    if (this == 0) "D-DAY" else "D-$this"
+
+private val defaultUpcomingAnniversaries = run {
+    val today = currentAnniversaryDate()
+    listOf(
+        AnniversaryItem(
+            id = 101,
+            title = "아버지 생신",
+            date = today,
+            memo = "아버지 생신 챙겨드려야지!",
+            isOfficial = true
+        ),
+        AnniversaryItem(
+            id = 102,
+            title = "어머니 생신",
+            date = today.plusDays(7),
+            memo = "어머니랑 여행을 가기로 한 날",
+            isOfficial = true
+        )
+    )
+}
 
 private val defaultPersonalAnniversaries = listOf(
     AnniversaryItem(
