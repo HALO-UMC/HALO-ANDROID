@@ -30,7 +30,7 @@ private fun StorybookDetailResponse.toDomain() = StorybookDetailResult(
         storyBookIntro = description,
         imageUrl = imageUrl
     ),
-    storyBookProgress = if (completedChapter == 10) StorybookProgress.Done else StorybookProgress.InProgress(completedChapter),
+    storyBookProgress = if (completedChapterCount == 10) StorybookProgress.Done else StorybookProgress.InProgress(completedChapterCount),
     storyBookIndex = chapters.map {
         StoryBookIndex(
             id = it.chapterOrder.toLong(),

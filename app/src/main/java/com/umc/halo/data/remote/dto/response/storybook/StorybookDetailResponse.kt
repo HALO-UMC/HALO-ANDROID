@@ -5,7 +5,7 @@ data class StorybookDetailResponse(
     val title: String,
     val description: String,
     val imageUrl: String,
-    val completedChapter: Int,
+    val completedChapterCount: Int,
     val chapters: List<Chapter>
 )
 

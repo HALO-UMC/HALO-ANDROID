@@ -33,15 +33,15 @@ private fun HomeResponse.toDomain() = HomeResult(
             currentChapterOrder = it.currentChapterOrder.toLong()
         )
     },
-    bookShelfList = bookshelf.map {
-        Bookshelf(
-            storybookId = it.storybookId,
-            title = it.title,
-            themeOrder = it.themeOrder,
-            spineColor = it.spineColor,
-            status = BookStatus.from(it.status)
-        )
-    },
+//    bookShelfList = bookshelf.map {
+//        Bookshelf(
+//            storybookId = it.storybookId,
+//            title = it.title,
+//            themeOrder = it.themeOrder,
+//            spineColor = it.spineColor,
+//            status = BookStatus.from(it.status)
+//        )
+//    },
     customStorybookList = recommendedStorybooks.map {
         CustomStorybook(
             id = it.storybookId,

@@ -4,7 +4,7 @@ data class HomeResponse(
     val homeStatus: String,
     val memberName: String,
     val inProgressStorybooks: List<InProgressStorybookResponse>,
-    val bookshelf: List<BookshelfResponse>,
+//    val bookshelf: List<BookshelfResponse>,
     val recommendedStorybooks: List<RecommendedStorybookResponse>
 )
 

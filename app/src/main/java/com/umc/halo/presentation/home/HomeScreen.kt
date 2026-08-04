@@ -46,6 +46,7 @@ import com.umc.halo.presentation.component.CustomStorybook
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary30
 import com.umc.halo.presentation.theme.Primary500
+import java.util.UUID
 
 @Composable
 fun HomeRoute(
@@ -80,6 +81,11 @@ fun HomeRoute(
             .addOnSuccessListener { token ->
                 Log.d("FCM", token)
             }
+
+        //토큰용 UUID 생성
+        val testUuid = UUID.randomUUID().toString()
+
+        Log.d("UUID", testUuid)
     }
 
     val state by viewModel.uiState.collectAsState()
