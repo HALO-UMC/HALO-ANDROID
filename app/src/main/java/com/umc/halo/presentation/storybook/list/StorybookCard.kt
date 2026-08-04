@@ -4,12 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -47,13 +50,16 @@ private val CoverDimColor = Color(0x1A000000)        // 커버 위 10% 딤 (책�
 private val WaitingOverlayColor = Color(0x99000000)  // 대기 상태 60% 딤
 private val WaitingTextSize = 13.5.sp                // 대기 안내 문구
 
-// 책갈피(배지) 값은 147dp 카드 기준 — 카드 폭을 바꾸면 함께 조정해야 비율이 맞음
-private val BadgeStartPadding = 4.5.dp               // 커버 왼쪽 끝 ~ 책갈피 시작
-private val BadgeTextSize = 11.2.sp                  // 배지 글자
-private val BadgeHeight = 24.7.dp                    // 진행중/완료 공통 높이
+// 책갈피(배지) — 진행중/완료 공통
+private val BadgeStartPadding = 8.dp                 // 커버 왼쪽 끝 ~ 책갈피 시작
+private val BadgeTailWidth = 12.dp                   // 오른쪽으로 뾰족하게 빠지는 꼬리 폭
+private val BadgeCornerRadius = 4.dp                 // 왼쪽 위 모서리만 둥굴게
+// 패딩: 위 4 / 왼쪽 6 / 아래 4
+private val BadgeTopPadding = 4.dp
+private val BadgeStartInnerPadding = 6.dp
+private val BadgeBottomPadding = 4.dp
 private val InProgressBadgeColor = Gray700           // "N장 진행중" 책갈피 색
 private val DoneBadgeColor = Primary500              // "완료" 책갈피 색
-private val DoneBadgeWidth = 45.dp                   // "완료"는 글자가 고정이라 폭도 고정
 
 /**
  * 커버 위 책갈피 종류
@@ -186,67 +192,64 @@ fun StorybookCard(
 
 /**
  * 커버 위 책갈피
+ *
+ * 구성: [왼쪽 위만 둥근 사각형 몸통] + [오른쪽으로 뾰족하게 빠지는 꼬리]
+ * 높이는 글자 크기 + 위아래 패딩으로 정해지고, 꼬리가 그 높이에 맞춰 늘어난다
  */
 @Composable
 private fun BookmarkBadge(
     badge: StorybookBadge,
     modifier: Modifier = Modifier
 ) {
-    when (badge) {
-        // 장수에 따라 글자 길이가 변해서 크기를 가변적으로
-        is StorybookBadge.InProgress -> Box(
-            modifier = modifier
-                .height(BadgeHeight)
-                .background(InProgressBadgeColor, InProgressBadgeShape)
-                .padding(start = 6.7.dp, end = 22.4.dp),
-            contentAlignment = Alignment.CenterStart
+    val label = when (badge) {
+        is StorybookBadge.InProgress -> "${badge.chapter}장 진행중"
+        StorybookBadge.Done -> "완료"
+    }
+    val badgeColor = when (badge) {
+        is StorybookBadge.InProgress -> InProgressBadgeColor
+        StorybookBadge.Done -> DoneBadgeColor
+    }
+
+    Row(modifier = modifier.height(IntrinsicSize.Min)) {
+        Box(
+            modifier = Modifier
+                .background(badgeColor, RoundedCornerShape(topStart = BadgeCornerRadius))
+                .padding(
+                    start = BadgeStartInnerPadding,
+                    top = BadgeTopPadding,
+                    bottom = BadgeBottomPadding
+                )
         ) {
             Text(
-                text = "${badge.chapter}장 진행중",
-                style = HaloType.caption01Medium.copy(fontSize = BadgeTextSize),
+                text = label,
+                style = HaloType.body03Medium,
                 color = White
             )
         }
 
-        StorybookBadge.Done -> Box(
-            modifier = modifier
-                .size(width = DoneBadgeWidth, height = BadgeHeight)
-                .background(DoneBadgeColor, DoneBadgeShape)
-                .padding(start = 9.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Text(
-                text = "완료",
-                style = HaloType.caption01Medium.copy(fontSize = BadgeTextSize),
-                color = White
-            )
-        }
+        Box(
+            modifier = Modifier
+                .width(BadgeTailWidth)
+                .fillMaxHeight()
+                .background(badgeColor, BadgeTailShape)
+        )
     }
 }
 
-
-// 진행중 책갈피
-private val InProgressBadgeShape = GenericShape { size, _ ->
-    val sx = size.width / 66f
-    val sy = size.height / 22f
-    moveTo(0f, 4f * sy)
-    cubicTo(0f, 1.79086f * sy, 1.79086f * sx, 0f, 4f * sx, 0f)
-    lineTo(47.6577f * sx, 0f)
-    cubicTo(48.9237f * sx, 0f, 50.115f * sx, 0.599345f * sy, 50.8696f * sx, 1.61592f * sy)
-    lineTo(66f * sx, 22f * sy)
-    lineTo(0f, 22f * sy)
-    close()
-}
-
-// 완료 책갈피
-private val DoneBadgeShape = GenericShape { size, _ ->
-    val sx = size.width / 40f
-    val sy = size.height / 22f
-    moveTo(0f, 4f * sy)
-    cubicTo(0f, 1.79086f * sy, 1.79086f * sx, 0f, 4f * sx, 0f)
-    lineTo(27.5164f * sx, 0f)
-    cubicTo(29.0906f * sx, 0f, 30.5185f * sx, 0.923335f * sy, 31.1643f * sx, 2.35897f * sy)
-    lineTo(40f * sx, 22f * sy)
-    lineTo(0f, 22f * sy)
+/**
+ * 책갈피 오른쪽 꼬리
+ */
+private val BadgeTailShape = GenericShape { size, _ ->
+    val sx = size.width / 12f
+    val sy = size.height / 25f
+    moveTo(0f, 0f)
+    lineTo(0.0664232f * sx, 0f)
+    cubicTo(
+        1.74608f * sx, 0f,
+        3.24682f * sx, 1.04935f * sy,
+        3.82338f * sx, 2.62695f * sy
+    )
+    lineTo(12f * sx, 25f * sy)
+    lineTo(0f, 25f * sy)
     close()
 }
