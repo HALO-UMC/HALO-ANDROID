@@ -17,11 +17,11 @@ fun NavGraphBuilder.authGraph(
         startDestination = Routes.SPLASH
     ) {
         /**
-         * 로그인 흐름(스플래시 → 로그인 → 약관 → 온보딩 → 홈)의 화면 이동.
+         * 로그인 흐름(스플래시 → 로그인 → 약관 → 온보딩 → 홈)의 화면 이동
          *
-         * 이 흐름은 한 방향으로만 진행되고 뒤로 돌아가지 않으므로, 이동할 때마다 백스택을 비운다.
-         * 그래야 홈에서 뒤로가기를 눌렀을 때 로그인 화면이 다시 뜨는 문제가 생기지 않는다.
-         * (각 화면의 '뒤로가기'는 popBackStack 이 아니라 명시적 이동으로 처리한다.
+         * 이 흐름은 한 방향으로만 진행되고 뒤로 돌아가지 않으므로 이동할 때마다 백스택을 비움
+         * 그래야 홈에서 뒤로가기를 눌렀을 때 로그인 화면이 다시 뜨는 문제가 생기지 않음
+         * (각 화면의 '뒤로가기'는 popBackStack 이 아니라 명시적 이동으로 처리
          *  자동 로그인으로 중간 화면에 바로 진입하면 백스택에 이전 화면이 없기 때문)
          */
         fun navigateInAuthFlow(route: String) {
@@ -31,7 +31,7 @@ fun NavGraphBuilder.authGraph(
         }
 
         composable(Routes.SPLASH) {
-            // 자동 로그인을 시도하고 로그인/약관/온보딩/홈 중 한 곳으로 보낸다
+            // 자동 로그인을 시도하고 로그인/약관/온보딩/홈 중 한 곳으로 보냄
             SplashRoute(
                 onNavigateToLogin = { navigateInAuthFlow(Routes.LOGIN) },
                 onNavigateToTerms = { navigateInAuthFlow(Routes.TERMS) },
@@ -42,13 +42,9 @@ fun NavGraphBuilder.authGraph(
 
         composable(Routes.ONBOARDING) {
             OnboardingRoute(
-                onNavigateBack = {
-                    // 온보딩은 로그인 흐름의 마지막 단계라 돌아갈 이전 화면이 없는 경우가 많다.
-                    // 그대로 popBackStack 하면 화면이 비어버리므로 이전 화면이 있을 때만 처리한다.
-                    if (navController.previousBackStackEntry != null) {
-                        navController.popBackStack()
-                    }
-                },
+                // 온보딩 첫 단계의 < → 약관동의로 되돌아감
+                // 되돌아가서 다시 고른 동의 내역은 '다음'을 누를 때 서버에 덮어씀
+                onNavigateBack = { navigateInAuthFlow(Routes.TERMS) },
                 onNavigateToHome = { navigateInAuthFlow(Graphs.MAIN) }
             )
         }

@@ -26,7 +26,7 @@ class ResolveStartDestinationUseCase @Inject constructor(
         val session = authRepository.reissue() ?: return AuthDestination.LOGIN
 
         // 2순위 : 필수 약관 동의 여부
-        val termsAgreed = session.termsAgreed ?: termsRepository.isTermsAgreed()
+        val termsAgreed = session.termsAgreed ?: termsRepository.getTermsAgreedStatus().allRequiredAgreed
         if (!termsAgreed) return AuthDestination.TERMS
 
         // 3순위 : 온보딩 완료 여부

@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -38,6 +39,7 @@ private val TodayCircleSize = 30.dp      // 오늘날짜 - 주황 원
 private val DayMarkWidth = 30.dp         // 날짜칸 서비스 로고 마크
 private val DayMarkHeight = 26.dp
 private val DividerColor = Gray200       // 달력 격자(구분선) 색상
+private const val DisabledArrowAlpha = 0.3f  // 더 넘어갈 달이 없을 때 화살표 투명도
 
 private val Weekdays = listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT")
 
@@ -77,17 +79,19 @@ fun CalendarMonthView(
                         .size(20.dp)
                         .clickable { onEvent(CalendarUiEvent.OnPrevMonthClicked) }
                 )
-                // 현재 월에선 다음 달로 넘어갈 수 없도록 오른쪽 화살표를 숨김 처리
-                if (canGoNext) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_calendar_right_arrow),
-                        contentDescription = "다음 달",
-                        tint = Color.Unspecified,
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable { onEvent(CalendarUiEvent.OnNextMonthClicked) }
-                    )
-                }
+                // 현재 월에선 다음 달로 넘어갈 수 없게 함
+                // 자리는 그대로 두고 흐리게 + 클릭 비활성으로만 표시
+                Icon(
+                    painter = painterResource(R.drawable.ic_calendar_right_arrow),
+                    contentDescription = if (canGoNext) "다음 달" else null,
+                    tint = Color.Unspecified,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .alpha(if (canGoNext) 1f else DisabledArrowAlpha)
+                        .clickable(enabled = canGoNext) {
+                            onEvent(CalendarUiEvent.OnNextMonthClicked)
+                        }
+                )
             }
         }
 

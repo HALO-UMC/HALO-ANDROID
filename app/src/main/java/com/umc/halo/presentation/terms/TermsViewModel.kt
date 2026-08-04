@@ -2,10 +2,13 @@ package com.umc.halo.presentation.terms
 
 import androidx.lifecycle.viewModelScope
 import com.umc.halo.domain.model.auth.AuthDestination
+import com.umc.halo.domain.model.terms.TermsAgreedStatus
+import com.umc.halo.domain.model.terms.TermsAgreement
 import com.umc.halo.domain.repository.auth.AuthRepository
 import com.umc.halo.domain.repository.terms.TermsRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -70,12 +73,42 @@ class TermsViewModel @Inject constructor(
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
 
-            runCatching { termsRepository.getTerms() }
-                .onSuccess { terms -> updateState { copy(terms = terms) } }
+            // 약관 목록과 동의 현황은 서로 다른 API라서 두 개를 동시에 요청
+            val termsDeferred = async { runCatching { termsRepository.getTerms() } }
+            val agreedStatusDeferred = async { termsRepository.getTermsAgreedStatus() }
+
+            val termsResult = termsDeferred.await()
+            val agreedStatus = agreedStatusDeferred.await()
+
+            termsResult
+                .onSuccess { terms ->
+                    updateState {
+                        copy(
+                            terms = terms,
+                            agreedIds = restoreAgreedIds(terms, agreedStatus)
+                        )
+                    }
+                }
                 .onFailure { updateState { copy(errorMessage = LOAD_FAILED_MESSAGE) } }
 
             updateState { copy(isLoading = false) }
         }
+    }
+
+    /**
+     * 화면에 들어올 때 미리 체크해둘 약관
+     */
+    private fun restoreAgreedIds(
+        terms: List<TermsAgreement>,
+        agreedStatus: TermsAgreedStatus
+    ): Set<Long> = when {
+        // null 이 아니면 서버가 약관별 내역을 알려줬다는 뜻
+        agreedStatus.agreedTermIds != null -> agreedStatus.agreedTermIds
+
+        agreedStatus.allRequiredAgreed ->
+            terms.filter { it.required }.map { it.id }.toSet()
+
+        else -> emptySet()
     }
 
     /**

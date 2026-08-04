@@ -188,7 +188,7 @@ private fun BookShelfCard(
                 .fillMaxWidth()
                 .height(ShelfHeight),
             verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             books.forEachIndexed { index, _ ->
                 BookSpine(spineRes = StorybookSpines[index % StorybookSpines.size])

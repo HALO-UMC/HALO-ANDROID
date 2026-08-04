@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,9 +32,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.R
 import com.umc.halo.domain.model.auth.AuthDestination
@@ -164,6 +165,7 @@ private fun TermsAgreementContent(
                 text = "전체 동의",
                 checked = uiState.isAllAgreed,
                 onToggle = { onEvent(TermsUiEvent.AllAgreeToggled) },
+                textStyle = HaloType.body02SemiBold,
                 uncheckedTextColor = Gray500
             )
 
@@ -178,13 +180,11 @@ private fun TermsAgreementContent(
 
             Spacer(Modifier.height(18.dp))
 
-            // TODO: 디자인에 [필수]/[선택] 표기가 없어 서버의 isRequired 를 화면에 표시하지 않음
-            //  ('다음' 활성 조건에는 이미 반영되어 있음 = 필수 약관만 검사)
-            //  표기 방식이 확정되면 term.required 로 배지를 붙이면 됨
+            // 필수/선택은 "(필수) "/"(선택) " 으로 표기
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 uiState.terms.forEach { term ->
                     TermsRow(
-                        text = term.title,
+                        text = term.displayTitle,
                         checked = uiState.isAgreed(term.id),
                         onToggle = { onEvent(TermsUiEvent.TermToggled(term.id)) },
                         onDetailClick = { onEvent(TermsUiEvent.TermDetailClicked(term.id)) }
@@ -200,9 +200,8 @@ private fun TermsAgreementContent(
             text = "다음",
             enabled = uiState.isNextEnabled,
             onClick = onNext,
-            // 네비게이션바 여백은 HaloScaffold 의 innerPadding 으로 이미 들어와 있어
-            // 여기서 navigationBarsPadding() 을 또 걸면 여백이 두 번 잡힌다
             modifier = Modifier
+                .navigationBarsPadding()
                 .padding(start = 24.dp, end = 24.dp, bottom = 20.dp)
         )
     }
@@ -253,10 +252,7 @@ private fun TermsDetailContent(
 
             Text(
                 text = term.detailContent,
-                style = HaloType.body01Medium.copy(
-                    lineHeight = 23.2.sp,
-                    letterSpacing = (-0.16).sp
-                ),
+                style = HaloType.body01Medium,
                 color = Gray800
             )
 
@@ -268,10 +264,17 @@ private fun TermsDetailContent(
             enabled = true,
             onClick = onAgree,
             modifier = Modifier
+                .navigationBarsPadding()
                 .padding(start = 24.dp, end = 24.dp, bottom = 20.dp)
         )
     }
 }
+
+/**
+ * 필수/선택 표기가 붙은 약관 제목
+ */
+private val TermsAgreement.displayTitle: String
+    get() = if (required) "(필수) $title" else "(선택) $title"
 
 /**
  * 약관 한 줄
@@ -279,6 +282,7 @@ private fun TermsDetailContent(
  * 체크+라벨 영역을 누르면 동의 토글, > 영역을 누르면 상세로 이동
  *
  * @param onDetailClick null 이면 > 를 표시하지 않음
+ * @param textStyle 라벨 글자 스타일. 전체 동의만 SemiBold 이고 세부 약관은 Medium
  * @param uncheckedTextColor 미체크 상태의 라벨 색
  */
 @Composable
@@ -287,6 +291,7 @@ private fun TermsRow(
     checked: Boolean,
     onToggle: () -> Unit,
     modifier: Modifier = Modifier,
+    textStyle: TextStyle = HaloType.body02Medium,
     uncheckedTextColor: Color = Gray400,
     onDetailClick: (() -> Unit)? = null
 ) {
@@ -318,7 +323,7 @@ private fun TermsRow(
 
             Text(
                 text = text,
-                style = HaloType.body02SemiBold,
+                style = textStyle,
                 color = if (checked) Primary600 else uncheckedTextColor,
                 maxLines = 1,
                 modifier = Modifier.weight(1f)
@@ -335,10 +340,10 @@ private fun TermsRow(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_home_right_arrow),
+                    painter = painterResource(R.drawable.ic_common_chevron_right),
                     contentDescription = "약관 상세 보기",
-                    tint = Gray400,
-                    modifier = Modifier.size(24.dp)
+                    tint = Gray300,
+                    modifier = Modifier.size(8.dp, 12.dp)
                 )
             }
         } else {
