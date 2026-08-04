@@ -3,6 +3,7 @@ package com.umc.halo.presentation.themebox.show_theme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -89,7 +91,6 @@ fun ShowThemeScreen(
     val pagerState = rememberPagerState(
         pageCount = { state.chapters.size }
     )
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(state.currentPage, state.isPlaying) {
         while (state.progress < 1f) {
@@ -111,109 +112,88 @@ fun ShowThemeScreen(
         )
     }
 
-    HorizontalPager(
-        state = pagerState,
-        modifier = Modifier.fillMaxSize()
-    ) { page ->
-        val currentPage = state.chapters[page]
+    val currentPage = state.chapters.getOrNull(state.currentPage) ?: return
 
-        Column(
-            Modifier.fillMaxSize()
-        ) {
-            StoryProgressBar(
-                state = state
-            )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = { offset ->
+                        // 1. 누르는 동안 자동 넘김 일시정지
+                        onEvent(ShowThemeUiEvent.StopPage)
 
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .pointerInput(Unit) {
-                        awaitEachGesture {
-                            val down = awaitFirstDown()
-                            var longPress  = false
-
-                            val longPressJob = scope.launch {
-                                delay(500)
-                                longPress = true
-                                onEvent(ShowThemeUiEvent.StopPage)
-                            }
-
-                            val up = waitForUpOrCancellation()
-
-                            longPressJob.cancel()
-
-                            if (up != null) {
-                                if (longPress) {
-                                    onEvent(ShowThemeUiEvent.ResumePage)
-                                } else {
-                                    if (down.position.x > size.width / 2f) {
-                                        onEvent(ShowThemeUiEvent.NextPage)
-                                    } else {
-                                        onEvent(ShowThemeUiEvent.PreviousPage)
-                                    }
-                                }
-                            }
+                        // 손을 떼거나 화면 밖으로 이탈할 때까지 대기
+                        try {
+                            awaitRelease()
+                        } finally {
+                            // 2. 손을 떼면 다시 재생
+                            onEvent(ShowThemeUiEvent.ResumePage)
+                        }
+                    },
+                    onTap = { offset ->
+                        // 3. 화면 좌/우 반전 영역 터치 판단
+                        if (offset.x > size.width / 2f) {
+                            onEvent(ShowThemeUiEvent.NextPage)
+                        } else {
+                            onEvent(ShowThemeUiEvent.PreviousPage)
                         }
                     }
-            ) {
-                // 뒤쪽 이미지 자리 (비워둠)
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.TopCenter)
-                        .background(Color.Black)
-                ) {
-                    AsyncImage(
-                        model = currentPage.imageUrl,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-
-                ShowThemeTopBar(currentPage.title, onEvent)
-
-                // 하단 텍스트 콘텐츠
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .padding(horizontal = 36.dp, vertical = 24.dp)
-                ) {
-                    Text(
-                        text = "${currentPage.id}장",
-                        style = HaloType.body02Medium,
-                        color = Gray100
-                    )
-
-                    Spacer(modifier = Modifier.height(2.dp))
-
-                    Text(
-                        text = currentPage.title,
-                        style = HaloType.heading01SemiBold, //bold로 바꿔야 함
-                        color = Gray100
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "최종 완료일 | ${currentPage.completedDate}",
-                        style = HaloType.caption01Regular,
-                        color = Gray100
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = currentPage.summary,
-                        style = HaloType.body02Medium,
-                        color = Gray100,
-                    )
-                }
+                )
             }
+    ) {
+        // 배경 이미지
+        AsyncImage(
+            model = currentPage.imageUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        )
+
+        ShowThemeTopBar(title = currentPage.title, onEvent = onEvent)
+
+        // 하단 텍스트 콘텐츠
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 36.dp, vertical = 24.dp)
+        ) {
+            Text(
+                text = "${currentPage.id}장",
+                style = HaloType.body02Medium,
+                color = Gray100
+            )
+
+            Spacer(modifier = Modifier.height(2.dp))
+
+            Text(
+                text = currentPage.title,
+                style = HaloType.heading01Bold,
+                color = Gray100
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "최종 완료일 | ${currentPage.completedDate}",
+                style = HaloType.caption01Regular,
+                color = Gray100
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = currentPage.summary,
+                style = HaloType.body02Medium,
+                color = Gray100,
+            )
         }
     }
-
 }
+
 
 @Composable
 fun StoryProgressBar(
@@ -222,7 +202,7 @@ fun StoryProgressBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(3.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         state.chapters.forEachIndexed { index, _ ->

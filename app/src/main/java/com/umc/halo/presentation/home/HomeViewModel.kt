@@ -40,7 +40,7 @@ class HomeViewModel @Inject constructor(
                 copy(
                     userInfo = UserInfo(home.memberName, true),
                     userState = if (home.homeStatus == HomeStatus.NO_STORYBOOK) UserState.FTU else UserState.RU,
-                    bookShelf = home.bookShelfList,
+//                    bookShelf = home.bookShelfList,
                     customStorybookList = home.customStorybookList,
                     continueStorybookList = home.continueStorybookList
                 )

@@ -21,13 +21,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontLoadingStrategy.Companion.Async
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import coil.compose.AsyncImage
 import com.umc.halo.R
 import com.umc.halo.domain.model.themebox.Theme
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
+import org.jetbrains.annotations.Async
 import kotlin.math.absoluteValue
 
 
@@ -103,8 +106,8 @@ fun CarouselPager(
                         .aspectRatio(0.7f),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Image(
-                        painter = painterResource(R.drawable.image_themebox_character_1),
+                    AsyncImage(
+                        model = item.imageUrl,
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize()
                     )

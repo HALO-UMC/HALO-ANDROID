@@ -12,7 +12,7 @@ data class HomeResult(
     val homeStatus: HomeStatus,
     val memberName: String,
     val continueStorybookList: List<ContinueStorybook>,
-    val bookShelfList: List<Bookshelf>,
+//    val bookShelfList: List<Bookshelf>,
     val customStorybookList: List<CustomStorybook>
 )
 

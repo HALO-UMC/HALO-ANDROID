@@ -116,10 +116,12 @@ fun BookCaseContents(
         state = listState,
         modifier = Modifier
             .fillMaxWidth()
-            .height(246.dp),
+            .height(246.dp)
+            .padding(horizontal = 24.dp),
         horizontalArrangement = Arrangement
             .spacedBy(8.dp),
-        verticalAlignment = Alignment.Bottom
+        verticalAlignment = Alignment.Bottom,
+        userScrollEnabled = selectedId == null // 클릭 시 스크롤 막기
     ) {
         items(
             items = bookList

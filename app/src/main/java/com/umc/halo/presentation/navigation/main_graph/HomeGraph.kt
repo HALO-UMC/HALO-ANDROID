@@ -132,11 +132,14 @@ fun NavGraphBuilder.homeGraph(
             )
         }
 
-        composable(Routes.SHOW_THEME) {
+        composable(
+            route = Routes.SHOW_THEME,
+            arguments = listOf(
+                navArgument("storybookId") { type = NavType.LongType }
+            )
+        ) {
             ShowThemeRoute(
-                onNavigateBack = {
-                    navController.popBackStackIfCurrent(Routes.SHOW_THEME)
-                }
+                onNavigateBack = { navController.popBackStackIfCurrent(Routes.SHOW_THEME) }
             )
         }
     }

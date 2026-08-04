@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.login
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.umc.halo.data.remote.auth.GoogleLoginDataSource
 import com.umc.halo.data.remote.auth.KakaoLoginDataSource
@@ -56,6 +57,7 @@ class LoginViewModel @Inject constructor(
 
             runCatching {
                 val idToken = getIdToken()
+
                 val loginResult = authRepository.login(provider, idToken)
                 resolveDestinationAfterLogin(loginResult)
             }.onSuccess { destination ->
