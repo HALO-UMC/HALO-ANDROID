@@ -11,6 +11,9 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
         when (event) {
             AnniversaryUiEvent.BackClicked -> handleBack()
             AnniversaryUiEvent.AddClicked -> openAdd()
+            AnniversaryUiEvent.ListExited -> updateState {
+                copy(lastAddedId = null)
+            }
             AnniversaryUiEvent.SelectModeClicked -> updateState {
                 copy(
                     isSelectionModeActive = !isSelectionModeActive,
@@ -95,6 +98,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
                 openedItem = null,
                 isSelectionModeActive = false,
                 selectedIds = emptySet(),
+                lastAddedId = null,
                 form = AnniversaryFormState()
             )
         }
@@ -107,7 +111,8 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
                 mode = AnniversaryScreenMode.DETAIL,
                 openedItem = item,
                 isSelectionModeActive = false,
-                selectedIds = emptySet()
+                selectedIds = emptySet(),
+                lastAddedId = null
             )
         }
     }
@@ -120,6 +125,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
                 openedItem = item,
                 isSelectionModeActive = false,
                 selectedIds = emptySet(),
+                lastAddedId = null,
                 form = AnniversaryFormState(
                     editingId = item.id,
                     title = item.title,

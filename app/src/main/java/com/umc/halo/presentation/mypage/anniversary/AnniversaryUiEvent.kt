@@ -5,6 +5,7 @@ import com.umc.halo.presentation.base.UiEvent
 sealed interface AnniversaryUiEvent : UiEvent {
     data object BackClicked : AnniversaryUiEvent
     data object AddClicked : AnniversaryUiEvent
+    data object ListExited : AnniversaryUiEvent
     data object SelectModeClicked : AnniversaryUiEvent
     data object DeleteSelectedClicked : AnniversaryUiEvent
     data class AnniversaryClicked(val id: Long) : AnniversaryUiEvent
