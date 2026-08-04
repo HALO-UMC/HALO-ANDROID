@@ -30,11 +30,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.R
 import com.umc.halo.domain.model.auth.AuthDestination
@@ -119,10 +119,7 @@ fun LoginScreen(
 
         Text(
             text = "가장 가까운 사람을 다시 알아가는 시간",
-            style = HaloType.body02Medium.copy(
-                lineHeight = 21.sp,
-                letterSpacing = (-0.28).sp
-            ),
+            style = HaloType.body02Medium,
             color = Gray800,
             textAlign = TextAlign.Center
         )
@@ -131,11 +128,7 @@ fun LoginScreen(
 
         Text(
             text = "HALO 시작해볼까요?",
-            style = HaloType.heading02Medium.copy(
-                fontSize = 24.sp,
-                lineHeight = 36.sp,
-                letterSpacing = (-0.48).sp
-            ),
+            style = HaloType.heading01Regular.copy(fontWeight = FontWeight.Medium),
             color = Gray800,
             textAlign = TextAlign.Center
         )
@@ -183,10 +176,7 @@ fun LoginScreen(
 
         Text(
             text = "계속 진행하면 이용약관과 개인정보처리방침에 동의하게 됩니다.",
-            style = HaloType.caption01Medium.copy(
-                lineHeight = 14.5.sp,
-                letterSpacing = (-0.1).sp
-            ),
+            style = HaloType.caption01Medium,
             color = Gray400,
             textAlign = TextAlign.Center
         )
@@ -252,10 +242,7 @@ private fun SocialLoginButton(
             }
             Text(
                 text = text,
-                style = HaloType.body01Medium.copy(
-                    lineHeight = 23.2.sp,
-                    letterSpacing = (-0.16).sp
-                ),
+                style = HaloType.body01Medium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f)
             )

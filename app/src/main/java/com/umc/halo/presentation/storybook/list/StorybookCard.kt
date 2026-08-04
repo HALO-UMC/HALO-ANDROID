@@ -149,20 +149,14 @@ fun StorybookCard(
             ) {
                 Text(
                     text = title,
-                    style = HaloType.body01SemiBold.copy(
-                        lineHeight = 23.2.sp,
-                        letterSpacing = (-0.32).sp
-                    ),
+                    style = HaloType.body01SemiBold,
                     color = Gray800,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = subtitle,
-                    style = HaloType.body03Regular.copy(
-                        lineHeight = 17.4.sp,
-                        letterSpacing = (-0.12).sp
-                    ),
+                    style = HaloType.body03Regular,
                     color = Gray700
                 )
             }
@@ -181,8 +175,7 @@ fun StorybookCard(
                     text = "다음 장은\n내일 할 수 있어요!",
                     style = HaloType.body03Medium.copy(
                         fontSize = WaitingTextSize,
-                        lineHeight = 19.5.sp,
-                        letterSpacing = (-0.13).sp
+                        lineHeight = 19.5.sp
                     ),
                     color = White,
                     textAlign = TextAlign.Center
