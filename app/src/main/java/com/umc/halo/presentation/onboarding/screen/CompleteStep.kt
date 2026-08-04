@@ -42,6 +42,7 @@ fun CompleteStep(
     uiState: OnboardingUiState,
     onBackClick: () -> Unit,
     onStartClick: () -> Unit,
+    onSystemBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     /*
@@ -56,7 +57,7 @@ fun CompleteStep(
         addAll(uiState.selectedGoals)
     }
 
-    BackHandler(onBack = onBackClick)
+    BackHandler(onBack = onSystemBack)
 
     BoxWithConstraints(
         modifier = modifier

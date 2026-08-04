@@ -65,6 +65,7 @@ import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary30
+import com.umc.halo.presentation.theme.Primary100
 import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.Primary600
@@ -454,7 +455,7 @@ private fun AnniversaryCalendar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_common_backward_arrow),
+                painter = painterResource(id = R.drawable.ic_common_chevron_left),
                 contentDescription = null,
                 tint = Gray500,
                 modifier = Modifier
@@ -469,7 +470,7 @@ private fun AnniversaryCalendar(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
             Icon(
-                painter = painterResource(id = R.drawable.ic_home_right_arrow),
+                painter = painterResource(id = R.drawable.ic_common_chevron_right),
                 contentDescription = null,
                 tint = Gray500,
                 modifier = Modifier
@@ -655,11 +656,11 @@ private fun AnniversaryDateField(
                 Spacer(Modifier.width(12.dp))
             }
             Icon(
-                painter = painterResource(id = R.drawable.ic_home_right_arrow),
+                painter = painterResource(id = R.drawable.ic_common_chevron_right),
                 contentDescription = null,
                 tint = Gray400,
                 modifier = Modifier
-                    .size(18.dp)
+                    .size(8.dp, 12.dp)
                     .graphicsLayer(rotationZ = if (form.isCalendarExpanded) -90f else 90f)
             )
         }
@@ -766,15 +767,15 @@ private fun AnniversaryPillButton(
     onClick: () -> Unit
 ) {
     Surface(
-        shape = RoundedCornerShape(20.dp),
-        color = if (active) Primary50 else Gray30,
+        shape = RoundedCornerShape(100.dp),
+        color = if (active) Primary100 else Gray30,
         modifier = Modifier.clickable(onClick = onClick)
     ) {
         Text(
             text = text,
-            style = HaloType.body03Medium.copy(fontSize = 13.sp),
-            color = if (active) Primary600 else Gray500,
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+            style = if (active) HaloType.body02Medium else HaloType.body02Regular,
+            color = if (active) Primary500 else Gray500,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
         )
     }
 }
@@ -802,10 +803,10 @@ private fun CalendarTypeChip(
 @Composable
 private fun RightChevron(tint: Color) {
     Icon(
-        painter = painterResource(id = R.drawable.ic_home_right_arrow),
+        painter = painterResource(id = R.drawable.ic_common_chevron_right),
         contentDescription = null,
         tint = tint,
-        modifier = Modifier.size(20.dp)
+        modifier = Modifier.size(8.dp, 12.dp)
     )
 }
 

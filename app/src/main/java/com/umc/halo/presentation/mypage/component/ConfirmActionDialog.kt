@@ -1,5 +1,7 @@
 package com.umc.halo.presentation.mypage.component
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray400
-import com.umc.halo.presentation.theme.Gray600
+import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
@@ -42,13 +43,13 @@ fun ConfirmActionDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .widthIn(max = 308.dp),
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(16.dp),
             color = White
         ) {
             Column(
                 modifier = Modifier.padding(
                     start = 24.dp,
-                    top = 18.dp,
+                    top = 24.dp,
                     end = 24.dp,
                     bottom = 18.dp
                 )
@@ -64,18 +65,21 @@ fun ConfirmActionDialog(
                         Text(
                             text = description,
                             style = HaloType.caption01Regular,
-                            color = Gray600
+                            color = Gray700
                         )
                     }
 
-                    IconButton(
-                        onClick = onDismiss,
-                        modifier = Modifier.size(24.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable(onClick = onDismiss),
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_common_close),
                             contentDescription = "닫기",
-                            tint = Gray400
+                            tint = Gray400,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }

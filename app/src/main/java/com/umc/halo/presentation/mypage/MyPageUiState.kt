@@ -31,12 +31,18 @@ data class MyPageUiState(
 ) : UiState
 
 fun MyPageUiState.formattedNotificationTime(): String {
-    val hourText = notificationHour.toString().padStart(2, '0')
+    val isAm = notificationHour < 12
+    val periodText = if (isAm) "오전" else "오후"
+    val displayHour = when {
+        notificationHour == 0 -> 12
+        notificationHour > 12 -> notificationHour - 12
+        else -> notificationHour
+    }
     val minuteText = if (notificationMinute == 0) {
         ""
     } else {
-        " ${notificationMinute.toString().padStart(2, '0')}분"
+        " ${notificationMinute}분"
     }
 
-    return "${hourText}시$minuteText"
+    return "$periodText ${displayHour}시$minuteText"
 }

@@ -30,12 +30,7 @@ import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray200
@@ -56,7 +51,7 @@ fun SystemVolumeSlider(
     BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
-            .height(30.dp)
+            .height(14.dp)
             .semantics {
                 progressBarRangeInfo = ProgressBarRangeInfo(
                     current = value.coerceIn(0f, 1f),
@@ -71,13 +66,13 @@ fun SystemVolumeSlider(
     ) {
         val sliderWidthPx = with(LocalDensity.current) { maxWidth.toPx() }
         val coercedValue = value.coerceIn(0f, 1f)
-        val thumbSize = 12.dp
+        val thumbSize = 14.dp
         val trackWidth = maxWidth
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(30.dp)
+                .height(14.dp)
                 .pointerInput(sliderWidthPx) {
                     detectDragGestures(
                         onDragStart = { offset ->
@@ -93,14 +88,14 @@ fun SystemVolumeSlider(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(3.dp)
+                    .height(4.dp)
                     .clip(RoundedCornerShape(100.dp))
                     .background(Gray200)
             )
             Box(
                 modifier = Modifier
                     .fillMaxWidth(coercedValue)
-                    .height(3.dp)
+                    .height(4.dp)
                     .clip(RoundedCornerShape(100.dp))
                     .background(Gray600)
             )
@@ -125,58 +120,45 @@ fun TrackRow(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
+            .height(56.dp)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(16.dp),
         color = White
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 10.dp),
+            modifier = Modifier.padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(38.dp)
+                    .size(40.dp)
                     .clip(CircleShape)
                     .background(Primary100)
             )
-            Spacer(Modifier.width(14.dp))
+            Spacer(Modifier.width(10.dp))
             Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        SpanStyle(
-                            fontSize = 14.5.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    ) {
-                        append(title)
-                    }
-                    append("  ")
-                    withStyle(
-                        SpanStyle(
-                            fontSize = 10.5.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    ) {
-                        append("Track 01")
-                    }
-                },
+                text = title,
                 style = HaloType.body02Medium,
                 color = if (selected) Primary600 else Gray700,
                 modifier = Modifier.weight(1f)
             )
-            Icon(
-                painter = painterResource(
-                    id = if (playing) {
-                        R.drawable.ic_home_bgmplayer_pause
-                    } else {
-                        R.drawable.ic_home_bgmplayer_play
-                    }
-                ),
-                contentDescription = null,
-                tint = if (selected) Primary600 else Gray800,
-                modifier = Modifier.size(26.dp)
-            )
+            Box(
+                modifier = Modifier.size(40.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(
+                        id = if (playing) {
+                            R.drawable.ic_home_bgmplayer_pause
+                        } else {
+                            R.drawable.ic_home_bgmplayer_play
+                        }
+                    ),
+                    contentDescription = null,
+                    tint = if (selected) Primary600 else Gray800,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.navigation.main_graph
 
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -65,8 +66,10 @@ fun NavGraphBuilder.mypageGraph(
             )
         }
 
-        composable(Routes.MYPAGE_ANNIVERSARY) {
-            val parentEntry = navController.getBackStackEntry(Graphs.MYPAGE)
+        composable(Routes.MYPAGE_ANNIVERSARY) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Graphs.MYPAGE)
+            }
             val anniversaryViewModel: AnniversaryViewModel = viewModel(parentEntry)
 
             AnniversaryRoute(
@@ -75,8 +78,10 @@ fun NavGraphBuilder.mypageGraph(
             )
         }
 
-        composable(Routes.MYPAGE_SYSTEM_SETTINGS) {
-            val parentEntry = navController.getBackStackEntry(Graphs.MYPAGE)
+        composable(Routes.MYPAGE_SYSTEM_SETTINGS) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Graphs.MYPAGE)
+            }
             val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
 
             SystemSettingsRoute(
@@ -85,8 +90,10 @@ fun NavGraphBuilder.mypageGraph(
             )
         }
 
-        composable(Routes.MYPAGE_NOTIFICATION_SETTINGS) {
-            val parentEntry = navController.getBackStackEntry(Graphs.MYPAGE)
+        composable(Routes.MYPAGE_NOTIFICATION_SETTINGS) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Graphs.MYPAGE)
+            }
             val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
 
             NotificationSettingsRoute(
@@ -116,8 +123,10 @@ fun NavGraphBuilder.mypageGraph(
             )
         }
 
-        composable(Routes.MYPAGE_ACCOUNT_INFO) {
-            val parentEntry = navController.getBackStackEntry(Graphs.MYPAGE)
+        composable(Routes.MYPAGE_ACCOUNT_INFO) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Graphs.MYPAGE)
+            }
             val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
 
             AccountInfoRoute(
@@ -139,8 +148,10 @@ fun NavGraphBuilder.mypageGraph(
             )
         }
 
-        composable(Routes.MYPAGE_WITHDRAW) {
-            val parentEntry = navController.getBackStackEntry(Graphs.MYPAGE)
+        composable(Routes.MYPAGE_WITHDRAW) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Graphs.MYPAGE)
+            }
             val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
 
             WithdrawRoute(

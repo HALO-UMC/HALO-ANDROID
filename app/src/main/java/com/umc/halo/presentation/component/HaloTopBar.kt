@@ -41,9 +41,10 @@ fun HaloTopBar(
                 onClick = onClick
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_common_backward_arrow),
+                    painter = painterResource(R.drawable.ic_common_chevron_left),
                     contentDescription = "backward",
-                    tint = titleColor
+                    tint = titleColor,
+                    modifier = Modifier.size(8.dp, 12.dp)
                 )
             }
         }

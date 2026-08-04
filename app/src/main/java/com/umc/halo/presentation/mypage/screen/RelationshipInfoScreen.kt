@@ -2,7 +2,8 @@ package com.umc.halo.presentation.mypage.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,9 +30,14 @@ import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.Primary600
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RelationshipInfoScreen(
     onBack: () -> Unit,
+    personalityTags: List<String> = listOf("낙천적인", "온화한", "사교적인"),
+    currentRelationshipTitle: String = "대체로 좋은 편이에요",
+    currentRelationshipDescription: String? = "일상적인 안부를 나누며 서로를 존중해요",
+    desiredRelationshipTitle: String = "같이 보내는 시간을 만들고 싶어요",
     modifier: Modifier = Modifier
 ) {
     MyPageContainer(modifier = modifier) {
@@ -42,49 +48,57 @@ fun RelationshipInfoScreen(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(top = 22.dp, bottom = 32.dp)
+                .padding(top = 35.dp, bottom = 32.dp)
         ) {
             Text(
                 text = "부모님의 성격/성향",
-                style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
+                style = HaloType.body01Medium,
                 color = Gray800
             )
-            Spacer(Modifier.height(12.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                TagChip("낙천적인")
-                TagChip("온화한")
-                TagChip("사교적인")
+            Spacer(modifier = Modifier.height(12.dp))
+
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                maxItemsInEachRow = 3
+            ) {
+                personalityTags.forEach { tag ->
+                    TagChip(tag)
+                }
             }
 
+            Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider(
-                color = Gray100,
-                modifier = Modifier.padding(vertical = 22.dp)
+                color = Gray100
             )
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = "부모님과 나의 관계는?",
-                style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
+                style = HaloType.body01Medium,
                 color = Gray800
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             RelationshipAnswerCard(
-                title = "대체로 좋은 편이에요",
-                description = "일상적인 안부를 나누며 서로를 존중해요"
+                title = currentRelationshipTitle,
+                description = currentRelationshipDescription
             )
 
+            Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider(
-                color = Gray100,
-                modifier = Modifier.padding(vertical = 22.dp)
+                color = Gray100
             )
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = "어떤 사이가 되고 싶나요?",
-                style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
+                style = HaloType.body01Medium,
                 color = Gray800
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             RelationshipAnswerCard(
-                title = "같이 보내는 시간을 만들고 싶어요",
+                title = desiredRelationshipTitle,
                 description = null
             )
         }
@@ -99,9 +113,9 @@ private fun TagChip(text: String) {
     ) {
         Text(
             text = text,
-            style = HaloType.body03Medium.copy(fontSize = 13.sp),
+            style = HaloType.body02Medium,
             color = Primary500,
-            modifier = Modifier.padding(horizontal = 11.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
     }
 }
@@ -113,22 +127,28 @@ private fun RelationshipAnswerCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Primary50)
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 13.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Text(
                 text = title,
-                style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
+                style = HaloType.body02Medium.copy(
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp
+                ),
                 color = Primary600
             )
             if (description != null) {
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = description,
-                    style = HaloType.caption01Medium.copy(fontSize = 10.5.sp),
+                    style = HaloType.caption01Regular.copy(
+                        fontSize = 10.sp,
+                        lineHeight = 14.sp
+                    ),
                     color = Primary400
                 )
             }

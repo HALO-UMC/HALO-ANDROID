@@ -1,7 +1,11 @@
 package com.umc.halo.presentation.onboarding
 
+import java.util.Calendar
+
 internal const val MIN_NAME_LENGTH = 2
 internal const val MAX_NAME_LENGTH = 10
+private const val DEFAULT_BIRTH_MONTH = 1
+private const val DEFAULT_BIRTH_DAY = 1
 
 private const val NAME_VALIDATION_MESSAGE =
     "닉네임 조건에 맞춰서 다시 입력해주세요!"
@@ -16,6 +20,10 @@ private val NAME_ALLOWED_CHARACTER_REGEX = Regex(
 
 internal fun Char.isAllowedNameCharacter(): Boolean {
     return NAME_ALLOWED_CHARACTER_REGEX.matches(toString())
+}
+
+private fun currentBirthYear(): Int {
+    return Calendar.getInstance().get(Calendar.YEAR)
 }
 
 private fun isValidBirthDate(
@@ -67,9 +75,10 @@ data class OnboardingUiState(
     val isNameErrorVisible: Boolean = false,
 
     val selectedGender: Gender? = null,
-    val birthYear: Int? = null,
-    val birthMonth: Int? = null,
-    val birthDay: Int? = null,
+    val birthYear: Int? = currentBirthYear(),
+    val birthMonth: Int? = DEFAULT_BIRTH_MONTH,
+    val birthDay: Int? = DEFAULT_BIRTH_DAY,
+    val hasBirthDateTouched: Boolean = false,
 
     val selectedParentPersonalities: List<String> = emptyList(),
     val selectedRelationship: String? = null,
@@ -120,7 +129,7 @@ data class OnboardingUiState(
      * 세 값이 단순히 선택됐는지가 아니라 실제 존재하는 날짜인지 검사한다.
      */
     val isBirthDateSelected: Boolean
-        get() = isBirthDateValid
+        get() = hasBirthDateTouched && isBirthDateValid
 
     val birthDateText: String
         get() {
@@ -158,7 +167,9 @@ data class OnboardingUiState(
             }
 
             OnboardingStep.BASIC_INFO -> {
-                selectedGender != null && isBirthDateValid
+                selectedGender != null &&
+                        hasBirthDateTouched &&
+                        isBirthDateValid
             }
 
             OnboardingStep.WELCOME -> {

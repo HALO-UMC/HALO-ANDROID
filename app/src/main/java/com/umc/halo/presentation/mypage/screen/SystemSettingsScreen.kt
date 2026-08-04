@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.presentation.mypage.MyPageUiEvent
 import com.umc.halo.presentation.mypage.MyPageUiState
 import com.umc.halo.presentation.mypage.component.MyPageContainer
@@ -39,35 +38,37 @@ fun SystemSettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
-                .padding(top = 34.dp)
+                .padding(top = 28.dp)
         ) {
             SettingSwitchRow(
                 title = "배경음악",
                 checked = uiState.bgmEnabled,
                 onCheckedChange = {
                     onEvent(MyPageUiEvent.BgmEnabledChanged(it))
-                }
+                },
+                modifier = Modifier.padding(vertical = 18.dp),
+                titleStyle = HaloType.body01SemiBold
             )
 
             if (uiState.bgmEnabled) {
-                Spacer(Modifier.height(28.dp))
+                Spacer(Modifier.height(18.dp))
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(18.dp),
                     color = Gray30
                 ) {
                     Column(
                         modifier = Modifier.padding(
-                            horizontal = 20.dp,
+                            horizontal = 24.dp,
                             vertical = 18.dp
                         )
                     ) {
                         Text(
                             text = "음량",
-                            style = HaloType.body03Medium.copy(fontSize = 11.sp),
+                            style = HaloType.body02Medium,
                             color = Gray700
                         )
-                        Spacer(Modifier.height(11.dp))
+                        Spacer(Modifier.height(12.dp))
                         SystemVolumeSlider(
                             value = uiState.volume,
                             onValueChange = {
@@ -77,25 +78,24 @@ fun SystemSettingsScreen(
                     }
                 }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(18.dp))
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(18.dp),
                     color = Gray30
                 ) {
                     Column(
                         modifier = Modifier.padding(
-                            horizontal = 16.dp,
+                            horizontal = 24.dp,
                             vertical = 18.dp
                         )
                     ) {
                         Text(
                             text = "재생 목록",
-                            style = HaloType.body03Medium.copy(fontSize = 11.sp),
+                            style = HaloType.body02Medium,
                             color = Gray700,
-                            modifier = Modifier.padding(start = 4.dp)
                         )
-                        Spacer(Modifier.height(14.dp))
+                        Spacer(Modifier.height(12.dp))
 
                         tracks.forEachIndexed { index, track ->
                             TrackRow(
@@ -107,7 +107,7 @@ fun SystemSettingsScreen(
                                 }
                             )
                             if (index < tracks.lastIndex) {
-                                Spacer(Modifier.height(12.dp))
+                                Spacer(Modifier.height(8.dp))
                             }
                         }
                     }

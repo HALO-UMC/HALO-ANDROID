@@ -21,15 +21,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -37,8 +43,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.umc.halo.R
+import com.umc.halo.presentation.mypage.component.ConfirmActionDialog
 import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.onboarding.screen.BasicInfoStep
@@ -84,6 +91,11 @@ fun OnboardingScreen(
     onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val activity = LocalActivity.current
+    var showExitDialog by remember { mutableStateOf(false) }
+    val onSystemBack = {
+        showExitDialog = true
+    }
     val onBackClick = {
         if (uiState.currentStep == OnboardingStep.NAME) {
             onNavigateBack()
@@ -98,6 +110,7 @@ fun OnboardingScreen(
                 uiState = uiState,
                 onEvent = onEvent,
                 onBackClick = onBackClick,
+                onSystemBack = onSystemBack,
                 modifier = modifier
             )
         }
@@ -106,6 +119,7 @@ fun OnboardingScreen(
             BasicInfoStep(
                 uiState = uiState,
                 onEvent = onEvent,
+                onSystemBack = onSystemBack,
                 modifier = modifier
             )
         }
@@ -117,6 +131,7 @@ fun OnboardingScreen(
                 onNextClick = {
                     onEvent(OnboardingUiEvent.NextClicked)
                 },
+                onSystemBack = onSystemBack,
                 modifier = modifier
             )
         }
@@ -125,6 +140,7 @@ fun OnboardingScreen(
             ParentPersonalityStep(
                 uiState = uiState,
                 onEvent = onEvent,
+                onSystemBack = onSystemBack,
                 modifier = modifier
             )
         }
@@ -133,6 +149,7 @@ fun OnboardingScreen(
             RelationshipStep(
                 uiState = uiState,
                 onEvent = onEvent,
+                onSystemBack = onSystemBack,
                 modifier = modifier
             )
         }
@@ -141,6 +158,7 @@ fun OnboardingScreen(
             GoalStep(
                 uiState = uiState,
                 onEvent = onEvent,
+                onSystemBack = onSystemBack,
                 modifier = modifier
             )
         }
@@ -150,9 +168,23 @@ fun OnboardingScreen(
                 uiState = uiState,
                 onBackClick = onBackClick,
                 onStartClick = onNavigateToHome,
+                onSystemBack = onSystemBack,
                 modifier = modifier
             )
         }
+    }
+
+    if (showExitDialog) {
+        ConfirmActionDialog(
+            title = "앱을 종료하시겠습니까?",
+            description = "확인을 누르면 HALO가 종료됩니다.",
+            buttonText = "종료",
+            onDismiss = { showExitDialog = false },
+            onConfirm = {
+                showExitDialog = false
+                activity?.finish()
+            }
+        )
     }
 }
 
@@ -161,12 +193,13 @@ private fun NameInputStep(
     uiState: OnboardingUiState,
     onEvent: (OnboardingUiEvent) -> Unit,
     onBackClick: () -> Unit,
+    onSystemBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val nameErrorMessage = uiState.nameErrorMessage
     val isNameError = nameErrorMessage != null
 
-    BackHandler(onBack = onBackClick)
+    BackHandler(onBack = onSystemBack)
 
     Box(
         modifier = modifier
@@ -284,7 +317,7 @@ private fun OnboardingNameTextField(
         modifier = modifier
             .fillMaxWidth()
             .height(54.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(18.dp),
         color = Gray30,
         border = BorderStroke(
             width = 1.dp,
@@ -299,7 +332,7 @@ private fun OnboardingNameTextField(
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
-            textStyle = HaloType.body02Regular.copy(
+            textStyle = HaloType.body02Medium.copy(
                 color = Gray800
             ),
             cursorBrush = SolidColor(Primary500),
@@ -346,13 +379,11 @@ private fun OnboardingNameTextField(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = "×",
-                                    style = HaloType.caption01Medium.copy(
-                                        fontSize = 12.sp,
-                                        lineHeight = 12.sp
-                                    ),
-                                    color = White
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_common_close),
+                                    contentDescription = "입력 내용 지우기",
+                                    tint = White,
+                                    modifier = Modifier.size(9.dp)
                                 )
                             }
                         }
@@ -396,18 +427,23 @@ private fun NameRequirementRow(
     hasInput: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val textColor = if (hasInput && isSatisfied) Success else Gray300
+    val textColor = when {
+        !hasInput -> Gray300
+        isSatisfied -> Success
+        else -> Error
+    }
 
     Row(
         modifier = modifier.height(15.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = "✓",
-            modifier = Modifier.width(14.dp),
-            style = HaloType.caption01Medium,
-            color = textColor
+        Icon(
+            painter = painterResource(id = R.drawable.ic_terms_check),
+            contentDescription = null,
+            tint = textColor,
+            modifier = Modifier.size(10.dp)
         )
+        Spacer(modifier = Modifier.width(7.dp))
         Text(
             text = text,
             style = HaloType.caption01Medium,
