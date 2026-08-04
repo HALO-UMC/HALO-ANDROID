@@ -340,10 +340,10 @@ private fun TermsRow(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_home_right_arrow),
+                    painter = painterResource(R.drawable.ic_common_chevron_right),
                     contentDescription = "약관 상세 보기",
-                    tint = Gray400,
-                    modifier = Modifier.size(24.dp)
+                    tint = Gray300,
+                    modifier = Modifier.size(8.dp, 12.dp)
                 )
             }
         } else {
