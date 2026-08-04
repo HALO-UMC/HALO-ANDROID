@@ -24,7 +24,7 @@ object HaloType {
         fontWeight = FontWeight.Bold,
         fontSize = 32.sp,
         lineHeight = lineHeight(32, 150),
-        letterSpacing = letterSpacing(32, -2)
+        letterSpacing = NoLetterSpacing
     )
 
     val title01SemiBold = TextStyle(
@@ -32,7 +32,7 @@ object HaloType {
         fontWeight = FontWeight.SemiBold,
         fontSize = 32.sp,
         lineHeight = lineHeight(32, 150),
-        letterSpacing = letterSpacing(32, -2)
+        letterSpacing = NoLetterSpacing
     )
 
     val title02Bold = TextStyle(
@@ -40,7 +40,7 @@ object HaloType {
         fontWeight = FontWeight.Bold,
         fontSize = 28.sp,
         lineHeight = lineHeight(28, 150),
-        letterSpacing = letterSpacing(28, -2)
+        letterSpacing = NoLetterSpacing
     )
 
     val title02SemiBold = TextStyle(
@@ -48,7 +48,7 @@ object HaloType {
         fontWeight = FontWeight.SemiBold,
         fontSize = 28.sp,
         lineHeight = lineHeight(28, 150),
-        letterSpacing = letterSpacing(28, -2)
+        letterSpacing = NoLetterSpacing
     )
 
     // -- Heading --
@@ -57,7 +57,7 @@ object HaloType {
         fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
         lineHeight = lineHeight(24, 150),
-        letterSpacing = letterSpacing(24, -2)
+        letterSpacing = NoLetterSpacing
     )
 
     val heading01SemiBold = TextStyle(
@@ -65,7 +65,7 @@ object HaloType {
         fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp,
         lineHeight = lineHeight(24, 150),
-        letterSpacing = letterSpacing(24, -2)
+        letterSpacing = NoLetterSpacing
     )
 
     // 온보딩 제목처럼 Regular와 SemiBold가 섞이는 경우 사용하는 스타일
@@ -74,7 +74,7 @@ object HaloType {
         fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
         lineHeight = lineHeight(24, 150),
-        letterSpacing = letterSpacing(24, -2)
+        letterSpacing = NoLetterSpacing
     )
 
     val heading02Bold = TextStyle(
@@ -82,7 +82,7 @@ object HaloType {
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
         lineHeight = lineHeight(20, 150),
-        letterSpacing = letterSpacing(20)
+        letterSpacing = NoLetterSpacing
     )
 
     val heading02SemiBold = TextStyle(
@@ -90,7 +90,7 @@ object HaloType {
         fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp,
         lineHeight = lineHeight(20, 150),
-        letterSpacing = letterSpacing(20)
+        letterSpacing = NoLetterSpacing
     )
 
     val heading02Medium = TextStyle(
@@ -98,7 +98,7 @@ object HaloType {
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
         lineHeight = lineHeight(20, 150),
-        letterSpacing = letterSpacing(20)
+        letterSpacing = NoLetterSpacing
     )
 
     val heading02Regular = TextStyle(
@@ -106,7 +106,7 @@ object HaloType {
         fontWeight = FontWeight.Normal,
         fontSize = 20.sp,
         lineHeight = lineHeight(20, 150),
-        letterSpacing = letterSpacing(20)
+        letterSpacing = NoLetterSpacing
     )
 
     val heading03SemiBold = TextStyle(
@@ -114,7 +114,7 @@ object HaloType {
         fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp,
         lineHeight = lineHeight(18, 150),
-        letterSpacing = letterSpacing(18)
+        letterSpacing = NoLetterSpacing
     )
 
     val heading03Medium = TextStyle(
@@ -122,7 +122,7 @@ object HaloType {
         fontWeight = FontWeight.Medium,
         fontSize = 18.sp,
         lineHeight = lineHeight(18, 150),
-        letterSpacing = letterSpacing(18)
+        letterSpacing = NoLetterSpacing
     )
 
     // -- Body --
@@ -131,7 +131,7 @@ object HaloType {
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
         lineHeight = lineHeight(16, 145),
-        letterSpacing = letterSpacing(16)
+        letterSpacing = NoLetterSpacing
     )
 
     val body01Medium = TextStyle(
@@ -139,7 +139,7 @@ object HaloType {
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
         lineHeight = lineHeight(16, 145),
-        letterSpacing = letterSpacing(16)
+        letterSpacing = NoLetterSpacing
     )
 
     val body01Regular = TextStyle(
@@ -147,7 +147,7 @@ object HaloType {
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = lineHeight(16, 145),
-        letterSpacing = letterSpacing(16)
+        letterSpacing = NoLetterSpacing
     )
 
     val body02SemiBold = TextStyle(
@@ -155,7 +155,7 @@ object HaloType {
         fontWeight = FontWeight.SemiBold,
         fontSize = 14.sp,
         lineHeight = lineHeight(14, 145),
-        letterSpacing = letterSpacing(14)
+        letterSpacing = NoLetterSpacing
     )
 
     val body02Medium = TextStyle(
@@ -163,7 +163,7 @@ object HaloType {
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         lineHeight = lineHeight(14, 145),
-        letterSpacing = letterSpacing(14)
+        letterSpacing = NoLetterSpacing
     )
 
     val body02Regular = TextStyle(
@@ -171,7 +171,7 @@ object HaloType {
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = lineHeight(14, 145),
-        letterSpacing = letterSpacing(14)
+        letterSpacing = NoLetterSpacing
     )
 
     val body03Medium = TextStyle(
@@ -179,7 +179,7 @@ object HaloType {
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         lineHeight = lineHeight(12, 145),
-        letterSpacing = letterSpacing(12)
+        letterSpacing = NoLetterSpacing
     )
 
     val body03Regular = TextStyle(
@@ -187,7 +187,7 @@ object HaloType {
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = lineHeight(12, 145),
-        letterSpacing = letterSpacing(12)
+        letterSpacing = NoLetterSpacing
     )
 
     // -- Caption --
@@ -196,7 +196,7 @@ object HaloType {
         fontWeight = FontWeight.Medium,
         fontSize = 10.sp,
         lineHeight = lineHeight(10, 145),
-        letterSpacing = letterSpacing(10)
+        letterSpacing = NoLetterSpacing
     )
 
     val caption01Regular = TextStyle(
@@ -204,7 +204,7 @@ object HaloType {
         fontWeight = FontWeight.Normal,
         fontSize = 10.sp,
         lineHeight = lineHeight(10, 145),
-        letterSpacing = letterSpacing(10)
+        letterSpacing = NoLetterSpacing
     )
 
     val caption02Medium = TextStyle(
@@ -212,7 +212,7 @@ object HaloType {
         fontWeight = FontWeight.Medium,
         fontSize = 8.sp,
         lineHeight = lineHeight(8, 145),
-        letterSpacing = letterSpacing(8)
+        letterSpacing = NoLetterSpacing
     )
 
     val caption02Regular = TextStyle(
@@ -220,7 +220,7 @@ object HaloType {
         fontWeight = FontWeight.Normal,
         fontSize = 8.sp,
         lineHeight = lineHeight(8, 145),
-        letterSpacing = letterSpacing(8)
+        letterSpacing = NoLetterSpacing
     )
 }
 
@@ -233,5 +233,7 @@ object HaloType {
 private fun lineHeight(fontSize: Int, percent: Int) =
     (fontSize * percent / 100f).sp
 
-private fun letterSpacing(fontSize: Int, percent: Int = -1) =
-    (fontSize * percent / 100f).sp
+/**
+ * 자간 없음
+ */
+private val NoLetterSpacing = 0.sp
