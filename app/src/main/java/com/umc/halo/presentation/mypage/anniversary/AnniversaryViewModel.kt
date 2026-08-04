@@ -22,12 +22,13 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
             }
 
             AnniversaryUiEvent.DeleteSelectedClicked -> deleteSelected()
+            AnniversaryUiEvent.EditClicked -> currentState.openedItem?.id?.let { openEdit(it) }
 
             is AnniversaryUiEvent.AnniversaryClicked -> {
                 if (currentState.isSelectionModeActive) {
                     toggleSelection(event.id)
                 } else {
-                    openEdit(event.id)
+                    openDetail(event.id)
                 }
             }
 
@@ -49,13 +50,17 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
                 copy(form = form.copy(calendarType = event.type))
             }
 
+            is AnniversaryUiEvent.RepeatChanged -> updateState {
+                copy(form = form.copy(repeatEnabled = event.enabled))
+            }
+
             is AnniversaryUiEvent.DateSelected -> updateState {
                 copy(
                     form = form.copy(
                         date = event.date,
                         visibleYear = event.date.year,
                         visibleMonth = event.date.month,
-                        isCalendarExpanded = false
+                        isCalendarExpanded = true
                     )
                 )
             }
@@ -69,7 +74,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
             }
 
             is AnniversaryUiEvent.MemoChanged -> updateState {
-                copy(form = form.copy(memo = event.memo))
+                copy(form = form.copy(memo = event.memo.take(50)))
             }
 
             AnniversaryUiEvent.SaveClicked -> saveForm()
@@ -105,7 +110,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
     }
 
     private fun openDetail(id: Long) {
-        val item = currentState.visibleUpcomingItems.firstOrNull { it.id == id } ?: return
+        val item = findAnniversary(id) ?: return
         updateState {
             copy(
                 mode = AnniversaryScreenMode.DETAIL,
@@ -118,7 +123,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
     }
 
     private fun openEdit(id: Long) {
-        val item = currentState.personalItems.firstOrNull { it.id == id } ?: return
+        val item = findAnniversary(id) ?: return
         updateState {
             copy(
                 mode = AnniversaryScreenMode.EDIT,
@@ -131,6 +136,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
                     title = item.title,
                     date = item.date,
                     calendarType = item.calendarType,
+                    repeatEnabled = item.repeatEnabled,
                     d7AlarmEnabled = item.d7AlarmEnabled,
                     dayAlarmEnabled = item.dayAlarmEnabled,
                     memo = item.memo,
@@ -151,6 +157,10 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
             copy(selectedIds = next)
         }
     }
+
+    private fun findAnniversary(id: Long): AnniversaryItem? =
+        (currentState.visibleUpcomingItems + currentState.personalItems)
+            .firstOrNull { it.id == id }
 
     private fun deleteSelected() {
         updateState {
@@ -187,27 +197,36 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
         val form = currentState.form
         val date = form.date ?: return
         if (form.title.isBlank()) return
+        val previousItem = form.editingId?.let { findAnniversary(it) }
 
         val item = AnniversaryItem(
             id = form.editingId ?: nextId++,
             title = form.title,
             date = date,
             calendarType = form.calendarType,
+            repeatEnabled = form.repeatEnabled,
             d7AlarmEnabled = form.d7AlarmEnabled,
             dayAlarmEnabled = form.dayAlarmEnabled,
-            memo = form.memo
+            memo = form.memo,
+            isOfficial = previousItem?.isOfficial ?: false
         )
 
         updateState {
-            val nextItems = if (form.editingId == null) {
+            val nextPersonalItems = if (form.editingId == null) {
                 listOf(item) + personalItems
             } else {
                 personalItems.map { if (it.id == item.id) item else it }
             }
+            val nextUpcomingItems = if (form.editingId == null) {
+                upcomingItems
+            } else {
+                upcomingItems.map { if (it.id == item.id) item else it }
+            }
 
             copy(
                 mode = AnniversaryScreenMode.LIST,
-                personalItems = nextItems,
+                upcomingItems = nextUpcomingItems,
+                personalItems = nextPersonalItems,
                 openedItem = null,
                 form = AnniversaryFormState(),
                 isSelectionModeActive = false,
