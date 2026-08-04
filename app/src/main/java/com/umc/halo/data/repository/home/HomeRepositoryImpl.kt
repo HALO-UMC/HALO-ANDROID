@@ -30,7 +30,8 @@ private fun HomeResponse.toDomain() = HomeResult(
         ContinueStorybook(
             storybookId = it.storybookId,
             title = it.title,
-            currentChapterOrder = it.currentChapterOrder.toLong()
+            currentChapterOrder = it.currentChapterOrder.toLong(),
+            todayAvailable = it.todayAvailable
         )
     },
 //    bookShelfList = bookshelf.map {

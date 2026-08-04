@@ -86,7 +86,7 @@ fun ContinueStorybookCard(
                 Spacer(Modifier.height(4.dp))
 
                 Text(
-                    text = "오늘 ${item.currentChapterOrder+1}장까지 완료할 수 있어요!",
+                    text = "오늘 ${item.currentChapterOrder}장까지 완료할 수 있어요!",
                     style = HaloType.caption01Regular,
                     color = Gray500
                 )
@@ -111,7 +111,7 @@ fun ContinueStorybookCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "${item.currentChapterOrder+1}장",
+                        text = "${item.currentChapterOrder}장",
                         style = HaloType.body02Medium,
                         color = Primary500
                     )
