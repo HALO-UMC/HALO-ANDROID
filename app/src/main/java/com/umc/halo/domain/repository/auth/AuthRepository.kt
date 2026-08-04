@@ -1,5 +1,6 @@
 package com.umc.halo.domain.repository.auth
 
+import com.umc.halo.domain.model.auth.AuthSession
 import com.umc.halo.domain.model.auth.LoginResult
 import com.umc.halo.domain.model.auth.SocialProvider
 
@@ -21,11 +22,11 @@ interface AuthRepository {
     /**
      * 저장된 refreshToken 으로 토큰을 재발급 (자동 로그인)
      *
-     * @return 성공하면 true(새 토큰 저장 완료)
-     *         저장된 토큰이 없거나 refreshToken 이 만료됐으면 false 이고 이때 로컬 토큰은 정리
-     *         → 호출한 쪽은 false 면 로그인 화면으로 보냄
+     * @return 성공하면 새 토큰을 저장하고 계정 상태([AuthSession])를 반환
+     *         저장된 토큰이 없거나 refreshToken 이 만료됐으면 null 이고 이때 로컬 토큰은 정리
+     *         → 호출한 쪽은 null 이면 로그인 화면으로 보냄
      */
-    suspend fun reissue(): Boolean
+    suspend fun reissue(): AuthSession?
 
     /**
      * 로그아웃

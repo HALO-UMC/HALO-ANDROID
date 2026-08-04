@@ -4,6 +4,7 @@ import com.umc.halo.core.datastore.TokenDataStore
 import com.umc.halo.data.remote.api.auth.AuthApi
 import com.umc.halo.data.remote.dto.request.auth.LoginRequest
 import com.umc.halo.data.remote.dto.request.auth.ReissueRequest
+import com.umc.halo.domain.model.auth.AuthSession
 import com.umc.halo.domain.model.auth.LoginResult
 import com.umc.halo.domain.model.auth.SocialProvider
 import com.umc.halo.domain.repository.auth.AuthRepository
@@ -40,13 +41,14 @@ class AuthRepositoryImpl @Inject constructor(
         // isNewUser 는 화면 분기에 쓰지 않음
         return LoginResult(
             isNewUser = result.isNewUser,
-            onboardingCompleted = result.onboardingCompleted
+            onboardingCompleted = result.onboardingCompleted,
+            termsAgreed = result.termsAgreed
         )
     }
 
-    override suspend fun reissue(): Boolean {
+    override suspend fun reissue(): AuthSession? {
         val refreshToken = tokenDataStore.refreshTokenFlow.first()
-        if (refreshToken.isNullOrBlank()) return false
+        if (refreshToken.isNullOrBlank()) return null
 
         // 만료(AUTH401_2)·네트워크 오류 모두 '자동 로그인 실패'로 같게 처리
         val result = runCatching { authApi.reissue(ReissueRequest(refreshToken)) }
@@ -56,11 +58,15 @@ class AuthRepositoryImpl @Inject constructor(
 
         if (result == null) {
             tokenDataStore.clear()
-            return false
+            return null
         }
 
         tokenDataStore.saveTokens(result.accessToken, result.refreshToken)
-        return true
+
+        return AuthSession(
+            termsAgreed = result.termsAgreed,
+            onboardingCompleted = result.onboardingCompleted
+        )
     }
 
     override suspend fun logout() {
