@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -47,6 +47,10 @@ import com.umc.halo.presentation.theme.HaloType
 // 카카오 공식 브랜드 색상
 private val KakaoYellow = Color(0xFFFEE500)
 private val KakaoLabel = Color(0xFF191919)       // 카카오 로고 라벨 색
+
+private const val TopSpaceWeight = 3f            // 상태바 아래 ~ 문구
+private const val CharacterToButtonWeight = 1f   // 캐릭터 ~ 카카오 버튼
+private val CharacterOffsetX = 12.dp             // 캐릭터를 중앙에서 오른쪽으로 밀어놓은 값
 
 /**
  * 로그인 화면 진입점
@@ -115,7 +119,7 @@ fun LoginScreen(
     ) {
 
         // 위쪽 여백
-        Spacer(Modifier.weight(3f))
+        Spacer(Modifier.weight(TopSpaceWeight))
 
         Text(
             text = "가장 가까운 사람을 다시 알아가는 시간",
@@ -133,19 +137,19 @@ fun LoginScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.height(40.dp))
+        Spacer(Modifier.height(23.dp))
 
         // 중앙 HALO 캐릭터
         Image(
             painter = painterResource(id = R.drawable.ic_login_character),
             contentDescription = null,          // 장식용 이미지라 null
             modifier = Modifier
-                .width(133.dp)
-                .height(155.dp)
+                .offset(x = CharacterOffsetX)
+                .size(238.dp)
         )
 
         // 캐릭터 ~ 버튼 여백
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.weight(CharacterToButtonWeight))
 
         // 카카오 로그인 버튼
         SocialLoginButton(
@@ -181,10 +185,11 @@ fun LoginScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.height(73.dp))
+        // 네비게이션바 위로 띄우는 여백
+        Spacer(Modifier.height(53.dp))
     }
 
-        // 로그인 진행 중 표시. 디자인 시안이 없어 기본 인디케이터를 화면 가운데에 둔다
+        // 로그인 진행 중 표시
         // TODO: 로딩 표현 확정되면 교체
         if (isLoading) {
             CircularProgressIndicator(
