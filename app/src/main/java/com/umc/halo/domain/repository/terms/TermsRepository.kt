@@ -1,5 +1,6 @@
 package com.umc.halo.domain.repository.terms
 
+import com.umc.halo.domain.model.terms.TermsAgreedStatus
 import com.umc.halo.domain.model.terms.TermsAgreement
 
 /**
@@ -11,12 +12,13 @@ interface TermsRepository {
     suspend fun getTerms(): List<TermsAgreement>
 
     /**
-     * 필수 약관에 모두 동의했는지 여부
-     * 로그인 직후와 앱 실행(스플래시)에서 약관 화면을 띄울지 판단하는 기준
+     * 이 사용자의 약관 동의 현황
+     * - 로그인 직후, 앱 실행(스플래시): 약관 화면을 띄울지 판단 → [TermsAgreedStatus.allRequiredAgreed]
+     * - 약관 화면: 되돌아왔을 때 체크 상태 복원 → [TermsAgreedStatus.agreedTermIds]
      *
-     * @return 조회 실패 시 false
+     * @return 조회 실패 시 '미동의'(allRequiredAgreed = false) → 약관 화면을 한 번 더 보여줌
      */
-    suspend fun isTermsAgreed(): Boolean
+    suspend fun getTermsAgreedStatus(): TermsAgreedStatus
 
     /**
      * 약관 동의 저장

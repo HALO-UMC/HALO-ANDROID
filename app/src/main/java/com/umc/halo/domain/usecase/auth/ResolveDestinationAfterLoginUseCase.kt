@@ -17,7 +17,7 @@ class ResolveDestinationAfterLoginUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(loginResult: LoginResult): AuthDestination {
         // 약관 미동의면 무조건 약관부터
-        val termsAgreed = loginResult.termsAgreed ?: termsRepository.isTermsAgreed()
+        val termsAgreed = loginResult.termsAgreed ?: termsRepository.getTermsAgreedStatus().allRequiredAgreed
         if (!termsAgreed) return AuthDestination.TERMS
 
         return if (loginResult.onboardingCompleted) {

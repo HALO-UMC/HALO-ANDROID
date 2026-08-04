@@ -3,6 +3,7 @@ package com.umc.halo.data.repository.terms
 import com.umc.halo.data.remote.api.terms.TermsApi
 import com.umc.halo.data.remote.dto.request.terms.TermAgreementItem
 import com.umc.halo.data.remote.dto.request.terms.TermsAgreementRequest
+import com.umc.halo.domain.model.terms.TermsAgreedStatus
 import com.umc.halo.domain.model.terms.TermsAgreement
 import com.umc.halo.domain.repository.terms.TermsRepository
 import javax.inject.Inject
@@ -36,13 +37,23 @@ class TermsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun isTermsAgreed(): Boolean =
-        runCatching { termsApi.getTermsAgreed() }
+    override suspend fun getTermsAgreedStatus(): TermsAgreedStatus {
+        val result = runCatching { termsApi.getTermsAgreed() }
             .getOrNull()
             ?.takeIf { it.isSuccess }
             ?.result
-            ?.termsAgreed
-            ?: false   // 조회 실패 시 '미동의'로 → 약관 화면을 한 번 더 보여줌
+            ?: return TermsAgreedStatus(allRequiredAgreed = false) // 조회 실패 → 약관 화면을 한 번 더
+
+        return TermsAgreedStatus(
+            allRequiredAgreed = result.termsAgreed,
+            // 서버가 배열을 안 주면(미구현) null 을 그대로 넘김
+            // 빈 배열로 바꿔버리면 '아무것도 동의 안 함'과 구분이 안 됨
+            agreedTermIds = result.agreements
+                ?.filter { it.isAgreed }
+                ?.map { it.termId }
+                ?.toSet()
+        )
+    }
 
     override suspend fun agreeTerms(agreements: Map<Long, Boolean>): Boolean {
         val request = TermsAgreementRequest(
