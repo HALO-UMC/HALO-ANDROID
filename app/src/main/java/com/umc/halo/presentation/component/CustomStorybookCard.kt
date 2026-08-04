@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -31,12 +30,9 @@ import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.White
-import org.jetbrains.annotations.Async
 
 /**
- * 맞춤 스토리북 카드
- *
- * @param coverRes 커버 이미지. null이면 회색 플레이스홀더
+ * 맞춤 스토리북 카드 (스토리북 목록 '전체' 탭 + 홈 공용)
  */
 @Composable
 fun CustomStorybookCard(
@@ -47,7 +43,7 @@ fun CustomStorybookCard(
     val shape = RoundedCornerShape(16.dp)
     Row(
         modifier = modifier
-            .shadow(elevation = 2.dp, shape = shape)   // 카드 그림자
+            .haloCardShadow(shape)
             .clip(shape)
             .background(White)
             .clickable { onClick() }

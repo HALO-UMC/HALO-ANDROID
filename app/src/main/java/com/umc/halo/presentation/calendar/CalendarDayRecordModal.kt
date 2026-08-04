@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -34,6 +33,7 @@ import com.umc.halo.R
 import com.umc.halo.domain.model.calendar.DateCompletedChapter
 import com.umc.halo.domain.model.calendar.DateCompletedStorybook
 import com.umc.halo.domain.model.calendar.DayRecord
+import com.umc.halo.presentation.component.haloCardShadow
 import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
@@ -172,7 +172,7 @@ private fun CompletedCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(2.dp, shape)
+            .haloCardShadow(shape)
             .clip(shape)
             .background(androidx.compose.ui.graphics.Color.White)
             .clickable { onClick() }
@@ -226,7 +226,7 @@ private fun ChapterCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(2.dp, shape)
+            .haloCardShadow(shape)
             .clip(shape)
             .background(androidx.compose.ui.graphics.Color.White)
             .clickable { onClick() }

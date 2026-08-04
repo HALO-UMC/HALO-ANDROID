@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
@@ -25,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.umc.halo.presentation.component.haloCardShadow
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
@@ -38,7 +38,6 @@ import com.umc.halo.presentation.theme.White
 
 private val CardAspectRatio = 147f / 185f            // 가로:세로 (세로형 비율 잠금)
 private val CardCornerRadius = 8.dp
-private val CardElevation = 4.dp
 private const val CoverWeight = 119f                 // 커버 : 라벨 높이 비율 = 119 : 66
 private const val LabelWeight = 66f
 private val LabelPaddingHorizontal = 12.dp
@@ -93,7 +92,7 @@ fun StorybookCard(
     Box(
         modifier = modifier
             .aspectRatio(CardAspectRatio)
-            .shadow(elevation = CardElevation, shape = shape)
+            .haloCardShadow(shape)
             .clip(shape)
             .background(White)
             // 대기 상태이거나 onClick이 없으면 클릭 비활성화

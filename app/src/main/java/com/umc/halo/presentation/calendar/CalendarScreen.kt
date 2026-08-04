@@ -22,7 +22,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +31,7 @@ import com.umc.halo.domain.model.calendar.CalendarDay
 import com.umc.halo.domain.model.calendar.CompletedBook
 import com.umc.halo.domain.model.calendar.DayMark
 import com.umc.halo.domain.model.calendar.MonthSummary
+import com.umc.halo.presentation.component.haloCardShadow
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.HaloTheme
 import com.umc.halo.presentation.theme.HaloType
@@ -161,7 +161,7 @@ private fun CalendarTopSummaryCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(2.dp, shape)
+            .haloCardShadow(shape)
             .clip(shape)
             .background(White)
             .padding(horizontal = 18.dp, vertical = 12.dp),
