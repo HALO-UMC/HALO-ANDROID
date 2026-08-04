@@ -1,8 +1,6 @@
 package com.umc.halo.presentation.mypage.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,6 +54,7 @@ import com.umc.halo.presentation.mypage.component.MyPageContainer
 import com.umc.halo.presentation.mypage.component.MyPageTopBar
 import com.umc.halo.presentation.mypage.component.PrimaryActionButton
 import com.umc.halo.presentation.theme.Gray100
+import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray400
@@ -71,7 +70,7 @@ import com.umc.halo.presentation.theme.Primary600
 import com.umc.halo.presentation.theme.White
 import java.util.Calendar
 
-private val AnniversaryBadgeGreen = Color(0xFF14B86A)
+private val AddButtonShadowColor = Color(0x409A9A9A)
 
 @Composable
 fun AnniversaryScreen(
@@ -89,7 +88,7 @@ fun AnniversaryScreen(
             )
 
             AnniversaryScreenMode.ADD -> AnniversaryFormScreen(
-                title = "일정 추가",
+                title = "기념일 추가",
                 form = uiState.form,
                 onEvent = onEvent,
                 onBack = { onEvent(AnniversaryUiEvent.BackClicked) }
@@ -97,7 +96,8 @@ fun AnniversaryScreen(
 
             AnniversaryScreenMode.DETAIL -> AnniversaryDetailScreen(
                 item = uiState.openedItem,
-                onBack = { onEvent(AnniversaryUiEvent.BackClicked) }
+                onBack = { onEvent(AnniversaryUiEvent.BackClicked) },
+                onEdit = { onEvent(AnniversaryUiEvent.EditClicked) }
             )
 
             AnniversaryScreenMode.EDIT -> AnniversaryFormScreen(
@@ -121,32 +121,41 @@ private fun AnniversaryListScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                start = 24.dp,
-                end = 24.dp,
-                bottom = 148.dp
-            )
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 148.dp)
         ) {
             item {
                 MyPageTopBar(title = "기념일 관리", onBack = onBack)
                 Spacer(Modifier.height(32.dp))
-                AnniversarySectionTitle("다가오는 기념일")
+                AnniversarySectionTitle(
+                    text = "다가오는 기념일",
+                    modifier = Modifier.padding(horizontal = 24.dp)
+                )
                 Spacer(Modifier.height(20.dp))
             }
 
             item {
-                LazyRow(
-                    contentPadding = PaddingValues(vertical = 2.dp),
-                    horizontalArrangement = Arrangement.spacedBy(18.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(112.dp)
-                ) {
-                    items(uiState.visibleUpcomingItems) { item ->
-                        UpcomingAnniversaryCard(
-                            item = item,
-                            onClick = { onEvent(AnniversaryUiEvent.UpcomingClicked(item.id)) }
-                        )
+                if (uiState.visibleUpcomingItems.isEmpty()) {
+                    AnniversaryEmptyMessage(
+                        text = "다가오는 기념일이 없습니다.",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(108.dp)
+                            .padding(horizontal = 24.dp)
+                    )
+                } else {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 2.dp),
+                        horizontalArrangement = Arrangement.spacedBy(18.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(112.dp)
+                    ) {
+                        items(uiState.visibleUpcomingItems) { item ->
+                            UpcomingAnniversaryCard(
+                                item = item,
+                                onClick = { onEvent(AnniversaryUiEvent.UpcomingClicked(item.id)) }
+                            )
+                        }
                     }
                 }
             }
@@ -154,7 +163,9 @@ private fun AnniversaryListScreen(
             item {
                 Spacer(Modifier.height(44.dp))
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AnniversarySectionTitle("기념일 관리")
@@ -174,32 +185,52 @@ private fun AnniversaryListScreen(
                 Spacer(Modifier.height(18.dp))
             }
 
-            items(uiState.personalItems, key = { it.id }) { item ->
-                AnniversaryListItem(
-                    item = item,
-                    isSelectionMode = uiState.isSelectionMode,
-                    selected = item.id in actualSelectedIds,
-                    highlighted = uiState.lastAddedId == item.id,
-                    onClick = { onEvent(AnniversaryUiEvent.AnniversaryClicked(item.id)) }
-                )
-                Spacer(Modifier.height(12.dp))
+            if (uiState.personalItems.isEmpty()) {
+                item {
+                    AnniversaryEmptyMessage(
+                        text = "기념일을 등록해주세요!",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(132.dp)
+                            .padding(horizontal = 24.dp)
+                    )
+                }
+            } else {
+                items(uiState.personalItems, key = { it.id }) { item ->
+                    AnniversaryListItem(
+                        item = item,
+                        isSelectionMode = uiState.isSelectionMode,
+                        selected = item.id in actualSelectedIds,
+                        highlighted = uiState.lastAddedId == item.id,
+                        onClick = { onEvent(AnniversaryUiEvent.AnniversaryClicked(item.id)) },
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+                    Spacer(Modifier.height(12.dp))
+                }
             }
         }
 
         if (!uiState.isSelectionMode) {
+            val addButtonShape = RoundedCornerShape(100.dp)
+
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(end = 28.dp, bottom = 60.dp)
                     .width(121.dp)
-                    .height(44.dp)
+                    .shadow(
+                        elevation = 10.dp,
+                        shape = addButtonShape,
+                        clip = false,
+                        ambientColor = AddButtonShadowColor,
+                        spotColor = AddButtonShadowColor
+                    )
                     .clickable { onEvent(AnniversaryUiEvent.AddClicked) },
-                shape = RoundedCornerShape(100.dp),
-                color = Primary500,
-                shadowElevation = 2.dp
+                shape = addButtonShape,
+                color = Primary500
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 10.dp),
+                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 15.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
@@ -213,14 +244,11 @@ private fun AnniversaryListScreen(
                         modifier = Modifier.size(24.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "+",
-                            style = HaloType.heading01SemiBold.copy(
-                                fontSize = 32.sp,
-                                lineHeight = 24.sp
-                            ),
-                            color = White,
-                            textAlign = TextAlign.Center
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_anniversary_add),
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                            modifier = Modifier.size(14.dp)
                         )
                     }
                 }
@@ -287,36 +315,37 @@ private fun AnniversaryListItem(
     isSelectionMode: Boolean,
     selected: Boolean,
     highlighted: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(66.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        color = if (selected || highlighted) Primary30 else Gray30
+        color = when {
+            selected -> Primary30
+            highlighted -> Primary50
+            else -> Gray30
+        }
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 20.dp),
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = item.title,
                     style = HaloType.body01SemiBold,
-                    color = if (selected || highlighted) Primary600 else Gray800
+                    color = if (selected) Primary600 else Gray800
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
                     text = item.date.compactWithDayOfWeek(),
                     style = HaloType.caption01Medium.copy(fontSize = 11.5.sp),
-                    color = if (selected || highlighted) Primary600 else Gray600
+                    color = if (selected) Primary600 else Gray600
                 )
-            }
-            if (highlighted && !isSelectionMode) {
-                AddedAnniversaryBadge()
-                Spacer(Modifier.width(28.dp))
             }
             if (isSelectionMode) {
                 Text(
@@ -325,32 +354,31 @@ private fun AnniversaryListItem(
                     color = if (selected) Primary600 else Gray300
                 )
             } else {
-                RightChevron(tint = Gray500)
+                Box(
+                    modifier = Modifier.size(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    RightChevron(tint = Gray500)
+                }
             }
         }
     }
 }
 
 @Composable
-private fun AddedAnniversaryBadge() {
-    Surface(
-        modifier = Modifier
-            .size(38.dp)
-            .shadow(
-                elevation = 4.dp,
-                shape = CircleShape,
-                clip = false,
-                ambientColor = Color(0x33000000),
-                spotColor = Color(0x33000000)
-            ),
-        shape = CircleShape,
-        color = White,
-        border = BorderStroke(4.dp, AnniversaryBadgeGreen)
+private fun AnniversaryEmptyMessage(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_orange_character),
-            contentDescription = null,
-            modifier = Modifier.padding(7.dp)
+        Text(
+            text = text,
+            style = HaloType.body03Medium,
+            color = Gray500,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -365,55 +393,60 @@ private fun AnniversaryFormScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                start = 24.dp,
-                end = 24.dp,
-                bottom = 112.dp
-            )
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 112.dp)
         ) {
             item {
                 MyPageTopBar(title = title, onBack = onBack)
-                Spacer(Modifier.height(28.dp))
-                AnniversaryInputLabel("기념일명")
-                Spacer(Modifier.height(12.dp))
-                AnniversaryTextField(
-                    value = form.title,
-                    placeholder = "기록해보세요.",
-                    onValueChange = { onEvent(AnniversaryUiEvent.TitleChanged(it)) }
-                )
-                Spacer(Modifier.height(28.dp))
-                AnniversaryInputLabel("날짜")
-                Spacer(Modifier.height(12.dp))
-                AnniversaryDateField(
-                    form = form,
-                    onClick = { onEvent(AnniversaryUiEvent.DateFieldClicked) }
-                )
-                if (form.isCalendarExpanded) {
-                    Spacer(Modifier.height(18.dp))
-                    AnniversaryCalendar(
+                Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                    Spacer(Modifier.height(28.dp))
+                    AnniversaryInputLabel("기념일명")
+                    Spacer(Modifier.height(12.dp))
+                    AnniversaryTextField(
+                        value = form.title,
+                        placeholder = "기록해보세요.",
+                        onValueChange = { onEvent(AnniversaryUiEvent.TitleChanged(it)) }
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    AnniversaryRepeatInputRow(
+                        checked = form.repeatEnabled,
+                        onCheckedChange = { onEvent(AnniversaryUiEvent.RepeatChanged(it)) }
+                    )
+                    Spacer(Modifier.height(28.dp))
+                    AnniversaryInputLabel("날짜")
+                    Spacer(Modifier.height(12.dp))
+                    AnniversaryDateField(
                         form = form,
-                        onEvent = onEvent
+                        onClick = { onEvent(AnniversaryUiEvent.DateFieldClicked) }
+                    )
+                    if (form.isCalendarExpanded) {
+                        Spacer(Modifier.height(18.dp))
+                        AnniversaryCalendar(
+                            form = form,
+                            onEvent = onEvent
+                        )
+                    }
+                    Spacer(Modifier.height(28.dp))
+                    AnniversaryInputLabel("알림설정")
+                    Spacer(Modifier.height(12.dp))
+                    AnniversaryAlarmBox(
+                        d7Checked = form.d7AlarmEnabled,
+                        dayChecked = form.dayAlarmEnabled,
+                        onD7Changed = { onEvent(AnniversaryUiEvent.D7AlarmChanged(it)) },
+                        onDayChanged = { onEvent(AnniversaryUiEvent.DayAlarmChanged(it)) }
+                    )
+                    Spacer(Modifier.height(28.dp))
+                    AnniversaryInputLabel("메모")
+                    Spacer(Modifier.height(12.dp))
+                    AnniversaryTextField(
+                        value = form.memo,
+                        placeholder = "메모를 입력해주세요.",
+                        onValueChange = { onEvent(AnniversaryUiEvent.MemoChanged(it)) },
+                        minHeight = 104.dp,
+                        singleLine = false,
+                        maxLength = 50,
+                        showCounter = true
                     )
                 }
-                Spacer(Modifier.height(28.dp))
-                AnniversaryInputLabel("알림설정")
-                Spacer(Modifier.height(12.dp))
-                AnniversaryAlarmBox(
-                    d7Checked = form.d7AlarmEnabled,
-                    dayChecked = form.dayAlarmEnabled,
-                    onD7Changed = { onEvent(AnniversaryUiEvent.D7AlarmChanged(it)) },
-                    onDayChanged = { onEvent(AnniversaryUiEvent.DayAlarmChanged(it)) }
-                )
-                Spacer(Modifier.height(28.dp))
-                AnniversaryInputLabel("메모")
-                Spacer(Modifier.height(12.dp))
-                AnniversaryTextField(
-                    value = form.memo,
-                    placeholder = "메모를 입력해주세요.",
-                    onValueChange = { onEvent(AnniversaryUiEvent.MemoChanged(it)) },
-                    minHeight = 104.dp,
-                    singleLine = false
-                )
             }
         }
 
@@ -433,48 +466,88 @@ private fun AnniversaryFormScreen(
 @Composable
 private fun AnniversaryDetailScreen(
     item: AnniversaryItem?,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onEdit: () -> Unit
 ) {
     val anniversary = item ?: return
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(
-            start = 24.dp,
-            end = 24.dp,
-            bottom = 40.dp
-        )
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 99.dp)
     ) {
         item {
-            MyPageTopBar(title = "", onBack = onBack)
-            Spacer(Modifier.height(28.dp))
-            AnniversaryInputLabel("기념일명")
-            Spacer(Modifier.height(12.dp))
-            ReadOnlyBox(text = anniversary.title)
-            Spacer(Modifier.height(28.dp))
-            AnniversaryInputLabel("날짜")
-            Spacer(Modifier.height(12.dp))
-            ReadOnlyBox(
-                text = anniversary.date.formatted(),
-                trailing = anniversary.calendarType.label
+            AnniversaryDetailTopBar(
+                onBack = onBack,
+                onEdit = onEdit
             )
-            Spacer(Modifier.height(28.dp))
-            AnniversaryInputLabel("알림설정")
-            Spacer(Modifier.height(12.dp))
-            AnniversaryAlarmBox(
-                d7Checked = anniversary.d7AlarmEnabled,
-                dayChecked = anniversary.dayAlarmEnabled,
-                onD7Changed = {},
-                onDayChanged = {},
-                enabled = false
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                Spacer(Modifier.height(28.dp))
+                AnniversaryInputLabel("기념일명")
+                Spacer(Modifier.height(12.dp))
+                ReadOnlyBox(text = anniversary.title)
+                Spacer(Modifier.height(12.dp))
+                AnniversaryRepeatReadOnlyRow(checked = anniversary.repeatEnabled)
+                Spacer(Modifier.height(28.dp))
+                AnniversaryInputLabel("날짜")
+                Spacer(Modifier.height(12.dp))
+                ReadOnlyBox(
+                    text = anniversary.date.formatted(),
+                    trailing = anniversary.calendarType.label
+                )
+                Spacer(Modifier.height(28.dp))
+                AnniversaryInputLabel("알림설정")
+                Spacer(Modifier.height(12.dp))
+                AnniversaryReadOnlyAlarmBox(
+                    d7Checked = anniversary.d7AlarmEnabled,
+                    dayChecked = anniversary.dayAlarmEnabled
+                )
+                Spacer(Modifier.height(28.dp))
+                AnniversaryInputLabel("메모")
+                Spacer(Modifier.height(12.dp))
+                AnniversaryMemoReadOnlyBox(text = anniversary.memo)
+            }
+        }
+    }
+}
+
+@Composable
+private fun AnniversaryDetailTopBar(
+    onBack: () -> Unit,
+    onEdit: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 8.dp)
+                .size(44.dp)
+                .clickable(onClick = onBack),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_common_chevron_left),
+                contentDescription = null,
+                tint = Gray800,
+                modifier = Modifier.size(8.dp, 12.dp)
             )
-            Spacer(Modifier.height(28.dp))
-            AnniversaryInputLabel("메모")
-            Spacer(Modifier.height(12.dp))
-            ReadOnlyBox(
-                text = anniversary.memo,
-                minHeight = 104.dp,
-                alignTop = true
+        }
+        Surface(
+            shape = RoundedCornerShape(100.dp),
+            color = Gray30,
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 24.dp)
+                .clickable(onClick = onEdit)
+        ) {
+            Text(
+                text = "편집",
+                style = HaloType.body02Regular,
+                color = Gray500,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
             )
         }
     }
@@ -502,7 +575,7 @@ private fun AnniversaryCalendar(
             Text(
                 text = "${form.visibleYear}년 ${form.visibleMonth}월",
                 style = HaloType.body01Medium,
-                color = Gray600,
+                color = Gray500,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
             Icon(
@@ -515,16 +588,9 @@ private fun AnniversaryCalendar(
                     .padding(6.dp)
             )
             Spacer(Modifier.weight(1f))
-            CalendarTypeChip(
-                text = "양력",
-                selected = form.calendarType == AnniversaryCalendarType.SOLAR,
-                onClick = { onEvent(AnniversaryUiEvent.CalendarTypeChanged(AnniversaryCalendarType.SOLAR)) }
-            )
-            Spacer(Modifier.width(6.dp))
-            CalendarTypeChip(
-                text = "음력",
-                selected = form.calendarType == AnniversaryCalendarType.LUNAR,
-                onClick = { onEvent(AnniversaryUiEvent.CalendarTypeChanged(AnniversaryCalendarType.LUNAR)) }
+            CalendarTypeSegmentedControl(
+                selectedType = form.calendarType,
+                onTypeSelected = { onEvent(AnniversaryUiEvent.CalendarTypeChanged(it)) }
             )
         }
         Spacer(Modifier.height(16.dp))
@@ -586,15 +652,15 @@ private fun CalendarGrid(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(26.dp)
+                                .size(30.dp)
                                 .clip(CircleShape)
                                 .background(if (selected) Primary500 else Color.Transparent),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = if (day == 0) "" else day.toString(),
-                                style = HaloType.body02Regular,
-                                color = if (selected) White else Gray600
+                                style = if (selected) HaloType.body02Medium else HaloType.body02Regular,
+                                color = if (selected) White else Gray500
                             )
                         }
                     }
@@ -648,8 +714,8 @@ private fun AlarmRow(
     ) {
         Text(
             text = text,
-            style = HaloType.body02Medium.copy(fontSize = 15.sp),
-            color = if (enabled) Gray600 else Gray400,
+            style = HaloType.body02Medium,
+            color = if (enabled) Gray500 else Gray400,
             modifier = Modifier.weight(1f)
         )
         HaloSwitch(
@@ -661,44 +727,157 @@ private fun AlarmRow(
 }
 
 @Composable
+private fun AnniversaryRepeatInputRow(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "기념일 반복 여부",
+            style = HaloType.body02Medium,
+            color = Gray500
+        )
+        Spacer(Modifier.width(8.dp))
+        HaloSwitch(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
+    }
+}
+
+@Composable
+private fun AnniversaryRepeatReadOnlyRow(
+    checked: Boolean
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "기념일 반복 여부",
+            style = HaloType.body02Medium,
+            color = Gray500
+        )
+        Spacer(Modifier.width(8.dp))
+        ReadOnlySwitch(checked = checked)
+    }
+}
+
+@Composable
+private fun AnniversaryReadOnlyAlarmBox(
+    d7Checked: Boolean,
+    dayChecked: Boolean
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = Gray30
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 24.dp, vertical = 18.dp)) {
+            ReadOnlyAlarmRow(
+                text = "D-7 알림",
+                checked = d7Checked
+            )
+            Spacer(Modifier.height(18.dp))
+            ReadOnlyAlarmRow(
+                text = "당일 알림",
+                checked = dayChecked
+            )
+        }
+    }
+}
+
+@Composable
+private fun ReadOnlyAlarmRow(
+    text: String,
+    checked: Boolean
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = text,
+            style = HaloType.body02Medium,
+            color = Gray500,
+            modifier = Modifier.weight(1f)
+        )
+        ReadOnlySwitch(checked = checked)
+    }
+}
+
+@Composable
+private fun ReadOnlySwitch(
+    checked: Boolean
+) {
+    Box(
+        modifier = Modifier
+            .width(42.dp)
+            .height(24.dp)
+            .clip(RoundedCornerShape(100.dp))
+            .background(if (checked) Gray600 else Gray100)
+    ) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = if (checked) 21.dp else 3.dp)
+                .size(18.dp)
+                .clip(CircleShape)
+                .background(if (checked) White else Gray300)
+        )
+    }
+}
+
+@Composable
 private fun AnniversaryDateField(
     form: AnniversaryFormState,
     onClick: () -> Unit
 ) {
+    val hasDate = form.date != null
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(44.dp)
+            .height(60.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         color = Gray30
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 18.dp),
+            modifier = Modifier.padding(horizontal = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = form.date?.formatted() ?: "날짜를 선택해주세요.",
-                style = HaloType.body02Regular,
-                color = if (form.date == null) Gray300 else Gray800,
+                style = if (hasDate) HaloType.body02Medium else HaloType.body02Regular,
+                color = if (hasDate) Gray800 else Gray300,
                 modifier = Modifier.weight(1f)
             )
-            if (form.date != null) {
+            if (hasDate) {
                 Text(
                     text = form.calendarType.label,
-                    style = HaloType.caption01Medium.copy(fontSize = 11.5.sp),
+                    style = HaloType.body02Regular,
                     color = Gray300
                 )
                 Spacer(Modifier.width(12.dp))
             }
-            Icon(
-                painter = painterResource(id = R.drawable.ic_common_chevron_right),
-                contentDescription = null,
-                tint = Gray400,
-                modifier = Modifier
-                    .size(8.dp, 12.dp)
-                    .graphicsLayer(rotationZ = if (form.isCalendarExpanded) -90f else 90f)
-            )
+            Box(
+                modifier = Modifier.size(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_common_chevron_right),
+                    contentDescription = null,
+                    tint = if (hasDate) Gray500 else Gray300,
+                    modifier = Modifier
+                        .size(8.dp, 12.dp)
+                        .graphicsLayer(rotationZ = if (form.isCalendarExpanded) -90f else 90f)
+                )
+            }
         }
     }
 }
@@ -708,8 +887,10 @@ private fun AnniversaryTextField(
     value: String,
     placeholder: String,
     onValueChange: (String) -> Unit,
-    minHeight: androidx.compose.ui.unit.Dp = 44.dp,
-    singleLine: Boolean = true
+    minHeight: androidx.compose.ui.unit.Dp = 60.dp,
+    singleLine: Boolean = true,
+    maxLength: Int? = null,
+    showCounter: Boolean = false
 ) {
     Surface(
         modifier = Modifier
@@ -722,21 +903,31 @@ private fun AnniversaryTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = minHeight)
-                .padding(horizontal = 18.dp, vertical = if (singleLine) 0.dp else 16.dp),
+                .padding(horizontal = 24.dp, vertical = if (singleLine) 0.dp else 18.dp),
             contentAlignment = if (singleLine) Alignment.CenterStart else Alignment.TopStart
         ) {
             BasicTextField(
                 value = value,
-                onValueChange = onValueChange,
+                onValueChange = { input ->
+                    onValueChange(maxLength?.let { input.take(it) } ?: input)
+                },
                 singleLine = singleLine,
-                textStyle = HaloType.body02Regular.copy(color = Gray800).toTextStyle(),
+                textStyle = HaloType.body02Medium.copy(color = Gray800).toTextStyle(),
                 modifier = Modifier.fillMaxWidth()
             )
             if (value.isEmpty()) {
                 Text(
                     text = placeholder,
-                    style = HaloType.body03Regular.copy(fontSize = 13.5.sp),
+                    style = HaloType.body02Regular,
                     color = Gray300
+                )
+            }
+            if (showCounter && maxLength != null) {
+                Text(
+                    text = "${value.length}/$maxLength",
+                    style = HaloType.body02Regular,
+                    color = Gray300,
+                    modifier = Modifier.align(Alignment.BottomEnd)
                 )
             }
         }
@@ -747,7 +938,7 @@ private fun AnniversaryTextField(
 private fun ReadOnlyBox(
     text: String,
     trailing: String? = null,
-    minHeight: androidx.compose.ui.unit.Dp = 50.dp,
+    minHeight: androidx.compose.ui.unit.Dp = 60.dp,
     alignTop: Boolean = false
 ) {
     Surface(
@@ -758,7 +949,7 @@ private fun ReadOnlyBox(
         color = Gray30
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 18.dp, vertical = if (alignTop) 18.dp else 0.dp),
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = if (alignTop) 18.dp else 0.dp),
             verticalAlignment = if (alignTop) Alignment.Top else Alignment.CenterVertically
         ) {
             Text(
@@ -779,11 +970,50 @@ private fun ReadOnlyBox(
 }
 
 @Composable
-private fun AnniversarySectionTitle(text: String) {
+private fun AnniversaryMemoReadOnlyBox(
+    text: String,
+    maxLength: Int = 50
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(128.dp),
+        shape = RoundedCornerShape(16.dp),
+        color = Gray30
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp, vertical = 18.dp)
+        ) {
+            Text(
+                text = text,
+                style = HaloType.body02Medium,
+                color = Gray800,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.align(Alignment.TopStart)
+            )
+            Text(
+                text = "${text.length}/$maxLength",
+                style = HaloType.body02Regular,
+                color = Gray400,
+                modifier = Modifier.align(Alignment.BottomEnd)
+            )
+        }
+    }
+}
+
+@Composable
+private fun AnniversarySectionTitle(
+    text: String,
+    modifier: Modifier = Modifier
+) {
     Text(
         text = text,
-        style = HaloType.heading03SemiBold.copy(fontSize = 21.sp),
-        color = Gray800
+        style = HaloType.heading03SemiBold,
+        color = Gray800,
+        modifier = modifier
     )
 }
 
@@ -812,6 +1042,56 @@ private fun AnniversaryPillButton(
             style = if (active) HaloType.body02Medium else HaloType.body02Regular,
             color = if (active) Primary500 else Gray500,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+        )
+    }
+}
+
+@Composable
+private fun CalendarTypeSegmentedControl(
+    selectedType: AnniversaryCalendarType,
+    onTypeSelected: (AnniversaryCalendarType) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(100.dp))
+            .background(Gray30)
+    ) {
+        CalendarTypeSegment(
+            text = "양력",
+            selected = selectedType == AnniversaryCalendarType.SOLAR,
+            onClick = { onTypeSelected(AnniversaryCalendarType.SOLAR) }
+        )
+        CalendarTypeSegment(
+            text = "음력",
+            selected = selectedType == AnniversaryCalendarType.LUNAR,
+            onClick = { onTypeSelected(AnniversaryCalendarType.LUNAR) }
+        )
+    }
+}
+
+@Composable
+private fun CalendarTypeSegment(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(100.dp))
+            .background(if (selected) Primary50 else Color.Transparent)
+            .clickable(onClick = onClick)
+            .padding(
+                start = if (selected) 15.dp else 14.dp,
+                end = if (selected) 11.dp else 15.dp,
+                top = 7.dp,
+                bottom = 7.dp
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            style = HaloType.body02Medium,
+            color = if (selected) Primary500 else Gray200
         )
     }
 }

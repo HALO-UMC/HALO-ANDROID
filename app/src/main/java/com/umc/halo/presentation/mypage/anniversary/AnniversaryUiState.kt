@@ -54,6 +54,7 @@ data class AnniversaryItem(
     val calendarType: AnniversaryCalendarType = AnniversaryCalendarType.SOLAR,
     val dDayLabel: String? = null,
     val memo: String = "",
+    val repeatEnabled: Boolean = true,
     val d7AlarmEnabled: Boolean = false,
     val dayAlarmEnabled: Boolean = true,
     val isOfficial: Boolean = false
@@ -64,6 +65,7 @@ data class AnniversaryFormState(
     val title: String = "",
     val date: AnniversaryDate? = null,
     val calendarType: AnniversaryCalendarType = AnniversaryCalendarType.SOLAR,
+    val repeatEnabled: Boolean = true,
     val d7AlarmEnabled: Boolean = false,
     val dayAlarmEnabled: Boolean = true,
     val memo: String = "",
@@ -92,15 +94,16 @@ data class AnniversaryUiState(
     val visibleUpcomingItems: List<AnniversaryItem>
         get() = (upcomingItems + personalItems)
             .mapNotNull { item ->
-                val daysUntil = item.date.daysUntilNextOccurrence(today)
+                val daysUntil = item.daysUntilUpcoming(today)
                 if (daysUntil in 0..7) {
-                    item.copy(dDayLabel = daysUntil.toDdayLabel())
+                    item.copy(dDayLabel = daysUntil.toDdayLabel()) to daysUntil
                 } else {
                     null
                 }
             }
-            .distinctBy { it.id }
-            .sortedBy { it.date.daysUntilNextOccurrence(today) }
+            .distinctBy { it.first.id }
+            .sortedBy { it.second }
+            .map { it.first }
 }
 
 private const val MILLIS_PER_DAY = 24L * 60L * 60L * 1000L
@@ -136,6 +139,26 @@ private fun AnniversaryDate.daysUntilNextOccurrence(from: AnniversaryDate): Int 
 
     return ((targetCalendar.timeInMillis - fromCalendar.timeInMillis) / MILLIS_PER_DAY).toInt()
 }
+
+private fun AnniversaryDate.daysUntilExactDate(from: AnniversaryDate): Int {
+    val fromCalendar = Calendar.getInstance().apply {
+        clear()
+        set(from.year, from.month - 1, from.day)
+    }
+    val targetCalendar = Calendar.getInstance().apply {
+        clear()
+        set(year, month - 1, day)
+    }
+
+    return ((targetCalendar.timeInMillis - fromCalendar.timeInMillis) / MILLIS_PER_DAY).toInt()
+}
+
+private fun AnniversaryItem.daysUntilUpcoming(from: AnniversaryDate): Int =
+    if (isOfficial || repeatEnabled) {
+        date.daysUntilNextOccurrence(from)
+    } else {
+        date.daysUntilExactDate(from)
+    }
 
 private fun AnniversaryDate.plusDays(days: Int): AnniversaryDate {
     val calendar = Calendar.getInstance().apply {

@@ -129,6 +129,7 @@ fun AnniversaryRoute(
 
     BackHandler {
         if (uiState.mode == AnniversaryScreenMode.LIST) {
+            viewModel.onEvent(AnniversaryUiEvent.ListExited)
             onBack()
         } else {
             viewModel.onEvent(AnniversaryUiEvent.BackClicked)
@@ -140,6 +141,7 @@ fun AnniversaryRoute(
         onEvent = viewModel::onEvent,
         onBack = {
             if (uiState.mode == AnniversaryScreenMode.LIST) {
+                viewModel.onEvent(AnniversaryUiEvent.ListExited)
                 onBack()
             } else {
                 viewModel.onEvent(AnniversaryUiEvent.BackClicked)
