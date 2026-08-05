@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,6 +74,13 @@ fun OnboardingRoute(
     onNavigateToHome: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState.navigateToHome) {
+        if (uiState.navigateToHome) {
+            onNavigateToHome()
+            viewModel.onEvent(OnboardingUiEvent.HomeNavigationHandled)
+        }
+    }
 
     OnboardingScreen(
         uiState = uiState,
@@ -166,7 +174,6 @@ fun OnboardingScreen(
         OnboardingStep.COMPLETE -> {
             CompleteStep(
                 uiState = uiState,
-                onBackClick = onBackClick,
                 onStartClick = onNavigateToHome,
                 onSystemBack = onSystemBack,
                 modifier = modifier
