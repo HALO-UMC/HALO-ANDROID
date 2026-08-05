@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -59,7 +60,7 @@ fun ContinueStorybookHome(
             .padding(horizontal = 24.dp)
         )
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(16.dp))
 
         val pagerState = rememberPagerState(
             pageCount = { (item.size + 1) / 2 }
@@ -67,16 +68,20 @@ fun ContinueStorybookHome(
 
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             pageSpacing = 24.dp,
-            contentPadding = PaddingValues(horizontal = 24.dp)
+            contentPadding = PaddingValues(horizontal = 24.dp),
+            verticalAlignment = Alignment.Top //위쪽 정렬
+
         ) { page ->
 
             val firstItem = item[page * 2]
 
             Column(
-                Modifier.fillMaxWidth()
-
+                Modifier
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Top //위쪽 정렬
             ) {
                 Box() {
                     ContinueStorybookCard(firstItem) {

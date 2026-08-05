@@ -47,21 +47,14 @@ fun ContinueStorybookCard(
         Modifier
             .fillMaxWidth()
             .aspectRatio(312f/76f)
-            .dropShadow(
-                shape = RoundedCornerShape(12.dp),
-                shadow = Shadow(
-                    radius = 4.dp,
-                    spread = 2.dp,
-                    color = Color(0xCFECE9E7),
-                    offset = DpOffset(0.dp, 0.dp)
-                )
-            )
+            .haloCardShadow(RoundedCornerShape(16.dp))
             .clickable{
                 onClick()
             },
         colors = CardDefaults.cardColors(
             containerColor = White
-        )
+        ),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Row(
             Modifier

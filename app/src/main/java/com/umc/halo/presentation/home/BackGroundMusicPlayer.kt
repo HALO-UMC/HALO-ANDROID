@@ -53,15 +53,7 @@ fun BackGroundMusicPlayer(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = buildAnnotatedString {
-                append("산들바람 ")
-
-                withStyle(
-                    style = HaloType.body03Regular.toSpanStyle()
-                ) {
-                    append("Track01")
-                }
-            },
+            text = "산들바람",
             style = HaloType.body02Medium,
             color = Gray600
         )

@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontLoadingStrategy.Companion.Async
@@ -53,12 +54,12 @@ fun CarouselPager(
         val targetIndex = themeList
             .indexOfFirst { it.storybookId == initialStorybookId }
             .coerceAtLeast(0)
-        val initialPage = middle - (middle % themeList.size) + targetIndex
+        val initialPage = if (themeList.size == 1 || themeList.size == 2) 0 else middle - (middle % themeList.size) + targetIndex
         val baseWidth = maxWidth
         val horizontalPadding = baseWidth * 0.2f
         val pageSpacing = baseWidth * 0.04f
         val pagerState = rememberPagerState(
-            pageCount = { Int.MAX_VALUE },
+            pageCount = { if (themeList.size == 1 || themeList.size == 2) themeList.size else Int.MAX_VALUE },
             initialPage = initialPage
         )
 
@@ -110,6 +111,7 @@ fun CarouselPager(
                         model = item.imageUrl,
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize()
+                            .alpha(alpha)
                     )
                 }
 
