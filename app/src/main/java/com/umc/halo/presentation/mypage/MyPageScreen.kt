@@ -13,9 +13,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryScreenMode
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryUiEvent
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryViewModel
+import com.umc.halo.presentation.mypage.relationship.RelationshipInfoViewModel
 import com.umc.halo.presentation.mypage.screen.AccountInfoScreen
 import com.umc.halo.presentation.mypage.screen.AnniversaryScreen
 import com.umc.halo.presentation.mypage.screen.NotificationSettingsScreen
+import com.umc.halo.presentation.mypage.screen.RelationshipInfoScreen
 import com.umc.halo.presentation.mypage.screen.SystemSettingsScreen
 import com.umc.halo.presentation.mypage.screen.WithdrawScreen
 
@@ -117,6 +119,28 @@ private fun AccountActionEffect(
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         viewModel.onEvent(MyPageUiEvent.AccountErrorShown)
     }
+}
+
+@Composable
+fun RelationshipInfoRoute(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: RelationshipInfoViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(uiState.errorMessage) {
+        val message = uiState.errorMessage ?: return@LaunchedEffect
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        viewModel.errorMessageShown()
+    }
+
+    RelationshipInfoScreen(
+        uiState = uiState,
+        onBack = onBack,
+        modifier = modifier
+    )
 }
 
 @Composable
