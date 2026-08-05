@@ -137,8 +137,9 @@ fun NavGraphBuilder.mypageGraph(
                         launchSingleTop = true
                     }
                 },
+                // 로그아웃은 계정이 남아 있으므로 '재로그인' 화면으로 (탈퇴는 아래 로그인 화면 그대로)
                 onNavigateToLogin = {
-                    navController.navigate(Routes.LOGIN) {
+                    navController.navigate(Routes.RELOGIN) {
                         popUpTo(navController.graph.id) {
                             inclusive = true
                         }
