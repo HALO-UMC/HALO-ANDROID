@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.domain.model.calendar.CompletedBook
 import com.umc.halo.domain.model.calendar.MonthSummary
+import com.umc.halo.presentation.component.storybookSpineOf
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.Gray500
@@ -36,14 +37,6 @@ import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.White
 
-// 책등 이미지(홈 책장과 같은 자산 사용 — 투명 배경)
-// 순서는 홈 HomeViewModel 의 번호와 동일: 1 오래전 당신 / 2 당신의 1호 팬 / 3 취향이 닿는 날 ...
-private val StorybookSpines = listOf(
-    R.drawable.image_home_bookcase_1, R.drawable.image_home_bookcase_2, R.drawable.image_home_bookcase_3,
-    R.drawable.image_home_bookcase_4, R.drawable.image_home_bookcase_5, R.drawable.image_home_bookcase_6,
-    R.drawable.image_home_bookcase_7, R.drawable.image_home_bookcase_8, R.drawable.image_home_bookcase_9,
-    R.drawable.image_home_bookcase_10
-)
 private val ShelfHeight = 84.dp
 
 /**
@@ -190,8 +183,8 @@ private fun BookShelfCard(
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            books.forEachIndexed { index, _ ->
-                BookSpine(spineRes = StorybookSpines[index % StorybookSpines.size])
+            books.forEach { book ->
+                BookSpine(spineRes = storybookSpineOf(book.storybookId))
             }
         }
 
