@@ -65,8 +65,8 @@ data class MonthSummary(
 /**
  * 책꽂이에 꽂히는 완료 스토리북(책등)
  *
- * 책등 그림은 앱 자산이라 storybookId 로 고르면 됨(테마 10종의 고정 ID)
- * TODO: 다만 아직 매핑표가 없어 화면에서 목록 순서대로 배정 중 — CalendarMonthSummary 참고
+ * 책등 그림은 앱 자산이라 storybookId 로 고름(테마 10종의 고정 ID)
+ * 매핑표는 presentation 의 storybookSpineOf() 참고
  */
 data class CompletedBook(
     val storybookId: Long
