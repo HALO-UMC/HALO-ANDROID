@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.umc.halo.presentation.login.LoginRoute
+import com.umc.halo.presentation.login.ReloginRoute
 import com.umc.halo.presentation.onboarding.OnboardingRoute
 import com.umc.halo.presentation.splash.SplashRoute
 import com.umc.halo.presentation.terms.TermsRoute
@@ -52,6 +53,16 @@ fun NavGraphBuilder.authGraph(
         composable(Routes.LOGIN) {
             // 로그인 성공 → 약관 미동의면 약관, 동의했으면 온보딩 또는 홈
             LoginRoute(
+                onNavigateToTerms = { navigateInAuthFlow(Routes.TERMS) },
+                onNavigateToOnboarding = { navigateInAuthFlow(Routes.ONBOARDING) },
+                onNavigateToHome = { navigateInAuthFlow(Graphs.MAIN) }
+            )
+        }
+
+        composable(Routes.RELOGIN) {
+            // 마이페이지에서 로그아웃하면 재로그인 화면으로 이동
+            // 로그인 이후 분기는 로그인 화면과 동일
+            ReloginRoute(
                 onNavigateToTerms = { navigateInAuthFlow(Routes.TERMS) },
                 onNavigateToOnboarding = { navigateInAuthFlow(Routes.ONBOARDING) },
                 onNavigateToHome = { navigateInAuthFlow(Graphs.MAIN) }

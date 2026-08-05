@@ -1,28 +1,20 @@
 package com.umc.halo.presentation.login
 
-import android.widget.Toast
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -33,20 +25,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.R
-import com.umc.halo.domain.model.auth.AuthDestination
 import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloTheme
 import com.umc.halo.presentation.theme.HaloType
-
-// 카카오 공식 브랜드 색상
-private val KakaoYellow = Color(0xFFFEE500)
-private val KakaoLabel = Color(0xFF191919)       // 카카오 로고 라벨 색
 
 private const val TopSpaceWeight = 3f            // 상태바 아래 ~ 문구
 private const val CharacterToButtonWeight = 1f   // 캐릭터 ~ 카카오 버튼
@@ -70,23 +56,13 @@ fun LoginRoute(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(uiState.destination) {
-        when (uiState.destination ?: return@LaunchedEffect) {
-            AuthDestination.TERMS -> onNavigateToTerms()
-            AuthDestination.ONBOARDING -> onNavigateToOnboarding()
-            AuthDestination.HOME -> onNavigateToHome()
-            // 로그인에 성공한 뒤 다시 로그인으로 보낼 일은 없으므로
-            AuthDestination.LOGIN -> Unit
-        }
-        viewModel.onEvent(LoginUiEvent.NavigationHandled)
-    }
-
-    LaunchedEffect(uiState.errorMessage) {
-        val message = uiState.errorMessage ?: return@LaunchedEffect
-        // TODO: 에러 표시 방식은 디자인 확정 후 교체
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        viewModel.onEvent(LoginUiEvent.ErrorShown)
-    }
+    LoginResultEffect(
+        uiState = uiState,
+        onEvent = viewModel::onEvent,
+        onNavigateToTerms = onNavigateToTerms,
+        onNavigateToOnboarding = onNavigateToOnboarding,
+        onNavigateToHome = onNavigateToHome
+    )
 
     LoginScreen(
         isLoading = uiState.isLoading,
@@ -195,61 +171,6 @@ fun LoginScreen(
             CircularProgressIndicator(
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    }
-}
-
-/**
- * 카카오/구글 버튼(공통)
- */
-@Composable
-private fun SocialLoginButton(
-    text: String,
-    containerColor: Color,
-    contentColor: Color,
-    onClick: () -> Unit,
-    @DrawableRes iconRes: Int,
-    modifier: Modifier = Modifier,
-    iconSize: Dp = 24.dp,
-    border: BorderStroke? = null,
-    enabled: Boolean = true
-) {
-    Button(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(54.dp),
-        shape = RoundedCornerShape(30.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor,
-            // 비활성 상태에서도 브랜드 색을 유지하고 살짝 흐리게만
-            disabledContainerColor = containerColor.copy(alpha = 0.5f),
-            disabledContentColor = contentColor.copy(alpha = 0.5f)
-        ),
-        border = border
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier.size(24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = iconRes),
-                    contentDescription = null,      // 장식용 로고라 null
-                    modifier = Modifier.size(iconSize)
-                )
-            }
-            Text(
-                text = text,
-                style = HaloType.body01Medium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
             )
         }
     }

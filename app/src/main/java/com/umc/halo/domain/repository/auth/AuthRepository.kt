@@ -35,4 +35,11 @@ interface AuthRepository {
      * 서버 호출이 실패하더라도 로컬 토큰은 반드시 지움
      */
     suspend fun logout()
+
+    /**
+     * 마지막으로 성공한 소셜 로그인 방식
+     * 재로그인 화면의 '최근 로그인' 표시에 사용하며, 로그인 기록이 없으면 null
+     * 로그아웃해도 남는 값임
+     */
+    suspend fun getLastLoginProvider(): SocialProvider?
 }

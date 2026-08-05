@@ -58,9 +58,9 @@ fun HaloScaffold(
 
     /*
      * 시스템 바의 뒤로가기로 '앱 종료'를 물어볼 화면
-     * 탭 최상위 화면 + 로그인 흐름(로그인·약관동의)에 적용됨
+     * 탭 최상위 화면 + 로그인 흐름(로그인·재로그인·약관동의)에 적용됨
      */
-    val exitOnBackRoutes = mainRootRoutes + listOf(Routes.LOGIN, Routes.TERMS)
+    val exitOnBackRoutes = mainRootRoutes + listOf(Routes.LOGIN, Routes.RELOGIN, Routes.TERMS)
 
     var showExitDialog by remember { mutableStateOf(false) }
 
