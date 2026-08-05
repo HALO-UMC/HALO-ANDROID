@@ -46,12 +46,11 @@ class TermsRepositoryImpl @Inject constructor(
 
         return TermsAgreedStatus(
             allRequiredAgreed = result.termsAgreed,
-            // 서버가 배열을 안 주면(미구현) null 을 그대로 넘김
-            // 빈 배열로 바꿔버리면 '아무것도 동의 안 함'과 구분이 안 됨
             agreedTermIds = result.agreements
-                ?.filter { it.isAgreed }
-                ?.map { it.termId }
-                ?.toSet()
+                .orEmpty()
+                .filter { it.isAgreed }
+                .map { it.termId }
+                .toSet()
         )
     }
 
