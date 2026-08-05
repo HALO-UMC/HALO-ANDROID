@@ -26,7 +26,7 @@ class ShowThemeViewModel @Inject constructor(
             ShowThemeUiEvent.PreviousPage -> {
                 updateState {
                     copy(
-                        currentPage = (currentPage + 1).coerceAtLeast(0),
+                        currentPage = (currentPage - 1).coerceAtLeast(0),
                         progress = 0f
                     )
                 }

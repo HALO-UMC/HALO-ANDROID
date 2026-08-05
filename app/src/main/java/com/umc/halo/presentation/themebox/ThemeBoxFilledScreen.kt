@@ -65,8 +65,8 @@ fun ThemeBoxFilledScreen(
             text = "감상 시작",
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .aspectRatio(52f/9f),
+                .height(54.dp)
+                .padding(horizontal = 24.dp),
             style = HaloType.body01SemiBold
         ) {
             if (state.currentStorybookId != null) {

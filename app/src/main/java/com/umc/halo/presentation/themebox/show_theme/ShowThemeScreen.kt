@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.themebox.show_theme
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -25,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -34,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.umc.halo.presentation.component.HaloTopBar
+import com.umc.halo.presentation.theme.Black
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.White
@@ -92,24 +95,18 @@ fun ShowThemeScreen(
         pageCount = { state.chapters.size }
     )
 
-    LaunchedEffect(state.currentPage, state.isPlaying) {
-        while (state.progress < 1f) {
-            delay(50)
+    LaunchedEffect(state.currentPage) {
+        var progress = 0f
 
-            onEvent(
-                ShowThemeUiEvent.UpdateProgress(
-                    state.progress + 0.01f
-                )
-            )
+        while (progress < 1f) {
+            if (state.isPlaying) {
+                progress += 0.01f
+                onEvent(ShowThemeUiEvent.UpdateProgress(progress))
+            }
+            delay(50)
         }
 
-        onEvent(
-            ShowThemeUiEvent.NextPage
-        )
-
-        pagerState.animateScrollToPage(
-            state.currentPage
-        )
+        onEvent(ShowThemeUiEvent.NextPage)
     }
 
     val currentPage = state.chapters.getOrNull(state.currentPage) ?: return
@@ -152,6 +149,12 @@ fun ShowThemeScreen(
                 .background(Color.Black)
         )
 
+        Box(
+            modifier = Modifier.fillMaxSize()
+                .background(Black)
+                .alpha(0.3f)
+        )
+
         ShowThemeTopBar(title = currentPage.title, onEvent = onEvent)
 
         // 하단 텍스트 콘텐츠
@@ -190,6 +193,8 @@ fun ShowThemeScreen(
                 style = HaloType.body02Medium,
                 color = Gray100,
             )
+
+            Spacer(Modifier.height(24.dp))
         }
     }
 }

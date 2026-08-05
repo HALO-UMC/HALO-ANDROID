@@ -13,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,9 +45,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
@@ -58,6 +61,8 @@ import androidx.compose.ui.unit.lerp
 import com.lottiefiles.dotlottie.core.compose.runtime.DotLottieController
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.Books
+import com.umc.halo.presentation.component.haloBookShadow
+import com.umc.halo.presentation.component.haloCardShadow
 import com.umc.halo.presentation.home.HomeUiEvent
 import com.umc.halo.presentation.home.HomeUiState
 import com.umc.halo.presentation.home.HomeViewModel
@@ -117,7 +122,7 @@ fun BookCaseContents(
         modifier = Modifier
             .fillMaxWidth()
             .height(246.dp)
-            .padding(horizontal = 24.dp),
+            .background(Color(0xFFF8F5F3)),
         horizontalArrangement = Arrangement
             .spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom,
@@ -275,7 +280,23 @@ fun BookItem(
         modifier = Modifier
             .bringIntoViewRequester(bringIntoViewRequester)
             .fillMaxWidth()
-            .clickable { onClick() }
+            .then(
+                if (!hasSelection || isSelected) {
+                    Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        onClick()
+                    }
+                } else {
+                    Modifier
+                }
+            )
+            .padding(
+                start = if (item.id == 1L) 24.dp else 0.dp,
+                end = if (item.id == 10L) 24.dp else 0.dp
+            )
+
     ) {
         Box(
             modifier = Modifier
@@ -332,33 +353,15 @@ fun BookItem(
                 Image(
                     painter = painterResource(item.coverImage),
                     contentDescription = "${item.id}",
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            shape = RoundedCornerShape(11.1.dp)
+                            clip = true
+                        }
+                        .haloCardShadow(RoundedCornerShape(11.1.dp)),
                     contentScale = ContentScale.FillBounds
                 )
-
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .aspectRatio(180f/83f)
-//                        .background(White)
-//                        .padding(horizontal = 13.86.dp)
-//                        .align(Alignment.BottomCenter),
-//                    verticalArrangement = Arrangement.Center
-//                ) {
-//                    Spacer(Modifier.height(15.24.dp))
-//
-//                    Text(
-//                        text = item.title,
-//                        style = HaloType.heading01SemiBold,
-//                        color = Gray800
-//                    )
-//
-//                    Text(
-//                        text = item.subtitle,
-//                        style = HaloType.body01Regular,
-//                        color = Gray700
-//                    )
-//                }
             }
         }
     }
