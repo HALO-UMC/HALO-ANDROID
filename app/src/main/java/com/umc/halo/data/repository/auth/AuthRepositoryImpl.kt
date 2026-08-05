@@ -1,5 +1,6 @@
 package com.umc.halo.data.repository.auth
 
+import com.umc.halo.core.datastore.LastLoginDataStore
 import com.umc.halo.core.datastore.TokenDataStore
 import com.umc.halo.data.remote.api.auth.AuthApi
 import com.umc.halo.data.remote.dto.request.auth.LoginRequest
@@ -17,7 +18,8 @@ import javax.inject.Inject
  */
 class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
-    private val tokenDataStore: TokenDataStore
+    private val tokenDataStore: TokenDataStore,
+    private val lastLoginDataStore: LastLoginDataStore
 ) : AuthRepository {
 
     override suspend fun login(provider: SocialProvider, providerToken: String): LoginResult {
@@ -36,6 +38,9 @@ class AuthRepositoryImpl @Inject constructor(
 
         // 서버 토큰 저장 (자동 로그인/인증 헤더에서 재사용)
         tokenDataStore.saveTokens(result.accessToken, result.refreshToken)
+
+        // 재로그인 화면의 '최근 로그인' 표시에 쓸 로그인 방식 기록 (로그아웃해도 지우지 않음)
+        lastLoginDataStore.saveProvider(provider.name)
 
         // DTO → 도메인 변환
         // isNewUser 는 화면 분기에 쓰지 않음
@@ -73,5 +78,12 @@ class AuthRepositoryImpl @Inject constructor(
         // 서버 무효화는 실패해도 무시(토큰 만료 등)
         runCatching { authApi.logout() }
         tokenDataStore.clear()
+    }
+
+    override suspend fun getLastLoginProvider(): SocialProvider? {
+        val saved = lastLoginDataStore.providerFlow.first() ?: return null
+
+        // 저장된 문자열 → 도메인 enum 변환
+        return SocialProvider.entries.firstOrNull { it.name == saved }
     }
 }
