@@ -65,8 +65,8 @@ data class MonthSummary(
 /**
  * 책꽂이에 꽂히는 완료 스토리북(책등)
  *
- *  서버(캘린더 메인 조회)가 storybookId 만 주고 제목·커버는 주지 않기에
- *  책등 이미지는 여전히 목록 순서대로 임시 배정
+ * 책등 그림은 앱 자산이라 storybookId 로 고르면 됨(테마 10종의 고정 ID)
+ * TODO: 다만 아직 매핑표가 없어 화면에서 목록 순서대로 배정 중 — CalendarMonthSummary 참고
  */
 data class CompletedBook(
     val storybookId: Long

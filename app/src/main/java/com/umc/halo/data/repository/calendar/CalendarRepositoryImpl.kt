@@ -39,8 +39,7 @@ class CalendarRepositoryImpl @Inject constructor(
             summary = MonthSummary(
                 completedCount = stats?.completedStorybookCount ?: 0,
                 inProgressCount = stats?.inProgressStorybookCount ?: 0,
-                // 서버가 id 만 주므로 책등 이미지는 화면에서 순서대로 배정
-                // TODO : 백엔드와 협의
+                // 책등 그림은 앱 자산이라 서버는 id 만 주면 되고 매핑은 화면이 함
                 completedBooks = result.completedStorybooks.orEmpty().map { dto ->
                     CompletedBook(storybookId = dto.storybookId)
                 }
