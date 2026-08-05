@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.HaloType
@@ -41,7 +40,7 @@ fun PrimaryActionButton(
     ) {
         Text(
             text = text,
-            style = HaloType.body02SemiBold.copy(fontSize = 15.sp)
+            style = HaloType.body01SemiBold
         )
     }
 }
@@ -66,7 +65,7 @@ fun SecondaryActionButton(
     ) {
         Text(
             text = text,
-            style = HaloType.body02SemiBold.copy(fontSize = 15.sp)
+            style = HaloType.body01SemiBold
         )
     }
 }

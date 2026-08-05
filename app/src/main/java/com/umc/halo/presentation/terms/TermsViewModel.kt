@@ -6,6 +6,7 @@ import com.umc.halo.domain.repository.auth.AuthRepository
 import com.umc.halo.domain.repository.terms.TermsRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -70,8 +71,23 @@ class TermsViewModel @Inject constructor(
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
 
-            runCatching { termsRepository.getTerms() }
-                .onSuccess { terms -> updateState { copy(terms = terms) } }
+            // 약관 목록과 동의 현황은 서로 다른 API라서 두 개를 동시에 요청
+            val termsDeferred = async { runCatching { termsRepository.getTerms() } }
+            val agreedStatusDeferred = async { termsRepository.getTermsAgreedStatus() }
+
+            val termsResult = termsDeferred.await()
+            val agreedStatus = agreedStatusDeferred.await()
+
+            termsResult
+                .onSuccess { terms ->
+                    updateState {
+                        copy(
+                            terms = terms,
+                            // 온보딩에서 되돌아온 경우 이미 동의한 약관을 다시 체크해둠
+                            agreedIds = agreedStatus.agreedTermIds
+                        )
+                    }
+                }
                 .onFailure { updateState { copy(errorMessage = LOAD_FAILED_MESSAGE) } }
 
             updateState { copy(isLoading = false) }

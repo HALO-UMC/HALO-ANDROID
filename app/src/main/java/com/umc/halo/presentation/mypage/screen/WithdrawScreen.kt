@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.presentation.mypage.MyPageUiEvent
@@ -49,7 +50,7 @@ fun WithdrawScreen(
     if (uiState.showWithdrawDialog) {
         ConfirmActionDialog(
             title = "정말 탈퇴하시겠어요?",
-            description = "탈퇴 시 모든 정보가 사라집니다.",
+            description = "탈퇴 시 모든 정보가 사라집니다!",
             buttonText = "탈퇴하기",
             onDismiss = {
                 onEvent(MyPageUiEvent.WithdrawDialogChanged(false))
@@ -70,16 +71,16 @@ fun WithdrawScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(top = 58.dp, bottom = 142.dp),
+                    .padding(top = 59.dp, bottom = 142.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = "정말 탈퇴하시겠어요?",
-                    style = HaloType.heading01SemiBold,
+                    style = HaloType.heading01Regular.copy(fontWeight = FontWeight.Medium),
                     color = Gray800,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(14.dp))
                 Text(
                     text = "회원 탈퇴 시 계정 정보와 진행 중인 스토리북, 저장된 모든 기록이 삭제되며, 삭제된 데이터는 복구할 수 없어요.",
                     style = HaloType.body02Regular,
@@ -87,17 +88,17 @@ fun WithdrawScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(Modifier.height(54.dp))
+                Spacer(Modifier.height(44.dp))
                 Image(
                     painter = painterResource(id = R.drawable.ic_orange_character),
                     contentDescription = null,
                     modifier = Modifier.size(width = 94.dp, height = 109.dp)
                 )
 
-                Spacer(Modifier.height(42.dp))
-                WarningLine("계정 정보가 삭제돼요.")
-                WarningLine("기록과 스토리북이 모두 사라져요")
-                WarningLine("삭제 후에는 복구할 수 없어요.")
+                Spacer(Modifier.height(48.dp))
+                WarningLine("❶ 계정 정보가 삭제돼요.")
+                WarningLine("❷ 기록과 스토리북이 모두 사라져요")
+                WarningLine("❸ 삭제 후에는 복구할 수 없어요.")
             }
 
             Column(

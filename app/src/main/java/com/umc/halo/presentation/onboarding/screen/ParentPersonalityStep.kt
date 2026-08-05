@@ -53,6 +53,7 @@ import com.umc.halo.presentation.theme.HaloType
 fun ParentPersonalityStep(
     uiState: OnboardingUiState,
     onEvent: (OnboardingUiEvent) -> Unit,
+    onSystemBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showLimitMessage by rememberSaveable {
@@ -63,9 +64,7 @@ fun ParentPersonalityStep(
      * 기기 시스템 뒤로가기 버튼을 눌렀을 때도
      * 온보딩 이전 단계로 이동한다.
      */
-    BackHandler {
-        onEvent(OnboardingUiEvent.BackClicked)
-    }
+    BackHandler(onBack = onSystemBack)
 
     Box(
         modifier = modifier
@@ -114,11 +113,11 @@ fun ParentPersonalityStep(
                 ) {
                     Icon(
                         painter = painterResource(
-                            id = R.drawable.ic_chevron_left
+                            id = R.drawable.ic_common_chevron_left
                         ),
                         contentDescription = "이전 화면",
                         tint = Gray800,
-                        modifier = Modifier.size(21.dp)
+                        modifier = Modifier.size(8.dp, 12.dp)
                     )
                 }
             }
@@ -167,6 +166,16 @@ fun ParentPersonalityStep(
                     style = HaloType.body03Regular,
                     color = Gray400
                 )
+
+                if (showLimitMessage) {
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = "태그는 최대 3개까지 선택할 수 있어요.",
+                        style = HaloType.body03Regular,
+                        color = Error
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(33.dp))
 
@@ -237,16 +246,6 @@ fun ParentPersonalityStep(
                             )
                         }
                     }
-                }
-
-                if (showLimitMessage) {
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "태그는 최대 3개까지 선택할 수 있어요.",
-                        style = HaloType.body03Regular,
-                        color = Error
-                    )
                 }
             }
 

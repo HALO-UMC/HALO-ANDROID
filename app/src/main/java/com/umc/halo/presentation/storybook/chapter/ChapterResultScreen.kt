@@ -263,9 +263,10 @@ private fun ResultHeroTopBar(
             onClick = onBackClick
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_common_backward_arrow),
+                painter = painterResource(id = R.drawable.ic_common_chevron_left),
                 contentDescription = "뒤로가기",
-                tint = White
+                tint = Gray800,
+                modifier = Modifier.size(8.dp, 12.dp)
             )
         }
 

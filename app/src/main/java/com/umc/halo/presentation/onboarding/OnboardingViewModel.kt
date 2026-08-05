@@ -81,19 +81,28 @@ class OnboardingViewModel @Inject constructor() :
 
     private fun updateBirthYear(year: Int) {
         updateState {
-            copy(birthYear = year)
+            copy(
+                birthYear = year,
+                hasBirthDateTouched = true
+            )
         }
     }
 
     private fun updateBirthMonth(month: Int) {
         updateState {
-            copy(birthMonth = month)
+            copy(
+                birthMonth = month,
+                hasBirthDateTouched = true
+            )
         }
     }
 
     private fun updateBirthDay(day: Int) {
         updateState {
-            copy(birthDay = day)
+            copy(
+                birthDay = day,
+                hasBirthDateTouched = true
+            )
         }
     }
 

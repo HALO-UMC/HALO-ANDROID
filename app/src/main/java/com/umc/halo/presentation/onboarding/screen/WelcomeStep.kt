@@ -42,6 +42,7 @@ fun WelcomeStep(
     userName: String,
     onBackClick: () -> Unit,
     onNextClick: () -> Unit,
+    onSystemBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     /*
@@ -59,7 +60,7 @@ fun WelcomeStep(
         isNextButtonVisible = true
     }
 
-    BackHandler(onBack = onBackClick)
+    BackHandler(onBack = onSystemBack)
 
     Box(
         modifier = modifier

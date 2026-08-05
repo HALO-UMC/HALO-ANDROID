@@ -1,17 +1,13 @@
 package com.umc.halo.presentation.onboarding.component
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray50
@@ -32,7 +28,6 @@ fun OnboardingChoiceChip(
 ) {
     Surface(
         modifier = modifier
-            .height(30.dp)
             .toggleable(
                 value = selected,
                 enabled = enabled,
@@ -48,19 +43,15 @@ fun OnboardingChoiceChip(
             Gray50
         },
     ) {
-        Box(
-            modifier = Modifier.padding(horizontal = 10.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = text,
-                style = HaloType.body03Regular.copy(fontWeight = FontWeight.Medium),
-                color = if (selected) {
-                    Primary500
-                } else {
-                    Gray400
-                }
-            )
-        }
+        Text(
+            text = text,
+            style = HaloType.body03Medium,
+            color = if (selected) {
+                Primary500
+            } else {
+                Gray400
+            },
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)
+        )
     }
 }

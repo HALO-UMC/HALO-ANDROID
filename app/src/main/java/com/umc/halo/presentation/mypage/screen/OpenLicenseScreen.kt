@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.presentation.mypage.component.MyPageContainer
@@ -29,6 +30,7 @@ import com.umc.halo.presentation.mypage.component.MyPageTopBar
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray500
+import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 
@@ -41,17 +43,17 @@ private data class OpenLicenseItem(
 private val openLicenseItems = listOf(
     OpenLicenseItem(
         name = "AndroidX Core KTX",
-        version = "1.12",
+        version = "1.1.2",
         description = "The android,,~"
     ),
     OpenLicenseItem(
         name = "AndroidX Core KTX",
-        version = "1.12",
+        version = "1.1.2",
         description = "The android,,~"
     ),
     OpenLicenseItem(
         name = "AndroidX Core KTX",
-        version = "1.12",
+        version = "1.1.2",
         description = "The android,,~"
     )
 )
@@ -72,7 +74,7 @@ fun OpenLicenseScreen(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(top = 52.dp, bottom = 32.dp)
+                .padding(top = 34.dp, bottom = 32.dp)
         ) {
             Text(
                 text = "HALO 는 오픈소스 라이브러리를 사용합니다.\n각 라이브러리의 라이선스 전문은 아래에서 확인하실 수 있습니다.",
@@ -80,7 +82,7 @@ fun OpenLicenseScreen(
                 color = Gray500
             )
 
-            Spacer(Modifier.height(38.dp))
+            Spacer(Modifier.height(34.dp))
 
             openLicenseItems.forEachIndexed { index, item ->
                 OpenLicenseRow(
@@ -89,10 +91,11 @@ fun OpenLicenseScreen(
                 )
 
                 if (index < openLicenseItems.lastIndex) {
+                    Spacer(Modifier.height(10.dp))
                     HorizontalDivider(
-                        color = Gray100,
-                        modifier = Modifier.padding(vertical = 24.dp)
+                        color = Gray100
                     )
+                    Spacer(Modifier.height(10.dp))
                 }
             }
         }
@@ -107,31 +110,35 @@ private fun OpenLicenseRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(39.dp)
-            .clickable(onClick = onClick),
+            .height(84.dp)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(36.dp)
+                .size(48.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(Gray200)
         )
 
-        Spacer(Modifier.width(16.dp))
+        Spacer(Modifier.width(12.dp))
 
         Column(modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
                     text = item.name,
                     style = HaloType.body02SemiBold,
-                    color = Gray800
+                    color = Gray800,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
                     text = item.version,
                     style = HaloType.body03Regular,
-                    color = Gray500
+                    color = Gray500,
+                    maxLines = 1
                 )
             }
 
@@ -140,15 +147,22 @@ private fun OpenLicenseRow(
             Text(
                 text = item.description,
                 style = HaloType.body03Regular,
-                color = Gray500
+                color = Gray500,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
-        Icon(
-            painter = painterResource(id = R.drawable.ic_home_right_arrow),
-            contentDescription = null,
-            tint = Gray800,
-            modifier = Modifier.size(24.dp)
-        )
+        Box(
+            modifier = Modifier.size(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_common_chevron_right),
+                contentDescription = null,
+                tint = Gray700,
+                modifier = Modifier.size(8.dp, 12.dp)
+            )
+        }
     }
 }

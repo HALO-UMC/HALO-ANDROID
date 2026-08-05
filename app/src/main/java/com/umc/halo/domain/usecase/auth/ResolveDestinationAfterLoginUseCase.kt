@@ -8,18 +8,17 @@ import javax.inject.Inject
 /**
  * 소셜 로그인 성공 직후 어느 화면으로 갈지 판정
  *
- * 스플래시(ResolveStartDestinationUseCase)와 달리 토큰은 방금 발급받았고
- * 온보딩 완료 여부도 로그인 응답에 들어 있으므로 약관 여부만 서버에 확인
- *
- * TODO: 백엔드에 /auth/login 응답으로 termsAgreed 를 함께 달라고 요청해둠
- *  추가되면 이 API 호출 생략 가능
+ * termsRepository 는 폴백 전용으로 남겨둠
+ * 서버 배포가 앱보다 늦어 termsAgreed 가 안 오는 경우(null)에만 예전처럼 조회
+ * 실서버에서 값이 항상 온다고 확인되면 이 폴백과 의존성을 지워도 됨
  */
 class ResolveDestinationAfterLoginUseCase @Inject constructor(
     private val termsRepository: TermsRepository
 ) {
     suspend operator fun invoke(loginResult: LoginResult): AuthDestination {
         // 약관 미동의면 무조건 약관부터
-        if (!termsRepository.isTermsAgreed()) return AuthDestination.TERMS
+        val termsAgreed = loginResult.termsAgreed ?: termsRepository.getTermsAgreedStatus().allRequiredAgreed
+        if (!termsAgreed) return AuthDestination.TERMS
 
         return if (loginResult.onboardingCompleted) {
             AuthDestination.HOME

@@ -29,13 +29,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray100
-import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray400
@@ -44,13 +44,15 @@ import com.umc.halo.presentation.theme.Gray600
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
+import com.umc.halo.presentation.theme.Primary30
+import com.umc.halo.presentation.theme.Primary600
 import com.umc.halo.presentation.theme.White
 
 @Composable
 fun SectionTitle(text: String) {
     Text(
         text = text,
-        style = HaloType.body01SemiBold.copy(fontSize = 17.sp),
+        style = HaloType.body01SemiBold,
         color = Gray800
     )
 }
@@ -63,30 +65,30 @@ fun ProfileCard() {
         color = Gray30
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
                 shape = CircleShape,
                 color = White,
-                modifier = Modifier.size(58.dp)
+                modifier = Modifier.size(72.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_orange_character),
                     contentDescription = null,
-                    modifier = Modifier.padding(9.dp)
+                    modifier = Modifier.padding(12.dp)
                 )
             }
 
-            Spacer(Modifier.width(18.dp))
+            Spacer(Modifier.width(12.dp))
 
             Column {
                 Text(
                     text = "주현AB",
-                    style = HaloType.heading03SemiBold.copy(fontSize = 19.sp),
+                    style = HaloType.heading02SemiBold,
                     color = Gray800
                 )
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(2.dp))
                 Text(
                     text = "2003.09.25",
                     style = HaloType.body02Regular,
@@ -102,29 +104,39 @@ fun MenuRow(
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    titleColor: Color = Gray800
+    titleColor: Color = Gray800,
+    verticalPadding: Dp = 18.dp,
+    contentHorizontalPadding: Dp = 0.dp,
+    showDivider: Boolean = true
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .padding(horizontal = contentHorizontalPadding, vertical = verticalPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = title,
-            style = HaloType.body02Medium.copy(fontSize = 15.sp),
+            style = HaloType.body02SemiBold,
             color = titleColor,
             modifier = Modifier.weight(1f)
         )
-        Icon(
-            painter = painterResource(id = R.drawable.ic_home_right_arrow),
-            contentDescription = null,
-            tint = Gray700,
-            modifier = Modifier.size(18.dp)
-        )
+        Box(
+            modifier = Modifier.size(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_common_chevron_right),
+                contentDescription = null,
+                tint = Gray700,
+                modifier = Modifier.size(8.dp, 12.dp)
+            )
+        }
     }
-    HorizontalDivider(color = Gray100)
+    if (showDivider) {
+        HorizontalDivider(color = Gray100)
+    }
 }
 
 @Composable
@@ -134,7 +146,8 @@ fun SettingSwitchRow(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     description: String? = null,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    titleStyle: TextStyle = HaloType.body02SemiBold
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -143,14 +156,14 @@ fun SettingSwitchRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = HaloType.body02SemiBold.copy(fontSize = 15.sp),
+                style = titleStyle,
                 color = if (enabled) Gray800 else Gray400
             )
             if (description != null) {
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(2.dp))
                 Text(
                     text = description,
-                    style = HaloType.caption01Medium.copy(fontSize = 10.5.sp),
+                    style = HaloType.body03Regular,
                     color = if (enabled) Gray500 else Gray300
                 )
             }
@@ -172,7 +185,7 @@ fun HaloSwitch(
     enabled: Boolean = true
 ) {
     val thumbOffset by animateDpAsState(
-        targetValue = if (checked) 18.dp else 2.dp,
+        targetValue = if (checked) 21.dp else 3.dp,
         label = "haloSwitchThumb"
     )
 
@@ -180,7 +193,7 @@ fun HaloSwitch(
         modifier = modifier
             .width(42.dp)
             .height(24.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(100.dp))
             .background(
                 when {
                     !enabled -> Gray100
@@ -199,7 +212,7 @@ fun HaloSwitch(
         Box(
             modifier = Modifier
                 .offset(x = thumbOffset)
-                .size(20.dp)
+                .size(18.dp)
                 .clip(CircleShape)
                 .background(if (checked && enabled) White else Gray300)
         )
@@ -209,31 +222,40 @@ fun HaloSwitch(
 @Composable
 fun InfoRow(
     label: String,
-    value: String
+    value: String,
+    showDivider: Boolean = true,
+    verticalPadding: Dp = 18.dp,
+    contentHorizontalPadding: Dp = 0.dp
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .padding(horizontal = contentHorizontalPadding, vertical = verticalPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
-            style = HaloType.body02Medium.copy(fontSize = 15.sp),
+            style = HaloType.body02SemiBold,
             color = Gray800,
             modifier = Modifier.weight(0.9f)
         )
         Text(
             text = value,
-            style = HaloType.body03Regular.copy(fontSize = 12.5.sp),
-            color = Gray700,
+            style = if (value.length > 12) {
+                HaloType.body03Regular
+            } else {
+                HaloType.body02Regular
+            },
+            color = Gray800,
             textAlign = TextAlign.End,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1.1f)
         )
     }
-    HorizontalDivider(color = Gray100)
+    if (showDivider) {
+        HorizontalDivider(color = Gray100)
+    }
 }
 
 @Composable
@@ -245,25 +267,29 @@ fun TimeSettingCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(if (enabled) com.umc.halo.presentation.theme.Primary30 else Gray30)
+            .background(if (enabled) Primary30 else Gray30)
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 14.dp),
+            .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = timeText,
-            style = HaloType.body03Medium.copy(fontSize = 11.5.sp),
-            color = if (enabled) com.umc.halo.presentation.theme.Primary600 else Gray400,
+            style = HaloType.body02Regular,
+            color = if (enabled) Primary600 else Gray400,
             modifier = Modifier.weight(1f)
         )
-        Icon(
-            painter = painterResource(id = R.drawable.ic_home_right_arrow),
-            contentDescription = null,
-            tint = if (enabled) com.umc.halo.presentation.theme.Primary600 else Gray300,
-            modifier = Modifier.size(18.dp)
-        )
+        Box(
+            modifier = Modifier.size(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_common_chevron_right),
+                contentDescription = null,
+                tint = if (enabled) Primary600 else Gray300,
+                modifier = Modifier.size(8.dp, 12.dp)
+            )
+        }
     }
 }
 
@@ -272,29 +298,13 @@ fun WarningLine(text: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 5.dp),
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Surface(
-            shape = CircleShape,
-            color = Gray500,
-            modifier = Modifier.size(12.dp)
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Text(
-                    text = "!",
-                    style = HaloType.caption02Medium,
-                    color = White
-                )
-            }
-        }
-
-        Spacer(Modifier.width(6.dp))
-
         Text(
             text = text,
-            style = HaloType.body03Regular.copy(fontSize = 12.5.sp),
-            color = Gray600
+            style = HaloType.body01Regular,
+            color = Gray500
         )
     }
 }

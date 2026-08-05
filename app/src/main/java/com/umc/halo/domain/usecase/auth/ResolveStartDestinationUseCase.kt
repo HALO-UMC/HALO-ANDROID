@@ -12,9 +12,9 @@ import javax.inject.Inject
  * 저장된 refreshToken 으로 자동 로그인을 시도한 뒤
  * 약관 → 온보딩 순서로 서버 상태를 확인해 첫 화면을 결정
  *
- *
- * TODO: 백엔드에 /auth/reissue 응답으로 termsAgreed·onboardingCompleted 를 함께 달라고 요청해둠
- *  추가되면 아래 API 호출 3번이 1번으로 줄어듬. 그때 이 파일만 수정예정
+ * termsRepository·onboardingRepository 는 폴백 전용으로 남겨둠
+ * 서버 배포가 앱보다 늦어 두 필드가 안 오는 경우(null)에만 예전처럼 각각 조회
+ * 실서버에서 두 값이 항상 온다고 확인되면 이 폴백과 의존성 2개를 지워도 됨
  */
 class ResolveStartDestinationUseCase @Inject constructor(
     private val authRepository: AuthRepository,
@@ -23,13 +23,16 @@ class ResolveStartDestinationUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): AuthDestination {
         // 1순위 : 로그인 여부 (재발급 실패 = 토큰 없음/만료 → 로컬 토큰도 정리된 상태)
-        if (!authRepository.reissue()) return AuthDestination.LOGIN
+        val session = authRepository.reissue() ?: return AuthDestination.LOGIN
 
         // 2순위 : 필수 약관 동의 여부
-        if (!termsRepository.isTermsAgreed()) return AuthDestination.TERMS
+        val termsAgreed = session.termsAgreed ?: termsRepository.getTermsAgreedStatus().allRequiredAgreed
+        if (!termsAgreed) return AuthDestination.TERMS
 
         // 3순위 : 온보딩 완료 여부
-        if (!onboardingRepository.isOnboardingCompleted()) return AuthDestination.ONBOARDING
+        val onboardingCompleted =
+            session.onboardingCompleted ?: onboardingRepository.isOnboardingCompleted()
+        if (!onboardingCompleted) return AuthDestination.ONBOARDING
 
         return AuthDestination.HOME
     }

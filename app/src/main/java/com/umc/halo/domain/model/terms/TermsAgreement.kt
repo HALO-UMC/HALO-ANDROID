@@ -8,12 +8,8 @@ package com.umc.halo.domain.model.terms
  * @param shortDescription 약관 요약 (서버 제공)
  * @param required 필수 약관 여부. 필수를 모두 동의해야 '다음' 버튼이 활성화
  * @param lastUpdated 약관 상세 화면 상단의 최종 업데이트 표기
- * @param detailHeading 약관 상세 화면 제목
+ * @param detailHeading 약관 상세 화면 제목. 서버에 대응 필드가 없어 title 을 그대로 사용
  * @param detailContent 약관 상세 화면 본문
- *
- *  TODO: lastUpdated / detailHeading / detailContent 는 아직 서버 응답에 없음
- *  TODO: 약관 전문을 어디서 받을지는 대기 중이라 RepositoryImpl 에서 임시 값을 채워 넣음
- *  TODO: 확정되면 그 부분만 교체예정
  */
 data class TermsAgreement(
     val id: Long,
