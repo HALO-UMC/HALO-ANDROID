@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
@@ -29,6 +30,14 @@ fun TermsScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val uriHandler = LocalUriHandler.current
+    val termsLinks = listOf(
+        "https://halo-homepage.vercel.app/terms",
+        "https://halo-homepage.vercel.app/privacy",
+        "https://halo-homepage.vercel.app/content-policy",
+        "https://halo-homepage.vercel.app/marketing"
+    )
+
     MyPageContainer(modifier = modifier) {
         MyPageTopBar(title = "이용 약관", onBack = onBack)
 
@@ -54,7 +63,7 @@ fun TermsScreen(
             ).forEachIndexed { index, title ->
                 TermsAgreementRow(
                     title = title,
-                    onClick = {}
+                    onClick = { uriHandler.openUri(termsLinks[index]) }
                 )
                 if (index != 3) {
                     Spacer(Modifier.height(12.dp))
