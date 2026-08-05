@@ -35,10 +35,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
+import com.umc.halo.domain.model.onboarding.OnboardingTag
 import com.umc.halo.presentation.onboarding.MAX_PARENT_PERSONALITY_COUNT
 import com.umc.halo.presentation.onboarding.OnboardingUiEvent
 import com.umc.halo.presentation.onboarding.OnboardingUiState
-import com.umc.halo.presentation.onboarding.PARENT_PERSONALITY_GROUPS
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.onboarding.component.OnboardingChoiceChip
 import com.umc.halo.presentation.onboarding.component.OnboardingProgressBar
@@ -60,10 +60,6 @@ fun ParentPersonalityStep(
         mutableStateOf(false)
     }
 
-    /*
-     * 기기 시스템 뒤로가기 버튼을 눌렀을 때도
-     * 온보딩 이전 단계로 이동한다.
-     */
     BackHandler(onBack = onSystemBack)
 
     Box(
@@ -77,10 +73,6 @@ fun ParentPersonalityStep(
                 .fillMaxSize()
                 .statusBarsPadding()
         ) {
-            /*
-             * 진행 바는 스크롤 영역과 분리하여
-             * 화면 상단에 고정한다.
-             */
             OnboardingProgressBar(
                 currentStep = 1,
                 totalStep = 3,
@@ -93,10 +85,6 @@ fun ParentPersonalityStep(
 
             Spacer(modifier = Modifier.height(31.dp))
 
-            /*
-             * 뒤로 가기 영역도 진행 바 아래에 고정한다.
-             * IconButton의 터치 영역은 44dp로 유지한다.
-             */
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -122,11 +110,6 @@ fun ParentPersonalityStep(
                 }
             }
 
-            /*
-             * 남은 화면 높이를 선택 영역이 차지한다.
-             * 화면 높이가 작거나 내용이 길어질 경우
-             * 이 영역만 세로로 스크롤된다.
-             */
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -162,16 +145,22 @@ fun ParentPersonalityStep(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "해당되는 항목을 모두 선택해주세요. (최대 3개).",
+                    text = "해당하는 항목을 모두 선택해주세요. (최대 3개)",
                     style = HaloType.body03Regular,
                     color = Gray400
                 )
 
-                if (showLimitMessage) {
+                val errorMessage = if (showLimitMessage) {
+                    "태그는 최대 3개까지 선택할 수 있어요."
+                } else {
+                    uiState.stepErrorMessage
+                }
+
+                if (errorMessage != null) {
                     Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
-                        text = "태그는 최대 3개까지 선택할 수 있어요.",
+                        text = errorMessage,
                         style = HaloType.body03Regular,
                         color = Error
                     )
@@ -179,80 +168,66 @@ fun ParentPersonalityStep(
 
                 Spacer(modifier = Modifier.height(33.dp))
 
-                PARENT_PERSONALITY_GROUPS.forEachIndexed { index, group ->
-                    if (index > 0) {
-                        Spacer(modifier = Modifier.height(24.dp))
-                    }
+                uiState.parentPersonalityTags.toParentPersonalityGroups()
+                    .forEachIndexed { index, group ->
+                        if (index > 0) {
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
 
-                    Text(
-                        text = group.title,
-                        style = HaloType.body02SemiBold,
-                        color = Gray700
-                    )
+                        Text(
+                            text = group.title,
+                            style = HaloType.body02SemiBold,
+                            color = Gray700
+                        )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        maxItemsInEachRow = 4
-                    ) {
-                        group.options.forEach { personality ->
-                            val isSelected =
-                                personality in uiState.selectedParentPersonalities
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            maxItemsInEachRow = 4
+                        ) {
+                            group.options.forEach { tag ->
+                                val isSelected =
+                                    tag in uiState.selectedParentPersonalities
 
-                            OnboardingChoiceChip(
-                                text = personality,
-                                selected = isSelected,
-
-                                // 3개가 선택되어 있어도 다른 태그를 누를 수 있어야
-                                // 최대 선택 안내 문구를 띄울 수 있다.
-                                enabled = true,
-
-                                onClick = {
-                                    when {
-                                        // 이미 선택된 태그를 다시 누르면 선택 해제
-                                        // 실제 선택 상태가 바뀌므로 안내 문구도 제거
-                                        isSelected -> {
-                                            showLimitMessage = false
-
-                                            onEvent(
-                                                OnboardingUiEvent.ParentPersonalityClicked(
-                                                    personality
+                                OnboardingChoiceChip(
+                                    text = tag.title,
+                                    selected = isSelected,
+                                    enabled = true,
+                                    onClick = {
+                                        when {
+                                            isSelected -> {
+                                                showLimitMessage = false
+                                                onEvent(
+                                                    OnboardingUiEvent.ParentPersonalityClicked(
+                                                        tag
+                                                    )
                                                 )
-                                            )
-                                        }
+                                            }
 
-                                        // 선택 개수가 3개 미만이면 정상적으로 추가
-                                        uiState.selectedParentPersonalities.size <
-                                                MAX_PARENT_PERSONALITY_COUNT -> {
-                                            showLimitMessage = false
-
-                                            onEvent(
-                                                OnboardingUiEvent.ParentPersonalityClicked(
-                                                    personality
+                                            uiState.selectedParentPersonalities.size <
+                                                    MAX_PARENT_PERSONALITY_COUNT -> {
+                                                showLimitMessage = false
+                                                onEvent(
+                                                    OnboardingUiEvent.ParentPersonalityClicked(
+                                                        tag
+                                                    )
                                                 )
-                                            )
-                                        }
+                                            }
 
-                                        // 이미 3개인데 새로운 태그를 누른 경우
-                                        // 선택 상태는 변경하지 않고 안내만 표시
-                                        else -> {
-                                            showLimitMessage = true
+                                            else -> {
+                                                showLimitMessage = true
+                                            }
                                         }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
-                }
             }
 
-            /*
-             * 하단 버튼은 스크롤 영역 밖에 배치하여
-             * 화면 크기와 관계없이 항상 하단에 유지한다.
-             */
             OnboardingBottomButton(
                 text = "다음",
                 enabled = uiState.isNextEnabled,
@@ -269,5 +244,40 @@ fun ParentPersonalityStep(
                     )
             )
         }
+    }
+}
+
+private data class ParentPersonalityUiGroup(
+    val title: String,
+    val options: List<OnboardingTag>
+)
+
+private fun List<OnboardingTag>.toParentPersonalityGroups(): List<ParentPersonalityUiGroup> {
+    if (isEmpty()) return emptyList()
+
+    val groups = groupBy { it.subtitle }
+    val orderedGroups = listOf(
+        "POSITIVE" to "긍정적인 성향",
+        "NEUTRAL" to "중립적인 성향",
+        "CAUTIOUS" to "신중하게 보는 성향"
+    ).mapNotNull { (subtitle, title) ->
+        groups[subtitle]?.let { tags ->
+            ParentPersonalityUiGroup(
+                title = title,
+                options = tags
+            )
+        }
+    }
+
+    val ungrouped = groups[null].orEmpty()
+    return orderedGroups + if (ungrouped.isEmpty()) {
+        emptyList()
+    } else {
+        listOf(
+            ParentPersonalityUiGroup(
+                title = "부모님 성향",
+                options = ungrouped
+            )
+        )
     }
 }

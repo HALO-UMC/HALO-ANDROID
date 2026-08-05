@@ -35,6 +35,7 @@ import com.umc.halo.presentation.onboarding.OnboardingUiEvent
 import com.umc.halo.presentation.onboarding.OnboardingUiState
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.onboarding.component.OnboardingProgressBar
+import com.umc.halo.presentation.theme.Error
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray500
@@ -45,34 +46,6 @@ import com.umc.halo.presentation.theme.Primary400
 import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary600
 
-private data class RelationshipOption(
-    val title: String,
-    val description: String
-)
-
-private val relationshipOptions = listOf(
-    RelationshipOption(
-        title = "매우 가까운 편이에요",
-        description = "부모이기 전에 친구 같은, 비밀까지 나누는 사이"
-    ),
-    RelationshipOption(
-        title = "대체로 좋은 편이에요",
-        description = "일상적인 안부를 나누며 서로를 존중해요"
-    ),
-    RelationshipOption(
-        title = "보통이에요",
-        description = "가끔 어색하지만 필요한 이야기는 나눠요"
-    ),
-    RelationshipOption(
-        title = "서먹한 편이에요",
-        description = "대화가 많지 않고 거리감이 느껴질 때가 있어요"
-    ),
-    RelationshipOption(
-        title = "멀어진 것 같아요",
-        description = "최근에 갈등이 있거나 거의 연락하지 않아요"
-    )
-)
-
 @Composable
 fun RelationshipStep(
     uiState: OnboardingUiState,
@@ -80,10 +53,6 @@ fun RelationshipStep(
     onSystemBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    /*
-     * 기기 시스템 뒤로가기 버튼을 눌렀을 때도
-     * 부모님 성격 선택 단계로 이동한다.
-     */
     BackHandler(onBack = onSystemBack)
 
     Box(
@@ -99,9 +68,6 @@ fun RelationshipStep(
                 .statusBarsPadding()
                 .padding(bottom = 110.dp)
         ) {
-            /*
-             * 온보딩 세 단계 중 두 번째 단계
-             */
             OnboardingProgressBar(
                 currentStep = 2,
                 totalStep = 3,
@@ -114,9 +80,6 @@ fun RelationshipStep(
 
             Spacer(modifier = Modifier.height(31.dp))
 
-            /*
-             * 이전 버튼 영역
-             */
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -175,23 +138,34 @@ fun RelationshipStep(
                     color = Gray400
                 )
 
+                uiState.stepErrorMessage?.let { message ->
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = message,
+                        style = HaloType.body03Regular,
+                        color = Error
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(24.dp))
 
-                relationshipOptions.forEachIndexed { index, option ->
+                uiState.currentRelationStateTags.forEachIndexed { index, tag ->
                     val isSelected =
-                        uiState.selectedRelationship == option.title
+                        uiState.selectedRelationship == tag
 
                     if (index > 0) {
                         Spacer(modifier = Modifier.height(12.dp))
                     }
 
                     RelationshipOptionCard(
-                        option = option,
+                        title = tag.title,
+                        description = tag.description.orEmpty(),
                         selected = isSelected,
                         onClick = {
                             onEvent(
                                 OnboardingUiEvent.RelationshipClicked(
-                                    option.title
+                                    tag
                                 )
                             )
                         }
@@ -200,9 +174,6 @@ fun RelationshipStep(
             }
         }
 
-        /*
-         * 관계를 하나 선택하면 활성화된다.
-         */
         OnboardingBottomButton(
             text = "다음",
             enabled = uiState.isNextEnabled,
@@ -224,7 +195,8 @@ fun RelationshipStep(
 
 @Composable
 private fun RelationshipOptionCard(
-    option: RelationshipOption,
+    title: String,
+    description: String,
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -260,7 +232,7 @@ private fun RelationshipOptionCard(
             )
     ) {
         Text(
-            text = option.title,
+            text = title,
             style = HaloType.body02Medium,
             color = titleColor
         )
@@ -268,7 +240,7 @@ private fun RelationshipOptionCard(
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = option.description,
+            text = description,
             style = HaloType.caption01Regular,
             color = descriptionColor,
             maxLines = 1

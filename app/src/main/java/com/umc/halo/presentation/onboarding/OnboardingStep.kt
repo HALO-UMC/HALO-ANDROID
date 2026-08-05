@@ -40,4 +40,17 @@ enum class OnboardingStep {
             GOAL -> 2
             else -> null
         }
+
+    companion object {
+        fun fromSavedServerStep(step: Int?): OnboardingStep {
+            return when (step) {
+                1 -> NAME
+                2 -> BASIC_INFO
+                3 -> PARENT_PERSONALITY
+                4 -> RELATIONSHIP
+                5 -> GOAL
+                else -> NAME
+            }
+        }
+    }
 }

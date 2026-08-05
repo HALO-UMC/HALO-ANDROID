@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
 import com.lottiefiles.dotlottie.core.util.DotLottieSource
 import com.umc.halo.presentation.onboarding.OnboardingUiState
-import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray500
@@ -40,7 +39,6 @@ import com.umc.halo.presentation.theme.HaloType
 @Composable
 fun CompleteStep(
     uiState: OnboardingUiState,
-    onBackClick: () -> Unit,
     onStartClick: () -> Unit,
     onSystemBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -51,10 +49,10 @@ fun CompleteStep(
      */
     val selectedDirections = buildList {
         uiState.selectedRelationship?.let { relationship ->
-            add(relationship)
+            add(relationship.title)
         }
 
-        addAll(uiState.selectedGoals)
+        addAll(uiState.selectedGoals.map { it.title })
     }
 
     BackHandler(onBack = onSystemBack)
@@ -64,17 +62,6 @@ fun CompleteStep(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        OnboardingBackButton(
-            onClick = onBackClick,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .statusBarsPadding()
-                .padding(
-                    start = 8.dp,
-                    top = 14.dp
-                )
-        )
-
         /*
          * 화면 높이에 비례해 제목 위치를 고정한다.
          *

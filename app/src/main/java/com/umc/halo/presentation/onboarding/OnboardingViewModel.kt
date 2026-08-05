@@ -1,64 +1,95 @@
 package com.umc.halo.presentation.onboarding
 
+import androidx.lifecycle.viewModelScope
+import com.umc.halo.domain.model.onboarding.OnboardingSavedData
+import com.umc.halo.domain.model.onboarding.OnboardingStatus
+import com.umc.halo.domain.model.onboarding.OnboardingTag
+import com.umc.halo.domain.model.onboarding.OnboardingTags
+import com.umc.halo.domain.repository.onboarding.OnboardingRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class OnboardingViewModel @Inject constructor() :
-    BaseViewModel<OnboardingUiState, OnboardingUiEvent>(
-        initialState = OnboardingUiState()
-    ) {
+class OnboardingViewModel @Inject constructor(
+    private val onboardingRepository: OnboardingRepository
+) : BaseViewModel<OnboardingUiState, OnboardingUiEvent>(
+    initialState = OnboardingUiState()
+) {
+
+    init {
+        loadInitialData()
+    }
 
     override fun onEvent(event: OnboardingUiEvent) {
         when (event) {
-            is OnboardingUiEvent.NameChanged -> {
-                updateName(event.name)
+            is OnboardingUiEvent.NameChanged -> updateName(event.name)
+            is OnboardingUiEvent.GenderSelected -> updateGender(event.gender)
+            is OnboardingUiEvent.BirthYearSelected -> updateBirthYear(event.year)
+            is OnboardingUiEvent.BirthMonthSelected -> updateBirthMonth(event.month)
+            is OnboardingUiEvent.BirthDaySelected -> updateBirthDay(event.day)
+            is OnboardingUiEvent.ParentPersonalityClicked -> toggleParentPersonality(event.tag)
+            is OnboardingUiEvent.RelationshipClicked -> updateRelationship(event.tag)
+            is OnboardingUiEvent.GoalClicked -> toggleGoal(event.tag)
+            OnboardingUiEvent.NextClicked -> handleNextClicked()
+            OnboardingUiEvent.BackClicked -> moveToPreviousStep()
+            OnboardingUiEvent.HomeNavigationHandled -> updateState { copy(navigateToHome = false) }
+        }
+    }
+
+    private fun loadInitialData() {
+        viewModelScope.launch {
+            updateState {
+                copy(
+                    isInitialLoading = true,
+                    loadErrorMessage = null
+                )
             }
 
-            is OnboardingUiEvent.GenderSelected -> {
-                updateGender(event.gender)
+            val tagsDeferred = async {
+                runCatching { onboardingRepository.getTags() }
+            }
+            val statusDeferred = async {
+                runCatching { onboardingRepository.getStatus() }
             }
 
-            is OnboardingUiEvent.BirthYearSelected -> {
-                updateBirthYear(event.year)
+            val tagsResult = tagsDeferred.await()
+            val statusResult = statusDeferred.await()
+
+            val tags = tagsResult.getOrNull()
+            val status = statusResult.getOrNull()
+
+            if (status?.onboardingCompleted == true) {
+                updateState {
+                    copy(
+                        isInitialLoading = false,
+                        navigateToHome = true
+                    )
+                }
+                return@launch
             }
 
-            is OnboardingUiEvent.BirthMonthSelected -> {
-                updateBirthMonth(event.month)
-            }
+            updateState {
+                val nextState = copy(
+                    isInitialLoading = false,
+                    parentPersonalityTags = tags?.parentPersonalityTags.orEmpty(),
+                    currentRelationStateTags = tags?.currentRelationStateTags.orEmpty(),
+                    goalRelationshipTags = tags?.goalRelationshipTags.orEmpty(),
+                    loadErrorMessage = if (tags == null) TAG_LOAD_FAILED_MESSAGE else null
+                )
 
-            is OnboardingUiEvent.BirthDaySelected -> {
-                updateBirthDay(event.day)
-            }
-
-            is OnboardingUiEvent.ParentPersonalityClicked -> {
-                toggleParentPersonality(event.personality)
-            }
-
-            is OnboardingUiEvent.RelationshipClicked -> {
-                updateRelationship(event.relationship)
-            }
-
-            is OnboardingUiEvent.GoalClicked -> {
-                toggleGoal(event.goal)
-            }
-
-            OnboardingUiEvent.NextClicked -> {
-                moveToNextStep()
-            }
-
-            OnboardingUiEvent.BackClicked -> {
-                moveToPreviousStep()
+                if (status == null) {
+                    nextState
+                } else {
+                    nextState.restore(status)
+                }
             }
         }
     }
 
     private fun updateName(input: String) {
-        /*
-         * 허용되지 않은 문자는 실제 입력값에는 반영하지 않는다.
-         * 10자를 초과한 문자도 입력값에는 반영하지 않는다.
-         */
         val filteredName = input
             .filter { character ->
                 character.isAllowedNameCharacter()
@@ -68,14 +99,18 @@ class OnboardingViewModel @Inject constructor() :
         updateState {
             copy(
                 name = filteredName,
-                isNameErrorVisible = false
+                nameErrorText = null,
+                saveErrorMessage = null
             )
         }
     }
 
     private fun updateGender(gender: Gender) {
         updateState {
-            copy(selectedGender = gender)
+            copy(
+                selectedGender = gender,
+                saveErrorMessage = null
+            )
         }
     }
 
@@ -83,7 +118,8 @@ class OnboardingViewModel @Inject constructor() :
         updateState {
             copy(
                 birthYear = year,
-                hasBirthDateTouched = true
+                hasBirthDateTouched = true,
+                saveErrorMessage = null
             )
         }
     }
@@ -92,7 +128,8 @@ class OnboardingViewModel @Inject constructor() :
         updateState {
             copy(
                 birthMonth = month,
-                hasBirthDateTouched = true
+                hasBirthDateTouched = true,
+                saveErrorMessage = null
             )
         }
     }
@@ -101,82 +138,57 @@ class OnboardingViewModel @Inject constructor() :
         updateState {
             copy(
                 birthDay = day,
-                hasBirthDateTouched = true
+                hasBirthDateTouched = true,
+                saveErrorMessage = null
             )
         }
     }
 
-    private fun toggleParentPersonality(personality: String) {
+    private fun toggleParentPersonality(tag: OnboardingTag) {
         updateState {
             val updatedPersonalities = when {
-                /*
-                 * 이미 선택된 태그를 다시 누르면 선택 해제
-                 */
-                personality in selectedParentPersonalities -> {
-                    selectedParentPersonalities - personality
-                }
+                tag in selectedParentPersonalities -> selectedParentPersonalities - tag
+                selectedParentPersonalities.size < MAX_PARENT_PERSONALITY_COUNT ->
+                    selectedParentPersonalities + tag
 
-                /*
-                 * 전체 선택 개수가 3개 미만이면 선택 추가
-                 */
-                selectedParentPersonalities.size <
-                        MAX_PARENT_PERSONALITY_COUNT -> {
-                    selectedParentPersonalities + personality
-                }
-
-                /*
-                 * 이미 전체에서 3개를 선택했다면 변경하지 않음
-                 */
-                else -> {
-                    selectedParentPersonalities
-                }
+                else -> selectedParentPersonalities
             }
 
             copy(
-                selectedParentPersonalities = updatedPersonalities
+                selectedParentPersonalities = updatedPersonalities,
+                saveErrorMessage = null
             )
         }
     }
 
-    private fun updateRelationship(relationship: String) {
+    private fun updateRelationship(tag: OnboardingTag) {
         updateState {
-            copy(selectedRelationship = relationship)
+            copy(
+                selectedRelationship = tag,
+                saveErrorMessage = null
+            )
         }
     }
 
-    /*
-     * 원하는 관계는 전체 항목 중 최소 1개, 최대 2개까지 선택한다.
-     */
-    private fun toggleGoal(goal: String) {
+    private fun toggleGoal(tag: OnboardingTag) {
         updateState {
             when {
-                /*
-                 * 이미 선택된 항목을 다시 누르면 선택을 해제한다.
-                 * 선택 상태가 정상적으로 변경됐으므로 안내 문구도 제거한다.
-                 */
-                goal in selectedGoals -> {
+                tag in selectedGoals -> {
                     copy(
-                        selectedGoals = selectedGoals - goal,
-                        isGoalLimitMessageVisible = false
+                        selectedGoals = selectedGoals - tag,
+                        isGoalLimitMessageVisible = false,
+                        saveErrorMessage = null
                     )
                 }
 
-                /*
-                 * 현재 선택 개수가 두 개 미만이면 새 항목을 추가한다.
-                 */
                 selectedGoals.size < MAX_GOAL_COUNT -> {
                     copy(
-                        selectedGoals = selectedGoals + goal,
-                        isGoalLimitMessageVisible = false
+                        selectedGoals = selectedGoals + tag,
+                        isGoalLimitMessageVisible = false,
+                        saveErrorMessage = null
                     )
                 }
 
-                /*
-                 * 이미 두 개를 선택한 상태에서 세 번째 항목을 누른 경우다.
-                 *
-                 * 기존 선택 상태는 그대로 유지하고,
-                 * 최대 선택 개수 안내 문구만 표시한다.
-                 */
                 else -> {
                     copy(
                         isGoalLimitMessageVisible = true
@@ -186,27 +198,209 @@ class OnboardingViewModel @Inject constructor() :
         }
     }
 
-    private fun moveToNextStep() {
-        updateState {
-            when {
-                currentStep == OnboardingStep.NAME && !isNameValid -> {
-                    copy(isNameErrorVisible = true)
-                }
+    private fun handleNextClicked() {
+        if (currentState.isSaving) return
 
-                !isNextEnabled -> {
-                    this
-                }
+        when (currentState.currentStep) {
+            OnboardingStep.NAME -> submitName()
+            OnboardingStep.BASIC_INFO -> submitBasicInfo()
+            OnboardingStep.WELCOME -> moveToNextStep()
+            OnboardingStep.PARENT_PERSONALITY -> submitParentPersonality()
+            OnboardingStep.RELATIONSHIP -> submitRelationship()
+            OnboardingStep.GOAL -> submitGoal()
+            OnboardingStep.COMPLETE -> Unit
+        }
+    }
 
-                else -> {
-                    copy(currentStep = currentStep.next())
+    private fun submitName() {
+        if (!currentState.isNameValid) {
+            updateState { copy(nameErrorText = NAME_VALIDATION_MESSAGE) }
+            return
+        }
+
+        viewModelScope.launch {
+            updateState {
+                copy(
+                    isSaving = true,
+                    nameErrorText = null,
+                    saveErrorMessage = null
+                )
+            }
+
+            val isAvailable = runCatching {
+                onboardingRepository.checkNickname(currentState.name)
+            }.getOrElse {
+                updateState {
+                    copy(
+                        isSaving = false,
+                        nameErrorText = NICKNAME_CHECK_FAILED_MESSAGE
+                    )
+                }
+                return@launch
+            }
+
+            if (!isAvailable) {
+                updateState {
+                    copy(
+                        isSaving = false,
+                        nameErrorText = DUPLICATE_NICKNAME_MESSAGE
+                    )
+                }
+                return@launch
+            }
+
+            val saved = runCatching {
+                onboardingRepository.saveStep1(currentState.name)
+            }.isSuccess
+
+            updateState {
+                if (saved) {
+                    copy(
+                        isSaving = false,
+                        currentStep = OnboardingStep.BASIC_INFO
+                    )
+                } else {
+                    copy(
+                        isSaving = false,
+                        nameErrorText = SAVE_FAILED_MESSAGE
+                    )
                 }
             }
         }
     }
 
+    private fun submitBasicInfo() {
+        val gender = currentState.selectedGender ?: return
+        val birthDate = currentState.birthDateApiText
+        if (birthDate.isBlank()) return
+
+        saveAndMoveNext {
+            onboardingRepository.saveStep2(
+                gender = gender.name,
+                birthDate = birthDate
+            )
+        }
+    }
+
+    private fun submitParentPersonality() {
+        val tagIds = currentState.selectedParentPersonalities.map { it.id }
+        if (tagIds.isEmpty()) return
+
+        saveAndMoveNext {
+            onboardingRepository.saveStep3(tagIds)
+        }
+    }
+
+    private fun submitRelationship() {
+        val tagId = currentState.selectedRelationship?.id ?: return
+
+        saveAndMoveNext {
+            onboardingRepository.saveStep4(tagId)
+        }
+    }
+
+    private fun submitGoal() {
+        val tagIds = currentState.selectedGoals.map { it.id }
+        if (tagIds.isEmpty()) return
+
+        saveAndMoveNext {
+            onboardingRepository.saveStep5(tagIds)
+        }
+    }
+
+    private fun saveAndMoveNext(
+        save: suspend () -> com.umc.halo.domain.model.onboarding.OnboardingSaveResult
+    ) {
+        viewModelScope.launch {
+            updateState {
+                copy(
+                    isSaving = true,
+                    saveErrorMessage = null
+                )
+            }
+
+            val result = runCatching { save() }.getOrNull()
+
+            updateState {
+                if (result == null) {
+                    copy(
+                        isSaving = false,
+                        saveErrorMessage = SAVE_FAILED_MESSAGE
+                    )
+                } else if (
+                    currentStep == OnboardingStep.GOAL &&
+                    result.onboardingCompleted
+                ) {
+                    copy(
+                        isSaving = false,
+                        currentStep = OnboardingStep.COMPLETE
+                    )
+                } else {
+                    copy(
+                        isSaving = false,
+                        currentStep = currentStep.next()
+                    )
+                }
+            }
+        }
+    }
+
+    private fun moveToNextStep() {
+        updateState {
+            copy(
+                currentStep = currentStep.next(),
+                saveErrorMessage = null
+            )
+        }
+    }
+
     private fun moveToPreviousStep() {
         updateState {
-            copy(currentStep = currentStep.previous())
+            copy(
+                currentStep = currentStep.previous(),
+                saveErrorMessage = null
+            )
         }
+    }
+}
+
+private fun OnboardingUiState.restore(status: OnboardingStatus): OnboardingUiState {
+    val savedData = status.savedData ?: return copy(
+        currentStep = OnboardingStep.fromSavedServerStep(status.currentStep)
+    )
+
+    return copy(
+        currentStep = OnboardingStep.fromSavedServerStep(status.currentStep),
+        name = savedData.name.orEmpty(),
+        selectedGender = savedData.gender?.let { gender ->
+            runCatching { Gender.valueOf(gender) }.getOrNull()
+        },
+        birthYear = savedData.birthDate?.substringBefore("-")?.toIntOrNull() ?: birthYear,
+        birthMonth = savedData.birthDate
+            ?.split("-")
+            ?.getOrNull(1)
+            ?.toIntOrNull()
+            ?: birthMonth,
+        birthDay = savedData.birthDate
+            ?.split("-")
+            ?.getOrNull(2)
+            ?.toIntOrNull()
+            ?: birthDay,
+        hasBirthDateTouched = savedData.birthDate != null || hasBirthDateTouched,
+        selectedParentPersonalities = parentPersonalityTags.findAllById(
+            savedData.parentPersonalityTagIds
+        ),
+        selectedRelationship = savedData.currentRelationStateTagId?.let { tagId ->
+            currentRelationStateTags.firstOrNull { it.id == tagId }
+        },
+        selectedGoals = goalRelationshipTags.findAllById(
+            savedData.goalRelationshipTagIds
+        )
+    )
+}
+
+private fun List<OnboardingTag>.findAllById(ids: List<Long>): List<OnboardingTag> {
+    return ids.mapNotNull { id ->
+        firstOrNull { tag -> tag.id == id }
     }
 }

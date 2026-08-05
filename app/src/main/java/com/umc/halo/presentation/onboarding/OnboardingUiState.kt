@@ -1,21 +1,31 @@
 package com.umc.halo.presentation.onboarding
 
+import com.umc.halo.domain.model.onboarding.OnboardingTag
 import java.util.Calendar
 
 internal const val MIN_NAME_LENGTH = 2
 internal const val MAX_NAME_LENGTH = 10
+internal const val MAX_PARENT_PERSONALITY_COUNT = 3
+internal const val MAX_GOAL_COUNT = 2
+
 private const val DEFAULT_BIRTH_MONTH = 1
 private const val DEFAULT_BIRTH_DAY = 1
 
-private const val NAME_VALIDATION_MESSAGE =
-    "닉네임 조건에 맞춰서 다시 입력해주세요!"
-
+internal const val NAME_VALIDATION_MESSAGE =
+    "이름 조건에 맞춰 다시 입력해주세요!"
+internal const val DUPLICATE_NICKNAME_MESSAGE =
+    "중복된 닉네임 입니다!"
+internal const val NICKNAME_CHECK_FAILED_MESSAGE =
+    "이름 확인에 실패했어요. 잠시 후 다시 시도해주세요."
+internal const val TAG_LOAD_FAILED_MESSAGE =
+    "선택지를 불러오지 못했어요. 잠시 후 다시 시도해주세요."
+internal const val SAVE_FAILED_MESSAGE =
+    "저장에 실패했어요. 잠시 후 다시 시도해주세요."
 private const val GOAL_LIMIT_MESSAGE =
-    "두 개까지 선택이 가능해요."
+    "2개까지 선택 가능해요."
 
-// 완성형 한글, 한글 조합 중간 자음·모음, 영어, 숫자 허용
 private val NAME_ALLOWED_CHARACTER_REGEX = Regex(
-    "[가-힣ㄱ-ㅎㅏ-ㅣ\u1100-\u11FF\uA960-\uA97F\uD7B0-\uD7FFa-zA-Z0-9]"
+    "[가-힣ㄱ-ㅎㅏ-ㅣ\\u1100-\\u11FF\\uA960-\\uA97F\\uD7B0-\\uD7FFa-zA-Z0-9]"
 )
 
 internal fun Char.isAllowedNameCharacter(): Boolean {
@@ -35,14 +45,8 @@ private fun isValidBirthDate(
     if (month !in 1..12) return false
 
     val maxDay = when (month) {
-        1, 3, 5, 7, 8, 10, 12 -> {
-            31
-        }
-
-        4, 6, 9, 11 -> {
-            30
-        }
-
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
         2 -> {
             val isLeapYear =
                 year % 400 == 0 ||
@@ -51,9 +55,7 @@ private fun isValidBirthDate(
             if (isLeapYear) 29 else 28
         }
 
-        else -> {
-            return false
-        }
+        else -> return false
     }
 
     return day in 1..maxDay
@@ -70,9 +72,7 @@ data class OnboardingUiState(
     val currentStep: OnboardingStep = OnboardingStep.NAME,
 
     val name: String = "",
-
-    // 특수문자 입력, 글자 수 초과 등의 잘못된 입력 시도 여부
-    val isNameErrorVisible: Boolean = false,
+    val nameErrorText: String? = null,
 
     val selectedGender: Gender? = null,
     val birthYear: Int? = currentBirthYear(),
@@ -80,14 +80,20 @@ data class OnboardingUiState(
     val birthDay: Int? = DEFAULT_BIRTH_DAY,
     val hasBirthDateTouched: Boolean = false,
 
-    val selectedParentPersonalities: List<String> = emptyList(),
-    val selectedRelationship: String? = null,
+    val parentPersonalityTags: List<OnboardingTag> = emptyList(),
+    val currentRelationStateTags: List<OnboardingTag> = emptyList(),
+    val goalRelationshipTags: List<OnboardingTag> = emptyList(),
 
-    // 원하는 관계는 최소 1개, 최대 2개 선택
-    val selectedGoals: List<String> = emptyList(),
+    val selectedParentPersonalities: List<OnboardingTag> = emptyList(),
+    val selectedRelationship: OnboardingTag? = null,
+    val selectedGoals: List<OnboardingTag> = emptyList(),
 
-    // 이미 두 개를 선택한 상태에서 세 번째 항목을 누르면 표시
-    val isGoalLimitMessageVisible: Boolean = false
+    val isGoalLimitMessageVisible: Boolean = false,
+    val isInitialLoading: Boolean = false,
+    val isSaving: Boolean = false,
+    val loadErrorMessage: String? = null,
+    val saveErrorMessage: String? = null,
+    val navigateToHome: Boolean = false
 ) {
     val userName: String
         get() = name.ifBlank { "주연" }
@@ -105,11 +111,7 @@ data class OnboardingUiState(
         get() = isNameLengthValid && isNameFormatValid
 
     val nameErrorMessage: String?
-        get() = if (isNameErrorVisible) {
-            NAME_VALIDATION_MESSAGE
-        } else {
-            null
-        }
+        get() = nameErrorText
 
     val isBirthDateValid: Boolean
         get() {
@@ -124,10 +126,6 @@ data class OnboardingUiState(
             )
         }
 
-    /*
-     * 기존 화면 코드에서 사용하는 이름을 유지한다.
-     * 세 값이 단순히 선택됐는지가 아니라 실제 존재하는 날짜인지 검사한다.
-     */
     val isBirthDateSelected: Boolean
         get() = hasBirthDateTouched && isBirthDateValid
 
@@ -136,6 +134,17 @@ data class OnboardingUiState(
             if (!isBirthDateValid) return ""
 
             return "%04d.%02d.%02d".format(
+                birthYear,
+                birthMonth,
+                birthDay
+            )
+        }
+
+    val birthDateApiText: String
+        get() {
+            if (!isBirthDateValid) return ""
+
+            return "%04d-%02d-%02d".format(
                 birthYear,
                 birthMonth,
                 birthDay
@@ -156,40 +165,41 @@ data class OnboardingUiState(
             null
         }
 
+    val stepErrorMessage: String?
+        get() = saveErrorMessage ?: loadErrorMessage
+
     val isNextEnabled: Boolean
-        get() = when (currentStep) {
-            OnboardingStep.NAME -> {
-                /*
-                 * 잘못된 문자를 제거한 뒤 저장된 이름이 유효하더라도
-                 * 현재 오류가 표시 중이면 다음 단계로 이동하지 못하게 한다.
-                 */
-                isNameValid && !isNameErrorVisible
-            }
+        get() {
+            if (isSaving || isInitialLoading) return false
 
-            OnboardingStep.BASIC_INFO -> {
-                selectedGender != null &&
-                        hasBirthDateTouched &&
-                        isBirthDateValid
-            }
+            return when (currentStep) {
+                OnboardingStep.NAME -> isNameValid && nameErrorText == null
+                OnboardingStep.BASIC_INFO -> {
+                    selectedGender != null &&
+                            hasBirthDateTouched &&
+                            isBirthDateValid
+                }
 
-            OnboardingStep.WELCOME -> {
-                true
-            }
+                OnboardingStep.WELCOME -> true
+                OnboardingStep.PARENT_PERSONALITY -> {
+                    parentPersonalityTags.isNotEmpty() &&
+                            loadErrorMessage == null &&
+                            isParentPersonalityValid
+                }
 
-            OnboardingStep.PARENT_PERSONALITY -> {
-                isParentPersonalityValid
-            }
+                OnboardingStep.RELATIONSHIP -> {
+                    currentRelationStateTags.isNotEmpty() &&
+                            loadErrorMessage == null &&
+                            selectedRelationship != null
+                }
 
-            OnboardingStep.RELATIONSHIP -> {
-                selectedRelationship != null
-            }
+                OnboardingStep.GOAL -> {
+                    goalRelationshipTags.isNotEmpty() &&
+                            loadErrorMessage == null &&
+                            isGoalValid
+                }
 
-            OnboardingStep.GOAL -> {
-                isGoalValid
-            }
-
-            OnboardingStep.COMPLETE -> {
-                true
+                OnboardingStep.COMPLETE -> true
             }
         }
 }

@@ -4,8 +4,6 @@ package com.umc.halo.presentation.onboarding
  * 부모님 성격 태그는 모든 카테고리를 합쳐
  * 최소 1개부터 최대 3개까지 선택할 수 있다.
  */
-internal const val MAX_PARENT_PERSONALITY_COUNT = 3
-
 internal data class ParentPersonalityGroup(
     val title: String,
     val options: List<String>

@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
-import com.umc.halo.presentation.onboarding.GOAL_OPTIONS
 import com.umc.halo.presentation.onboarding.OnboardingUiEvent
 import com.umc.halo.presentation.onboarding.OnboardingUiState
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
@@ -52,10 +51,6 @@ fun GoalStep(
     onSystemBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    /*
-     * 기기 시스템 뒤로가기 버튼을 눌렀을 때도
-     * 현재 관계 선택 단계로 이동한다.
-     */
     BackHandler(onBack = onSystemBack)
 
     Box(
@@ -71,10 +66,6 @@ fun GoalStep(
                 .statusBarsPadding()
                 .padding(bottom = 110.dp)
         ) {
-            /*
-             * 세 번째 온보딩 단계이므로
-             * 진행 바의 세 번째 칸이 진하게 표시된다.
-             */
             OnboardingProgressBar(
                 currentStep = 3,
                 totalStep = 3,
@@ -87,9 +78,6 @@ fun GoalStep(
 
             Spacer(modifier = Modifier.height(31.dp))
 
-            /*
-             * 이전 화면으로 이동하는 버튼
-             */
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -143,18 +131,19 @@ fun GoalStep(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "해당되는 항목을 선택해주세요.",
+                    text = "해당하는 항목을 선택해주세요.",
                     style = HaloType.body03Regular,
                     color = Gray400
                 )
 
                 val limitMessage = uiState.goalLimitMessage
+                val errorMessage = limitMessage ?: uiState.stepErrorMessage
 
-                if (limitMessage != null) {
+                if (errorMessage != null) {
                     Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
-                        text = limitMessage,
+                        text = errorMessage,
                         style = HaloType.body03Regular,
                         color = Error
                     )
@@ -162,19 +151,19 @@ fun GoalStep(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                GOAL_OPTIONS.forEachIndexed { index, goal ->
+                uiState.goalRelationshipTags.forEachIndexed { index, tag ->
                     if (index > 0) {
                         Spacer(modifier = Modifier.height(12.dp))
                     }
 
-                    val isSelected = goal in uiState.selectedGoals
+                    val isSelected = tag in uiState.selectedGoals
 
                     GoalOptionCard(
-                        text = goal,
+                        text = tag.title,
                         selected = isSelected,
                         onClick = {
                             onEvent(
-                                OnboardingUiEvent.GoalClicked(goal)
+                                OnboardingUiEvent.GoalClicked(tag)
                             )
                         }
                     )
@@ -182,9 +171,6 @@ fun GoalStep(
             }
         }
 
-        /*
-         * 한 개 이상 선택한 경우 다음 버튼 활성화
-         */
         OnboardingBottomButton(
             text = "다음",
             enabled = uiState.isNextEnabled,

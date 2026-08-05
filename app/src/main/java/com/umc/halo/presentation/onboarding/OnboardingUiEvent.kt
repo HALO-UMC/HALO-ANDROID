@@ -1,5 +1,7 @@
 package com.umc.halo.presentation.onboarding
 
+import com.umc.halo.domain.model.onboarding.OnboardingTag
+
 sealed interface OnboardingUiEvent {
     data class NameChanged(val name: String) : OnboardingUiEvent
 
@@ -9,10 +11,11 @@ sealed interface OnboardingUiEvent {
     data class BirthMonthSelected(val month: Int) : OnboardingUiEvent
     data class BirthDaySelected(val day: Int) : OnboardingUiEvent
 
-    data class ParentPersonalityClicked(val personality: String) : OnboardingUiEvent
-    data class RelationshipClicked(val relationship: String) : OnboardingUiEvent
-    data class GoalClicked(val goal: String) : OnboardingUiEvent
+    data class ParentPersonalityClicked(val tag: OnboardingTag) : OnboardingUiEvent
+    data class RelationshipClicked(val tag: OnboardingTag) : OnboardingUiEvent
+    data class GoalClicked(val tag: OnboardingTag) : OnboardingUiEvent
 
     data object NextClicked : OnboardingUiEvent
     data object BackClicked : OnboardingUiEvent
+    data object HomeNavigationHandled : OnboardingUiEvent
 }

@@ -1,12 +1,12 @@
-package com.umc.halo.data.remote.dto.response.onboarding
+package com.umc.halo.domain.model.onboarding
 
-data class OnboardingStatusResponse(
+data class OnboardingStatus(
     val onboardingCompleted: Boolean,
     val currentStep: Int?,
-    val savedData: OnboardingSavedDataResponse?
+    val savedData: OnboardingSavedData?
 )
 
-data class OnboardingSavedDataResponse(
+data class OnboardingSavedData(
     val name: String?,
     val gender: String?,
     val birthDate: String?,
