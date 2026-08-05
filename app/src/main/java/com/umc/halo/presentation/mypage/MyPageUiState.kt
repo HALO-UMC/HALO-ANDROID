@@ -6,7 +6,7 @@ data class MyPageUiState(
     val bgmEnabled: Boolean = true,
     val volume: Float = 0.42f,
     val selectedTrackIndex: Int = 0,
-    val playingTrackIndex: Int = 0,
+    val playingTrackIndex: Int? = 0,
     val allNotificationsEnabled: Boolean = true,
     val todayChapterNotificationEnabled: Boolean = true,
     val anniversaryNotificationEnabled: Boolean = true,

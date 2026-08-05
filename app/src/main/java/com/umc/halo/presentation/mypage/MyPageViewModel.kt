@@ -43,7 +43,11 @@ class MyPageViewModel @Inject constructor(
             is MyPageUiEvent.TrackClicked -> updateState {
                 copy(
                     selectedTrackIndex = event.index,
-                    playingTrackIndex = event.index
+                    playingTrackIndex = if (playingTrackIndex == event.index) {
+                        null
+                    } else {
+                        event.index
+                    }
                 )
             }
 
