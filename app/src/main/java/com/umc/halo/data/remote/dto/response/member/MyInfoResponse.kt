@@ -12,5 +12,7 @@ data class MyInfoResponse(
     val birthDate: String?,
     val provider: String?,           // KAKAO / GOOGLE
     val onboardingCompleted: Boolean?,
+    val characterImageUrl: String?,
+    val email: String?,
     val createdAt: String?
 )

@@ -7,5 +7,12 @@ package com.umc.halo.domain.model.member
  */
 data class MemberInfo(
     val memberId: Long,
-    val name: String
+    val name: String,
+    val gender: String?,
+    val birthDate: String?,
+    val provider: String?,
+    val onboardingCompleted: Boolean,
+    val characterImageUrl: String?,
+    val email: String?,
+    val createdAt: String?
 )

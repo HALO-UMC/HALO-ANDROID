@@ -20,6 +20,14 @@ data class MyPageUiState(
     val isEditingNotificationTime: Boolean = false,
     val showLogoutDialog: Boolean = false,
     val showWithdrawDialog: Boolean = false,
+    val isMyPageLoading: Boolean = false,
+    val memberName: String = "-",
+    val memberBirthDate: String = "-",
+    val memberProvider: String = "-",
+    val memberEmail: String = "-",
+    val memberCreatedAt: String = "-",
+    val memberCharacterImageUrl: String? = null,
+    val isReceivingNotification: Boolean = false,
 
     // ---- 계정 처리 ----
     /** 로그아웃/탈퇴 처리 중 (버튼 중복 탭 방지) */

@@ -20,7 +20,14 @@ class MemberRepositoryImpl @Inject constructor(
 
         return MemberInfo(
             memberId = result.memberId,
-            name = result.name.orEmpty()
+            name = result.name.orEmpty(),
+            gender = result.gender,
+            birthDate = result.birthDate,
+            provider = result.provider,
+            onboardingCompleted = result.onboardingCompleted == true,
+            characterImageUrl = result.characterImageUrl,
+            email = result.email,
+            createdAt = result.createdAt
         )
     }
 

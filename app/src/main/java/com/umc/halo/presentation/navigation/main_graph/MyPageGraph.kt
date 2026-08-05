@@ -1,6 +1,8 @@
 package com.umc.halo.presentation.navigation.main_graph
 
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -30,8 +32,15 @@ fun NavGraphBuilder.mypageGraph(
         route = Graphs.MYPAGE,
         startDestination = Routes.MYPAGE
     ) {
-        composable(Routes.MYPAGE) {
+        composable(Routes.MYPAGE) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Graphs.MYPAGE)
+            }
+            val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
+            val uiState by myPageViewModel.uiState.collectAsState()
+
             MyPageScreen(
+                uiState = uiState,
                 onNavigateToRelationshipInfo = {
                     navController.navigate(Routes.MYPAGE_RELATIONSHIP_INFO) {
                         launchSingleTop = true
