@@ -306,11 +306,14 @@ fun BookItem(
                 .graphicsLayer {
                     transformOrigin = TransformOrigin(1f, 0.5f)
                     rotationY = spineRotation
-                    rotationZ = tilt
                     cameraDistance = 6f * density
                     alpha = spineAlpha
                     clip = false
                 }
+                .graphicsLayer(
+                    transformOrigin = TransformOrigin(0.5f, 0.5f) ,
+                    rotationZ = tilt
+                )
                 .background(Color.Transparent)
         ) {
             Image(

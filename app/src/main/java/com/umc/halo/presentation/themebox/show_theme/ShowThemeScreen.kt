@@ -151,8 +151,7 @@ fun ShowThemeScreen(
 
         Box(
             modifier = Modifier.fillMaxSize()
-                .background(Black)
-                .alpha(0.3f)
+                .background(Black.copy(alpha = 0.3f))
         )
 
         ShowThemeTopBar(title = currentPage.title, onEvent = onEvent)

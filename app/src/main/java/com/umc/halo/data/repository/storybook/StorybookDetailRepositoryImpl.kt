@@ -2,6 +2,7 @@ package com.umc.halo.data.repository.storybook
 
 import com.umc.halo.data.remote.api.storybook.StorybookDetailApi
 import com.umc.halo.data.remote.dto.response.storybook.StorybookDetailResponse
+import com.umc.halo.data.remote.dto.response.storybook.StorybookStartResponse
 import com.umc.halo.domain.model.storybook.StoryBookIndex
 import com.umc.halo.domain.model.storybook.StoryBookInfo
 import com.umc.halo.domain.model.storybook.StorybookDetailResult
@@ -20,6 +21,13 @@ class StorybookDetailRepositoryImpl @Inject constructor(
 
         return response.result?.toDomain()
             ?: throw IllegalStateException("storybook data is null")
+    }
+
+    override suspend fun startStorybook(storybookId: Long): StorybookStartResponse {
+        val response = storybookDetailApi.startStorybook(storybookId)
+
+        return response.result
+            ?: throw IllegalStateException("storybook is not started")
     }
 }
 
@@ -61,3 +69,4 @@ private fun completeStatusStringIntoBoolean(status: String): Boolean {
         StorybookIndexStatus.TODAY -> false
     }
 }
+

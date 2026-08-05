@@ -68,10 +68,14 @@ fun StoryBookDetailRoute(
             }
 
             when (event) {
-                is StoryBookDetailUiEvent.OnClickStoryBookIndex ->
+                is StoryBookDetailUiEvent.OnClickStoryBookIndex -> {
+                    viewModel.onEvent(event)
                     navigate(event.storyBookId, event.chapterId)
+                }
+
 
                 is StoryBookDetailUiEvent.OnClickTodayStoryBook -> {
+                    viewModel.onEvent(event)
                     when (state.storyBookProgress) {
                         is StorybookProgress.Done -> onNavigateToShowTheme(event.storyBookId)
                         is StorybookProgress.InProgress -> onNavigateToChapterProgress(event.storyBookId, event.chapterId)

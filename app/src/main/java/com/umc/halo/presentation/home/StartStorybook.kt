@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -23,13 +24,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.StartStorybook
 import com.umc.halo.presentation.theme.Black
@@ -88,7 +92,7 @@ fun StartStorybook(
                 StartStorybookContents(item)
             }
 
-            if (item.isCompleted)
+            if (item.isCompleted && item.currentProgress != 10)
                 ContentsOverlay(item)
         }
     }
@@ -111,10 +115,9 @@ fun ContentsOverlay(
     ) {
         Box(
             Modifier.fillMaxSize()
-        )
-        {
+        ) {
             Text(
-                text = "테마 ${item.currentProgress}장은\n'내일 다시' 참여할 수 있어요!",
+                text = "테마 ${item.storybookId}장은\n'내일 다시' 참여할 수 있어요!",
                 style = HaloType.body01Medium,
                 color = Gray600,
                 modifier = Modifier
@@ -141,32 +144,29 @@ fun StartStorybookContents(
             modifier = Modifier
                 .fillMaxHeight()
                 .width(75.dp)
-                .border(
-                    width = 0.dp,
-                    color = Color.Transparent,
-                    shape = RoundedCornerShape(8.dp)
-                )
+                .clip(RoundedCornerShape(8.dp))
                 .background(Color(0xFFF6F6F6))
         ) {
-            Image(
-                painter = painterResource(R.drawable.image_storybook_detail_ex),
+            AsyncImage(
+                model = item.imageUrl,
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize()
-            ) //추가 이미지 들어가야 함
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
         }
 
         Spacer(Modifier.weight(2f))
 
         Column(
             modifier = Modifier
-                .width(125.dp)
                 .fillMaxHeight()
+                .wrapContentWidth()
         ) {
             Spacer(Modifier.weight(2.5f))
 
             if (item.isFirst) {
                 Text(
-                    text = item.tag,
+                    text = item.tag ?: "void",
                     style = HaloType.body03Regular,
                     color = Primary600
                 )
@@ -184,7 +184,7 @@ fun StartStorybookContents(
             Spacer(Modifier.weight(1f))
 
             Text(
-                text = "오늘 ${item.currentProgress + 1}장까지 완료할 수 있어요!",
+                text = if (item.currentProgress == 10) "모든 페이지를 완성했어요!" else "오늘 ${item.currentProgress + 1}장까지 완료할 수 있어요!",
                 style = HaloType.caption01Regular,
                 color = Gray500
             )
