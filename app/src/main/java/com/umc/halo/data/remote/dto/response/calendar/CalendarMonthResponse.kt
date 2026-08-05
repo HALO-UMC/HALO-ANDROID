@@ -30,8 +30,7 @@ data class RecordedDayResponse(
 /**
  * 그 달에 완성한 스토리북
  *
- * 서버가 id 만 주기에 책장 책등은 여전히 순서대로 임시 배정됨
- * TODO : 백엔드와 매핑 규칙 협의
+ * 책등 그림은 앱 자산이라 서버는 storybookId 만 줌
  */
 data class CompletedStorybookResponse(
     val storybookId: Long
