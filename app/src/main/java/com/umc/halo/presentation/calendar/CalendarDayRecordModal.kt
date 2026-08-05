@@ -1,6 +1,5 @@
 package com.umc.halo.presentation.calendar
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import java.util.Locale
+import coil.compose.AsyncImage
 import com.umc.halo.R
 import com.umc.halo.domain.model.calendar.DateCompletedChapter
 import com.umc.halo.domain.model.calendar.DateCompletedStorybook
@@ -180,8 +180,7 @@ private fun CompletedCard(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // 커버 이미지
-        // TODO: [임시] 모든 카드가 같은 더미 커버를 씀 — 서버에서 스토리북별 커버가 내려오면 교체
+        // 커버 이미지 — 서버가 주는 URL. 아직 안 오거나 로드에 실패하면 뒤에 깔린 Gray50 이 그대로 보임
         Box(
             modifier = Modifier
                 .width(57.dp)
@@ -189,12 +188,14 @@ private fun CompletedCard(
                 .clip(RoundedCornerShape(6.dp))
                 .background(Gray50)
         ) {
-            Image(
-                painter = painterResource(R.drawable.ic_storybook_customsection_dummy),
-                contentDescription = null,      // 장식용 이미지라 null
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
-            )
+            if (!item.imageUrl.isNullOrBlank()) {
+                AsyncImage(
+                    model = item.imageUrl,
+                    contentDescription = null,      // 장식용 이미지라 null
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.matchParentSize()
+                )
+            }
         }
         Column(
             modifier = Modifier.weight(1f),
