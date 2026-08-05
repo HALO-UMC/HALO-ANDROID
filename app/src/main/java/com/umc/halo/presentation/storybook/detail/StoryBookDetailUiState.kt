@@ -22,6 +22,7 @@ data class StoryBookDetailUiState(
         imageUrl = ""
     ),
     val storyBookIndex: List<StoryBookIndex> = emptyList(),
-    val showDialog: Boolean = false
+    val showDialog: Boolean = false,
+    val startedStorybook: Long? = null
 )
 

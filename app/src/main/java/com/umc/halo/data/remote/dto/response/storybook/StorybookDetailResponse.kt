@@ -18,3 +18,7 @@ data class Chapter(
     val description: String,
     val status: String
 )
+
+data class StorybookStartResponse(
+    val storybookId: Long
+)

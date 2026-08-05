@@ -41,6 +41,18 @@ class StoryBookDetailViewModel @Inject constructor(
                 }
             }
 
+            is StoryBookDetailUiEvent.OnClickStoryBookIndex -> {
+                if (event.chapterId == 1L) {
+                    startStorybook(event.storyBookId)
+                }
+            }
+
+            is StoryBookDetailUiEvent.OnClickTodayStoryBook -> {
+                if (event.chapterId == 1L) {
+                    startStorybook(event.storyBookId)
+                }
+            }
+
             else -> Unit
         }
     }
@@ -67,6 +79,18 @@ class StoryBookDetailViewModel @Inject constructor(
                                 .first { it.id == progress.chapter + 1L }
                                 .toTodayStoryBook()
                     }
+                )
+            }
+        }
+    }
+
+    fun startStorybook(storybookId: Long) {
+        viewModelScope.launch {
+            val startStoryBook = storybookDetailRepository.startStorybook(storybookId)
+
+            updateState {
+                copy(
+                    startedStorybook = startStoryBook.storybookId
                 )
             }
         }

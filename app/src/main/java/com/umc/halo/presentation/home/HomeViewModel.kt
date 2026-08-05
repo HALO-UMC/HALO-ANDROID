@@ -70,7 +70,8 @@ class HomeViewModel @Inject constructor(
                         tag = book.recommendationReasonText,
                         currentProgress = book.currentChapterOrder,
                         isFirst = book.isFirst,
-                        isCompleted = book.todayAvailable
+                        isCompleted = !book.todayAvailable,
+                        imageUrl = book.imageUrl
                     )
                 )
             }

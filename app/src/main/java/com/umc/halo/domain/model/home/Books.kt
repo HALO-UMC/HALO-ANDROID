@@ -56,6 +56,7 @@ data class StartStorybook(
     val storybookId: Long = 0,
     val title: String = "void",
     val tag: String? = "void", // 상단 태그
+    val imageUrl: String = "void",
     val currentProgress: Int = 0,
     val isCompleted: Boolean = false,
     val isFirst: Boolean = false
