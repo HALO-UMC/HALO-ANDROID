@@ -29,6 +29,16 @@ class LoginViewModel @Inject constructor(
 ) : BaseViewModel<LoginUiState, LoginUiEvent>(
     initialState = LoginUiState()
 ) {
+    init {
+        // 재로그인 화면의 '최근 로그인' 배지에 쓸 값
+        // 로컬에만 있는 정보임
+        viewModelScope.launch {
+            // updateState 의 람다는 suspend 가 아니라서 조회를 먼저 끝내고 상태에 넣는다
+            val provider = authRepository.getLastLoginProvider()
+            updateState { copy(recentProvider = provider) }
+        }
+    }
+
     override fun onEvent(event: LoginUiEvent) {
         when (event) {
             is LoginUiEvent.KakaoLoginClicked -> login(SocialProvider.KAKAO) {
