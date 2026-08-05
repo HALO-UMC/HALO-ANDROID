@@ -1,6 +1,6 @@
 package com.umc.halo.presentation.mypage.component
 
-import androidx.compose.foundation.Image
+import coil.compose.AsyncImage
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
@@ -58,7 +60,11 @@ fun SectionTitle(text: String) {
 }
 
 @Composable
-fun ProfileCard() {
+fun ProfileCard(
+    name: String,
+    birthDate: String,
+    characterImageUrl: String?
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -73,10 +79,15 @@ fun ProfileCard() {
                 color = White,
                 modifier = Modifier.size(72.dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_orange_character),
+                AsyncImage(
+                    model = characterImageUrl,
                     contentDescription = null,
-                    modifier = Modifier.padding(12.dp)
+                    placeholder = painterResource(id = R.drawable.ic_orange_character),
+                    error = painterResource(id = R.drawable.ic_orange_character),
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp)
                 )
             }
 
@@ -84,13 +95,13 @@ fun ProfileCard() {
 
             Column {
                 Text(
-                    text = "주현AB",
+                    text = name,
                     style = HaloType.heading02SemiBold,
                     color = Gray800
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = "2003.09.25",
+                    text = birthDate,
                     style = HaloType.body02Regular,
                     color = Gray500
                 )

@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.umc.halo.data.remote.auth.GoogleLoginDataSource
 import com.umc.halo.data.remote.auth.KakaoLoginDataSource
+import com.umc.halo.domain.model.member.MemberInfo
 import com.umc.halo.domain.repository.auth.AuthRepository
 import com.umc.halo.domain.repository.member.MemberRepository
+import com.umc.halo.domain.repository.settings.SettingsRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -25,11 +27,16 @@ import javax.inject.Inject
 class MyPageViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val memberRepository: MemberRepository,
+    private val settingsRepository: SettingsRepository,
     private val kakaoLoginDataSource: KakaoLoginDataSource,
     private val googleLoginDataSource: GoogleLoginDataSource
 ) : BaseViewModel<MyPageUiState, MyPageUiEvent>(
     initialState = MyPageUiState()
 ) {
+    init {
+        loadMyPageData()
+    }
+
     override fun onEvent(event: MyPageUiEvent) {
         when (event) {
             is MyPageUiEvent.BgmEnabledChanged -> updateState {
@@ -169,6 +176,49 @@ class MyPageViewModel @Inject constructor(
      * 로그아웃 — 서버 refreshToken 무효화 + 로컬 토큰 삭제
      * 회원 정보와 기록은 그대로 남으므로 같은 계정으로 다시 로그인하면 바로 홈으로 이동
      */
+    private fun loadMyPageData() {
+        viewModelScope.launch {
+            updateState { copy(isMyPageLoading = true) }
+
+            runCatching { memberRepository.getMyInfo() }
+                .onSuccess { member ->
+                    updateState {
+                        copy(
+                            memberName = member.name.ifBlank { "-" },
+                            memberBirthDate = member.birthDate.toDisplayDate(),
+                            memberProvider = member.provider.toProviderLabel(),
+                            memberEmail = member.email?.takeIf { it.isNotBlank() } ?: "-",
+                            memberCreatedAt = member.createdAt.toDisplayDate(),
+                            memberCharacterImageUrl = member.characterImageUrl
+                        )
+                    }
+                }
+
+            runCatching { settingsRepository.getNotificationSettings() }
+                .onSuccess { settings ->
+                    val (hour, minute) = settings.regularNotificationTime.toHourMinute()
+                    updateState {
+                        copy(
+                            allNotificationsEnabled = settings.isAllNotificationEnabled,
+                            todayChapterNotificationEnabled = settings.todayChapterNotificationEnabled,
+                            anniversaryNotificationEnabled = settings.anniversaryNotificationEnabled,
+                            retentionNotificationEnabled = settings.retentionNotificationEnabled,
+                            notificationHour = hour,
+                            notificationMinute = minute,
+                            draftNotificationHour = hour,
+                            draftNotificationMinute = minute,
+                            isReceivingNotification = settings.isReceiving
+                        )
+                    }
+                }
+                .onFailure {
+                    updateState { copy(isReceivingNotification = false) }
+                }
+
+            updateState { copy(isMyPageLoading = false) }
+        }
+    }
+
     private fun logout() {
         if (currentState.isProcessingAccountAction) return
 
@@ -222,4 +272,26 @@ class MyPageViewModel @Inject constructor(
         // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
         const val WITHDRAW_FAILED_MESSAGE = "회원 탈퇴에 실패했어요. 잠시 후 다시 시도해 주세요."
     }
+}
+
+private fun String?.toDisplayDate(): String {
+    val date = this
+        ?.takeIf { it.length >= 10 }
+        ?.substring(0, 10)
+        ?: return "-"
+
+    return date.replace("-", ".")
+}
+
+private fun String?.toProviderLabel(): String = when (this) {
+    "KAKAO" -> "카카오 로그인"
+    "GOOGLE" -> "구글 로그인"
+    else -> "-"
+}
+
+private fun String?.toHourMinute(): Pair<Int, Int> {
+    val parts = this?.split(":").orEmpty()
+    val hour = parts.getOrNull(0)?.toIntOrNull()?.coerceIn(0, 23) ?: 9
+    val minute = parts.getOrNull(1)?.toIntOrNull()?.coerceIn(0, 59) ?: 0
+    return hour to minute
 }

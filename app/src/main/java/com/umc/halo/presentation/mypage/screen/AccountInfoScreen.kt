@@ -63,25 +63,25 @@ fun AccountInfoScreen(
             Column {
                 InfoRow(
                     label = "닉네임",
-                    value = "난혁",
+                    value = uiState.memberName,
                     verticalPadding = AccountInfoRowPadding,
                     contentHorizontalPadding = AccountInfoContentIndent
                 )
                 InfoRow(
                     label = "로그인 방식",
-                    value = "카카오 로그인",
+                    value = uiState.memberProvider,
                     verticalPadding = AccountInfoRowPadding,
                     contentHorizontalPadding = AccountInfoContentIndent
                 )
                 InfoRow(
                     label = "이메일",
-                    value = "kimjooyeon038@gmail.com",
+                    value = uiState.memberEmail,
                     verticalPadding = AccountInfoRowPadding,
                     contentHorizontalPadding = AccountInfoContentIndent
                 )
                 InfoRow(
                     label = "계정 생성일",
-                    value = "2026.06.28",
+                    value = uiState.memberCreatedAt,
                     showDivider = false,
                     verticalPadding = AccountInfoRowPadding,
                     contentHorizontalPadding = AccountInfoContentIndent
@@ -94,7 +94,7 @@ fun AccountInfoScreen(
             Column {
                 InfoRow(
                     label = "알림 상태",
-                    value = "수신 중",
+                    value = if (uiState.isReceivingNotification) "수신 중" else "미수신",
                     verticalPadding = AccountInfoRowPadding,
                     contentHorizontalPadding = AccountInfoContentIndent
                 )

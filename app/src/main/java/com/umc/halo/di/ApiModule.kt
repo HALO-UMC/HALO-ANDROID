@@ -5,6 +5,7 @@ import com.umc.halo.data.remote.api.calendar.CalendarApi
 import com.umc.halo.data.remote.api.home.HomeApi
 import com.umc.halo.data.remote.api.member.MemberApi
 import com.umc.halo.data.remote.api.onboarding.OnboardingApi
+import com.umc.halo.data.remote.api.settings.SettingsApi
 import com.umc.halo.data.remote.api.storybook.StorybookApi
 import com.umc.halo.data.remote.api.storybook.StorybookDetailApi
 import com.umc.halo.data.remote.api.terms.TermsApi
@@ -53,6 +54,11 @@ object ApiModule {
     @Singleton
     fun provideHomeApi(retrofit: Retrofit): HomeApi =
         retrofit.create(HomeApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideSettingsApi(retrofit: Retrofit): SettingsApi =
+        retrofit.create(SettingsApi::class.java)
 
     @Provides
     @Singleton

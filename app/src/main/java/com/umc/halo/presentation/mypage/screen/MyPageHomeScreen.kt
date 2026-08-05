@@ -21,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
+import com.umc.halo.presentation.mypage.MyPageUiState
 import com.umc.halo.presentation.mypage.component.MyPageBrandTopBar
 import com.umc.halo.presentation.mypage.component.MyPageContainer
 import com.umc.halo.presentation.mypage.component.ProfileCard
@@ -32,6 +33,7 @@ import com.umc.halo.presentation.theme.HaloType
 
 @Composable
 fun MyPageScreen(
+    uiState: MyPageUiState,
     onNavigateToRelationshipInfo: () -> Unit,
     onNavigateToAnniversary: () -> Unit,
     onNavigateToSystemSettings: () -> Unit,
@@ -51,7 +53,11 @@ fun MyPageScreen(
         ) {
             SectionTitle("내 정보")
             Spacer(Modifier.height(12.dp))
-            ProfileCard()
+            ProfileCard(
+                name = uiState.memberName,
+                birthDate = uiState.memberBirthDate,
+                characterImageUrl = uiState.memberCharacterImageUrl
+            )
 
             Spacer(Modifier.height(36.dp))
             SectionTitle("추가 기능")
