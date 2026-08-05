@@ -2,8 +2,6 @@ package com.umc.halo.presentation.terms
 
 import androidx.lifecycle.viewModelScope
 import com.umc.halo.domain.model.auth.AuthDestination
-import com.umc.halo.domain.model.terms.TermsAgreedStatus
-import com.umc.halo.domain.model.terms.TermsAgreement
 import com.umc.halo.domain.repository.auth.AuthRepository
 import com.umc.halo.domain.repository.terms.TermsRepository
 import com.umc.halo.presentation.base.BaseViewModel
@@ -85,7 +83,8 @@ class TermsViewModel @Inject constructor(
                     updateState {
                         copy(
                             terms = terms,
-                            agreedIds = restoreAgreedIds(terms, agreedStatus)
+                            // 온보딩에서 되돌아온 경우 이미 동의한 약관을 다시 체크해둠
+                            agreedIds = agreedStatus.agreedTermIds
                         )
                     }
                 }
@@ -93,22 +92,6 @@ class TermsViewModel @Inject constructor(
 
             updateState { copy(isLoading = false) }
         }
-    }
-
-    /**
-     * 화면에 들어올 때 미리 체크해둘 약관
-     */
-    private fun restoreAgreedIds(
-        terms: List<TermsAgreement>,
-        agreedStatus: TermsAgreedStatus
-    ): Set<Long> = when {
-        // null 이 아니면 서버가 약관별 내역을 알려줬다는 뜻
-        agreedStatus.agreedTermIds != null -> agreedStatus.agreedTermIds
-
-        agreedStatus.allRequiredAgreed ->
-            terms.filter { it.required }.map { it.id }.toSet()
-
-        else -> emptySet()
     }
 
     /**
