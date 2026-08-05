@@ -4,7 +4,7 @@ data class HomeResponse(
     val homeStatus: String,
     val memberName: String,
     val inProgressStorybooks: List<InProgressStorybookResponse>,
-//    val bookshelf: List<BookshelfResponse>,
+    val bookshelf: List<BookshelfResponse>,
     val recommendedStorybooks: List<RecommendedStorybookResponse>
 )
 
@@ -19,9 +19,11 @@ data class InProgressStorybookResponse(
 data class BookshelfResponse(
     val storybookId: Long,
     val title: String,
-    val themeOrder: Int,
-    val spineColor: String,
-    val status: String
+    val shortDescription: String,
+    val imageUrl: String,
+    val currentChapterOrder: Int?,
+    val todayAvailable: Boolean,
+    val recommendationReasonText: String?
 )
 
 data class RecommendedStorybookResponse(

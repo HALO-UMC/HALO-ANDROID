@@ -12,7 +12,7 @@ data class HomeResult(
     val homeStatus: HomeStatus,
     val memberName: String,
     val continueStorybookList: List<ContinueStorybook>,
-//    val bookShelfList: List<Bookshelf>,
+    val bookShelfList: List<BookResult>,
     val customStorybookList: List<CustomStorybook>
 )
 
@@ -28,21 +28,13 @@ enum class HomeStatus {
     }
 }
 
-data class Bookshelf(
+data class BookResult(
     val storybookId: Long,
     val title: String,
-    val themeOrder: Int,
-    val spineColor: String?,
-    val status: BookStatus
+    val shortDescription: String,
+    val imageUrl: String,
+    val currentChapterOrder: Int,
+    val todayAvailable: Boolean,
+    val recommendationReasonText: String?,
+    val isFirst: Boolean
 )
-
-enum class BookStatus {
-    NOT_STARTED,
-    IN_PROGRESS,
-    COMPLETED;
-
-    companion object {
-        fun from(value: String): BookStatus =
-            entries.find { it.name == value } ?: NOT_STARTED
-    }
-}

@@ -111,10 +111,9 @@ fun ContentsOverlay(
     ) {
         Box(
             Modifier.fillMaxSize()
-        )
-        {
+        ) {
             Text(
-                text = "테마 ${item.currentProgress}장은\n'내일 다시' 참여할 수 있어요!",
+                text = "테마 ${item.storybookId}장은\n'내일 다시' 참여할 수 있어요!",
                 style = HaloType.body01Medium,
                 color = Gray600,
                 modifier = Modifier
@@ -166,7 +165,7 @@ fun StartStorybookContents(
 
             if (item.isFirst) {
                 Text(
-                    text = item.tag,
+                    text = item.tag ?: "void",
                     style = HaloType.body03Regular,
                     color = Primary600
                 )
@@ -184,7 +183,7 @@ fun StartStorybookContents(
             Spacer(Modifier.weight(1f))
 
             Text(
-                text = "오늘 ${item.currentProgress + 1}장까지 완료할 수 있어요!",
+                text = if (item.currentProgress == 10) "모든 페이지를 완성했어요!" else "오늘 ${item.currentProgress + 1}장까지 완료할 수 있어요!",
                 style = HaloType.caption01Regular,
                 color = Gray500
             )

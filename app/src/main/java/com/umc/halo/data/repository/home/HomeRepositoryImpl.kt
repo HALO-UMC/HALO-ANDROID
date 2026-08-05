@@ -2,8 +2,7 @@ package com.umc.halo.data.repository.home
 
 import com.umc.halo.data.remote.api.home.HomeApi
 import com.umc.halo.data.remote.dto.response.home.HomeResponse
-import com.umc.halo.domain.model.home.BookStatus
-import com.umc.halo.domain.model.home.Bookshelf
+import com.umc.halo.domain.model.home.BookResult
 import com.umc.halo.domain.model.home.HomeResult
 import com.umc.halo.domain.model.home.HomeStatus
 import com.umc.halo.domain.model.storybook.CustomStorybook
@@ -34,15 +33,18 @@ private fun HomeResponse.toDomain() = HomeResult(
             todayAvailable = it.todayAvailable
         )
     },
-//    bookShelfList = bookshelf.map {
-//        Bookshelf(
-//            storybookId = it.storybookId,
-//            title = it.title,
-//            themeOrder = it.themeOrder,
-//            spineColor = it.spineColor,
-//            status = BookStatus.from(it.status)
-//        )
-//    },
+    bookShelfList = bookshelf.map {
+        BookResult(
+            storybookId = it.storybookId,
+            title = it.title,
+            shortDescription = it.shortDescription,
+            imageUrl = it.imageUrl,
+            currentChapterOrder = it.currentChapterOrder ?: 0,
+            todayAvailable = it.todayAvailable,
+            isFirst = it.currentChapterOrder == null,
+            recommendationReasonText = it.recommendationReasonText
+        )
+    },
     customStorybookList = recommendedStorybooks.map {
         CustomStorybook(
             id = it.storybookId,
