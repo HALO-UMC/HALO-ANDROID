@@ -13,6 +13,7 @@ import com.umc.halo.presentation.mypage.AccountInfoRoute
 import com.umc.halo.presentation.mypage.AnniversaryRoute
 import com.umc.halo.presentation.mypage.MyPageViewModel
 import com.umc.halo.presentation.mypage.NotificationSettingsRoute
+import com.umc.halo.presentation.mypage.RelationshipInfoRoute
 import com.umc.halo.presentation.mypage.SystemSettingsRoute
 import com.umc.halo.presentation.mypage.WithdrawRoute
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryViewModel
@@ -20,7 +21,6 @@ import com.umc.halo.presentation.mypage.screen.AccountManagementScreen
 import com.umc.halo.presentation.mypage.screen.MyPageScreen
 import com.umc.halo.presentation.mypage.screen.OpenLicenseScreen
 import com.umc.halo.presentation.mypage.screen.PrivacyPolicyScreen
-import com.umc.halo.presentation.mypage.screen.RelationshipInfoScreen
 import com.umc.halo.presentation.mypage.screen.TermsScreen
 import com.umc.halo.presentation.navigation.Graphs
 import com.umc.halo.presentation.navigation.Routes
@@ -70,7 +70,7 @@ fun NavGraphBuilder.mypageGraph(
         }
 
         composable(Routes.MYPAGE_RELATIONSHIP_INFO) {
-            RelationshipInfoScreen(
+            RelationshipInfoRoute(
                 onBack = { navController.popBackStackIfCurrent(Routes.MYPAGE_RELATIONSHIP_INFO) }
             )
         }

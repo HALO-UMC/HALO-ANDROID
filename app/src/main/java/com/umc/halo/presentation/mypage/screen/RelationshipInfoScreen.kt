@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.umc.halo.presentation.mypage.relationship.RelationshipInfoUiState
 import com.umc.halo.presentation.mypage.component.MyPageContainer
 import com.umc.halo.presentation.mypage.component.MyPageTopBar
 import com.umc.halo.presentation.theme.Gray100
@@ -33,11 +34,8 @@ import com.umc.halo.presentation.theme.Primary600
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RelationshipInfoScreen(
+    uiState: RelationshipInfoUiState,
     onBack: () -> Unit,
-    personalityTags: List<String> = listOf("낙천적인", "온화한", "사교적인"),
-    currentRelationshipTitle: String = "대체로 좋은 편이에요",
-    currentRelationshipDescription: String? = "일상적인 안부를 나누며 서로를 존중해요",
-    desiredRelationshipTitle: String = "같이 보내는 시간을 만들고 싶어요",
     modifier: Modifier = Modifier
 ) {
     MyPageContainer(modifier = modifier) {
@@ -63,7 +61,7 @@ fun RelationshipInfoScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 maxItemsInEachRow = 3
             ) {
-                personalityTags.forEach { tag ->
+                uiState.parentPersonalityDisplayTags.forEach { tag ->
                     TagChip(tag)
                 }
             }
@@ -81,8 +79,8 @@ fun RelationshipInfoScreen(
             )
             Spacer(modifier = Modifier.height(12.dp))
             RelationshipAnswerCard(
-                title = currentRelationshipTitle,
-                description = currentRelationshipDescription
+                title = uiState.currentRelationStateDisplayText,
+                description = null
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -97,10 +95,16 @@ fun RelationshipInfoScreen(
                 color = Gray800
             )
             Spacer(modifier = Modifier.height(12.dp))
-            RelationshipAnswerCard(
-                title = desiredRelationshipTitle,
-                description = null
-            )
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                maxItemsInEachRow = 2
+            ) {
+                uiState.goalRelationshipDisplayTags.forEach { tag ->
+                    TagChip(tag)
+                }
+            }
         }
     }
 }
