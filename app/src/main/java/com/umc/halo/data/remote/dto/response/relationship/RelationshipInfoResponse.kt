@@ -8,5 +8,6 @@ data class RelationshipInfoResponse(
 
 data class RelationshipTagResponse(
     val tagId: Long?,
-    val title: String?
+    val title: String?,
+    val description: String? = null
 )

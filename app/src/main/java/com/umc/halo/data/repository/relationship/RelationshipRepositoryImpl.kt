@@ -29,6 +29,7 @@ private fun RelationshipTagResponse.toDomain(): RelationshipTag? {
 
     return RelationshipTag(
         id = id,
-        title = title
+        title = title,
+        description = description?.takeIf { it.isNotBlank() }
     )
 }

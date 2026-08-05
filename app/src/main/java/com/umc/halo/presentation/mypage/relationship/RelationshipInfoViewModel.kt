@@ -37,8 +37,18 @@ class RelationshipInfoViewModel @Inject constructor(
                         it.copy(
                             isLoading = false,
                             parentPersonalityTags = info.parentPersonalityTags.map { tag -> tag.title },
-                            currentRelationState = info.currentRelationState?.title,
-                            goalRelationships = info.goalRelationships.map { tag -> tag.title }
+                            currentRelationState = info.currentRelationState?.let { tag ->
+                                RelationshipDisplayItem(
+                                    title = tag.title,
+                                    description = tag.description
+                                )
+                            },
+                            goalRelationships = info.goalRelationships.map { tag ->
+                                RelationshipDisplayItem(
+                                    title = tag.title,
+                                    description = tag.description
+                                )
+                            }
                         )
                     }
                 }
