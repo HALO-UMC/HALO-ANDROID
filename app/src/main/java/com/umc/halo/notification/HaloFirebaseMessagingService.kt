@@ -11,6 +11,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.umc.halo.R
 import com.umc.halo.core.datastore.DeviceUuidDataStore
+import com.umc.halo.domain.repository.notification.NotificationRepository
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class HaloFirebaseMessagingService: FirebaseMessagingService() {
     @Inject lateinit var deviceUuidDataStore: DeviceUuidDataStore
+    @Inject lateinit var notificationRepository: NotificationRepository
 
     @Deprecated("Deprecated in Java")
     //FCM 토큰 변경 시
@@ -29,7 +31,7 @@ class HaloFirebaseMessagingService: FirebaseMessagingService() {
         CoroutineScope(Dispatchers.IO).launch {
             val uuid = deviceUuidDataStore.getOrCreate()
 
-
+            notificationRepository.addMembers(token, uuid)
         }
     }
 
