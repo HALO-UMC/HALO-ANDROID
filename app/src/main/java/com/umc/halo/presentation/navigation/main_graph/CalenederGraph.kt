@@ -21,15 +21,16 @@ fun NavGraphBuilder.calenderGraph(
     ) {
         composable(Routes.CALENDAR) {
             CalendarScreen(
-                // 캘린더 → 스토리북(전체탭) / 테마함
-                // 하단바와 같은 백스택 옵션으로 전환
+                // 캘린더 '바로 시작하기' / 빈 모달 '시작하기' → 스토리북. 항상 '전체' 탭에서 시작
                 onNavigateToStorybookList = {
+                    navController.clearBackStack(Graphs.STORYBOOK)
                     navController.navigate(Graphs.STORYBOOK) {
                         launchSingleTop = true
                         restoreState = true
                         popUpTo(Graphs.MAIN) { saveState = true }
                     }
                 },
+                // 캘린더 → 테마함(기본 위치)
                 onNavigateToThemeBox = {
                     navController.navigate(Graphs.THEME_BOX) {
                         launchSingleTop = true
