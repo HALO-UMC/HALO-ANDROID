@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
 import com.umc.halo.R
 import com.umc.halo.core.datastore.DeviceUuidDataStore
+import com.umc.halo.data.remote.dto.request.notification.NotificationRequest
 import com.umc.halo.domain.model.home.Books
 import com.umc.halo.domain.model.home.HomeStatus
 import com.umc.halo.domain.model.home.StartStorybook
 import com.umc.halo.domain.model.home.UserInfo
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.domain.repository.home.HomeRepository
+import com.umc.halo.domain.repository.notification.NotificationRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import com.umc.halo.presentation.component.storybookSpineOf
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +26,8 @@ import kotlin.math.sin
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
-    private val deviceUuidDataStore: DeviceUuidDataStore
+    private val deviceUuidDataStore: DeviceUuidDataStore,
+    private val notificationRepository: NotificationRepository
 ): BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
 
     override fun onEvent(event: HomeUiEvent) {
@@ -115,6 +118,7 @@ class HomeViewModel @Inject constructor(
     fun registerFCMToken(token: String) = viewModelScope.launch {
         val uuid = deviceUuidDataStore.getOrCreate()
 
+        notificationRepository.addMembers(token,uuid)
     }
 }
 

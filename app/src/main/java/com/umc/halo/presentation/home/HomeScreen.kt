@@ -58,7 +58,7 @@ fun HomeRoute(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
-        // 필요하면 ViewModel에 결과 전달
+        viewModel.onNotificationPermissionResult(granted)
     }
 
     LaunchedEffect(Unit) {
@@ -75,12 +75,6 @@ fun HomeRoute(
         ) {
             launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
-
-        //초기 토큰 발급 (테스트용)
-        FirebaseMessaging.getInstance().token
-            .addOnSuccessListener { token ->
-                Log.d("FCM", token)
-            }
     }
 
     val state by viewModel.uiState.collectAsState()
