@@ -10,17 +10,27 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.umc.halo.R
+import com.umc.halo.core.datastore.DeviceUuidDataStore
+import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class HaloFirebaseMessagingService : FirebaseMessagingService() {
+@AndroidEntryPoint
+class HaloFirebaseMessagingService: FirebaseMessagingService() {
+    @Inject lateinit var deviceUuidDataStore: DeviceUuidDataStore
 
     @Deprecated("Deprecated in Java")
     //FCM 토큰 변경 시
     override fun onNewToken(token: String) {
         super.onNewToken(token)
 
-        Log.d("FCM", "New Token = $token")
+        CoroutineScope(Dispatchers.IO).launch {
+            val uuid = deviceUuidDataStore.getOrCreate()
 
-        // TODO 서버에 전송
+
+        }
     }
 
     // 앱 실행 중 알림 도착

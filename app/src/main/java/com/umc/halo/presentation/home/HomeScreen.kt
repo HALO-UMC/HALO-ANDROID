@@ -81,11 +81,6 @@ fun HomeRoute(
             .addOnSuccessListener { token ->
                 Log.d("FCM", token)
             }
-
-        //토큰용 UUID 생성
-        val testUuid = UUID.randomUUID().toString()
-
-        Log.d("UUID", testUuid)
     }
 
     val state by viewModel.uiState.collectAsState()

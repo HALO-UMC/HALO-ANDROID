@@ -2,7 +2,9 @@ package com.umc.halo.presentation.home
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.messaging.FirebaseMessaging
 import com.umc.halo.R
+import com.umc.halo.core.datastore.DeviceUuidDataStore
 import com.umc.halo.domain.model.home.Books
 import com.umc.halo.domain.model.home.HomeStatus
 import com.umc.halo.domain.model.home.StartStorybook
@@ -21,7 +23,8 @@ import kotlin.math.sin
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val homeRepository: HomeRepository
+    private val homeRepository: HomeRepository,
+    private val deviceUuidDataStore: DeviceUuidDataStore
 ): BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
 
     override fun onEvent(event: HomeUiEvent) {
@@ -97,6 +100,21 @@ class HomeViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    fun onNotificationPermissionResult(isGranted: Boolean) {
+        if (isGranted) {
+            FirebaseMessaging.getInstance().token
+                .addOnSuccessListener { token ->
+                    Log.d("FCM", token)
+                    registerFCMToken(token)
+                }
+        }
+    }
+
+    fun registerFCMToken(token: String) = viewModelScope.launch {
+        val uuid = deviceUuidDataStore.getOrCreate()
+
     }
 }
 
