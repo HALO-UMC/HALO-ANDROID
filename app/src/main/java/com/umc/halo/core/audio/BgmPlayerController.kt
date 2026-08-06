@@ -49,12 +49,7 @@ class BgmPlayerController @Inject constructor(
     }
 
     fun stop() {
-        runCatching {
-            mediaPlayer?.let { player ->
-                if (player.isPlaying) player.pause()
-                player.seekTo(0)
-            }
-        }
+        releasePlayer()
     }
 
     fun setVolume(volume: Float) {
