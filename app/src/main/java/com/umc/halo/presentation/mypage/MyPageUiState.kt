@@ -3,10 +3,12 @@ package com.umc.halo.presentation.mypage
 import com.umc.halo.presentation.base.UiState
 
 data class MyPageUiState(
-    val bgmEnabled: Boolean = true,
-    val volume: Float = 0.42f,
+    val bgmEnabled: Boolean = false,
+    val volume: Float = 0.7f,
     val selectedTrackIndex: Int = 0,
-    val playingTrackIndex: Int? = 0,
+    val playingTrackIndex: Int? = null,
+    val isBgmLoading: Boolean = false,
+    val systemSettingsErrorMessage: String? = null,
     val allNotificationsEnabled: Boolean = true,
     val todayChapterNotificationEnabled: Boolean = true,
     val anniversaryNotificationEnabled: Boolean = true,

@@ -46,6 +46,7 @@ import com.umc.halo.presentation.theme.White
 fun SystemVolumeSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
+    onValueChangeFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     BoxWithConstraints(
@@ -59,6 +60,7 @@ fun SystemVolumeSlider(
                 )
                 setProgress { targetValue ->
                     onValueChange(targetValue.coerceIn(0f, 1f))
+                    onValueChangeFinished()
                     true
                 }
             },
@@ -80,7 +82,9 @@ fun SystemVolumeSlider(
                         },
                         onDrag = { change, _ ->
                             onValueChange((change.position.x / sliderWidthPx).coerceIn(0f, 1f))
-                        }
+                        },
+                        onDragEnd = onValueChangeFinished,
+                        onDragCancel = onValueChangeFinished
                     )
                 },
             contentAlignment = Alignment.CenterStart

@@ -4,9 +4,12 @@ import android.content.Context
 import com.umc.halo.presentation.base.UiEvent
 
 sealed interface MyPageUiEvent : UiEvent {
+    data object SystemSettingsEntered : MyPageUiEvent
     data class BgmEnabledChanged(val enabled: Boolean) : MyPageUiEvent
     data class VolumeChanged(val volume: Float) : MyPageUiEvent
+    data object VolumeChangeFinished : MyPageUiEvent
     data class TrackClicked(val index: Int) : MyPageUiEvent
+    data object SystemSettingsErrorShown : MyPageUiEvent
 
     data class AllNotificationsChanged(val enabled: Boolean) : MyPageUiEvent
     data class TodayChapterNotificationChanged(val enabled: Boolean) : MyPageUiEvent

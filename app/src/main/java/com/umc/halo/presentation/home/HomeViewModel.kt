@@ -2,6 +2,7 @@ package com.umc.halo.presentation.home
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.audio.BgmPlaybackManager
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.Books
 import com.umc.halo.domain.model.home.HomeStatus
@@ -21,8 +22,10 @@ import kotlin.math.sin
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val homeRepository: HomeRepository
+    private val homeRepository: HomeRepository,
+    private val bgmPlaybackManager: BgmPlaybackManager
 ): BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
+    val bgmState = bgmPlaybackManager.state
 
     override fun onEvent(event: HomeUiEvent) {
         when (event) {
@@ -47,6 +50,18 @@ class HomeViewModel @Inject constructor(
                     continueStorybookList = home.continueStorybookList
                 )
             }
+        }
+    }
+
+    fun loadBgmSetting() {
+        viewModelScope.launch {
+            bgmPlaybackManager.loadSettings()
+        }
+    }
+
+    fun onBgmPlayerClicked() {
+        viewModelScope.launch {
+            bgmPlaybackManager.toggleHomePlayback()
         }
     }
 
