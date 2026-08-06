@@ -20,15 +20,16 @@ import com.umc.halo.presentation.theme.HaloType
 @Composable
 fun BottomNav(
     navController: NavHostController,
-    currentRoute: String?
+    currentRoute: String?,
+    modifier: Modifier = Modifier
 ) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface,
-        modifier = Modifier.padding(
-            top = 8.dp,
+        modifier = modifier.padding(
+            top = 4.dp,
             start = 10.dp,
             end = 10.dp,
-            bottom = 8.dp
+            bottom = 4.dp
         )
     ) {
         BottomNavItem.entries.forEach { item ->

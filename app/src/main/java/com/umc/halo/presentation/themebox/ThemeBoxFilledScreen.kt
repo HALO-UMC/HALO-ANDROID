@@ -39,7 +39,7 @@ fun ThemeBoxFilledScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.weight(12f))
-        //Spacer(Modifier.height(12.dp))
+        //Spacer(Modifier.height(24.dp))
 
         ProgressBox(
             Modifier.weight(35f),
@@ -48,7 +48,7 @@ fun ThemeBoxFilledScreen(
         )
 
         Spacer(Modifier.weight(18f))
-        //Spacer(Modifier.height(26.dp))
+        //Spacer(Modifier.height(36.dp))
 
         ThemeBox(
             Modifier.weight(190f),
@@ -58,7 +58,7 @@ fun ThemeBoxFilledScreen(
         )
 
         Spacer(Modifier.weight(15f))
-        //Spacer(Modifier.height(60.dp))
+        //Spacer(Modifier.height(30.dp))
 
         HaloMaterialButton(
             buttonState = ButtonState.ABLE,
