@@ -22,9 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +37,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.lottiefiles.dotlottie.core.compose.runtime.DotLottieController
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
 import com.lottiefiles.dotlottie.core.util.DotLottieSource
+import com.umc.halo.core.audio.BgmPlaybackState
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.home.actionguide.ActionGuide
 import com.umc.halo.presentation.home.bookcase.BookCase
@@ -64,6 +63,7 @@ fun HomeRoute(
     LaunchedEffect(Unit) {
         //화면 불러오기
         viewModel.getHome()
+        viewModel.loadBgmSetting()
 
         //알림 권한 허용
         if (
@@ -89,9 +89,12 @@ fun HomeRoute(
     }
 
     val state by viewModel.uiState.collectAsState()
+    val bgmState by viewModel.bgmState.collectAsState()
 
     HomeScreen(
         state = state,
+        bgmState = bgmState,
+        onBgmClick = viewModel::onBgmPlayerClicked,
         onEvent = { event ->
             when (event) {
                 is HomeUiEvent.OnBookClicked -> {
@@ -117,6 +120,8 @@ fun HomeRoute(
 @Composable
 fun HomeScreen(
     state: HomeUiState,
+    bgmState: BgmPlaybackState,
+    onBgmClick: () -> Unit,
     onEvent: (HomeUiEvent) -> Unit
 ) {
     Box(
@@ -129,6 +134,8 @@ fun HomeScreen(
             item {
                 HomeScreenContents(
                     state = state,
+                    bgmState = bgmState,
+                    onBgmClick = onBgmClick,
                     onEvent = onEvent
                 )
             }
@@ -139,25 +146,28 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContents(
     state: HomeUiState,
+    bgmState: BgmPlaybackState,
+    onBgmClick: () -> Unit,
     onEvent: (HomeUiEvent) -> Unit
 ) {
     val controller = remember { DotLottieController() }
-    var bgmPlayer by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Spacer(Modifier.height(18.dp))
+        if (bgmState.bgmEnabled) {
+            Spacer(Modifier.height(18.dp))
 
-        BackGroundMusicPlayer(isPlaying = bgmPlayer) {
-            bgmPlayer = if (bgmPlayer) {
-                false
-            } else {
-                true
-            }
+            BackGroundMusicPlayer(
+                title = bgmState.title,
+                isPlaying = bgmState.isPlaying,
+                onClick = onBgmClick
+            )
+
+            Spacer(Modifier.height(28.dp))
+        } else {
+            Spacer(Modifier.height(46.dp))
         }
-
-        Spacer(Modifier.height(28.dp))
 
         Text(
             text = buildAnnotatedString {

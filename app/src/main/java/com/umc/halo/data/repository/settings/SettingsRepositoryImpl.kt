@@ -52,4 +52,4 @@ private fun BgmSettingResponse.toDomain(): BgmSetting = BgmSetting(
 )
 
 private const val DEFAULT_BGM_ID = 1L
-private const val DEFAULT_BGM_VOLUME = 70
+private const val DEFAULT_BGM_VOLUME = 50

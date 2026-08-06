@@ -1,7 +1,12 @@
 package com.umc.halo.core.audio
 
 import android.content.Context
-import android.media.MediaPlayer
+import android.net.Uri
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -10,7 +15,7 @@ import javax.inject.Singleton
 class BgmPlayerController @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) {
-    private var mediaPlayer: MediaPlayer? = null
+    private var player: ExoPlayer? = null
     private var currentBgmId: Long? = null
     private var currentVolume: Float = DEFAULT_VOLUME
 
@@ -18,7 +23,7 @@ class BgmPlayerController @Inject constructor(
         get() = currentBgmId.takeIf { isPlaying }
 
     val isPlaying: Boolean
-        get() = runCatching { mediaPlayer?.isPlaying == true }.getOrDefault(false)
+        get() = player?.isPlaying == true
 
     fun applySettings(bgmId: Long?, enabled: Boolean, volume: Float) {
         currentVolume = volume.coerceIn(0f, 1f)
@@ -33,84 +38,52 @@ class BgmPlayerController @Inject constructor(
         val track = BgmTrackCatalog.trackById(bgmId)
         currentVolume = volume.coerceIn(0f, 1f)
 
-        if (currentBgmId != track.id || mediaPlayer == null) {
-            releasePlayer()
-            mediaPlayer = createPlayer(track)
+        val currentPlayer = player ?: createPlayer().also { player = it }
+        if (currentBgmId != track.id) {
+            currentPlayer.setMediaItem(MediaItem.fromUri(track.rawUri()))
+            currentPlayer.prepare()
             currentBgmId = track.id
         }
 
-        startPlayer(track)
+        currentPlayer.volume = currentVolume
+        currentPlayer.playWhenReady = true
+        currentPlayer.play()
     }
 
     fun pause() {
-        runCatching {
-            mediaPlayer?.takeIf { it.isPlaying }?.pause()
-        }
+        player?.pause()
     }
 
     fun stop() {
-        releasePlayer()
+        player?.stop()
+        currentBgmId = null
     }
 
     fun setVolume(volume: Float) {
         currentVolume = volume.coerceIn(0f, 1f)
-        runCatching {
-            mediaPlayer?.setVolume(currentVolume, currentVolume)
-        }
+        player?.volume = currentVolume
     }
 
-    private fun createPlayer(track: BgmTrack): MediaPlayer? {
-        return MediaPlayer.create(context, track.rawResId)?.apply {
-            isLooping = true
-            setVolume(currentVolume, currentVolume)
-            setOnCompletionListener { player ->
-                runCatching {
-                    player.seekTo(0)
-                    player.start()
-                }.onFailure {
-                    releasePlayer()
-                }
+    private fun createPlayer(): ExoPlayer {
+        return ExoPlayer.Builder(context)
+            .build()
+            .apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(C.USAGE_MEDIA)
+                        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                        .build(),
+                    true
+                )
+                repeatMode = Player.REPEAT_MODE_ONE
+                volume = currentVolume
             }
-            setOnErrorListener { _, _, _ ->
-                releasePlayer()
-                true
-            }
-        }
     }
 
-    private fun startPlayer(track: BgmTrack) {
-        val player = mediaPlayer ?: run {
-            mediaPlayer = createPlayer(track)
-            currentBgmId = track.id
-            mediaPlayer
-        }
-
-        val started = runCatching {
-            player?.setVolume(currentVolume, currentVolume)
-            if (player?.isPlaying != true) {
-                player?.start()
-            }
-        }.isSuccess
-
-        if (!started) {
-            releasePlayer()
-            mediaPlayer = createPlayer(track)
-            currentBgmId = track.id
-            runCatching {
-                mediaPlayer?.start()
-            }
-        }
-    }
-
-    private fun releasePlayer() {
-        runCatching {
-            mediaPlayer?.release()
-        }
-        mediaPlayer = null
-        currentBgmId = null
-    }
+    private fun BgmTrack.rawUri(): Uri =
+        Uri.parse("android.resource://${context.packageName}/$rawResId")
 
     private companion object {
-        const val DEFAULT_VOLUME = 0.7f
+        const val DEFAULT_VOLUME = 0.5f
     }
 }

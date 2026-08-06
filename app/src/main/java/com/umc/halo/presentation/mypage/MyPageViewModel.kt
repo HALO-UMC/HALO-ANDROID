@@ -2,19 +2,16 @@ package com.umc.halo.presentation.mypage
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.umc.halo.core.audio.BgmPlayerController
-import com.umc.halo.core.audio.BgmTrackCatalog
+import com.umc.halo.core.audio.BgmPlaybackManager
 import com.umc.halo.data.remote.auth.GoogleLoginDataSource
 import com.umc.halo.data.remote.auth.KakaoLoginDataSource
 import com.umc.halo.domain.model.member.MemberInfo
-import com.umc.halo.domain.model.settings.BgmSetting
 import com.umc.halo.domain.repository.auth.AuthRepository
 import com.umc.halo.domain.repository.member.MemberRepository
 import com.umc.halo.domain.repository.settings.SettingsRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 import javax.inject.Inject
 
 /**
@@ -32,13 +29,14 @@ class MyPageViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val memberRepository: MemberRepository,
     private val settingsRepository: SettingsRepository,
-    private val bgmPlayerController: BgmPlayerController,
+    private val bgmPlaybackManager: BgmPlaybackManager,
     private val kakaoLoginDataSource: KakaoLoginDataSource,
     private val googleLoginDataSource: GoogleLoginDataSource
 ) : BaseViewModel<MyPageUiState, MyPageUiEvent>(
     initialState = MyPageUiState()
 ) {
     init {
+        observeBgmPlayback()
         loadMyPageData()
     }
 
@@ -223,28 +221,11 @@ class MyPageViewModel @Inject constructor(
         viewModelScope.launch {
             updateState { copy(isBgmLoading = true, systemSettingsErrorMessage = null) }
 
-            runCatching { settingsRepository.getBgmSetting() }
-                .onSuccess { setting ->
-                    applyBgmSetting(setting)
-                }
+            bgmPlaybackManager.loadSettings(force = true)
                 .onFailure {
-                    val fallback = BgmSetting(
-                        bgmId = BgmTrackCatalog.DEFAULT_BGM_ID,
-                        bgmEnabled = false,
-                        bgmVolume = DEFAULT_BGM_VOLUME
-                    )
-                    bgmPlayerController.applySettings(
-                        bgmId = fallback.bgmId,
-                        enabled = false,
-                        volume = fallback.bgmVolume.toVolumeFloat()
-                    )
                     updateState {
                         copy(
                             isBgmLoading = false,
-                            bgmEnabled = fallback.bgmEnabled,
-                            volume = fallback.bgmVolume.toVolumeFloat(),
-                            selectedTrackIndex = BgmTrackCatalog.indexOf(fallback.bgmId),
-                            playingTrackIndex = null,
                             systemSettingsErrorMessage = BGM_LOAD_FAILED_MESSAGE
                         )
                     }
@@ -253,106 +234,49 @@ class MyPageViewModel @Inject constructor(
     }
 
     private fun onBgmEnabledChanged(enabled: Boolean) {
-        val state = currentState
-        val track = BgmTrackCatalog.trackByIndex(state.selectedTrackIndex)
-        val volume = state.volume.coerceIn(0f, 1f)
-
-        if (enabled) {
-            bgmPlayerController.play(track.id, volume)
-        } else {
-            bgmPlayerController.stop()
+        viewModelScope.launch {
+            bgmPlaybackManager.setEnabled(enabled)
+                .onFailure { showBgmSaveError() }
         }
-
-        updateState {
-            copy(
-                bgmEnabled = enabled,
-                playingTrackIndex = if (enabled) selectedTrackIndex else null
-            )
-        }
-        saveCurrentBgmSetting()
     }
 
     private fun onBgmVolumeChanged(volume: Float) {
-        val coercedVolume = volume.coerceIn(0f, 1f)
-        bgmPlayerController.setVolume(coercedVolume)
-        updateState { copy(volume = coercedVolume) }
+        bgmPlaybackManager.setVolume(volume)
     }
 
     private fun onBgmTrackClicked(index: Int) {
-        val state = currentState
-        val track = BgmTrackCatalog.trackByIndex(index)
-        val isSameTrack = state.selectedTrackIndex == index
-        val isPlayingSameTrack = state.playingTrackIndex == index
-
-        if (isSameTrack) {
-            if (isPlayingSameTrack) {
-                bgmPlayerController.pause()
-                updateState { copy(playingTrackIndex = null) }
-            } else {
-                bgmPlayerController.play(track.id, state.volume)
-                updateState { copy(playingTrackIndex = index) }
-            }
-            return
+        viewModelScope.launch {
+            bgmPlaybackManager.onTrackClicked(index)
+                .onFailure { showBgmSaveError() }
         }
-
-        bgmPlayerController.play(track.id, state.volume)
-        updateState {
-            copy(
-                selectedTrackIndex = index,
-                playingTrackIndex = index
-            )
-        }
-        saveCurrentBgmSetting()
     }
 
     private fun saveCurrentBgmSetting() {
-        val state = currentState
-        val setting = BgmSetting(
-            bgmId = BgmTrackCatalog.trackByIndex(state.selectedTrackIndex).id,
-            bgmEnabled = state.bgmEnabled,
-            bgmVolume = state.volume.toVolumeInt()
-        )
-
         viewModelScope.launch {
-            runCatching { settingsRepository.updateBgmSetting(setting) }
-                .onSuccess { updatedSetting ->
-                    applyBgmSetting(updatedSetting, syncPlayer = false)
-                }
-                .onFailure {
-                    updateState {
-                        copy(systemSettingsErrorMessage = BGM_SAVE_FAILED_MESSAGE)
-                    }
-                }
+            bgmPlaybackManager.saveCurrent()
+                .onFailure { showBgmSaveError() }
         }
     }
 
-    private fun applyBgmSetting(
-        setting: BgmSetting,
-        syncPlayer: Boolean = true
-    ) {
-        val trackIndex = BgmTrackCatalog.indexOf(setting.bgmId)
-        val volume = setting.bgmVolume.toVolumeFloat()
-
-        if (syncPlayer) {
-            bgmPlayerController.applySettings(
-                bgmId = setting.bgmId,
-                enabled = setting.bgmEnabled,
-                volume = volume
-            )
-        }
-
-        updateState {
-            copy(
-                isBgmLoading = false,
-                bgmEnabled = setting.bgmEnabled,
-                volume = volume,
-                selectedTrackIndex = trackIndex,
-                playingTrackIndex = if (setting.bgmEnabled && bgmPlayerController.isPlaying) {
-                    trackIndex
-                } else {
-                    null
+    private fun observeBgmPlayback() {
+        viewModelScope.launch {
+            bgmPlaybackManager.state.collect { bgmState ->
+                updateState {
+                    copy(
+                        isBgmLoading = bgmState.isLoading,
+                        bgmEnabled = bgmState.bgmEnabled,
+                        volume = bgmState.volume,
+                        selectedTrackIndex = bgmState.selectedTrackIndex,
+                        playingTrackIndex = bgmState.playingTrackIndex
+                    )
                 }
-            )
+            }
+        }
+    }
+
+    private fun showBgmSaveError() {
+        updateState {
+            copy(systemSettingsErrorMessage = BGM_SAVE_FAILED_MESSAGE)
         }
     }
 
@@ -408,7 +332,6 @@ class MyPageViewModel @Inject constructor(
     private companion object {
         // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
         const val WITHDRAW_FAILED_MESSAGE = "회원 탈퇴에 실패했어요. 잠시 후 다시 시도해 주세요."
-        const val DEFAULT_BGM_VOLUME = 70
         const val BGM_LOAD_FAILED_MESSAGE = "BGM 설정을 불러오지 못했어요."
         const val BGM_SAVE_FAILED_MESSAGE = "BGM 설정을 저장하지 못했어요."
     }
@@ -435,7 +358,3 @@ private fun String?.toHourMinute(): Pair<Int, Int> {
     val minute = parts.getOrNull(1)?.toIntOrNull()?.coerceIn(0, 59) ?: 0
     return hour to minute
 }
-
-private fun Int.toVolumeFloat(): Float = coerceIn(0, 100) / 100f
-
-private fun Float.toVolumeInt(): Int = (coerceIn(0f, 1f) * 100).roundToInt().coerceIn(0, 100)
