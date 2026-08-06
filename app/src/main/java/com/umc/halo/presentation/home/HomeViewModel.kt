@@ -112,6 +112,8 @@ class HomeViewModel @Inject constructor(
                     Log.d("FCM", token)
                     registerFCMToken(token)
                 }
+        } else {
+            deleteFCMToken()
         }
     }
 
@@ -119,6 +121,12 @@ class HomeViewModel @Inject constructor(
         val uuid = deviceUuidDataStore.getOrCreate()
 
         notificationRepository.addMembers(token,uuid)
+    }
+
+    fun deleteFCMToken() = viewModelScope.launch {
+        val uuid = deviceUuidDataStore.getOrCreate()
+
+        notificationRepository.deleteMembers(uuid)
     }
 }
 

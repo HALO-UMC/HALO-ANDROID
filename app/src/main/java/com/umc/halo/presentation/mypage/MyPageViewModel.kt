@@ -2,11 +2,13 @@ package com.umc.halo.presentation.mypage
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.datastore.DeviceUuidDataStore
 import com.umc.halo.data.remote.auth.GoogleLoginDataSource
 import com.umc.halo.data.remote.auth.KakaoLoginDataSource
 import com.umc.halo.domain.model.member.MemberInfo
 import com.umc.halo.domain.repository.auth.AuthRepository
 import com.umc.halo.domain.repository.member.MemberRepository
+import com.umc.halo.domain.repository.notification.NotificationRepository
 import com.umc.halo.domain.repository.settings.SettingsRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +31,9 @@ class MyPageViewModel @Inject constructor(
     private val memberRepository: MemberRepository,
     private val settingsRepository: SettingsRepository,
     private val kakaoLoginDataSource: KakaoLoginDataSource,
-    private val googleLoginDataSource: GoogleLoginDataSource
+    private val googleLoginDataSource: GoogleLoginDataSource,
+    private val deviceUuidDataStore: DeviceUuidDataStore,
+    private val notificationRepository: NotificationRepository
 ) : BaseViewModel<MyPageUiState, MyPageUiEvent>(
     initialState = MyPageUiState()
 ) {
@@ -228,6 +232,10 @@ class MyPageViewModel @Inject constructor(
             // 서버 호출이 실패해도 로컬 토큰은 지워짐 (AuthRepository.logout 참고)
             authRepository.logout()
 
+            // 알림 member table에서 삭제
+            val uuid = deviceUuidDataStore.getOrCreate()
+            notificationRepository.deleteMembers(uuid)
+
             updateState {
                 copy(
                     isProcessingAccountAction = false,
@@ -251,10 +259,13 @@ class MyPageViewModel @Inject constructor(
             updateState { copy(isProcessingAccountAction = true) }
 
             val success = memberRepository.withdraw()
+            val uuid = deviceUuidDataStore.getOrCreate()
 
             if (success) {
                 kakaoLoginDataSource.unlink()
                 googleLoginDataSource.clearCredentialState(context)
+                // 푸시 알림 연결 종료
+                notificationRepository.deleteMembers(uuid)
             }
 
             updateState {

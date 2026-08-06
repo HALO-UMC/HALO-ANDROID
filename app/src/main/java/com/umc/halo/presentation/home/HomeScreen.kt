@@ -55,26 +55,21 @@ fun HomeRoute(
 ) {
     val context = LocalContext.current
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        viewModel.onNotificationPermissionResult(granted)
-    }
+    val hasPermission =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+
+    viewModel.onNotificationPermissionResult(hasPermission)
 
     LaunchedEffect(Unit) {
         //화면 불러오기
         viewModel.getHome()
-
-        //알림 권한 허용
-        if (
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
     }
 
     val state by viewModel.uiState.collectAsState()
