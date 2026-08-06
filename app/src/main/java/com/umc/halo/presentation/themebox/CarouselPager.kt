@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -94,6 +95,8 @@ fun CarouselPager(
                 fraction = 1f - pageOffset.coerceIn(0f, 1f)
             )
 
+            val cardHeight = maxHeight * 0.84f
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -103,7 +106,7 @@ fun CarouselPager(
                             scaleY = pagerSize,
                             alpha = alpha
                         )
-                        .fillMaxWidth()
+                        .height(cardHeight)
                         .aspectRatio(0.7f),
                     shape = RoundedCornerShape(16.dp)
                 ) {
