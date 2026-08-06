@@ -12,8 +12,10 @@ data class StorybookListResponse(
  * 스토리북 한 권
  *
  * @param status NOT_STARTED / IN_PROGRESS / TODAY_DONE / COMPLETED
- * @param lastChapterOrder 완료한 장 순서. 시작 전이면 null
- * @param lastCompletedDate 마지막 기록일("yyyy-MM-dd"). 시작 전이면 null
+ * @param lastChapterOrder 지금 진행중인 장 번호*. 시작 전이면 null
+ *  완료한 장에서 +1
+ * @param startedDate 스토리북 시작일("yyyy-MM-dd"). 시작 전이면 null → 진행중 탭 정렬 기준
+ * @param lastCompletedDate 마지막 기록일("yyyy-MM-dd"). 시작 전이면 null → 완료 탭 정렬 기준
  */
 data class StorybookSummaryResponse(
     val storybookId: Long,
@@ -23,6 +25,7 @@ data class StorybookSummaryResponse(
     val imageUrl: String?,
     val status: String?,
     val lastChapterOrder: Int?,
+    val startedDate: String?,
     val lastCompletedDate: String?
 )
 

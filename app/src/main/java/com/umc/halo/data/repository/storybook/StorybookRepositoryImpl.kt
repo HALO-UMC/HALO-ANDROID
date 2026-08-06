@@ -50,9 +50,10 @@ class StorybookRepositoryImpl @Inject constructor(
             },
 
             // 진행중 탭 - 오늘 분량을 끝낸 책(TODAY_DONE)도 아직 진행중이므로 함께 담고 대기 상태로 표시
-            // TODO: 디자인은 '시작일이 빠른 순' 인데 서버가 시작일을 주지 않아 지금은 서버 순서(테마 순서) 그대로 씀
+            // 먼저 시작한 책부터 좌상단에 (날짜가 "yyyy-MM-dd" 라 문자열 오름차순 = 시간순)
             inProgressStorybooks = summaries
                 .filter { it.status == STATUS_IN_PROGRESS || it.status == STATUS_TODAY_DONE }
+                .sortedBy { it.startedDate ?: LAST_DATE }  // 시작일이 없으면 맨 뒤로
                 .map { summary ->
                     InProgressStorybook(
                         id = summary.storybookId,
@@ -64,10 +65,10 @@ class StorybookRepositoryImpl @Inject constructor(
                     )
                 },
 
-            // 완료 탭 - 완료가 빠른 순으로 좌상단부터 (날짜가 "yyyy-MM-dd" 라 문자열 정렬로 시간순이 됨)
+            // 완료 탭 - 가장 최근에 끝낸 책부터 좌상단에 (문자열 내림차순 = 최신순)
             doneStorybooks = summaries
                 .filter { it.status == STATUS_COMPLETED }
-                .sortedBy { it.lastCompletedDate ?: LAST_DATE }  // 날짜가 없으면 맨 뒤로
+                .sortedByDescending { it.lastCompletedDate ?: FIRST_DATE }  // 기록일이 없으면 맨 뒤로
                 .map { summary ->
                     Storybook(
                         id = summary.storybookId,
@@ -100,8 +101,7 @@ class StorybookRepositoryImpl @Inject constructor(
      *
      * NOT_STARTED는 애초에 제외
      *
-     * TODO: "N장 진행중" 의 N 을 '완료한 장 수(lastChapterOrder)' 로 지금 서버에서 내려주어
-     *  '지금 진행중인 장' 은 주지 않음 -> 확인 필요
+     * "N장 진행중" 의 N = [StorybookSummaryResponse.lastChapterOrder]
      */
     private fun StorybookSummaryResponse.toProgress(): StorybookProgress? = when (status) {
         STATUS_IN_PROGRESS, STATUS_TODAY_DONE -> StorybookProgress.InProgress(lastChapterOrder ?: 0)
@@ -111,6 +111,7 @@ class StorybookRepositoryImpl @Inject constructor(
 
     private companion object {
         // 정렬에서 '날짜 없음' 을 맨 뒤로 보내기 위한 값
-        const val LAST_DATE = "9999-99-99"
+        const val LAST_DATE = "9999-99-99"   // 오름차순(진행중 탭)용
+        const val FIRST_DATE = "0000-00-00"  // 내림차순(완료 탭)용
     }
 }

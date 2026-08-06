@@ -55,7 +55,12 @@ fun CarouselPager(
         val targetIndex = themeList
             .indexOfFirst { it.storybookId == initialStorybookId }
             .coerceAtLeast(0)
-        val initialPage = if (themeList.size == 1 || themeList.size == 2) 0 else middle - (middle % themeList.size) + targetIndex
+        // 테마가 1~2개일 때와 무한페이저일 때
+        val initialPage = if (themeList.size == 1 || themeList.size == 2) {
+            targetIndex
+        } else {
+            middle - (middle % themeList.size) + targetIndex
+        }
         val baseWidth = maxWidth
         val horizontalPadding = baseWidth * 0.2f
         val pageSpacing = baseWidth * 0.04f
