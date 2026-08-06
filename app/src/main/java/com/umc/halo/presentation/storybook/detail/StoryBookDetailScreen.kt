@@ -225,6 +225,7 @@ fun StoryThemeIntro(
             StorybookCard(
                 title = storyBookInfo.title,
                 subtitle = "",
+                coverUrl = storyBookInfo.imageUrl,
                 badge = when (storyBookProgress) {
                     is StorybookProgress.Done ->  StorybookBadge.Done
                     is StorybookProgress.InProgress -> StorybookBadge.InProgress(storyBookProgress.chapter)

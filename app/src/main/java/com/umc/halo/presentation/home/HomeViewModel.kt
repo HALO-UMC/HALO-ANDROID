@@ -71,7 +71,8 @@ class HomeViewModel @Inject constructor(
                         currentProgress = book.currentChapterOrder,
                         isFirst = book.isFirst,
                         isCompleted = !book.todayAvailable,
-                        imageUrl = book.imageUrl
+                        imageUrl = book.imageUrl,
+                        subtitle = book.shortDescription
                     )
                 )
             }

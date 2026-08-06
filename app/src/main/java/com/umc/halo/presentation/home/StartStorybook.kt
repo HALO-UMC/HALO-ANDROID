@@ -184,7 +184,7 @@ fun StartStorybookContents(
             Spacer(Modifier.weight(1f))
 
             Text(
-                text = if (item.currentProgress == 10) "모든 페이지를 완성했어요!" else "오늘 ${item.currentProgress + 1}장까지 완료할 수 있어요!",
+                text = if (item.currentProgress == 10 && item.isCompleted) "모든 페이지를 완성했어요!" else if (item.isFirst) item.subtitle else "오늘 ${item.currentProgress}장까지 완료할 수 있어요!",
                 style = HaloType.caption01Regular,
                 color = Gray500
             )
@@ -193,7 +193,7 @@ fun StartStorybookContents(
                 Spacer(Modifier.weight(5f))
 
                 Text(
-                    text = "${item.currentProgress}/10",
+                    text = if (item.currentProgress == 10 && item.isCompleted) "10/10" else "${item.currentProgress - 1}/10",
                     style = HaloType.caption01Regular,
                     color = Primary500
                 )
@@ -214,7 +214,7 @@ fun StartStorybookContents(
                     Box(
                         modifier = Modifier
                             .fillMaxHeight()
-                            .width(((item.currentProgress/10f)*121).dp)
+                            .width(if (item.currentProgress == 10 && item.isCompleted) 121.dp else (((item.currentProgress-1)/10f)*121).dp)
                             .border(
                                 width = 0.dp,
                                 color = Color.Transparent,
