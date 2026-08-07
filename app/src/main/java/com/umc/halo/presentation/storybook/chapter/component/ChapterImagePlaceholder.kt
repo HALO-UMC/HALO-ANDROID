@@ -27,7 +27,9 @@ fun ChapterImagePlaceholder(
     modifier: Modifier = Modifier,
     showLabel: Boolean = true,
     lightColor: Color = DefaultCheckerColorLight,
-    darkColor: Color = DefaultCheckerColorDark
+    darkColor: Color = DefaultCheckerColorDark,
+    contentScale: ContentScale = ContentScale.Crop,
+    alignment: Alignment = Alignment.Center
 ) {
     Box(
         modifier = modifier.background(lightColor),
@@ -38,7 +40,8 @@ fun ChapterImagePlaceholder(
                 model = imageUrl,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                contentScale = contentScale,
+                alignment = alignment
             )
         } else {
             Canvas(

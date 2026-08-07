@@ -50,7 +50,7 @@ fun CalendarScreen(
     onNavigateToStorybookList: () -> Unit = {},
     onNavigateToThemeBox: () -> Unit = {},
     onNavigateToThemeBoxStorybook: (Long) -> Unit = {},
-    onNavigateToChapterResult: (Long, Long) -> Unit = { _, _ -> }
+    onNavigateToChapterResult: (Long) -> Unit = {}
 ) {
     val state by vm.uiState.collectAsState()
     val context = LocalContext.current
@@ -82,7 +82,7 @@ fun CalendarScreen(
                 // 서버가 장 고유 id 를 안 줘서 장 순서를 chapterId 자리에 넘긴다 (CalendarUiEvent 주석 참고)
                 is CalendarUiEvent.OnChapterClicked -> {
                     vm.onEvent(CalendarUiEvent.OnDismissModal)
-                    onNavigateToChapterResult(event.storybookId, event.chapterOrder.toLong())
+                    onNavigateToChapterResult(event.memberChapterId)
                 }
                 CalendarUiEvent.OnSummaryDetailClicked -> onNavigateToThemeBox()  // 하단 '자세히 보러가기'
 

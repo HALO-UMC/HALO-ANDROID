@@ -2,7 +2,6 @@ package com.umc.halo.data.repository.chapter
 
 import android.content.Context
 import android.net.Uri
-import android.provider.OpenableColumns
 import com.umc.halo.core.network.BaseResponse
 import com.umc.halo.data.remote.api.chapter.ChapterApi
 import com.umc.halo.data.remote.dto.request.chapter.ChapterAnswerRequest
@@ -36,6 +35,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import retrofit2.HttpException
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ChapterRepositoryImpl @Inject constructor(
     private val chapterApi: ChapterApi,
@@ -94,13 +95,13 @@ class ChapterRepositoryImpl @Inject constructor(
         return result.toDomain()
     }
 
-    override suspend fun uploadImageFromUri(imageUri: String): UploadedChapterImage {
+    override suspend fun uploadImageFromUri(imageUri: String): UploadedChapterImage = withContext(Dispatchers.IO) {
         val uri = Uri.parse(imageUri)
         val contentType = context.contentResolver.getType(uri)
             ?: error("지원하지 않는 이미지 형식입니다.")
         val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
             ?: error("사진을 읽지 못했어요.")
-        val fileSize = queryFileSize(uri) ?: bytes.size.toLong()
+        val fileSize = bytes.size.toLong()
 
         val presignedResponse = runCatching {
             chapterApi.createPresignedUrl(
@@ -126,6 +127,7 @@ class ChapterRepositoryImpl @Inject constructor(
             .url(presigned!!.presignedUrl!!)
             .put(bytes.toRequestBody(contentType.toMediaType()))
             .header("Content-Type", contentType)
+            .header("Content-Length", fileSize.toString())
             .build()
 
         s3Client.newCall(request).execute().use { response ->
@@ -134,18 +136,9 @@ class ChapterRepositoryImpl @Inject constructor(
             }
         }
 
-        return UploadedChapterImage(imageKey = presigned.imageKey!!)
+        UploadedChapterImage(imageKey = presigned.imageKey!!)
     }
 
-    private fun queryFileSize(uri: Uri): Long? =
-        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-            val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
-            if (sizeIndex >= 0 && cursor.moveToFirst()) {
-                cursor.getLong(sizeIndex).takeIf { it > 0 }
-            } else {
-                null
-            }
-        }
 }
 
 private fun TodayChapterResponse.toDomain(storybookId: Long): TodayChapter {

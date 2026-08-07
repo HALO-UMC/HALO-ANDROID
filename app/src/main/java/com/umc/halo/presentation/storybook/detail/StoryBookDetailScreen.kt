@@ -53,6 +53,13 @@ fun StoryBookDetailRoute(
 
     val state by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(state.startedStorybook) {
+        state.startedStorybook?.let { startedStorybookId ->
+            onNavigateToChapterProgress(startedStorybookId, 1)
+            viewModel.clearStartedStorybook()
+        }
+    }
+
     StoryBookDetailScreen(
         state = state,
         onEvent = { event ->
@@ -69,16 +76,29 @@ fun StoryBookDetailRoute(
 
             when (event) {
                 is StoryBookDetailUiEvent.OnClickStoryBookIndex -> {
-                    viewModel.onEvent(event)
-                    navigate(event.storyBookId, event.chapterId)
+                    val chapter = state.storyBookIndex.firstOrNull { it.id == event.chapterId }
+                    if (chapter?.isCompleted == true) {
+                        navigate(event.storyBookId, event.chapterId)
+                    } else {
+                        viewModel.onEvent(event)
+                        if (event.chapterId != 1L) {
+                            navigate(event.storyBookId, event.chapterId)
+                        }
+                    }
                 }
 
 
                 is StoryBookDetailUiEvent.OnClickTodayStoryBook -> {
-                    viewModel.onEvent(event)
                     when (state.storyBookProgress) {
                         is StorybookProgress.Done -> onNavigateToShowTheme(event.storyBookId)
-                        is StorybookProgress.InProgress -> onNavigateToChapterProgress(event.storyBookId, event.chapterId.toInt())
+                        is StorybookProgress.InProgress -> {
+                            if (event.chapterId == 1L) {
+                                viewModel.onEvent(event)
+                            } else {
+                                viewModel.onEvent(event)
+                                onNavigateToChapterProgress(event.storyBookId, event.chapterId.toInt())
+                            }
+                        }
                     }
                 }
 

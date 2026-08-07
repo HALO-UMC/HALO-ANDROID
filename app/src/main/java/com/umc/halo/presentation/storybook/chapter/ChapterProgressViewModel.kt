@@ -10,6 +10,7 @@ import com.umc.halo.domain.model.storybook.ChapterSaveStatus
 import com.umc.halo.domain.repository.chapter.ChapterRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,6 +20,7 @@ class ChapterProgressViewModel @Inject constructor(
 ) : BaseViewModel<ChapterProgressUiState, ChapterProgressUiEvent>(
     initialState = ChapterProgressUiState()
 ) {
+    private var draftSaveJob: Job? = null
 
     override fun onEvent(event: ChapterProgressUiEvent) {
         when (event) {
@@ -359,7 +361,8 @@ class ChapterProgressViewModel @Inject constructor(
     private fun saveDraft() {
         val form = currentState.toSaveForm(ChapterSaveStatus.DRAFT) ?: return
 
-        viewModelScope.launch {
+        draftSaveJob?.cancel()
+        draftSaveJob = viewModelScope.launch {
             runCatching {
                 chapterRepository.saveMemberChapter(form)
             }.onFailure { throwable ->
@@ -376,6 +379,7 @@ class ChapterProgressViewModel @Inject constructor(
         }
 
         val form = currentState.toSaveForm(ChapterSaveStatus.COMPLETED) ?: return
+        draftSaveJob?.cancel()
 
         updateState {
             copy(
@@ -425,12 +429,30 @@ class ChapterProgressViewModel @Inject constructor(
         return ChapterSaveForm(
             chapterId = chapter.id,
             emotion = selectedMood?.toEmotion(),
-            coverType = coverType,
-            imageKey = selectedSceneImageKey,
+            coverType = coverTypeForSave(status),
+            imageKey = imageKeyForSave(status),
             sceneCardId = selectedSceneCardId,
             answers = answers,
             status = status
         )
     }
+
+    private fun ChapterProgressUiState.coverTypeForSave(
+        status: ChapterSaveStatus
+    ): ChapterCoverType? =
+        if (status == ChapterSaveStatus.DRAFT && coverType == ChapterCoverType.IMAGE) {
+            null
+        } else {
+            coverType
+        }
+
+    private fun ChapterProgressUiState.imageKeyForSave(
+        status: ChapterSaveStatus
+    ): String? =
+        if (status == ChapterSaveStatus.DRAFT) {
+            null
+        } else {
+            selectedSceneImageKey
+        }
 
 }

@@ -24,7 +24,7 @@ sealed interface CalendarUiEvent {
      *  서버는 장의 고유 id 를 주지 않고 순서([chapterOrder], 1~10)만 주기에 같은 방식으로 구현
      *  TODO :'완료된 장 다시보기' API(GET /api/v1/member-chapters/{memberChapterId})가 연동되면 실제 id 로 바꿔야 함
      */
-    data class OnChapterClicked(val storybookId: Long, val chapterOrder: Int) : CalendarUiEvent
+    data class OnChapterClicked(val memberChapterId: Long) : CalendarUiEvent
 
     /** 하단 요약 '자세히 보러가기' → 테마함 */
     data object OnSummaryDetailClicked : CalendarUiEvent
