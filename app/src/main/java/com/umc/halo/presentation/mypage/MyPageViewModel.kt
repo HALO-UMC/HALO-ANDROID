@@ -65,8 +65,26 @@ class MyPageViewModel @Inject constructor(
                 copy(notificationSettingsErrorMessage = null)
             }
 
-            is MyPageUiEvent.AllNotificationsChanged -> updateNotificationSettings {
-                copy(isAllNotificationEnabled = event.enabled)
+            is MyPageUiEvent.AllNotificationsChanged -> {
+                if (!currentState.notificationPermissionGranted) {
+                    updateState {
+                        copy(
+                            shouldOpenNotificationSettings = true
+                        )
+                    }
+                } else {
+                    updateNotificationSettings {
+                        copy(
+                            isAllNotificationEnabled = event.enabled
+                        )
+                    }
+                }
+            }
+
+            MyPageUiEvent.NotificationSettingsOpened -> updateState {
+                copy(
+                    shouldOpenNotificationSettings = false
+                )
             }
 
             is MyPageUiEvent.TodayChapterNotificationChanged -> {
@@ -170,12 +188,21 @@ class MyPageViewModel @Inject constructor(
     }
 
     fun offAllNotification() = viewModelScope.launch {
-        val notificationSettings = settingsRepository.getNotificationSettings()
-        val newSettings = notificationSettings.copy(
-            isAllNotificationEnabled = false
+        settingsRepository.updateNotificationSettings(
+            currentState.toNotificationSettings().copy(
+                isAllNotificationEnabled = false
+            )
         )
+    }
 
-        settingsRepository.updateNotificationSettings(newSettings)
+    fun onNotificationPermissionChanged(granted: Boolean) {
+        updateState {
+            copy(notificationPermissionGranted = granted)
+        }
+
+        if (!granted && currentState.allNotificationsEnabled) {
+            offAllNotification()
+        }
     }
 
     /**

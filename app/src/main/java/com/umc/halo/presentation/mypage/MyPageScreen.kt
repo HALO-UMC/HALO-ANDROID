@@ -1,8 +1,11 @@
 package com.umc.halo.presentation.mypage
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -60,26 +63,41 @@ fun NotificationSettingsRoute(
     val context = LocalContext.current
 
     //알림 권한 허용 되었는지 판단
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        if (!granted) {
-            viewModel.offAllNotification()
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        if ( // 권한 허용이 되지 않았을 시
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+    val hasPermission =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            //알림 권한 허용 팝업 띄우기
-            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
         }
 
+    LaunchedEffect(uiState.shouldOpenNotificationSettings) {
+        if (uiState.shouldOpenNotificationSettings) {
+
+            Toast.makeText(
+                context,
+                "알림을 사용하려면 기기 설정에서 알림 권한을 허용해주세요.",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", context.packageName, null)
+            }
+            context.startActivity(intent)
+
+            viewModel.onEvent(
+                MyPageUiEvent.NotificationSettingsOpened
+            )
+        }
+    }
+
+    LaunchedEffect(hasPermission) {
+        viewModel.onNotificationPermissionChanged(hasPermission)
+    }
+
+    LaunchedEffect(Unit) {
         viewModel.onEvent(MyPageUiEvent.NotificationSettingsEntered)
     }
 

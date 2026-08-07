@@ -17,6 +17,7 @@ sealed interface MyPageUiEvent : UiEvent {
     data class TodayChapterNotificationChanged(val enabled: Boolean) : MyPageUiEvent
     data class AnniversaryNotificationChanged(val enabled: Boolean) : MyPageUiEvent
     data class RetentionNotificationChanged(val enabled: Boolean) : MyPageUiEvent
+    data object NotificationSettingsOpened : MyPageUiEvent
 
     data object NotificationTimeClicked : MyPageUiEvent
     data object NotificationTimeEditClicked : MyPageUiEvent

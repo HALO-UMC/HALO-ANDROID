@@ -15,6 +15,8 @@ data class MyPageUiState(
     val todayChapterNotificationEnabled: Boolean = true,
     val anniversaryNotificationEnabled: Boolean = true,
     val retentionNotificationEnabled: Boolean = true,
+    val notificationPermissionGranted: Boolean = false,
+    val shouldOpenNotificationSettings: Boolean = false,
     val notificationHour: Int = 9,
     val notificationMinute: Int = 0,
     val draftNotificationHour: Int = notificationHour,
