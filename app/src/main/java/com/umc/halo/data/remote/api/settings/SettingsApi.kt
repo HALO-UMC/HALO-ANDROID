@@ -2,6 +2,7 @@ package com.umc.halo.data.remote.api.settings
 
 import com.umc.halo.core.network.BaseResponse
 import com.umc.halo.data.remote.dto.request.settings.BgmSettingUpdateRequest
+import com.umc.halo.data.remote.dto.request.settings.NotificationSettingsUpdateRequest
 import com.umc.halo.data.remote.dto.response.settings.BgmSettingResponse
 import com.umc.halo.data.remote.dto.response.settings.NotificationSettingsResponse
 import retrofit2.http.Body
@@ -11,6 +12,11 @@ import retrofit2.http.PUT
 interface SettingsApi {
     @GET("api/v1/settings/notifications")
     suspend fun getNotificationSettings(): BaseResponse<NotificationSettingsResponse>
+
+    @PUT("api/v1/settings/notifications")
+    suspend fun updateNotificationSettings(
+        @Body request: NotificationSettingsUpdateRequest
+    ): BaseResponse<NotificationSettingsResponse>
 
     @GET("api/v1/settings/bgm")
     suspend fun getBgmSetting(): BaseResponse<BgmSettingResponse>

@@ -11,6 +11,8 @@ sealed interface MyPageUiEvent : UiEvent {
     data class TrackClicked(val index: Int) : MyPageUiEvent
     data object SystemSettingsErrorShown : MyPageUiEvent
 
+    data object NotificationSettingsEntered : MyPageUiEvent
+    data object NotificationSettingsErrorShown : MyPageUiEvent
     data class AllNotificationsChanged(val enabled: Boolean) : MyPageUiEvent
     data class TodayChapterNotificationChanged(val enabled: Boolean) : MyPageUiEvent
     data class AnniversaryNotificationChanged(val enabled: Boolean) : MyPageUiEvent
