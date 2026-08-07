@@ -1,19 +1,33 @@
 package com.umc.halo.presentation.mypage.anniversary
 
+import androidx.lifecycle.viewModelScope
+import com.umc.halo.domain.model.anniversary.AnniversaryOverview
+import com.umc.halo.domain.model.anniversary.AnniversarySaveForm
+import com.umc.halo.domain.model.anniversary.CommonAnniversary
+import com.umc.halo.domain.model.anniversary.MyAnniversary
+import com.umc.halo.domain.model.anniversary.UpcomingAnniversary
+import com.umc.halo.domain.repository.anniversary.AnniversaryRepository
 import com.umc.halo.presentation.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+import kotlin.math.abs
 
-class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEvent>(
+@HiltViewModel
+class AnniversaryViewModel @Inject constructor(
+    private val anniversaryRepository: AnniversaryRepository
+) : BaseViewModel<AnniversaryUiState, AnniversaryUiEvent>(
     initialState = AnniversaryUiState()
 ) {
-    private var nextId = 10L
-
     override fun onEvent(event: AnniversaryUiEvent) {
         when (event) {
+            AnniversaryUiEvent.ScreenEntered -> loadAnniversaries(showError = true)
             AnniversaryUiEvent.BackClicked -> handleBack()
             AnniversaryUiEvent.AddClicked -> openAdd()
             AnniversaryUiEvent.ListExited -> updateState {
                 copy(lastAddedId = null)
             }
+
             AnniversaryUiEvent.SelectModeClicked -> updateState {
                 copy(
                     isSelectionModeActive = !isSelectionModeActive,
@@ -22,7 +36,14 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
             }
 
             AnniversaryUiEvent.DeleteSelectedClicked -> deleteSelected()
-            AnniversaryUiEvent.EditClicked -> currentState.openedItem?.id?.let { openEdit(it) }
+            AnniversaryUiEvent.EditClicked -> currentState.openedItem
+                ?.takeIf { !it.isOfficial }
+                ?.id
+                ?.let { openEdit(it) }
+
+            AnniversaryUiEvent.ErrorMessageShown -> updateState {
+                copy(errorMessage = null)
+            }
 
             is AnniversaryUiEvent.AnniversaryClicked -> {
                 if (currentState.isSelectionModeActive) {
@@ -36,7 +57,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
             is AnniversaryUiEvent.SelectionToggled -> toggleSelection(event.id)
 
             is AnniversaryUiEvent.TitleChanged -> updateState {
-                copy(form = form.copy(title = event.title))
+                copy(form = form.copy(title = event.title.take(TITLE_MAX_LENGTH)))
             }
 
             AnniversaryUiEvent.DateFieldClicked -> updateState {
@@ -47,11 +68,19 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
             AnniversaryUiEvent.NextMonthClicked -> moveVisibleMonth(1)
 
             is AnniversaryUiEvent.CalendarTypeChanged -> updateState {
-                copy(form = form.copy(calendarType = event.type))
+                copy(
+                    form = form.copy(
+                        calendarType = event.type
+                    )
+                )
             }
 
             is AnniversaryUiEvent.RepeatChanged -> updateState {
-                copy(form = form.copy(repeatEnabled = event.enabled))
+                copy(
+                    form = form.copy(
+                        repeatEnabled = event.enabled
+                    )
+                )
             }
 
             is AnniversaryUiEvent.DateSelected -> updateState {
@@ -74,10 +103,36 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
             }
 
             is AnniversaryUiEvent.MemoChanged -> updateState {
-                copy(form = form.copy(memo = event.memo.take(50)))
+                copy(form = form.copy(memo = event.memo.take(MEMO_MAX_LENGTH)))
             }
 
             AnniversaryUiEvent.SaveClicked -> saveForm()
+        }
+    }
+
+    private fun loadAnniversaries(showError: Boolean) {
+        viewModelScope.launch {
+            updateState { copy(isLoading = true, errorMessage = null) }
+
+            runCatching { anniversaryRepository.getAnniversaries() }
+                .onSuccess { overview ->
+                    updateState {
+                        copy(
+                            upcomingItems = overview.toUpcomingItems(),
+                            personalItems = overview.toPersonalItems(),
+                            isLoading = false,
+                            errorMessage = null
+                        )
+                    }
+                }
+                .onFailure {
+                    updateState {
+                        copy(
+                            isLoading = false,
+                            errorMessage = if (showError) LOAD_FAILED_MESSAGE else null
+                        )
+                    }
+                }
         }
     }
 
@@ -123,7 +178,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
     }
 
     private fun openEdit(id: Long) {
-        val item = findAnniversary(id) ?: return
+        val item = findAnniversary(id)?.takeIf { !it.isOfficial } ?: return
         updateState {
             copy(
                 mode = AnniversaryScreenMode.EDIT,
@@ -148,6 +203,7 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
     }
 
     private fun toggleSelection(id: Long) {
+        if (id <= 0L) return
         updateState {
             val next = if (id in selectedIds) {
                 selectedIds - id
@@ -163,21 +219,41 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
             .firstOrNull { it.id == id }
 
     private fun deleteSelected() {
-        updateState {
-            val idsToDelete = selectedIds.filter { it > 0 }.toSet()
-            if (idsToDelete.isEmpty()) {
+        val idsToDelete = currentState.selectedIds.filter { it > 0L }
+        if (idsToDelete.isEmpty()) {
+            updateState {
                 copy(
                     isSelectionModeActive = false,
                     selectedIds = emptySet()
                 )
-            } else {
-                copy(
-                    personalItems = personalItems.filterNot { it.id in idsToDelete },
-                    isSelectionModeActive = false,
-                    selectedIds = emptySet(),
-                    lastAddedId = null
-                )
             }
+            return
+        }
+
+        viewModelScope.launch {
+            updateState { copy(isSaving = true, errorMessage = null) }
+            runCatching { anniversaryRepository.deleteAnniversaries(idsToDelete) }
+                .onSuccess {
+                    updateState {
+                        copy(
+                            personalItems = personalItems.filterNot { it.id in idsToDelete },
+                            upcomingItems = upcomingItems.filterNot { it.id in idsToDelete },
+                            isSelectionModeActive = false,
+                            selectedIds = emptySet(),
+                            lastAddedId = null,
+                            isSaving = false
+                        )
+                    }
+                    loadAnniversaries(showError = false)
+                }
+                .onFailure {
+                    updateState {
+                        copy(
+                            isSaving = false,
+                            errorMessage = DELETE_FAILED_MESSAGE
+                        )
+                    }
+                }
         }
     }
 
@@ -196,43 +272,143 @@ class AnniversaryViewModel : BaseViewModel<AnniversaryUiState, AnniversaryUiEven
     private fun saveForm() {
         val form = currentState.form
         val date = form.date ?: return
-        if (form.title.isBlank()) return
-        val previousItem = form.editingId?.let { findAnniversary(it) }
+        if (!form.canSave || currentState.isSaving) return
 
-        val item = AnniversaryItem(
-            id = form.editingId ?: nextId++,
-            title = form.title,
-            date = date,
-            calendarType = form.calendarType,
-            repeatEnabled = form.repeatEnabled,
-            d7AlarmEnabled = form.d7AlarmEnabled,
+        val saveForm = AnniversarySaveForm(
+            title = form.title.trim(),
+            anniversaryDate = date.toApiDate(),
+            isLunar = form.calendarType == AnniversaryCalendarType.LUNAR,
+            isRepeated = form.repeatEnabled,
+            sevenDaysAlarmEnabled = form.d7AlarmEnabled,
             dayAlarmEnabled = form.dayAlarmEnabled,
-            memo = form.memo,
-            isOfficial = previousItem?.isOfficial ?: false
+            memo = form.memo.trim().takeIf { it.isNotEmpty() }
         )
 
-        updateState {
-            val nextPersonalItems = if (form.editingId == null) {
-                listOf(item) + personalItems
-            } else {
-                personalItems.map { if (it.id == item.id) item else it }
-            }
-            val nextUpcomingItems = if (form.editingId == null) {
-                upcomingItems
-            } else {
-                upcomingItems.map { if (it.id == item.id) item else it }
-            }
+        viewModelScope.launch {
+            updateState { copy(isSaving = true, errorMessage = null) }
 
-            copy(
-                mode = AnniversaryScreenMode.LIST,
-                upcomingItems = nextUpcomingItems,
-                personalItems = nextPersonalItems,
-                openedItem = null,
-                form = AnniversaryFormState(),
-                isSelectionModeActive = false,
-                selectedIds = emptySet(),
-                lastAddedId = if (form.editingId == null) item.id else null
-            )
+            runCatching {
+                form.editingId?.let { id ->
+                    anniversaryRepository.updateAnniversary(id, saveForm)
+                } ?: anniversaryRepository.createAnniversary(saveForm)
+            }
+                .onSuccess { savedId ->
+                    updateState {
+                        copy(
+                            mode = AnniversaryScreenMode.LIST,
+                            openedItem = null,
+                            form = AnniversaryFormState(),
+                            isSelectionModeActive = false,
+                            selectedIds = emptySet(),
+                            lastAddedId = if (form.editingId == null) savedId else null,
+                            isSaving = false
+                        )
+                    }
+                    loadAnniversaries(showError = false)
+                }
+                .onFailure {
+                    updateState {
+                        copy(
+                            isSaving = false,
+                            errorMessage = it.message?.takeIf { message -> message.isNotBlank() }
+                                ?: SAVE_FAILED_MESSAGE
+                        )
+                    }
+                }
         }
     }
+
+    private companion object {
+        const val TITLE_MAX_LENGTH = 20
+        const val MEMO_MAX_LENGTH = 50
+        const val LOAD_FAILED_MESSAGE = "기념일 정보를 불러오지 못했어요."
+        const val SAVE_FAILED_MESSAGE = "기념일을 저장하지 못했어요."
+        const val DELETE_FAILED_MESSAGE = "기념일을 삭제하지 못했어요."
+    }
 }
+
+private fun AnniversaryOverview.toPersonalItems(): List<AnniversaryItem> =
+    myAnniversaries.sortedByDescending { it.anniversaryId }.map { anniversary ->
+        val originalDate = anniversary.anniversaryDate.toAnniversaryDate()
+        AnniversaryItem(
+            id = anniversary.anniversaryId,
+            title = anniversary.title,
+            date = originalDate,
+            displayDate = anniversary.displayDate?.toAnniversaryDate() ?: originalDate,
+            calendarType = if (anniversary.isLunar) {
+                AnniversaryCalendarType.LUNAR
+            } else {
+                AnniversaryCalendarType.SOLAR
+            },
+            memo = anniversary.memo.orEmpty(),
+            repeatEnabled = anniversary.isRepeated,
+            d7AlarmEnabled = anniversary.sevenDaysAlarmEnabled,
+            dayAlarmEnabled = anniversary.dayAlarmEnabled,
+            isOfficial = false
+        )
+    }
+
+private fun AnniversaryOverview.toUpcomingItems(): List<AnniversaryItem> {
+    val personalItemsById = toPersonalItems().associateBy { it.id }
+    val commonItems = commonAnniversaries.associateBy { it.commonAnniversaryId }
+
+    return upcomingAnniversaries
+        .filter { it.dDay in 0..7 }
+        .sortedBy { it.dDay }
+        .map { anniversary ->
+            val upcomingDate = anniversary.anniversaryDate.toAnniversaryDate()
+            val personalItem = anniversary.anniversaryId?.let { personalItemsById[it] }
+            val commonItem = anniversary.commonAnniversaryId?.let { commonItems[it] }
+                ?: commonAnniversaries.firstOrNull { it.title == anniversary.title }
+
+            when {
+                personalItem != null -> personalItem.copy(
+                    displayDate = upcomingDate,
+                    dDayLabel = anniversary.dDay.toDdayLabel()
+                )
+
+                commonItem != null -> commonItem.toAnniversaryItem(
+                    upcoming = anniversary,
+                    upcomingDate = upcomingDate
+                )
+
+                else -> AnniversaryItem(
+                    id = -abs(anniversary.title.hashCode().toLong()),
+                    title = anniversary.title,
+                    date = upcomingDate,
+                    displayDate = upcomingDate,
+                    dDayLabel = anniversary.dDay.toDdayLabel(),
+                    isOfficial = true
+                )
+            }
+        }
+}
+
+private fun CommonAnniversary.toAnniversaryItem(
+    upcoming: UpcomingAnniversary,
+    upcomingDate: AnniversaryDate
+): AnniversaryItem = AnniversaryItem(
+    id = -commonAnniversaryId,
+    title = title,
+    date = upcomingDate,
+    displayDate = upcomingDate,
+    calendarType = if (isLunar) AnniversaryCalendarType.LUNAR else AnniversaryCalendarType.SOLAR,
+    dDayLabel = upcoming.dDay.toDdayLabel(),
+    memo = memo.orEmpty(),
+    repeatEnabled = true,
+    d7AlarmEnabled = sevenDaysAlarmEnabled,
+    dayAlarmEnabled = dayAlarmEnabled,
+    isOfficial = true
+)
+
+private fun String.toAnniversaryDate(): AnniversaryDate {
+    val parts = split("-")
+    return AnniversaryDate(
+        year = parts.getOrNull(0)?.toIntOrNull() ?: 1970,
+        month = parts.getOrNull(1)?.toIntOrNull() ?: 1,
+        day = parts.getOrNull(2)?.toIntOrNull() ?: 1
+    )
+}
+
+private fun AnniversaryDate.toApiDate(): String =
+    "${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}"

@@ -3,12 +3,14 @@ package com.umc.halo.presentation.mypage.anniversary
 import com.umc.halo.presentation.base.UiEvent
 
 sealed interface AnniversaryUiEvent : UiEvent {
+    data object ScreenEntered : AnniversaryUiEvent
     data object BackClicked : AnniversaryUiEvent
     data object AddClicked : AnniversaryUiEvent
     data object ListExited : AnniversaryUiEvent
     data object SelectModeClicked : AnniversaryUiEvent
     data object DeleteSelectedClicked : AnniversaryUiEvent
     data object EditClicked : AnniversaryUiEvent
+    data object ErrorMessageShown : AnniversaryUiEvent
     data class AnniversaryClicked(val id: Long) : AnniversaryUiEvent
     data class UpcomingClicked(val id: Long) : AnniversaryUiEvent
     data class SelectionToggled(val id: Long) : AnniversaryUiEvent

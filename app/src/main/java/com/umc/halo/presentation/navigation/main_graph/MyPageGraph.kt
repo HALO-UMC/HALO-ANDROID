@@ -4,7 +4,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -79,7 +78,7 @@ fun NavGraphBuilder.mypageGraph(
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(Graphs.MYPAGE)
             }
-            val anniversaryViewModel: AnniversaryViewModel = viewModel(parentEntry)
+            val anniversaryViewModel: AnniversaryViewModel = hiltViewModel(parentEntry)
 
             AnniversaryRoute(
                 onBack = { navController.popBackStackIfCurrent(Routes.MYPAGE_ANNIVERSARY) },
