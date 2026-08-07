@@ -11,7 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.HaloType
 import kotlin.math.ceil
@@ -31,44 +33,49 @@ fun ChapterImagePlaceholder(
         modifier = modifier.background(lightColor),
         contentAlignment = Alignment.Center
     ) {
-        Canvas(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            val cellSize = 24.dp.toPx()
-            val columnCount = ceil(size.width / cellSize).toInt()
-            val rowCount = ceil(size.height / cellSize).toInt()
+        if (!imageUrl.isNullOrBlank()) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Canvas(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                val cellSize = 24.dp.toPx()
+                val columnCount = ceil(size.width / cellSize).toInt()
+                val rowCount = ceil(size.height / cellSize).toInt()
 
-            repeat(rowCount) { row ->
-                repeat(columnCount) { column ->
-                    val checkerColor =
-                        if ((row + column) % 2 == 0) {
-                            lightColor
-                        } else {
-                            darkColor
-                        }
+                repeat(rowCount) { row ->
+                    repeat(columnCount) { column ->
+                        val checkerColor =
+                            if ((row + column) % 2 == 0) {
+                                lightColor
+                            } else {
+                                darkColor
+                            }
 
-                    drawRect(
-                        color = checkerColor,
-                        topLeft = Offset(
-                            x = column * cellSize,
-                            y = row * cellSize
-                        ),
-                        size = Size(
-                            width = cellSize,
-                            height = cellSize
+                        drawRect(
+                            color = checkerColor,
+                            topLeft = Offset(
+                                x = column * cellSize,
+                                y = row * cellSize
+                            ),
+                            size = Size(
+                                width = cellSize,
+                                height = cellSize
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
 
-        if (showLabel) {
+        if (showLabel && imageUrl.isNullOrBlank()) {
             Text(
-                text = if (imageUrl.isNullOrBlank()) {
-                    "챕터 배경 이미지"
-                } else {
-                    "이미지 URL 연결 예정"
-                },
+                text = "챕터 배경 이미지",
                 style = HaloType.body03Regular,
                 color = Gray500
             )

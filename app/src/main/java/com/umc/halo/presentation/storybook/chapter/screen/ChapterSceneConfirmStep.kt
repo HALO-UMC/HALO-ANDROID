@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.domain.model.storybook.ChapterSceneCard
 import com.umc.halo.presentation.component.HaloTopBar
@@ -183,6 +184,20 @@ private fun SelectedScenePreview(
 private fun SelectedPhotoImage(
     selectedImageUri: String?
 ) {
+    if (selectedImageUri?.startsWith("http") == true) {
+        AsyncImage(
+            model = selectedImageUri,
+            contentDescription = "?좏깮???λ㈃ ?대?吏",
+            modifier = Modifier
+                .fillMaxWidth()
+                .widthIn(max = 312.dp)
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(20.dp)),
+            contentScale = ContentScale.Crop
+        )
+        return
+    }
+
     val imageBitmap = rememberSelectedImageBitmap(selectedImageUri)
 
     if (imageBitmap != null) {

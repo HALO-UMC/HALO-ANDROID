@@ -42,8 +42,8 @@ private val ScreenPaddingHorizontal = 24.dp
 @Composable
 fun StoryBookDetailRoute(
     viewModel: StoryBookDetailViewModel = hiltViewModel(),
-    onNavigateToChapterProgress: (Long, Long) -> Unit,
-    onNavigateToChapterResult: (Long, Long) -> Unit,
+    onNavigateToChapterProgress: (Long, Int) -> Unit,
+    onNavigateToChapterResult: (Long) -> Unit,
     onNavigateToShowTheme: (Long) -> Unit,
     onNavigateToBack: () -> Unit
 ) {
@@ -61,9 +61,9 @@ fun StoryBookDetailRoute(
                 val isCompleted = chapter.isCompleted
 
                 if (isCompleted) {
-                    onNavigateToChapterResult(storyBookId, chapterId)
+                    chapter.memberChapterId?.let(onNavigateToChapterResult)
                 } else {
-                    onNavigateToChapterProgress(storyBookId, chapterId)
+                    onNavigateToChapterProgress(storyBookId, chapter.id.toInt())
                 }
             }
 
@@ -78,7 +78,7 @@ fun StoryBookDetailRoute(
                     viewModel.onEvent(event)
                     when (state.storyBookProgress) {
                         is StorybookProgress.Done -> onNavigateToShowTheme(event.storyBookId)
-                        is StorybookProgress.InProgress -> onNavigateToChapterProgress(event.storyBookId, event.chapterId)
+                        is StorybookProgress.InProgress -> onNavigateToChapterProgress(event.storyBookId, event.chapterId.toInt())
                     }
                 }
 

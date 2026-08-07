@@ -25,7 +25,7 @@ object ChapterResultDraftStore {
 
         drafts[key(chapter.storybookId, chapter.id)] = ChapterResultDraft(
             chapter = chapter,
-            questions = chapter.questions,
+            questions = chapter.questions.map { it.question },
             answers = state.questionAnswers,
             selectedSceneCard = state.selectedSceneCard,
             selectedImageUri = state.selectedSceneImageUri,

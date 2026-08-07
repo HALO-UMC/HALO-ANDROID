@@ -2,25 +2,19 @@ package com.umc.halo.presentation.storybook.chapter.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomAction
 import com.umc.halo.presentation.storybook.chapter.component.ChapterImagePlaceholder
 import com.umc.halo.presentation.storybook.chapter.component.ChapterSpeechBubble
-import com.umc.halo.presentation.theme.Gray800
-import com.umc.halo.presentation.theme.HaloType
 
 private val GuideCheckerLight = Color(0xFFFFF7DD)
 private val GuideCheckerDark = Color(0xFFFFF0C8)
@@ -58,20 +52,11 @@ fun ChapterGuideStep(
                 .align(Alignment.TopCenter)
                 .padding(
                     start = 32.dp,
-                    top = 178.dp,
+                    top = 214.dp,
                     end = 32.dp
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = chapter.themeGuideText,
-                style = HaloType.body03Regular,
-                color = Gray800,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(18.dp))
-
             ChapterSpeechBubble(
                 text = chapter.chapterGuideText
             )

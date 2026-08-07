@@ -14,10 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import android.widget.Toast
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomButton
@@ -39,30 +41,42 @@ import com.umc.halo.presentation.theme.White
 @Composable
 fun ChapterProgressRoute(
     storybookId: Long,
-    chapterId: Long,
+    chapterOrder: Int,
     onNavigateBack: () -> Unit,
-    onNavigateToResult: (Long, Long) -> Unit,
-    vm: ChapterProgressViewModel = viewModel()
+    onNavigateToStorybookDetail: (Long) -> Unit,
+    vm: ChapterProgressViewModel = hiltViewModel()
 ) {
     val state by vm.uiState.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(
         key1 = storybookId,
-        key2 = chapterId
+        key2 = chapterOrder
     ) {
         vm.onEvent(
             ChapterProgressUiEvent.Initialize(
                 storybookId = storybookId,
-                chapterId = chapterId
+                chapterOrder = chapterOrder
             )
         )
+    }
+
+    LaunchedEffect(state.errorMessage) {
+        val message = state.errorMessage ?: return@LaunchedEffect
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        vm.onEvent(ChapterProgressUiEvent.ErrorShown)
+    }
+
+    LaunchedEffect(state.navigateToStorybookDetail) {
+        val targetStorybookId = state.navigateToStorybookDetail ?: return@LaunchedEffect
+        vm.onEvent(ChapterProgressUiEvent.NavigationHandled)
+        onNavigateToStorybookDetail(targetStorybookId)
     }
 
     ChapterProgressScreen(
         state = state,
         onEvent = vm::onEvent,
-        onNavigateBack = onNavigateBack,
-        onNavigateToResult = onNavigateToResult
+        onNavigateBack = onNavigateBack
     )
 }
 
@@ -73,8 +87,7 @@ fun ChapterProgressRoute(
 private fun ChapterProgressScreen(
     state: ChapterProgressUiState,
     onEvent: (ChapterProgressUiEvent) -> Unit,
-    onNavigateBack: () -> Unit,
-    onNavigateToResult: (Long, Long) -> Unit
+    onNavigateBack: () -> Unit
 ) {
     val chapter = state.chapter
 
@@ -234,11 +247,7 @@ private fun ChapterProgressScreen(
                 selectedMood = state.selectedMood,
                 onBackClick = handleBack,
                 onCompleteClick = {
-                    ChapterResultDraftStore.save(state)
-                    onNavigateToResult(
-                        chapter.storybookId,
-                        chapter.id
-                    )
+                    onEvent(ChapterProgressUiEvent.CompleteClicked)
                 }
             )
         }

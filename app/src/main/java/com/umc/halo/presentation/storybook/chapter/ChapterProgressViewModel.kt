@@ -1,21 +1,31 @@
 package com.umc.halo.presentation.storybook.chapter
 
+import androidx.lifecycle.viewModelScope
 import com.umc.halo.domain.model.storybook.Chapter
-import com.umc.halo.domain.model.storybook.ChapterSceneCard
-import com.umc.halo.domain.model.storybook.ChapterStatus
+import com.umc.halo.domain.model.storybook.ChapterCoverType
+import com.umc.halo.domain.model.storybook.ChapterDraft
+import com.umc.halo.domain.model.storybook.ChapterSaveAnswer
+import com.umc.halo.domain.model.storybook.ChapterSaveForm
+import com.umc.halo.domain.model.storybook.ChapterSaveStatus
+import com.umc.halo.domain.repository.chapter.ChapterRepository
 import com.umc.halo.presentation.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ChapterProgressViewModel :
-    BaseViewModel<ChapterProgressUiState, ChapterProgressUiEvent>(
-        initialState = ChapterProgressUiState()
-    ) {
+@HiltViewModel
+class ChapterProgressViewModel @Inject constructor(
+    private val chapterRepository: ChapterRepository
+) : BaseViewModel<ChapterProgressUiState, ChapterProgressUiEvent>(
+    initialState = ChapterProgressUiState()
+) {
 
     override fun onEvent(event: ChapterProgressUiEvent) {
         when (event) {
             is ChapterProgressUiEvent.Initialize -> {
                 initializeChapter(
                     storybookId = event.storybookId,
-                    chapterId = event.chapterId
+                    chapterOrder = event.chapterOrder
                 )
             }
 
@@ -31,7 +41,7 @@ class ChapterProgressViewModel :
             }
 
             is ChapterProgressUiEvent.SceneImageSelected -> {
-                updateSceneImage(event.imageUri)
+                uploadSceneImage(event.imageUri)
             }
 
             ChapterProgressUiEvent.SceneCardModalRequested -> {
@@ -62,49 +72,100 @@ class ChapterProgressViewModel :
                 moveToNextStep()
             }
 
+            ChapterProgressUiEvent.CompleteClicked -> {
+                completeChapter()
+            }
+
             ChapterProgressUiEvent.BackClicked -> {
                 moveToPreviousStep()
+            }
+
+            ChapterProgressUiEvent.ErrorShown -> {
+                updateState { copy(errorMessage = null) }
+            }
+
+            ChapterProgressUiEvent.NavigationHandled -> {
+                updateState { copy(navigateToStorybookDetail = null) }
             }
         }
     }
 
     private fun initializeChapter(
         storybookId: Long,
-        chapterId: Long
+        chapterOrder: Int
     ) {
         val currentChapter = currentState.chapter
-
         if (
             currentState.isInitialized &&
             currentChapter?.storybookId == storybookId &&
-            currentChapter.id == chapterId
+            currentChapter.number == chapterOrder
         ) {
             return
         }
 
-        val chapter = createDummyChapter(
-            storybookId = storybookId,
-            chapterId = chapterId
-        )
-
         updateState {
             copy(
-                isInitialized = true,
-                chapter = chapter,
-                currentStep = ChapterProgressStep.INTRO,
-                questionAnswers = List(chapter.questions.size) { "" },
-                sceneCards = createDummySceneCards(
-                    storybookId = storybookId,
-                    chapterId = chapterId
-                ),
-                selectedSceneRecordMethod = null,
-                selectedSceneImageUri = null,
-                selectedSceneCardId = null,
-                pendingSceneCardId = null,
-                isSceneCardModalVisible = false,
-                selectedMood = null
+                isLoading = true,
+                errorMessage = null
             )
         }
+
+        viewModelScope.launch {
+            runCatching {
+                chapterRepository.getTodayChapter(storybookId, chapterOrder)
+            }.onSuccess { todayChapter ->
+                val chapter = todayChapter.chapter
+                val restoredState = currentState.applyDraft(
+                    chapter = chapter,
+                    draft = todayChapter.draft
+                )
+                updateState {
+                    restoredState.copy(
+                        isInitialized = true,
+                        isLoading = false,
+                        chapter = chapter,
+                        sceneCards = todayChapter.sceneCards,
+                        currentStep = ChapterProgressStep.INTRO
+                    )
+                }
+            }.onFailure { throwable ->
+                updateState {
+                    copy(
+                        isInitialized = false,
+                        isLoading = false,
+                        errorMessage = throwable.message ?: "오늘의 장을 불러오지 못했어요."
+                    )
+                }
+            }
+        }
+    }
+
+    private fun ChapterProgressUiState.applyDraft(
+        chapter: Chapter,
+        draft: ChapterDraft
+    ): ChapterProgressUiState {
+        val answers = List(chapter.questions.size) { index ->
+            val question = chapter.questions[index]
+            draft.answers.firstOrNull { it.chapterQuestionId == question.id }?.answer
+                ?: draft.answers.firstOrNull { it.questionOrder == question.order }?.answer
+                ?: ""
+        }
+
+        val selectedMethod = when (draft.coverType) {
+            ChapterCoverType.IMAGE -> ChapterSceneRecordMethod.PHOTO
+            ChapterCoverType.SCENE_CARD -> ChapterSceneRecordMethod.SCENE_CARD
+            null -> null
+        }
+
+        return copy(
+            questionAnswers = answers,
+            selectedSceneRecordMethod = selectedMethod,
+            selectedSceneImageUri = draft.imageUrl,
+            selectedSceneImageKey = draft.imageKey,
+            selectedSceneCardId = draft.sceneCardId,
+            pendingSceneCardId = draft.sceneCardId,
+            selectedMood = ChapterMood.fromEmotion(draft.emotion)
+        )
     }
 
     private fun updateQuestionAnswer(
@@ -128,24 +189,46 @@ class ChapterProgressViewModel :
         method: ChapterSceneRecordMethod
     ) {
         updateState {
-            copy(
-                selectedSceneRecordMethod = method
-            )
+            copy(selectedSceneRecordMethod = method)
         }
     }
 
-    private fun updateSceneImage(
+    private fun uploadSceneImage(
         imageUri: String
     ) {
         updateState {
             copy(
                 selectedSceneRecordMethod = ChapterSceneRecordMethod.PHOTO,
                 selectedSceneImageUri = imageUri,
+                selectedSceneImageKey = null,
                 selectedSceneCardId = null,
                 pendingSceneCardId = null,
                 isSceneCardModalVisible = false,
-                currentStep = ChapterProgressStep.SCENE_CONFIRM
+                isImageUploading = true,
+                errorMessage = null
             )
+        }
+
+        viewModelScope.launch {
+            runCatching {
+                chapterRepository.uploadImageFromUri(imageUri)
+            }.onSuccess { uploadedImage ->
+                updateState {
+                    copy(
+                        selectedSceneImageKey = uploadedImage.imageKey,
+                        isImageUploading = false,
+                        currentStep = ChapterProgressStep.SCENE_CONFIRM
+                    )
+                }
+            }.onFailure { throwable ->
+                updateState {
+                    copy(
+                        isImageUploading = false,
+                        selectedSceneImageUri = null,
+                        errorMessage = throwable.message ?: "사진 업로드에 실패했어요. 다시 선택해주세요."
+                    )
+                }
+            }
         }
     }
 
@@ -171,7 +254,7 @@ class ChapterProgressViewModel :
 
     private fun ChapterProgressUiState.committedSceneRecordMethod(): ChapterSceneRecordMethod? {
         return when {
-            !selectedSceneImageUri.isNullOrBlank() -> ChapterSceneRecordMethod.PHOTO
+            !selectedSceneImageKey.isNullOrBlank() -> ChapterSceneRecordMethod.PHOTO
             selectedSceneCardId != null -> ChapterSceneRecordMethod.SCENE_CARD
             else -> null
         }
@@ -181,9 +264,7 @@ class ChapterProgressViewModel :
         cardId: Long
     ) {
         updateState {
-            copy(
-                pendingSceneCardId = cardId
-            )
+            copy(pendingSceneCardId = cardId)
         }
     }
 
@@ -195,6 +276,7 @@ class ChapterProgressViewModel :
                 selectedSceneRecordMethod = ChapterSceneRecordMethod.SCENE_CARD,
                 selectedSceneCardId = selectedCardId,
                 selectedSceneImageUri = null,
+                selectedSceneImageKey = null,
                 isSceneCardModalVisible = false,
                 currentStep = ChapterProgressStep.SCENE_CONFIRM
             )
@@ -227,31 +309,41 @@ class ChapterProgressViewModel :
     }
 
     private fun moveToNextStep() {
+        val state = currentState
+        if (state.isSaving || state.isImageUploading) {
+            return
+        }
+
         if (
-            currentState.currentStep == ChapterProgressStep.QUESTION &&
-            !currentState.isQuestionStepNextEnabled
+            state.currentStep == ChapterProgressStep.QUESTION &&
+            !state.isQuestionStepNextEnabled
         ) {
             return
         }
 
         if (
-            currentState.currentStep == ChapterProgressStep.SCENE &&
-            !currentState.isSceneStepNextEnabled
+            state.currentStep == ChapterProgressStep.SCENE &&
+            !state.isSceneStepNextEnabled
         ) {
             return
         }
 
         if (
-            currentState.currentStep == ChapterProgressStep.MOOD &&
-            !currentState.isMoodStepNextEnabled
+            state.currentStep == ChapterProgressStep.MOOD &&
+            !state.isMoodStepNextEnabled
         ) {
             return
+        }
+
+        when (state.currentStep) {
+            ChapterProgressStep.QUESTION,
+            ChapterProgressStep.SCENE_CONFIRM,
+            ChapterProgressStep.MOOD -> saveDraft()
+            else -> Unit
         }
 
         updateState {
-            copy(
-                currentStep = currentStep.next()
-            )
+            copy(currentStep = currentStep.next())
         }
     }
 
@@ -264,99 +356,81 @@ class ChapterProgressViewModel :
         }
     }
 
-    private fun createDummyChapter(
-        storybookId: Long,
-        chapterId: Long
-    ): Chapter {
-        val chapterNumber = chapterId
-            .toInt()
-            .coerceIn(
-                minimumValue = 1,
-                maximumValue = 10
-            )
+    private fun saveDraft() {
+        val form = currentState.toSaveForm(ChapterSaveStatus.DRAFT) ?: return
 
-        return when (chapterNumber) {
-            1 -> Chapter(
-                id = chapterId,
-                storybookId = storybookId,
-                storybookTitle = "오래전 당신",
-                number = 1,
-                title = "나와 같은 나이였던 시절",
-                description = "부모님을 한 사람으로 바라보는 첫 장입니다.\n" +
-                        "지금의 내 나이였을 때 부모님은 어떤 하루를 살고\n" +
-                        "있었는지 들어봅니다.",
-                backgroundImageUrl = null,
-                guideImageUrl = null,
-                characterImageUrl = null,
-                themeGuideText = "지금의 부모님도 한때는\n" +
-                        "지금 나의 나이로 하루를 살고 있었어요.",
-                chapterGuideText = "부모님은 처음 어떻게 만나셨을까요?\n" +
-                        "첫인상부터 조심스럽게 물어보며 가족의\n" +
-                        "시작을 떠올려봐요!",
-                questions = listOf(
-                    "그 시절 부모님의 나이를 기록해보세요.",
-                    "어디에 살고 계셨나요?",
-                    "어떤 일을 하고 계셨나요?"
-                ),
-                status = ChapterStatus.AVAILABLE
-            )
-
-            else -> Chapter(
-                id = chapterId,
-                storybookId = storybookId,
-                storybookTitle = "오래전 당신",
-                number = chapterNumber,
-                title = "${chapterNumber}번째 이야기",
-                description = "부모님의 이야기를 차근차근 기록하는 챕터입니다.",
-                backgroundImageUrl = null,
-                guideImageUrl = null,
-                characterImageUrl = null,
-                themeGuideText = "지금의 부모님도 한때는\n" +
-                        "지금 나의 나이로 하루를 살고 있었어요.",
-                chapterGuideText = "부모님의 이야기를 천천히 떠올려볼까요?",
-                questions = listOf(
-                    "그날 부모님은 어디에 계셨나요?",
-                    "가장 기억에 남는 순간은 무엇인가요?",
-                    "그때 어떤 마음이셨을까요?"
-                ),
-                status = ChapterStatus.AVAILABLE
-            )
+        viewModelScope.launch {
+            runCatching {
+                chapterRepository.saveMemberChapter(form)
+            }.onFailure { throwable ->
+                updateState {
+                    copy(errorMessage = throwable.message ?: "임시저장에 실패했어요.")
+                }
+            }
         }
     }
 
-    private fun createDummySceneCards(
-        storybookId: Long,
-        chapterId: Long
-    ): List<ChapterSceneCard> {
-        return listOf(
-            ChapterSceneCard(
-                id = 1L,
-                storybookId = storybookId,
-                chapterId = chapterId,
-                title = "편지",
-                imageUrl = null
-            ),
-            ChapterSceneCard(
-                id = 2L,
-                storybookId = storybookId,
-                chapterId = chapterId,
-                title = "여행",
-                imageUrl = null
-            ),
-            ChapterSceneCard(
-                id = 3L,
-                storybookId = storybookId,
-                chapterId = chapterId,
-                title = "대화",
-                imageUrl = null
-            ),
-            ChapterSceneCard(
-                id = 4L,
-                storybookId = storybookId,
-                chapterId = chapterId,
-                title = "졸업",
-                imageUrl = null
+    private fun completeChapter() {
+        if (currentState.isSaving) {
+            return
+        }
+
+        val form = currentState.toSaveForm(ChapterSaveStatus.COMPLETED) ?: return
+
+        updateState {
+            copy(
+                isSaving = true,
+                errorMessage = null
             )
-        ).take(2)
+        }
+
+        viewModelScope.launch {
+            runCatching {
+                chapterRepository.saveMemberChapter(form)
+            }.onSuccess {
+                val storybookId = currentState.chapter?.storybookId
+                updateState {
+                    copy(
+                        isSaving = false,
+                        navigateToStorybookDetail = storybookId
+                    )
+                }
+            }.onFailure { throwable ->
+                updateState {
+                    copy(
+                        isSaving = false,
+                        errorMessage = throwable.message ?: "장 기록을 저장하지 못했어요."
+                    )
+                }
+            }
+        }
     }
+
+    private fun ChapterProgressUiState.toSaveForm(
+        status: ChapterSaveStatus
+    ): ChapterSaveForm? {
+        val chapter = chapter ?: return null
+        val answers = chapter.questions.mapIndexedNotNull { index, question ->
+            val answer = questionAnswers.getOrElse(index) { "" }.trim()
+            if (answer.isBlank()) {
+                null
+            } else {
+                ChapterSaveAnswer(
+                    chapterQuestionId = question.id,
+                    answer = answer
+                )
+            }
+        }
+
+        return ChapterSaveForm(
+            chapterId = chapter.id,
+            emotion = selectedMood?.toEmotion(),
+            coverType = coverType,
+            imageKey = selectedSceneImageKey,
+            sceneCardId = selectedSceneCardId,
+            answers = answers,
+            status = status
+        )
+    }
+
 }

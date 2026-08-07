@@ -7,7 +7,7 @@ sealed interface ChapterProgressUiEvent {
 
     data class Initialize(
         val storybookId: Long,
-        val chapterId: Long
+        val chapterOrder: Int
     ) : ChapterProgressUiEvent
 
     data class QuestionAnswerChanged(
@@ -41,5 +41,11 @@ sealed interface ChapterProgressUiEvent {
 
     data object NextClicked : ChapterProgressUiEvent
 
+    data object CompleteClicked : ChapterProgressUiEvent
+
     data object BackClicked : ChapterProgressUiEvent
+
+    data object ErrorShown : ChapterProgressUiEvent
+
+    data object NavigationHandled : ChapterProgressUiEvent
 }

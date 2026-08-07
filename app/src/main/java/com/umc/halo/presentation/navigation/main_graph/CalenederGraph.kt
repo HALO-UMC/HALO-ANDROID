@@ -46,8 +46,8 @@ fun NavGraphBuilder.calenderGraph(
                     }
                 },
                 // 모달 '장 기록중' 카드 → 그 장의 완료 결과 화면
-                onNavigateToChapterResult = { storybookId, chapterId ->
-                    navController.navigate(Routes.chapterResult(storybookId, chapterId)) {
+                onNavigateToChapterResult = { _, memberChapterId ->
+                    navController.navigate(Routes.chapterResult(memberChapterId)) {
                         launchSingleTop = true
                     }
                 }
@@ -57,25 +57,17 @@ fun NavGraphBuilder.calenderGraph(
         composable(
             route = Routes.CHAPTER_RESULT,
             arguments = listOf(
-                navArgument("storybookId") {
-                    type = NavType.LongType
-                },
-                navArgument("chapterId") {
+                navArgument("memberChapterId") {
                     type = NavType.LongType
                 }
             )
         ) { backStackEntry ->
-            val storybookId = backStackEntry.arguments
-                ?.getLong("storybookId")
-                ?: return@composable
-
-            val chapterId = backStackEntry.arguments
-                ?.getLong("chapterId")
+            val memberChapterId = backStackEntry.arguments
+                ?.getLong("memberChapterId")
                 ?: return@composable
 
             ChapterResultRoute(
-                storybookId = storybookId,
-                chapterId = chapterId,
+                memberChapterId = memberChapterId,
                 onNavigateBack = {
                     navController.popBackStackIfCurrent(Routes.CHAPTER_RESULT)
                 }

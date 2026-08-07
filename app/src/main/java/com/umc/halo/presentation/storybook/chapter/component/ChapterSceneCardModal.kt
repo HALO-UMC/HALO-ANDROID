@@ -1,9 +1,7 @@
 package com.umc.halo.presentation.storybook.chapter.component
 
-import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,30 +21,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import coil.compose.AsyncImage
 import com.umc.halo.domain.model.storybook.ChapterSceneCard
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.White
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.net.URL
 
 private val DimColor = Color(0xCC000000)
 private val DisabledButtonColor = Color(0xFFEEEEEE)
@@ -228,27 +217,9 @@ private fun ChapterModalCharacter(
     characterImageUrl: String?,
     modifier: Modifier = Modifier
 ) {
-    var imageBitmap by remember(characterImageUrl) {
-        mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null)
-    }
-
-    LaunchedEffect(characterImageUrl) {
-        imageBitmap = if (characterImageUrl.isNullOrBlank()) {
-            null
-        } else {
-            withContext(Dispatchers.IO) {
-                runCatching {
-                    URL(characterImageUrl).openStream().use { inputStream ->
-                        BitmapFactory.decodeStream(inputStream)?.asImageBitmap()
-                    }
-                }.getOrNull()
-            }
-        }
-    }
-
-    if (imageBitmap != null) {
-        Image(
-            bitmap = imageBitmap!!,
+    if (!characterImageUrl.isNullOrBlank()) {
+        AsyncImage(
+            model = characterImageUrl,
             contentDescription = "장면 선택 캐릭터",
             modifier = modifier.size(
                 width = 108.dp,
