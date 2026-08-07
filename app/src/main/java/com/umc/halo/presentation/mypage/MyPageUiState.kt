@@ -9,6 +9,8 @@ data class MyPageUiState(
     val playingTrackIndex: Int? = null,
     val isBgmLoading: Boolean = false,
     val systemSettingsErrorMessage: String? = null,
+    val isNotificationSettingsLoading: Boolean = false,
+    val notificationSettingsErrorMessage: String? = null,
     val allNotificationsEnabled: Boolean = true,
     val todayChapterNotificationEnabled: Boolean = true,
     val anniversaryNotificationEnabled: Boolean = true,
