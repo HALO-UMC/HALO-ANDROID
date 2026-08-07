@@ -1,5 +1,6 @@
 package com.umc.halo.di
 
+import com.umc.halo.data.remote.api.anniversary.AnniversaryApi
 import com.umc.halo.data.remote.api.auth.AuthApi
 import com.umc.halo.data.remote.api.calendar.CalendarApi
 import com.umc.halo.data.remote.api.home.HomeApi
@@ -25,6 +26,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ApiModule {
+
+    @Provides
+    @Singleton
+    fun provideAnniversaryApi(retrofit: Retrofit): AnniversaryApi =
+        retrofit.create(AnniversaryApi::class.java)
 
     @Provides
     @Singleton

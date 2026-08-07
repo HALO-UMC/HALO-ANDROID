@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryScreenMode
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryUiEvent
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryViewModel
@@ -165,9 +164,20 @@ fun RelationshipInfoRoute(
 fun AnniversaryRoute(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: AnniversaryViewModel = viewModel()
+    viewModel: AnniversaryViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(AnniversaryUiEvent.ScreenEntered)
+    }
+
+    LaunchedEffect(uiState.errorMessage) {
+        val message = uiState.errorMessage ?: return@LaunchedEffect
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        viewModel.onEvent(AnniversaryUiEvent.ErrorMessageShown)
+    }
 
     BackHandler {
         if (uiState.mode == AnniversaryScreenMode.LIST) {

@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.mypage.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -90,6 +91,8 @@ fun AnniversaryScreen(
             AnniversaryScreenMode.ADD -> AnniversaryFormScreen(
                 title = "기념일 추가",
                 form = uiState.form,
+                today = uiState.today,
+                isSaving = uiState.isSaving,
                 onEvent = onEvent,
                 onBack = { onEvent(AnniversaryUiEvent.BackClicked) }
             )
@@ -103,6 +106,8 @@ fun AnniversaryScreen(
             AnniversaryScreenMode.EDIT -> AnniversaryFormScreen(
                 title = "",
                 form = uiState.form,
+                today = uiState.today,
+                isSaving = uiState.isSaving,
                 onEvent = onEvent,
                 onBack = { onEvent(AnniversaryUiEvent.BackClicked) }
             )
@@ -299,7 +304,7 @@ private fun UpcomingAnniversaryCard(
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = item.date.compactWithDayOfWeek(),
+                    text = item.displayDate.compactWithDayOfWeek(),
                     style = HaloType.body03Regular.copy(fontSize = 13.sp),
                     color = Gray600
                 )
@@ -342,7 +347,7 @@ private fun AnniversaryListItem(
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = item.date.compactWithDayOfWeek(),
+                    text = item.displayDate.compactWithDayOfWeek(),
                     style = HaloType.caption01Medium.copy(fontSize = 11.5.sp),
                     color = if (selected) Primary600 else Gray600
                 )
@@ -387,6 +392,8 @@ private fun AnniversaryEmptyMessage(
 private fun AnniversaryFormScreen(
     title: String,
     form: AnniversaryFormState,
+    today: AnniversaryDate,
+    isSaving: Boolean,
     onEvent: (AnniversaryUiEvent) -> Unit,
     onBack: () -> Unit
 ) {
@@ -404,7 +411,9 @@ private fun AnniversaryFormScreen(
                     AnniversaryTextField(
                         value = form.title,
                         placeholder = "기록해보세요.",
-                        onValueChange = { onEvent(AnniversaryUiEvent.TitleChanged(it)) }
+                        onValueChange = { onEvent(AnniversaryUiEvent.TitleChanged(it)) },
+                        maxLength = 20,
+                        showCounter = true
                     )
                     Spacer(Modifier.height(12.dp))
                     AnniversaryRepeatInputRow(
@@ -422,6 +431,7 @@ private fun AnniversaryFormScreen(
                         Spacer(Modifier.height(18.dp))
                         AnniversaryCalendar(
                             form = form,
+                            today = today,
                             onEvent = onEvent
                         )
                     }
@@ -453,7 +463,7 @@ private fun AnniversaryFormScreen(
         PrimaryActionButton(
             text = "저장",
             onClick = { onEvent(AnniversaryUiEvent.SaveClicked) },
-            enabled = form.canSave,
+            enabled = form.canSave && !isSaving,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 24.dp, vertical = 24.dp)
@@ -478,7 +488,8 @@ private fun AnniversaryDetailScreen(
         item {
             AnniversaryDetailTopBar(
                 onBack = onBack,
-                onEdit = onEdit
+                onEdit = onEdit,
+                showEdit = !anniversary.isOfficial
             )
             Column(modifier = Modifier.padding(horizontal = 24.dp)) {
                 Spacer(Modifier.height(28.dp))
@@ -513,7 +524,8 @@ private fun AnniversaryDetailScreen(
 @Composable
 private fun AnniversaryDetailTopBar(
     onBack: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    showEdit: Boolean
 ) {
     Box(
         modifier = Modifier
@@ -535,20 +547,22 @@ private fun AnniversaryDetailTopBar(
                 modifier = Modifier.size(8.dp, 12.dp)
             )
         }
-        Surface(
-            shape = RoundedCornerShape(100.dp),
-            color = Gray30,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 24.dp)
-                .clickable(onClick = onEdit)
-        ) {
-            Text(
-                text = "편집",
-                style = HaloType.body02Regular,
-                color = Gray500,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
-            )
+        if (showEdit) {
+            Surface(
+                shape = RoundedCornerShape(100.dp),
+                color = Gray30,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 24.dp)
+                    .clickable(onClick = onEdit)
+            ) {
+                Text(
+                    text = "편집",
+                    style = HaloType.body02Regular,
+                    color = Gray500,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+                )
+            }
         }
     }
 }
@@ -556,6 +570,7 @@ private fun AnniversaryDetailTopBar(
 @Composable
 private fun AnniversaryCalendar(
     form: AnniversaryFormState,
+    today: AnniversaryDate,
     onEvent: (AnniversaryUiEvent) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -596,6 +611,7 @@ private fun AnniversaryCalendar(
         Spacer(Modifier.height(16.dp))
         CalendarGrid(
             form = form,
+            today = today,
             onDateSelected = { onEvent(AnniversaryUiEvent.DateSelected(it)) }
         )
     }
@@ -604,6 +620,7 @@ private fun AnniversaryCalendar(
 @Composable
 private fun CalendarGrid(
     form: AnniversaryFormState,
+    today: AnniversaryDate,
     onDateSelected: (AnniversaryDate) -> Unit
 ) {
     val calendar = Calendar.getInstance().apply {
@@ -632,36 +649,52 @@ private fun CalendarGrid(
         rows.forEach { row ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 (row + List(7 - row.size) { 0 }).forEach { day ->
+                    val date = AnniversaryDate(
+                        year = form.visibleYear,
+                        month = form.visibleMonth,
+                        day = day
+                    )
                     val selected = form.date?.let {
                         it.year == form.visibleYear && it.month == form.visibleMonth && it.day == day
                     } == true
+                    val isSolarCalendar = form.calendarType == AnniversaryCalendarType.SOLAR
+                    val isToday = day > 0 && isSolarCalendar && date == today
+                    val enabled = day > 0
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .height(34.dp)
-                            .clickable(enabled = day > 0) {
-                                onDateSelected(
-                                    AnniversaryDate(
-                                        year = form.visibleYear,
-                                        month = form.visibleMonth,
-                                        day = day
-                                    )
-                                )
+                            .clickable(enabled = enabled) {
+                                onDateSelected(date)
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        Box(
+                        Surface(
                             modifier = Modifier
                                 .size(30.dp)
-                                .clip(CircleShape)
-                                .background(if (selected) Primary500 else Color.Transparent),
-                            contentAlignment = Alignment.Center
+                                .clip(CircleShape),
+                            shape = CircleShape,
+                            color = if (selected) Primary500 else Color.Transparent,
+                            border = if (isToday && !selected) {
+                                BorderStroke(1.dp, Primary500)
+                            } else {
+                                null
+                            }
                         ) {
-                            Text(
-                                text = if (day == 0) "" else day.toString(),
-                                style = if (selected) HaloType.body02Medium else HaloType.body02Regular,
-                                color = if (selected) White else Gray500
-                            )
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = if (day == 0) "" else day.toString(),
+                                    style = if (selected) HaloType.body02Medium else HaloType.body02Regular,
+                                    color = when {
+                                        selected -> White
+                                        isToday -> Primary500
+                                        else -> Gray500
+                                    }
+                                )
+                            }
                         }
                     }
                 }

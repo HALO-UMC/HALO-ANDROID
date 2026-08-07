@@ -1,5 +1,6 @@
 package com.umc.halo.di
 
+import com.umc.halo.data.repository.anniversary.AnniversaryRepositoryImpl
 import com.umc.halo.data.repository.auth.AuthRepositoryImpl
 import com.umc.halo.data.repository.calendar.CalendarRepositoryImpl
 import com.umc.halo.data.repository.home.HomeRepositoryImpl
@@ -11,6 +12,7 @@ import com.umc.halo.data.repository.storybook.StorybookDetailRepositoryImpl
 import com.umc.halo.data.repository.storybook.StorybookRepositoryImpl
 import com.umc.halo.data.repository.terms.TermsRepositoryImpl
 import com.umc.halo.data.repository.themebox.ThemeBoxRepositoryImpl
+import com.umc.halo.domain.repository.anniversary.AnniversaryRepository
 import com.umc.halo.domain.repository.auth.AuthRepository
 import com.umc.halo.domain.repository.calendar.CalendarRepository
 import com.umc.halo.domain.repository.home.HomeRepository
@@ -34,6 +36,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindAnniversaryRepository(impl: AnniversaryRepositoryImpl): AnniversaryRepository
 
     @Binds
     @Singleton

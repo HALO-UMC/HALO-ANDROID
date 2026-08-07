@@ -51,6 +51,7 @@ data class AnniversaryItem(
     val id: Long,
     val title: String,
     val date: AnniversaryDate,
+    val displayDate: AnniversaryDate = date,
     val calendarType: AnniversaryCalendarType = AnniversaryCalendarType.SOLAR,
     val dDayLabel: String? = null,
     val memo: String = "",
@@ -65,7 +66,7 @@ data class AnniversaryFormState(
     val title: String = "",
     val date: AnniversaryDate? = null,
     val calendarType: AnniversaryCalendarType = AnniversaryCalendarType.SOLAR,
-    val repeatEnabled: Boolean = true,
+    val repeatEnabled: Boolean = false,
     val d7AlarmEnabled: Boolean = false,
     val dayAlarmEnabled: Boolean = true,
     val memo: String = "",
@@ -79,8 +80,11 @@ data class AnniversaryFormState(
 
 data class AnniversaryUiState(
     val mode: AnniversaryScreenMode = AnniversaryScreenMode.LIST,
-    val upcomingItems: List<AnniversaryItem> = defaultUpcomingAnniversaries,
-    val personalItems: List<AnniversaryItem> = defaultPersonalAnniversaries,
+    val upcomingItems: List<AnniversaryItem> = emptyList(),
+    val personalItems: List<AnniversaryItem> = emptyList(),
+    val isLoading: Boolean = false,
+    val isSaving: Boolean = false,
+    val errorMessage: String? = null,
     val isSelectionModeActive: Boolean = false,
     val selectedIds: Set<Long> = emptySet(),
     val lastAddedId: Long? = null,
@@ -92,14 +96,9 @@ data class AnniversaryUiState(
         get() = isSelectionModeActive
 
     val visibleUpcomingItems: List<AnniversaryItem>
-        get() = (upcomingItems + personalItems)
-            .mapNotNull { item ->
-                val daysUntil = item.daysUntilUpcoming(today)
-                if (daysUntil in 0..7) {
-                    item.copy(dDayLabel = daysUntil.toDdayLabel()) to daysUntil
-                } else {
-                    null
-                }
+        get() = upcomingItems
+            .map { item ->
+                item to item.dDayLabel.toDaysUntil()
             }
             .distinctBy { it.first.id }
             .sortedBy { it.second }
@@ -153,7 +152,7 @@ private fun AnniversaryDate.daysUntilExactDate(from: AnniversaryDate): Int {
     return ((targetCalendar.timeInMillis - fromCalendar.timeInMillis) / MILLIS_PER_DAY).toInt()
 }
 
-private fun AnniversaryItem.daysUntilUpcoming(from: AnniversaryDate): Int =
+fun AnniversaryItem.daysUntilUpcoming(from: AnniversaryDate): Int =
     if (isOfficial || repeatEnabled) {
         date.daysUntilNextOccurrence(from)
     } else {
@@ -173,43 +172,12 @@ private fun AnniversaryDate.plusDays(days: Int): AnniversaryDate {
     )
 }
 
-private fun Int.toDdayLabel(): String =
+fun Int.toDdayLabel(): String =
     if (this == 0) "D-DAY" else "D-$this"
 
-private val defaultUpcomingAnniversaries = run {
-    val today = currentAnniversaryDate()
-    listOf(
-        AnniversaryItem(
-            id = 101,
-            title = "아버지 생신",
-            date = today,
-            memo = "아버지 생신 챙겨드려야지!",
-            isOfficial = true
-        ),
-        AnniversaryItem(
-            id = 102,
-            title = "어머니 생신",
-            date = today.plusDays(7),
-            memo = "어머니랑 여행을 가기로 한 날",
-            isOfficial = true
-        )
-    )
-}
-
-private val defaultPersonalAnniversaries = listOf(
-    AnniversaryItem(
-        id = 1,
-        title = "어머니 생신",
-        date = AnniversaryDate(2026, 5, 8)
-    ),
-    AnniversaryItem(
-        id = 2,
-        title = "아버지 생신",
-        date = AnniversaryDate(2026, 5, 8)
-    ),
-    AnniversaryItem(
-        id = 3,
-        title = "할아버지 생신",
-        date = AnniversaryDate(2026, 5, 8)
-    )
-)
+private fun String?.toDaysUntil(): Int =
+    when {
+        this == "D-DAY" -> 0
+        this?.startsWith("D-") == true -> substringAfter("D-").toIntOrNull() ?: Int.MAX_VALUE
+        else -> Int.MAX_VALUE
+    }
