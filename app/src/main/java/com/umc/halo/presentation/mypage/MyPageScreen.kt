@@ -1,13 +1,19 @@
 package com.umc.halo.presentation.mypage
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryScreenMode
@@ -53,7 +59,27 @@ fun NotificationSettingsRoute(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
+    //알림 권한 허용 되었는지 판단
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (!granted) {
+            viewModel.offAllNotification()
+        }
+    }
+
     LaunchedEffect(Unit) {
+        if ( // 권한 허용이 되지 않았을 시
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            //알림 권한 허용 팝업 띄우기
+            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
         viewModel.onEvent(MyPageUiEvent.NotificationSettingsEntered)
     }
 

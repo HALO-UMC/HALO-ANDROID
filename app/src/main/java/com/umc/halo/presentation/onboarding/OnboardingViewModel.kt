@@ -1,11 +1,16 @@
 package com.umc.halo.presentation.onboarding
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.messaging.FirebaseMessaging
+import com.umc.halo.core.datastore.DeviceUuidDataStore
 import com.umc.halo.domain.model.onboarding.OnboardingSavedData
 import com.umc.halo.domain.model.onboarding.OnboardingStatus
 import com.umc.halo.domain.model.onboarding.OnboardingTag
 import com.umc.halo.domain.model.onboarding.OnboardingTags
+import com.umc.halo.domain.repository.notification.NotificationRepository
 import com.umc.halo.domain.repository.onboarding.OnboardingRepository
+import com.umc.halo.domain.repository.settings.SettingsRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -14,7 +19,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
-    private val onboardingRepository: OnboardingRepository
+    private val onboardingRepository: OnboardingRepository,
+    private val deviceUuidDataStore: DeviceUuidDataStore,
+    private val notificationRepository: NotificationRepository,
+    private val settingsRepository: SettingsRepository
 ) : BaseViewModel<OnboardingUiState, OnboardingUiEvent>(
     initialState = OnboardingUiState()
 ) {
@@ -361,6 +369,22 @@ class OnboardingViewModel @Inject constructor(
                 saveErrorMessage = null
             )
         }
+    }
+
+    fun registerFCMToken() = viewModelScope.launch {
+        val uuid = deviceUuidDataStore.getOrCreate()
+        val token = notificationRepository.getFcmToken()
+
+        notificationRepository.addMembers(token,uuid)
+    }
+
+    fun offAllNotification() = viewModelScope.launch {
+        val notificationSettings = settingsRepository.getNotificationSettings()
+        val newSettings = notificationSettings.copy(
+            isAllNotificationEnabled = false
+        )
+
+        settingsRepository.updateNotificationSettings(newSettings)
     }
 }
 

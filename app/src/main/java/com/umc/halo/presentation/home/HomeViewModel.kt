@@ -27,8 +27,6 @@ import kotlin.math.sin
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
-    private val deviceUuidDataStore: DeviceUuidDataStore,
-    private val notificationRepository: NotificationRepository,
     private val bgmPlaybackManager: BgmPlaybackManager
 ): BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
     val bgmState = bgmPlaybackManager.state
@@ -118,30 +116,6 @@ class HomeViewModel @Inject constructor(
                 )
             )
         }
-    }
-
-    fun onNotificationPermissionResult(isGranted: Boolean) {
-        if (isGranted) {
-            FirebaseMessaging.getInstance().token
-                .addOnSuccessListener { token ->
-                    Log.d("FCM", token)
-                    registerFCMToken(token)
-                }
-        } else {
-            deleteFCMToken()
-        }
-    }
-
-    fun registerFCMToken(token: String) = viewModelScope.launch {
-        val uuid = deviceUuidDataStore.getOrCreate()
-
-        notificationRepository.addMembers(token,uuid)
-    }
-
-    fun deleteFCMToken() = viewModelScope.launch {
-        val uuid = deviceUuidDataStore.getOrCreate()
-
-        notificationRepository.deleteMembers(uuid)
     }
 }
 

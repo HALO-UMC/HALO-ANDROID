@@ -34,9 +34,7 @@ class MyPageViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val bgmPlaybackManager: BgmPlaybackManager,
     private val kakaoLoginDataSource: KakaoLoginDataSource,
-    private val googleLoginDataSource: GoogleLoginDataSource,
-    private val deviceUuidDataStore: DeviceUuidDataStore,
-    private val notificationRepository: NotificationRepository
+    private val googleLoginDataSource: GoogleLoginDataSource
 ) : BaseViewModel<MyPageUiState, MyPageUiEvent>(
     initialState = MyPageUiState()
 ) {
@@ -169,6 +167,15 @@ class MyPageViewModel @Inject constructor(
             MyPageUiEvent.AccountNavigationHandled -> updateState { copy(navigateToLogin = false) }
             MyPageUiEvent.AccountErrorShown -> updateState { copy(accountErrorMessage = null) }
         }
+    }
+
+    fun offAllNotification() = viewModelScope.launch {
+        val notificationSettings = settingsRepository.getNotificationSettings()
+        val newSettings = notificationSettings.copy(
+            isAllNotificationEnabled = false
+        )
+
+        settingsRepository.updateNotificationSettings(newSettings)
     }
 
     /**
@@ -377,10 +384,6 @@ class MyPageViewModel @Inject constructor(
             // 서버 호출이 실패해도 로컬 토큰은 지워짐 (AuthRepository.logout 참고)
             authRepository.logout()
 
-            // 알림 member table에서 삭제
-            val uuid = deviceUuidDataStore.getOrCreate()
-            notificationRepository.deleteMembers(uuid)
-
             updateState {
                 copy(
                     isProcessingAccountAction = false,
@@ -404,13 +407,10 @@ class MyPageViewModel @Inject constructor(
             updateState { copy(isProcessingAccountAction = true) }
 
             val success = memberRepository.withdraw()
-            val uuid = deviceUuidDataStore.getOrCreate()
 
             if (success) {
                 kakaoLoginDataSource.unlink()
                 googleLoginDataSource.clearCredentialState(context)
-                // 푸시 알림 연결 종료
-                notificationRepository.deleteMembers(uuid)
             }
 
             updateState {

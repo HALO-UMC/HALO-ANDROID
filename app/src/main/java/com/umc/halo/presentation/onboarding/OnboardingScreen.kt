@@ -82,6 +82,34 @@ fun OnboardingRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    val context = LocalContext.current
+
+    //토큰 등록
+    viewModel.registerFCMToken()
+
+    //알림 권한 허용 되었는지 판단
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (!granted) {
+            //모든 알림 끄기
+            viewModel.offAllNotification()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if ( // 권한 허용이 되지 않았을 시
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            //알림 권한 허용 팝업 띄우기
+            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
     LaunchedEffect(uiState.navigateToHome) {
         if (uiState.navigateToHome) {
             onNavigateToHome()
@@ -212,27 +240,8 @@ private fun NameInputStep(
 ) {
     val nameErrorMessage = uiState.nameErrorMessage
     val isNameError = nameErrorMessage != null
-    val context = LocalContext.current
 
     BackHandler(onBack = onSystemBack)
-
-    //알림 권한 허용 되었는지 판단
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) {}
-
-    LaunchedEffect(Unit) {
-        if ( // 권한 허용이 되지 않았을 시
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            //알림 권한 허용 팝업 띄우기
-            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-    }
 
     Box(
         modifier = modifier
