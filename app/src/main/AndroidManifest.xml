@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HALO">
 
-        <!-- 앱이 백그라운드,종료 상태일 때 뜨는 푸쉬 알림 아아콘 -->
+        <!-- 앱이 백그라운드,종료 상태일 때 뜨는 푸쉬 알림 아이콘 -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_notification" />
