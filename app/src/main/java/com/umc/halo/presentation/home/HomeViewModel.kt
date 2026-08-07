@@ -13,6 +13,7 @@ import com.umc.halo.domain.model.home.StartStorybook
 import com.umc.halo.domain.model.home.UserInfo
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.domain.repository.home.HomeRepository
+import com.umc.halo.domain.repository.member.MemberRepository
 import com.umc.halo.domain.repository.notification.NotificationRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import com.umc.halo.presentation.component.storybookSpineOf
@@ -27,7 +28,8 @@ import kotlin.math.sin
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
-    private val bgmPlaybackManager: BgmPlaybackManager
+    private val bgmPlaybackManager: BgmPlaybackManager,
+    private val memberRepository: MemberRepository
 ): BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
     val bgmState = bgmPlaybackManager.state
 
@@ -67,6 +69,10 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             bgmPlaybackManager.toggleHomePlayback()
         }
+    }
+
+    fun userAccess() = viewModelScope.launch {
+        memberRepository.userAccess()
     }
 
     private fun selectedStorybook(id: Long?) {
