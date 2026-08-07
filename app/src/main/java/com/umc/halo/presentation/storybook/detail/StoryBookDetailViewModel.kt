@@ -105,6 +105,12 @@ class StoryBookDetailViewModel @Inject constructor(
         }
     }
 
+    fun clearStartedStorybook() {
+        updateState {
+            copy(startedStorybook = null)
+        }
+    }
+
     private fun StoryBookIndex.toTodayStoryBook() = TodayStoryBook(
         id = id,
         title = title,

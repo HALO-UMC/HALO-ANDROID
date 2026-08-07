@@ -74,7 +74,7 @@ fun ChapterSceneCardModal(
                 characterImageUrl = characterImageUrl,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .offset(y = 24.dp)
+                    .offset(y = 8.dp)
                     .zIndex(1f)
             )
 
