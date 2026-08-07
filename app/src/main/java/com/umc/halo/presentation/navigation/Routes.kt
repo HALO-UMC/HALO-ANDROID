@@ -34,23 +34,22 @@ object Routes {
     const val STORYBOOK_DETAIL = "storybook_detail/{storybookId}"
 
     // Chapter screens
-    const val CHAPTER_PROGRESS = "chapter_progress/{storybookId}/{chapterId}"
-    const val CHAPTER_RESULT = "chapter_result/{storybookId}/{chapterId}"
+    const val CHAPTER_PROGRESS = "chapter_progress/{storybookId}/{chapterOrder}"
+    const val CHAPTER_RESULT = "chapter_result/{memberChapterId}"
 
     fun storybookDetail(storybookId: Long): String =
         "storybook_detail/$storybookId"
 
     fun chapterProgress(
         storybookId: Long,
-        chapterId: Long
+        chapterOrder: Int
     ): String =
-        "chapter_progress/$storybookId/$chapterId"
+        "chapter_progress/$storybookId/$chapterOrder"
 
     fun chapterResult(
-        storybookId: Long,
-        chapterId: Long
+        memberChapterId: Long
     ): String =
-        "chapter_result/$storybookId/$chapterId"
+        "chapter_result/$memberChapterId"
 
     fun showTheme(
         storybookId: Long

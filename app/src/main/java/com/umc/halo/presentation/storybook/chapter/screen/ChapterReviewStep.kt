@@ -28,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.umc.halo.R
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.domain.model.storybook.ChapterSceneCard
@@ -148,7 +149,7 @@ private fun ReviewQuestionSection(
         chapter.questions.forEachIndexed { index, question ->
             ReviewQuestionAnswer(
                 questionNumber = index + 1,
-                question = question,
+                question = question.question,
                 answer = answers.getOrElse(index) { "" }
             )
         }
@@ -252,6 +253,18 @@ private fun ReviewScenePreview(
 private fun ReviewPhotoImage(
     selectedImageUri: String?
 ) {
+    if (selectedImageUri?.startsWith("http") == true) {
+        AsyncImage(
+            model = selectedImageUri,
+            contentDescription = "?좏깮???λ㈃ ?대?吏",
+            modifier = Modifier
+                .size(120.dp)
+                .clip(RoundedCornerShape(10.dp)),
+            contentScale = ContentScale.Crop
+        )
+        return
+    }
+
     val imageBitmap = rememberSelectedImageBitmap(selectedImageUri)
 
     if (imageBitmap != null) {

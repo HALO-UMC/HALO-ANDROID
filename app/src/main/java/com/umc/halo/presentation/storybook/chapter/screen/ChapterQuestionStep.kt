@@ -86,7 +86,7 @@ fun ChapterQuestionStep(
                     chapter.questions.forEachIndexed { index, question ->
                         ChapterQuestionItem(
                             questionNumber = index + 1,
-                            question = question,
+                            question = question.question,
                             answer = answers.getOrElse(index) { "" },
                             onAnswerChanged = { answer ->
                                 onAnswerChanged(index, answer)

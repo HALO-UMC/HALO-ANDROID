@@ -14,6 +14,7 @@ data class StoryBookInfo(
  */
 data class StoryBookIndex(
     val id: Long,
+    val memberChapterId: Long?,
     val title: String,
     val subTitle: String,
     val description: String,

@@ -51,13 +51,13 @@ fun NavGraphBuilder.storybookGraph(
             )
         ) {
             StoryBookDetailRoute(
-                onNavigateToChapterResult = { storybookId, chapterId ->
-                    navController.navigate(Routes.chapterResult(storybookId,chapterId)) {
+                onNavigateToChapterResult = { memberChapterId ->
+                    navController.navigate(Routes.chapterResult(memberChapterId)) {
                         launchSingleTop = true
                     }
                 },
-                onNavigateToChapterProgress = { storybookId, chapterId ->
-                    navController.navigate(Routes.chapterProgress(storybookId,chapterId)) {
+                onNavigateToChapterProgress = { storybookId, chapterOrder ->
+                    navController.navigate(Routes.chapterProgress(storybookId,chapterOrder)) {
                         launchSingleTop = true
                     }
                 },
@@ -78,8 +78,8 @@ fun NavGraphBuilder.storybookGraph(
                 navArgument("storybookId") {
                     type = NavType.LongType
                 },
-                navArgument("chapterId") {
-                    type = NavType.LongType
+                navArgument("chapterOrder") {
+                    type = NavType.IntType
                 }
             )
         ) { backStackEntry ->
@@ -87,17 +87,17 @@ fun NavGraphBuilder.storybookGraph(
                 ?.getLong("storybookId")
                 ?: return@composable
 
-            val chapterId = backStackEntry.arguments
-                ?.getLong("chapterId")
+            val chapterOrder = backStackEntry.arguments
+                ?.getInt("chapterOrder")
                 ?: return@composable
 
             ChapterProgressRoute(
                 storybookId = storybookId,
-                chapterId = chapterId,
+                chapterOrder = chapterOrder,
                 onNavigateBack = {
                     navController.popBackStackIfCurrent(Routes.CHAPTER_PROGRESS)
                 },
-                onNavigateToResult = { resultStorybookId, _ ->
+                onNavigateToStorybookDetail = { resultStorybookId ->
                     navController.navigate(
                         Routes.storybookDetail(resultStorybookId)
                     ) {
@@ -113,34 +113,19 @@ fun NavGraphBuilder.storybookGraph(
         composable(
             route = Routes.CHAPTER_RESULT,
             arguments = listOf(
-                navArgument("storybookId") {
-                    type = NavType.LongType
-                },
-                navArgument("chapterId") {
+                navArgument("memberChapterId") {
                     type = NavType.LongType
                 }
             )
         ) { backStackEntry ->
-            val storybookId = backStackEntry.arguments
-                ?.getLong("storybookId")
-                ?: return@composable
-
-            val chapterId = backStackEntry.arguments
-                ?.getLong("chapterId")
+            val memberChapterId = backStackEntry.arguments
+                ?.getLong("memberChapterId")
                 ?: return@composable
 
             ChapterResultRoute(
-                storybookId = storybookId,
-                chapterId = chapterId,
+                memberChapterId = memberChapterId,
                 onNavigateBack = {
-                    navController.navigateIfCurrent(Routes.CHAPTER_RESULT) {
-                        navigate(Routes.storybookDetail(storybookId)) {
-                            popUpTo(Routes.storybookDetail(storybookId)) {
-                                inclusive = false
-                            }
-                            launchSingleTop = true
-                        }
-                    }
+                    navController.popBackStackIfCurrent(Routes.CHAPTER_RESULT)
                 }
             )
         }

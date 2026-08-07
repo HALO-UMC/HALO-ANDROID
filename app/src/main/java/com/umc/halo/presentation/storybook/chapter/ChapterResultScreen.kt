@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.storybook.chapter
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,28 +21,30 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.umc.halo.R
-import com.umc.halo.domain.model.storybook.Chapter
-import com.umc.halo.domain.model.storybook.ChapterSceneCard
-import com.umc.halo.domain.model.storybook.ChapterStatus
+import com.umc.halo.domain.model.storybook.CompletedChapter
 import com.umc.halo.presentation.storybook.chapter.component.ChapterImagePlaceholder
-import com.umc.halo.presentation.storybook.chapter.component.ChapterSceneCardImage
-import com.umc.halo.presentation.storybook.chapter.component.rememberSelectedImageBitmap
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray50
@@ -54,34 +57,24 @@ import com.umc.halo.presentation.theme.White
 
 private val ResultTitleColor = Color(0xFF0D0D0D)
 private val ResultInputBackground = Color(0xFFFAFAFA)
-private val ResultHeroGridLight = Color(0xFFF4F4F4)
-private val ResultHeroGridDark = Color(0xFFE8E8E8)
-
-private data class ChapterResultUiModel(
-    val chapter: Chapter,
-    val backgroundImageResId: Int?,
-    val questions: List<String>,
-    val answers: List<String>,
-    val sceneCard: ChapterSceneCard?,
-    val selectedImageUri: String?,
-    val sceneCardImageResId: Int?,
-    val mood: ChapterMood
-)
 
 @Composable
 fun ChapterResultRoute(
-    storybookId: Long,
-    chapterId: Long,
-    onNavigateBack: () -> Unit
+    memberChapterId: Long,
+    onNavigateBack: () -> Unit,
+    viewModel: ChapterResultViewModel = hiltViewModel()
 ) {
-    val result = remember(storybookId, chapterId) {
-        ChapterResultDraftStore.get(
-            storybookId = storybookId,
-            chapterId = chapterId
-        )?.toUiModel() ?: createDummyChapterResult(
-            storybookId = storybookId,
-            chapterId = chapterId
-        )
+    val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(memberChapterId) {
+        viewModel.loadCompletedChapter(memberChapterId)
+    }
+
+    LaunchedEffect(state.errorMessage) {
+        val message = state.errorMessage ?: return@LaunchedEffect
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        viewModel.clearError()
     }
 
     BackHandler {
@@ -89,16 +82,23 @@ fun ChapterResultRoute(
     }
 
     ChapterResultScreen(
-        result = result,
+        state = state,
         onBackClick = onNavigateBack
     )
 }
 
 @Composable
 private fun ChapterResultScreen(
-    result: ChapterResultUiModel,
+    state: ChapterResultUiState,
     onBackClick: () -> Unit
 ) {
+    val completedChapter = state.completedChapter
+
+    if (state.isLoading || completedChapter == null) {
+        ChapterResultLoadingScreen()
+        return
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -106,8 +106,7 @@ private fun ChapterResultScreen(
             .verticalScroll(rememberScrollState())
     ) {
         ChapterResultHero(
-            chapter = result.chapter,
-            backgroundImageResId = result.backgroundImageResId,
+            completedChapter = completedChapter,
             onBackClick = onBackClick
         )
 
@@ -130,31 +129,39 @@ private fun ChapterResultScreen(
             Spacer(modifier = Modifier.height(28.dp))
 
             ResultQuestionSection(
-                questions = result.questions,
-                answers = result.answers
+                completedChapter = completedChapter
             )
 
             Spacer(modifier = Modifier.height(30.dp))
 
             ResultSceneSection(
-                sceneCard = result.sceneCard,
-                selectedImageUri = result.selectedImageUri,
-                imageResId = result.sceneCardImageResId
+                imageUrl = state.sceneImageUrl
             )
 
             Spacer(modifier = Modifier.height(30.dp))
 
             ResultMoodSection(
-                mood = result.mood
+                mood = state.selectedMood
             )
         }
     }
 }
 
 @Composable
+private fun ChapterResultLoadingScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(White),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
 private fun ChapterResultHero(
-    chapter: Chapter,
-    backgroundImageResId: Int?,
+    completedChapter: CompletedChapter,
     onBackClick: () -> Unit
 ) {
     BoxWithConstraints(
@@ -174,22 +181,11 @@ private fun ChapterResultHero(
                 .height(heroHeight)
                 .clip(heroShape)
         ) {
-            if (backgroundImageResId != null) {
-                Image(
-                    painter = painterResource(id = backgroundImageResId),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                ChapterImagePlaceholder(
-                    imageUrl = chapter.backgroundImageUrl,
-                    showLabel = false,
-                    lightColor = ResultHeroGridLight,
-                    darkColor = ResultHeroGridDark,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+            ChapterImagePlaceholder(
+                imageUrl = completedChapter.chapterImageUrl,
+                showLabel = false,
+                modifier = Modifier.fillMaxSize()
+            )
 
             Box(
                 modifier = Modifier
@@ -206,7 +202,7 @@ private fun ChapterResultHero(
             )
 
             ResultHeroTopBar(
-                title = chapter.storybookTitle,
+                title = completedChapter.storybookTitle,
                 onBackClick = onBackClick,
                 modifier = Modifier.align(Alignment.TopCenter)
             )
@@ -221,13 +217,13 @@ private fun ChapterResultHero(
                     )
             ) {
                 ResultChapterTag(
-                    chapterNumber = chapter.number
+                    chapterNumber = completedChapter.chapterOrder
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = chapter.title,
+                    text = completedChapter.chapterTitle,
                     style = HaloType.heading02SemiBold,
                     color = White
                 )
@@ -235,7 +231,7 @@ private fun ChapterResultHero(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = chapter.description,
+                    text = completedChapter.description,
                     style = HaloType.body02Regular,
                     color = White
                 )
@@ -281,8 +277,7 @@ private fun ResultHeroTopBar(
 
 @Composable
 private fun ResultQuestionSection(
-    questions: List<String>,
-    answers: List<String>
+    completedChapter: CompletedChapter
 ) {
     ResultSectionTitle(
         number = "01",
@@ -295,11 +290,11 @@ private fun ResultQuestionSection(
         verticalArrangement = Arrangement.spacedBy(18.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        questions.forEachIndexed { index, question ->
+        completedChapter.answers.forEachIndexed { index, answer ->
             ResultQuestionAnswer(
                 questionNumber = index + 1,
-                question = question,
-                answer = answers.getOrElse(index) { "" }
+                question = answer.question,
+                answer = answer.answer
             )
         }
     }
@@ -347,12 +342,8 @@ private fun ResultQuestionAnswer(
 
 @Composable
 private fun ResultSceneSection(
-    sceneCard: ChapterSceneCard?,
-    selectedImageUri: String?,
-    imageResId: Int?
+    imageUrl: String?
 ) {
-    val selectedImageBitmap = rememberSelectedImageBitmap(selectedImageUri)
-
     ResultSectionTitle(
         number = "02",
         title = "장면 확인하기"
@@ -360,36 +351,7 @@ private fun ResultSceneSection(
 
     Spacer(modifier = Modifier.height(12.dp))
 
-    if (imageResId != null) {
-        Image(
-            painter = painterResource(id = imageResId),
-            contentDescription = sceneCard?.title ?: "선택한 장면",
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(312f / 294f)
-                .clip(RoundedCornerShape(10.dp)),
-            contentScale = ContentScale.Crop
-        )
-    } else if (selectedImageBitmap != null) {
-        Image(
-            bitmap = selectedImageBitmap,
-            contentDescription = "선택한 사진",
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(312f / 294f)
-                .clip(RoundedCornerShape(10.dp)),
-            contentScale = ContentScale.Crop
-        )
-    } else if (sceneCard != null) {
-        ChapterSceneCardImage(
-            card = sceneCard,
-            cornerRadius = 10.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(312f / 294f)
-                .clip(RoundedCornerShape(10.dp))
-        )
-    } else {
+    if (imageUrl.isNullOrBlank()) {
         ChapterImagePlaceholder(
             imageUrl = null,
             showLabel = true,
@@ -397,6 +359,16 @@ private fun ResultSceneSection(
                 .fillMaxWidth()
                 .aspectRatio(312f / 294f)
                 .clip(RoundedCornerShape(10.dp))
+        )
+    } else {
+        AsyncImage(
+            model = imageUrl,
+            contentDescription = "선택한 장면",
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(312f / 294f)
+                .clip(RoundedCornerShape(10.dp)),
+            contentScale = ContentScale.Crop
         )
     }
 }
@@ -490,8 +462,8 @@ private fun ResultChapterTag(
     }
 }
 
-private fun ChapterMood.toResultMoodLabel(): String {
-    return when (this) {
+private fun ChapterMood.toResultMoodLabel(): String =
+    when (this) {
         ChapterMood.THANKFUL -> "감사했어요"
         ChapterMood.SAD -> "슬펐어요"
         ChapterMood.THOUGHTFUL -> "생각이 많아요"
@@ -499,10 +471,9 @@ private fun ChapterMood.toResultMoodLabel(): String {
         ChapterMood.AWKWARD -> "어색했어요"
         ChapterMood.HAPPY -> "즐거웠어요"
     }
-}
 
-private fun ChapterMood.toResultMoodImageResId(): Int {
-    return when (this) {
+private fun ChapterMood.toResultMoodImageResId(): Int =
+    when (this) {
         ChapterMood.THANKFUL -> R.drawable.ic_mood_thankful
         ChapterMood.SAD -> R.drawable.ic_mood_sad
         ChapterMood.THOUGHTFUL -> R.drawable.ic_mood_thoughtful
@@ -510,56 +481,3 @@ private fun ChapterMood.toResultMoodImageResId(): Int {
         ChapterMood.AWKWARD -> R.drawable.ic_mood_awkward
         ChapterMood.HAPPY -> R.drawable.ic_mood_happy
     }
-}
-
-private fun createDummyChapterResult(
-    storybookId: Long,
-    chapterId: Long
-): ChapterResultUiModel {
-    val chapterNumber = chapterId.toInt().coerceIn(1, 10)
-
-    val chapter = Chapter(
-        id = chapterId,
-        storybookId = storybookId,
-        storybookTitle = "오래전 당신",
-        number = chapterNumber,
-        title = "나와 같은 나이였던 시절",
-        description = "부모님을 한 사람으로 바라보는 첫 장입니다.\n" +
-                "지금의 내 나이였을 때 부모님은 어떤 하루를 살고 있었는\n" +
-                "지 돌아봅니다.",
-        backgroundImageUrl = null,
-        guideImageUrl = null,
-        characterImageUrl = null,
-        themeGuideText = "",
-        chapterGuideText = "",
-        questions = emptyList(),
-        status = ChapterStatus.COMPLETED
-    )
-
-    return ChapterResultUiModel(
-        chapter = chapter,
-        backgroundImageResId = null,
-        questions = listOf(
-            "부모님의 어릴 적 꿈은 무엇이었나요?",
-            "부모님이 어릴적 좋아했던 것은 무엇이었나요?",
-            "자주 하던 일은 무엇이었나요?"
-        ),
-        answers = listOf("", "", ""),
-        sceneCard = null,
-        selectedImageUri = null,
-        sceneCardImageResId = null,
-        mood = ChapterMood.THOUGHTFUL
-    )
-}
-
-private fun ChapterResultDraft.toUiModel(): ChapterResultUiModel =
-    ChapterResultUiModel(
-        chapter = chapter,
-        backgroundImageResId = null,
-        questions = questions,
-        answers = answers,
-        sceneCard = selectedSceneCard,
-        selectedImageUri = selectedImageUri,
-        sceneCardImageResId = null,
-        mood = mood
-    )

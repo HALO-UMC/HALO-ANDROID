@@ -1,6 +1,8 @@
 package com.umc.halo.presentation.storybook.chapter
 
 import com.umc.halo.domain.model.storybook.Chapter
+import com.umc.halo.domain.model.storybook.ChapterCoverType
+import com.umc.halo.domain.model.storybook.ChapterEmotion
 import com.umc.halo.domain.model.storybook.ChapterSceneCard
 
 enum class ChapterSceneRecordMethod {
@@ -11,45 +13,55 @@ enum class ChapterSceneRecordMethod {
 enum class ChapterMood(
     val id: String
 ) {
-    THANKFUL("thankful"),
-    SAD("sad"),
-    THOUGHTFUL("thoughtful"),
-    ANGRY("angry"),
-    AWKWARD("awkward"),
-    HAPPY("happy")
+    THANKFUL("GRATEFUL"),
+    SAD("SAD"),
+    THOUGHTFUL("THOUGHTFUL"),
+    ANGRY("ANGRY"),
+    AWKWARD("AWKWARD"),
+    HAPPY("HAPPY");
+
+    fun toEmotion(): ChapterEmotion =
+        when (this) {
+            THANKFUL -> ChapterEmotion.GRATEFUL
+            SAD -> ChapterEmotion.SAD
+            THOUGHTFUL -> ChapterEmotion.THOUGHTFUL
+            ANGRY -> ChapterEmotion.ANGRY
+            AWKWARD -> ChapterEmotion.AWKWARD
+            HAPPY -> ChapterEmotion.HAPPY
+        }
+
+    companion object {
+        fun fromEmotion(emotion: ChapterEmotion?): ChapterMood? =
+            when (emotion) {
+                ChapterEmotion.GRATEFUL -> THANKFUL
+                ChapterEmotion.SAD -> SAD
+                ChapterEmotion.THOUGHTFUL -> THOUGHTFUL
+                ChapterEmotion.ANGRY -> ANGRY
+                ChapterEmotion.AWKWARD -> AWKWARD
+                ChapterEmotion.HAPPY -> HAPPY
+                null -> null
+            }
+    }
 }
 
-/**
- * 챕터 작성 화면 전체에서 사용하는 UI 상태
- */
 data class ChapterProgressUiState(
     val isInitialized: Boolean = false,
     val chapter: Chapter? = null,
     val currentStep: ChapterProgressStep = ChapterProgressStep.INTRO,
-
-    // 질문 입력 답변
     val questionAnswers: List<String> = listOf("", "", ""),
-
-    // 장면카드 후보 목록
     val sceneCards: List<ChapterSceneCard> = emptyList(),
-
-    // 장면 남기기 방식 선택
     val selectedSceneRecordMethod: ChapterSceneRecordMethod? = null,
-
-    // 갤러리에서 선택한 이미지 Uri 문자열
     val selectedSceneImageUri: String? = null,
-
-    // 최종 선택 완료된 장면카드 id
+    val selectedSceneImageKey: String? = null,
+    val isImageUploading: Boolean = false,
     val selectedSceneCardId: Long? = null,
-
-    // 장면카드 모달에서 임시로 선택 중인 카드 id
     val pendingSceneCardId: Long? = null,
-
-    // 장면카드 선택 모달 표시 여부
     val isSceneCardModalVisible: Boolean = false,
-
-    // 이번 장을 기록하며 선택한 감정
-    val selectedMood: ChapterMood? = null
+    val selectedMood: ChapterMood? = null,
+    val isLoading: Boolean = false,
+    val isSaving: Boolean = false,
+    val errorMessage: String? = null,
+    val navigateToStorybookDetail: Long? = null
 ) {
     val isFirstStep: Boolean
         get() = currentStep == ChapterProgressStep.INTRO
@@ -65,7 +77,11 @@ data class ChapterProgressUiState(
 
     val isSceneSelected: Boolean
         get() = when (selectedSceneRecordMethod) {
-            ChapterSceneRecordMethod.PHOTO -> !selectedSceneImageUri.isNullOrBlank()
+            ChapterSceneRecordMethod.PHOTO ->
+                !selectedSceneImageUri.isNullOrBlank() &&
+                        !selectedSceneImageKey.isNullOrBlank() &&
+                        !isImageUploading
+
             ChapterSceneRecordMethod.SCENE_CARD -> selectedSceneCardId != null
             null -> false
         }
@@ -78,4 +94,11 @@ data class ChapterProgressUiState(
 
     val isMoodStepNextEnabled: Boolean
         get() = selectedMood != null
+
+    val coverType: ChapterCoverType?
+        get() = when (selectedSceneRecordMethod) {
+            ChapterSceneRecordMethod.PHOTO -> ChapterCoverType.IMAGE
+            ChapterSceneRecordMethod.SCENE_CARD -> ChapterCoverType.SCENE_CARD
+            null -> null
+        }
 }

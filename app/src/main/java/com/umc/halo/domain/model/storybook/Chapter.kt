@@ -36,7 +36,13 @@ data class Chapter(
     val chapterGuideText: String,
 
     // 해당 챕터에서 사용자에게 보여줄 질문 목록
-    val questions: List<String>,
+    val questions: List<ChapterQuestion>,
 
     val status: ChapterStatus
+)
+
+data class ChapterQuestion(
+    val id: Long,
+    val order: Int,
+    val question: String
 )

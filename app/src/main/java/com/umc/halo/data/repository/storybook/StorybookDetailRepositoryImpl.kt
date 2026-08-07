@@ -42,6 +42,7 @@ private fun StorybookDetailResponse.toDomain() = StorybookDetailResult(
     storyBookIndex = chapters.map {
         StoryBookIndex(
             id = it.chapterOrder.toLong(),
+            memberChapterId = it.memberChapterId,
             title = it.title,
             subTitle = it.shortDescription,
             description = it.description,
