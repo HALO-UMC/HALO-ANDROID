@@ -17,6 +17,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HALO">
+
+        <!-- 앱이 백그라운드,종료 상태일 때 뜨는 푸쉬 알림 아이콘 -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/notification_accent" />
+
         <service
             android:name=".notification.HaloFirebaseMessagingService"
             android:exported="false">
