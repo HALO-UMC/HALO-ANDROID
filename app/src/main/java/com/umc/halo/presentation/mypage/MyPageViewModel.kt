@@ -34,7 +34,9 @@ class MyPageViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val bgmPlaybackManager: BgmPlaybackManager,
     private val kakaoLoginDataSource: KakaoLoginDataSource,
-    private val googleLoginDataSource: GoogleLoginDataSource
+    private val googleLoginDataSource: GoogleLoginDataSource,
+    private val deviceUuidDataStore: DeviceUuidDataStore,
+    private val notificationRepository: NotificationRepository
 ) : BaseViewModel<MyPageUiState, MyPageUiEvent>(
     initialState = MyPageUiState()
 ) {
@@ -407,6 +409,11 @@ class MyPageViewModel @Inject constructor(
 
         viewModelScope.launch {
             updateState { copy(isProcessingAccountAction = true) }
+
+
+            // 로그 아웃시 토큰 삭제
+            val uuid = deviceUuidDataStore.getOrCreate()
+            notificationRepository.deleteMembers(uuid)
 
             // 서버 호출이 실패해도 로컬 토큰은 지워짐 (AuthRepository.logout 참고)
             authRepository.logout()

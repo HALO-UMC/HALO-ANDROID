@@ -84,9 +84,6 @@ fun OnboardingRoute(
 
     val context = LocalContext.current
 
-    //토큰 등록
-    viewModel.registerFCMToken()
-
     //알림 권한 허용 되었는지 판단
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()

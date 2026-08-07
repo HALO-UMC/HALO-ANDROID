@@ -83,7 +83,9 @@ fun ContinueStorybookHome(
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.Top //위쪽 정렬
             ) {
-                Box() {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     ContinueStorybookCard(firstItem) {
                         onEvent(HomeUiEvent.OnContinueStoryBookClicked(firstItem.storybookId))
                     }
@@ -97,7 +99,9 @@ fun ContinueStorybookHome(
                     val secondItem = item[page * 2 + 1]
 
                     Spacer(Modifier.height(10.dp))
-                    Box() {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
                         ContinueStorybookCard(secondItem) {
                             onEvent(HomeUiEvent.OnContinueStoryBookClicked(secondItem.storybookId))
                         }
@@ -164,7 +168,7 @@ fun ContentsOverlay(
         )
         {
             Text(
-                text = "테마 ${item.currentChapterOrder+1}장은\n'내일 다시' 참여할 수 있어요!",
+                text = "테마 ${item.currentChapterOrder}장은\n'내일 다시' 참여할 수 있어요!",
                 style = HaloType.body01Medium,
                 color = Gray600,
                 modifier = Modifier

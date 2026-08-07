@@ -20,8 +20,6 @@ import javax.inject.Inject
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
     private val onboardingRepository: OnboardingRepository,
-    private val deviceUuidDataStore: DeviceUuidDataStore,
-    private val notificationRepository: NotificationRepository,
     private val settingsRepository: SettingsRepository
 ) : BaseViewModel<OnboardingUiState, OnboardingUiEvent>(
     initialState = OnboardingUiState()
@@ -369,13 +367,6 @@ class OnboardingViewModel @Inject constructor(
                 saveErrorMessage = null
             )
         }
-    }
-
-    fun registerFCMToken() = viewModelScope.launch {
-        val uuid = deviceUuidDataStore.getOrCreate()
-        val token = notificationRepository.getFcmToken()
-
-        notificationRepository.addMembers(token,uuid)
     }
 
     fun offAllNotification() = viewModelScope.launch {
