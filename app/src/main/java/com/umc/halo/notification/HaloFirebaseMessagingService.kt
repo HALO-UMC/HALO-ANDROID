@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.umc.halo.R
@@ -53,7 +54,10 @@ class HaloFirebaseMessagingService: FirebaseMessagingService() {
     ) {
         val notification =
             NotificationCompat.Builder(this, "default")
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                // 푸시 알림 아이콘에서의 HALO 손 모양
+                .setSmallIcon(R.drawable.ic_notification)
+                // 아이콘 배경색
+                .setColor(ContextCompat.getColor(this, R.color.notification_accent))
                 .setContentTitle(title)
                 .setContentText(body)
                 .setAutoCancel(true)

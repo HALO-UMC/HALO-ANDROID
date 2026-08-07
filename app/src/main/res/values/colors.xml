@@ -8,4 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="splash_background">#FFFF7B10</color>
+    <!-- 푸시 알림 아이콘 뒤에 깔리는 배경 색 (Primary500) -->
+    <color name="notification_accent">#FFFF7B10</color>
 </resources>
