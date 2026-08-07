@@ -228,7 +228,7 @@ fun StoryThemeIntro(
                 coverUrl = storyBookInfo.imageUrl,
                 badge = when (storyBookProgress) {
                     is StorybookProgress.Done ->  StorybookBadge.Done
-                    is StorybookProgress.InProgress -> StorybookBadge.InProgress(storyBookProgress.chapter)
+                    is StorybookProgress.InProgress -> StorybookBadge.InProgress(storyBookProgress.chapter+1)
                 },
                 modifier = Modifier.fillMaxSize()
             )

@@ -41,4 +41,8 @@ class MemberRepositoryImpl @Inject constructor(
 
         return success
     }
+
+    override suspend fun userAccess() {
+        memberApi.userAccess()
+    }
 }

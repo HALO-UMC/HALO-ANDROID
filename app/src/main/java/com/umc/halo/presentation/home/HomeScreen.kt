@@ -55,6 +55,7 @@ fun HomeRoute(
     LaunchedEffect(Unit) {
         //화면 불러오기
         viewModel.getHome()
+        viewModel.userAccess()
         viewModel.loadBgmSetting()
     }
 

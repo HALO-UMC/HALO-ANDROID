@@ -4,6 +4,7 @@ import com.umc.halo.core.network.BaseResponse
 import com.umc.halo.data.remote.dto.response.member.MyInfoResponse
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 
 /**
  * 회원 관련 서버 API
@@ -17,4 +18,7 @@ interface MemberApi {
     // 회원 탈퇴: 계정과 온보딩 완료 상태를 삭제 → 같은 소셜 계정으로 재가입 시 신규 사용자로 처리됨
     @DELETE("api/v1/members/me")
     suspend fun withdraw(): BaseResponse<Unit>
+
+    @POST("api/v1/members/access")
+    suspend fun userAccess()
 }
