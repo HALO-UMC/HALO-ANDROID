@@ -39,7 +39,7 @@ fun ChapterIntroStep(
             .fillMaxSize()
             .background(White)
     ) {
-        val imageHeight = maxHeight * 0.56f
+        val imageHeight = maxHeight * 0.54f
         val contentHeight = maxHeight - imageHeight
 
         ChapterImagePlaceholder(
@@ -72,7 +72,7 @@ fun ChapterIntroStep(
                     .fillMaxSize()
                     .padding(
                         start = 24.dp,
-                        top = 24.dp,
+                        top = 72.dp,
                         end = 24.dp,
                         bottom = 100.dp
                     )

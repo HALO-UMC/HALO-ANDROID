@@ -265,7 +265,7 @@ private fun ResultHeroTopBar(
             Icon(
                 painter = painterResource(id = R.drawable.ic_common_chevron_left),
                 contentDescription = "뒤로가기",
-                tint = Gray800,
+                tint = White,
                 modifier = Modifier.size(8.dp, 12.dp)
             )
         }

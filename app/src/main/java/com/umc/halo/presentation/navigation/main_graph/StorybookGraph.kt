@@ -97,13 +97,15 @@ fun NavGraphBuilder.storybookGraph(
                 onNavigateBack = {
                     navController.popBackStackIfCurrent(Routes.CHAPTER_PROGRESS)
                 },
-                onNavigateToResult = { resultStorybookId, resultChapterId ->
+                onNavigateToResult = { resultStorybookId, _ ->
                     navController.navigate(
-                        Routes.chapterResult(
-                            storybookId = resultStorybookId,
-                            chapterId = resultChapterId
-                        )
-                    )
+                        Routes.storybookDetail(resultStorybookId)
+                    ) {
+                        popUpTo(Routes.storybookDetail(resultStorybookId)) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
