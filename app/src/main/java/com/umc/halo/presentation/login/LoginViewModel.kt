@@ -2,11 +2,13 @@ package com.umc.halo.presentation.login
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.datastore.DeviceUuidDataStore
 import com.umc.halo.data.remote.auth.GoogleLoginDataSource
 import com.umc.halo.data.remote.auth.KakaoLoginDataSource
 import com.umc.halo.domain.model.auth.LoginCancelledException
 import com.umc.halo.domain.model.auth.SocialProvider
 import com.umc.halo.domain.repository.auth.AuthRepository
+import com.umc.halo.domain.repository.notification.NotificationRepository
 import com.umc.halo.domain.usecase.auth.ResolveDestinationAfterLoginUseCase
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +27,9 @@ class LoginViewModel @Inject constructor(
     private val kakaoLoginDataSource: KakaoLoginDataSource,
     private val googleLoginDataSource: GoogleLoginDataSource,
     private val authRepository: AuthRepository,
-    private val resolveDestinationAfterLogin: ResolveDestinationAfterLoginUseCase
+    private val resolveDestinationAfterLogin: ResolveDestinationAfterLoginUseCase,
+    private val deviceUuidDataStore: DeviceUuidDataStore,
+    private val notificationRepository: NotificationRepository
 ) : BaseViewModel<LoginUiState, LoginUiEvent>(
     initialState = LoginUiState()
 ) {
@@ -69,6 +73,9 @@ class LoginViewModel @Inject constructor(
                 val idToken = getIdToken()
 
                 val loginResult = authRepository.login(provider, idToken)
+
+                registerFCMToken()
+
                 resolveDestinationAfterLogin(loginResult)
             }.onSuccess { destination ->
                 updateState { copy(destination = destination) }
@@ -81,6 +88,13 @@ class LoginViewModel @Inject constructor(
 
             updateState { copy(isLoading = false) }
         }
+    }
+
+    private fun registerFCMToken() = viewModelScope.launch {
+        val uuid = deviceUuidDataStore.getOrCreate()
+        val token = notificationRepository.getFcmToken()
+
+        notificationRepository.addMembers(token,uuid)
     }
 
     private companion object {
