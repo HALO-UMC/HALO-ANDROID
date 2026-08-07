@@ -30,6 +30,7 @@ data class DateCompletedStorybook(
  * @param chapterOrder 그 날 완료한 마지막 장 순서(1~10). 표시("N장 기록을 완료했어요!")와 화면 이동에 모두 사용
  */
 data class DateCompletedChapter(
+    val memberChapterId: Long,
     val storybookId: Long,
     val title: String,
     val chapterOrder: Int

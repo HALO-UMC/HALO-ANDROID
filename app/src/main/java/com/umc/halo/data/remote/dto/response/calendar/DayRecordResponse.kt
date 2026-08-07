@@ -24,6 +24,7 @@ data class DayCompletedStorybookResponse(
  * @param completedChapterOrder 그 날 완료한 마지막 장 순서 → "N장 기록을 완료했어요!"
  */
 data class DayCompletedChapterResponse(
+    val memberChapterId: Long,
     val storybookId: Long,
     val title: String,
     val completedChapterOrder: Int

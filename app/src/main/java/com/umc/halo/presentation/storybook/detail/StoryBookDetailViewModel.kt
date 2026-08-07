@@ -10,6 +10,7 @@ import com.umc.halo.domain.repository.storybook.StorybookDetailRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 import kotlin.collections.listOf
 
@@ -86,11 +87,19 @@ class StoryBookDetailViewModel @Inject constructor(
 
     fun startStorybook(storybookId: Long) {
         viewModelScope.launch {
-            val startStoryBook = storybookDetailRepository.startStorybook(storybookId)
+            val startStoryBookId = runCatching {
+                storybookDetailRepository.startStorybook(storybookId).storybookId
+            }.recoverCatching { throwable ->
+                if (throwable is HttpException && throwable.code() == 409) {
+                    storybookId
+                } else {
+                    throw throwable
+                }
+            }.getOrNull() ?: return@launch
 
             updateState {
                 copy(
-                    startedStorybook = startStoryBook.storybookId
+                    startedStorybook = startStoryBookId
                 )
             }
         }

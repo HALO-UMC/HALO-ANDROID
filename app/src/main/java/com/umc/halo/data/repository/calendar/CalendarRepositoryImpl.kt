@@ -66,6 +66,7 @@ class CalendarRepositoryImpl @Inject constructor(
             },
             completedChapters = result.chapters.orEmpty().map { dto ->
                 DateCompletedChapter(
+                    memberChapterId = dto.memberChapterId,
                     storybookId = dto.storybookId,
                     title = dto.title,
                     chapterOrder = dto.completedChapterOrder

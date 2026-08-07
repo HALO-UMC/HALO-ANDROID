@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.presentation.component.HaloTopBar
@@ -39,14 +40,19 @@ fun ChapterIntroStep(
             .fillMaxSize()
             .background(White)
     ) {
-        val imageHeight = maxHeight * 0.54f
-        val contentHeight = maxHeight - imageHeight
+        val contentHeight = if (maxHeight > 620.dp) {
+            353.dp
+        } else {
+            maxHeight * 0.48f
+        }
 
         ChapterImagePlaceholder(
             imageUrl = chapter.backgroundImageUrl,
+            showLabel = false,
+            contentScale = ContentScale.FillWidth,
+            alignment = Alignment.TopCenter,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(imageHeight)
+                .fillMaxSize()
                 .align(Alignment.TopCenter)
         )
 

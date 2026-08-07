@@ -46,7 +46,7 @@ fun NavGraphBuilder.calenderGraph(
                     }
                 },
                 // 모달 '장 기록중' 카드 → 그 장의 완료 결과 화면
-                onNavigateToChapterResult = { _, memberChapterId ->
+                onNavigateToChapterResult = { memberChapterId ->
                     navController.navigate(Routes.chapterResult(memberChapterId)) {
                         launchSingleTop = true
                     }

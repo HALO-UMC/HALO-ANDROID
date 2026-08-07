@@ -128,8 +128,7 @@ fun CalendarDayRecordModal(
                                     onClick = {
                                         onEvent(
                                             CalendarUiEvent.OnChapterClicked(
-                                                chapter.storybookId,
-                                                chapter.chapterOrder
+                                                memberChapterId = chapter.memberChapterId
                                             )
                                         )
                                     }
