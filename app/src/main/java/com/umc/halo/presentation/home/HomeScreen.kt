@@ -52,20 +52,6 @@ fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToStorybook: (Long) -> Unit
 ) {
-    val context = LocalContext.current
-
-    val hasPermission =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
-
-    viewModel.onNotificationPermissionResult(hasPermission)
-
     LaunchedEffect(Unit) {
         //화면 불러오기
         viewModel.getHome()
