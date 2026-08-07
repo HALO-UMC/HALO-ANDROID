@@ -117,6 +117,9 @@ dependencies {
     // 이미지 로드 - Coil
     implementation(libs.coil.compose)
 
+    // Media - ExoPlayer
+    implementation(libs.androidx.media3.exoplayer)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -33,6 +33,7 @@ import com.umc.halo.presentation.navigation.Routes
 @Composable
 fun HaloScaffold(
     navController: NavHostController,
+    onAppExit: () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
     val activity = LocalActivity.current
@@ -78,6 +79,7 @@ fun HaloScaffold(
             onDismiss = { showExitDialog = false },
             onConfirm = {
                 showExitDialog = false
+                onAppExit()
                 activity?.finish()
             }
         )

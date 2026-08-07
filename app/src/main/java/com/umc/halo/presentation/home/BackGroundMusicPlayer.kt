@@ -20,8 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray30
@@ -31,6 +29,7 @@ import com.umc.halo.presentation.theme.Primary30
 
 @Composable
 fun BackGroundMusicPlayer(
+    title: String,
     isPlaying: Boolean,
     onClick: () -> Unit
 ) {
@@ -53,7 +52,7 @@ fun BackGroundMusicPlayer(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "산들바람",
+            text = title,
             style = HaloType.body02Medium,
             color = Gray600
         )
@@ -64,22 +63,19 @@ fun BackGroundMusicPlayer(
             Modifier
                 .width(28.dp)
                 .height(28.dp)
-                .clickable {
-                    onClick()
-                },
+                .clickable { onClick() },
             contentAlignment = Alignment.Center
         ) {
-            if (isPlaying) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_home_bgmplayer_pause),
-                    contentDescription = "bgm_pause"
-                )
-            } else {
-                Icon(
-                    painter = painterResource(R.drawable.ic_home_bgmplayer_play),
-                    contentDescription = "bgm_play"
-                )
-            }
+            Icon(
+                painter = painterResource(
+                    if (isPlaying) {
+                        R.drawable.ic_home_bgmplayer_pause
+                    } else {
+                        R.drawable.ic_home_bgmplayer_play
+                    }
+                ),
+                contentDescription = if (isPlaying) "bgm_pause" else "bgm_play"
+            )
         }
     }
 }

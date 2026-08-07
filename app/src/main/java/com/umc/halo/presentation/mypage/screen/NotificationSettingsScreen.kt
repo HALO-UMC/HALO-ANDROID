@@ -42,6 +42,7 @@ fun NotificationSettingsScreen(
 
     MyPageContainer(modifier = modifier) {
         MyPageTopBar(title = "알림 설정", onBack = onBack)
+        val detailControlsEnabled = uiState.allNotificationsEnabled
 
         Column(
             modifier = Modifier
@@ -65,7 +66,7 @@ fun NotificationSettingsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable(enabled = uiState.allNotificationsEnabled) {
+                    .clickable(enabled = detailControlsEnabled) {
                         onEvent(MyPageUiEvent.NotificationTimeClicked)
                     }
                     .padding(top = 24.dp)
@@ -73,18 +74,18 @@ fun NotificationSettingsScreen(
                 Text(
                     text = "정기 알림 시간 설정",
                     style = HaloType.body02SemiBold,
-                    color = if (uiState.allNotificationsEnabled) Gray800 else Gray400
+                    color = if (detailControlsEnabled) Gray800 else Gray400
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
                     text = "원하는 시간에 알림을 발송해드려요!",
                     style = HaloType.body03Regular,
-                    color = if (uiState.allNotificationsEnabled) Gray500 else Gray300
+                    color = if (detailControlsEnabled) Gray500 else Gray300
                 )
                 Spacer(Modifier.height(17.dp))
                 TimeSettingCard(
                     timeText = "현재 알림 발송 시각 : ${uiState.formattedNotificationTime()}",
-                    enabled = uiState.allNotificationsEnabled,
+                    enabled = detailControlsEnabled,
                     onClick = {
                         onEvent(MyPageUiEvent.NotificationTimeClicked)
                     }
@@ -99,7 +100,7 @@ fun NotificationSettingsScreen(
             SettingSwitchRow(
                 title = "오늘의 장 알림",
                 checked = uiState.todayChapterNotificationEnabled,
-                enabled = uiState.allNotificationsEnabled,
+                enabled = detailControlsEnabled,
                 modifier = Modifier.padding(vertical = 18.dp),
                 onCheckedChange = {
                     onEvent(MyPageUiEvent.TodayChapterNotificationChanged(it))
@@ -109,7 +110,7 @@ fun NotificationSettingsScreen(
             SettingSwitchRow(
                 title = "기념일 알림",
                 checked = uiState.anniversaryNotificationEnabled,
-                enabled = uiState.allNotificationsEnabled,
+                enabled = detailControlsEnabled,
                 modifier = Modifier.padding(vertical = 18.dp),
                 onCheckedChange = {
                     onEvent(MyPageUiEvent.AnniversaryNotificationChanged(it))
@@ -119,7 +120,7 @@ fun NotificationSettingsScreen(
             SettingSwitchRow(
                 title = "리텐션 알림",
                 checked = uiState.retentionNotificationEnabled,
-                enabled = uiState.allNotificationsEnabled,
+                enabled = detailControlsEnabled,
                 modifier = Modifier.padding(vertical = 18.dp),
                 onCheckedChange = {
                     onEvent(MyPageUiEvent.RetentionNotificationChanged(it))

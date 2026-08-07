@@ -2,10 +2,12 @@ package com.umc.halo.presentation.mypage
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.audio.BgmPlaybackManager
 import com.umc.halo.core.datastore.DeviceUuidDataStore
 import com.umc.halo.data.remote.auth.GoogleLoginDataSource
 import com.umc.halo.data.remote.auth.KakaoLoginDataSource
 import com.umc.halo.domain.model.member.MemberInfo
+import com.umc.halo.domain.model.settings.NotificationSettings
 import com.umc.halo.domain.repository.auth.AuthRepository
 import com.umc.halo.domain.repository.member.MemberRepository
 import com.umc.halo.domain.repository.notification.NotificationRepository
@@ -30,6 +32,7 @@ class MyPageViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val memberRepository: MemberRepository,
     private val settingsRepository: SettingsRepository,
+    private val bgmPlaybackManager: BgmPlaybackManager,
     private val kakaoLoginDataSource: KakaoLoginDataSource,
     private val googleLoginDataSource: GoogleLoginDataSource,
     private val deviceUuidDataStore: DeviceUuidDataStore,
@@ -38,57 +41,57 @@ class MyPageViewModel @Inject constructor(
     initialState = MyPageUiState()
 ) {
     init {
+        observeBgmPlayback()
         loadMyPageData()
     }
 
     override fun onEvent(event: MyPageUiEvent) {
         when (event) {
-            is MyPageUiEvent.BgmEnabledChanged -> updateState {
-                copy(bgmEnabled = event.enabled)
+            MyPageUiEvent.SystemSettingsEntered -> loadBgmSetting()
+
+            is MyPageUiEvent.BgmEnabledChanged -> onBgmEnabledChanged(event.enabled)
+
+            is MyPageUiEvent.VolumeChanged -> onBgmVolumeChanged(event.volume)
+
+            MyPageUiEvent.VolumeChangeFinished -> saveCurrentBgmSetting()
+
+            is MyPageUiEvent.TrackClicked -> onBgmTrackClicked(event.index)
+
+            MyPageUiEvent.SystemSettingsErrorShown -> updateState {
+                copy(systemSettingsErrorMessage = null)
             }
 
-            is MyPageUiEvent.VolumeChanged -> updateState {
-                copy(volume = event.volume.coerceIn(0f, 1f))
+            MyPageUiEvent.NotificationSettingsEntered -> loadNotificationSettings(showErrorMessage = true)
+
+            MyPageUiEvent.NotificationSettingsErrorShown -> updateState {
+                copy(notificationSettingsErrorMessage = null)
             }
 
-            is MyPageUiEvent.TrackClicked -> updateState {
-                copy(
-                    selectedTrackIndex = event.index,
-                    playingTrackIndex = if (playingTrackIndex == event.index) {
-                        null
-                    } else {
-                        event.index
+            is MyPageUiEvent.AllNotificationsChanged -> updateNotificationSettings {
+                copy(isAllNotificationEnabled = event.enabled)
+            }
+
+            is MyPageUiEvent.TodayChapterNotificationChanged -> {
+                if (currentState.allNotificationsEnabled) {
+                    updateNotificationSettings {
+                        copy(todayChapterNotificationEnabled = event.enabled)
                     }
-                )
-            }
-
-            is MyPageUiEvent.AllNotificationsChanged -> updateState {
-                copy(
-                    allNotificationsEnabled = event.enabled
-                )
-            }
-
-            is MyPageUiEvent.TodayChapterNotificationChanged -> updateState {
-                if (allNotificationsEnabled) {
-                    copy(todayChapterNotificationEnabled = event.enabled)
-                } else {
-                    this
                 }
             }
 
-            is MyPageUiEvent.AnniversaryNotificationChanged -> updateState {
-                if (allNotificationsEnabled) {
-                    copy(anniversaryNotificationEnabled = event.enabled)
-                } else {
-                    this
+            is MyPageUiEvent.AnniversaryNotificationChanged -> {
+                if (currentState.allNotificationsEnabled) {
+                    updateNotificationSettings {
+                        copy(anniversaryNotificationEnabled = event.enabled)
+                    }
                 }
             }
 
-            is MyPageUiEvent.RetentionNotificationChanged -> updateState {
-                if (allNotificationsEnabled) {
-                    copy(retentionNotificationEnabled = event.enabled)
-                } else {
-                    this
+            is MyPageUiEvent.RetentionNotificationChanged -> {
+                if (currentState.allNotificationsEnabled) {
+                    updateNotificationSettings {
+                        copy(retentionNotificationEnabled = event.enabled)
+                    }
                 }
             }
 
@@ -150,15 +153,7 @@ class MyPageViewModel @Inject constructor(
                 copy(draftNotificationMinute = (draftNotificationMinute + 55) % 60)
             }
 
-            MyPageUiEvent.NotificationTimeConfirmed -> updateState {
-                copy(
-                    notificationHour = draftNotificationHour,
-                    notificationMinute = draftNotificationMinute,
-                    isNotificationTimeConfigured = true,
-                    showNotificationTimeDialog = false,
-                    isEditingNotificationTime = false
-                )
-            }
+            MyPageUiEvent.NotificationTimeConfirmed -> confirmNotificationTime()
 
             is MyPageUiEvent.LogoutDialogChanged -> updateState {
                 copy(showLogoutDialog = event.visible)
@@ -199,27 +194,177 @@ class MyPageViewModel @Inject constructor(
                 }
 
             runCatching { settingsRepository.getNotificationSettings() }
-                .onSuccess { settings ->
-                    val (hour, minute) = settings.regularNotificationTime.toHourMinute()
-                    updateState {
-                        copy(
-                            allNotificationsEnabled = settings.isAllNotificationEnabled,
-                            todayChapterNotificationEnabled = settings.todayChapterNotificationEnabled,
-                            anniversaryNotificationEnabled = settings.anniversaryNotificationEnabled,
-                            retentionNotificationEnabled = settings.retentionNotificationEnabled,
-                            notificationHour = hour,
-                            notificationMinute = minute,
-                            draftNotificationHour = hour,
-                            draftNotificationMinute = minute,
-                            isReceivingNotification = settings.isReceiving
-                        )
-                    }
-                }
+                .onSuccess { applyNotificationSettings(it) }
                 .onFailure {
                     updateState { copy(isReceivingNotification = false) }
                 }
 
             updateState { copy(isMyPageLoading = false) }
+        }
+    }
+
+    private fun loadBgmSetting() {
+        viewModelScope.launch {
+            updateState { copy(isBgmLoading = true, systemSettingsErrorMessage = null) }
+
+            bgmPlaybackManager.loadSettings(force = true)
+                .onFailure {
+                    updateState {
+                        copy(
+                            isBgmLoading = false,
+                            systemSettingsErrorMessage = BGM_LOAD_FAILED_MESSAGE
+                        )
+                    }
+                }
+        }
+    }
+
+    private fun loadNotificationSettings(showErrorMessage: Boolean) {
+        viewModelScope.launch {
+            updateState {
+                copy(
+                    isNotificationSettingsLoading = true,
+                    notificationSettingsErrorMessage = null
+                )
+            }
+
+            runCatching { settingsRepository.getNotificationSettings() }
+                .onSuccess { settings ->
+                    applyNotificationSettings(settings)
+                    updateState { copy(isNotificationSettingsLoading = false) }
+                }
+                .onFailure {
+                    updateState {
+                        copy(
+                            isNotificationSettingsLoading = false,
+                            notificationSettingsErrorMessage = if (showErrorMessage) {
+                                NOTIFICATION_LOAD_FAILED_MESSAGE
+                            } else {
+                                null
+                            },
+                            isReceivingNotification = false
+                        )
+                    }
+                }
+        }
+    }
+
+    private fun updateNotificationSettings(
+        reducer: NotificationSettings.() -> NotificationSettings
+    ) {
+        val previous = currentState.toNotificationSettings()
+        val updated = previous.reducer()
+
+        applyNotificationSettings(updated)
+        updateState {
+            copy(
+                isNotificationSettingsLoading = true,
+                notificationSettingsErrorMessage = null
+            )
+        }
+
+        viewModelScope.launch {
+            runCatching { settingsRepository.updateNotificationSettings(updated) }
+                .onSuccess { settings ->
+                    applyNotificationSettings(settings)
+                    updateState { copy(isNotificationSettingsLoading = false) }
+                }
+                .onFailure {
+                    applyNotificationSettings(previous)
+                    updateState {
+                        copy(
+                            isNotificationSettingsLoading = false,
+                            showNotificationTimeDialog = false,
+                            isEditingNotificationTime = false,
+                            draftNotificationHour = notificationHour,
+                            draftNotificationMinute = notificationMinute,
+                            notificationSettingsErrorMessage = NOTIFICATION_SAVE_FAILED_MESSAGE
+                        )
+                    }
+                }
+        }
+    }
+
+    private fun confirmNotificationTime() {
+        if (!currentState.allNotificationsEnabled) return
+
+        val hour = currentState.draftNotificationHour.coerceIn(0, 23)
+        val minute = currentState.draftNotificationMinute.coerceIn(0, 59)
+
+        updateNotificationSettings {
+            copy(regularNotificationTime = hour.toApiTime(minute))
+        }
+
+        updateState {
+            copy(
+                showNotificationTimeDialog = false,
+                isEditingNotificationTime = false
+            )
+        }
+    }
+
+    private fun applyNotificationSettings(settings: NotificationSettings) {
+        val (hour, minute) = settings.regularNotificationTime.toHourMinute()
+        updateState {
+            copy(
+                allNotificationsEnabled = settings.isAllNotificationEnabled,
+                todayChapterNotificationEnabled = settings.todayChapterNotificationEnabled,
+                anniversaryNotificationEnabled = settings.anniversaryNotificationEnabled,
+                retentionNotificationEnabled = settings.retentionNotificationEnabled,
+                notificationHour = hour,
+                notificationMinute = minute,
+                draftNotificationHour = hour,
+                draftNotificationMinute = minute,
+                isNotificationTimeConfigured = true,
+                isReceivingNotification = settings.isReceiving
+            )
+        }
+    }
+
+    private fun onBgmEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            bgmPlaybackManager.setEnabled(enabled)
+                .onFailure { showBgmSaveError() }
+        }
+    }
+
+    private fun onBgmVolumeChanged(volume: Float) {
+        bgmPlaybackManager.setVolume(volume)
+    }
+
+    private fun onBgmTrackClicked(index: Int) {
+        viewModelScope.launch {
+            bgmPlaybackManager.onTrackClicked(index)
+                .onFailure { showBgmSaveError() }
+        }
+    }
+
+    private fun saveCurrentBgmSetting() {
+        viewModelScope.launch {
+            bgmPlaybackManager.saveCurrent()
+                .onFailure { showBgmSaveError() }
+        }
+    }
+
+    private fun observeBgmPlayback() {
+        viewModelScope.launch {
+            bgmPlaybackManager.state.collect { bgmState ->
+                updateState {
+                    copy(
+                        isBgmLoading = bgmState.isLoading,
+                        bgmEnabled = bgmState.bgmEnabled,
+                        volume = bgmState.volume,
+                        selectedTrackIndex = bgmState.selectedTrackIndex,
+                        playingTrackIndex = bgmState.playingTrackIndex
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showBgmSaveError() {
+        updateState {
+            copy(systemSettingsErrorMessage = BGM_SAVE_FAILED_MESSAGE)
         }
     }
 
@@ -282,8 +427,23 @@ class MyPageViewModel @Inject constructor(
     private companion object {
         // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
         const val WITHDRAW_FAILED_MESSAGE = "회원 탈퇴에 실패했어요. 잠시 후 다시 시도해 주세요."
+        const val BGM_LOAD_FAILED_MESSAGE = "BGM 설정을 불러오지 못했어요."
+        const val BGM_SAVE_FAILED_MESSAGE = "BGM 설정을 저장하지 못했어요."
+        const val NOTIFICATION_LOAD_FAILED_MESSAGE = "알림 설정을 불러오지 못했어요."
+        const val NOTIFICATION_SAVE_FAILED_MESSAGE = "알림 설정을 저장하지 못했어요."
     }
 }
+
+private fun MyPageUiState.toNotificationSettings(): NotificationSettings = NotificationSettings(
+    isAllNotificationEnabled = allNotificationsEnabled,
+    regularNotificationTime = notificationHour.toApiTime(notificationMinute),
+    todayChapterNotificationEnabled = todayChapterNotificationEnabled,
+    retentionNotificationEnabled = retentionNotificationEnabled,
+    anniversaryNotificationEnabled = anniversaryNotificationEnabled
+)
+
+private fun Int.toApiTime(minute: Int): String =
+    "${coerceIn(0, 23).toString().padStart(2, '0')}:${minute.coerceIn(0, 59).toString().padStart(2, '0')}"
 
 private fun String?.toDisplayDate(): String {
     val date = this

@@ -3,6 +3,7 @@ package com.umc.halo.presentation.home
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
+import com.umc.halo.core.audio.BgmPlaybackManager
 import com.umc.halo.R
 import com.umc.halo.core.datastore.DeviceUuidDataStore
 import com.umc.halo.data.remote.dto.request.notification.NotificationRequest
@@ -27,8 +28,10 @@ import kotlin.math.sin
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
     private val deviceUuidDataStore: DeviceUuidDataStore,
-    private val notificationRepository: NotificationRepository
+    private val notificationRepository: NotificationRepository,
+    private val bgmPlaybackManager: BgmPlaybackManager
 ): BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
+    val bgmState = bgmPlaybackManager.state
 
     override fun onEvent(event: HomeUiEvent) {
         when (event) {
@@ -53,6 +56,18 @@ class HomeViewModel @Inject constructor(
                     continueStorybookList = home.continueStorybookList
                 )
             }
+        }
+    }
+
+    fun loadBgmSetting() {
+        viewModelScope.launch {
+            bgmPlaybackManager.loadSettings()
+        }
+    }
+
+    fun onBgmPlayerClicked() {
+        viewModelScope.launch {
+            bgmPlaybackManager.toggleHomePlayback()
         }
     }
 

@@ -28,6 +28,13 @@ fun SystemSettingsRoute(
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(uiState.systemSettingsErrorMessage) {
+        val message = uiState.systemSettingsErrorMessage ?: return@LaunchedEffect
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        viewModel.onEvent(MyPageUiEvent.SystemSettingsErrorShown)
+    }
 
     SystemSettingsScreen(
         uiState = uiState,
@@ -44,6 +51,17 @@ fun NotificationSettingsRoute(
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(MyPageUiEvent.NotificationSettingsEntered)
+    }
+
+    LaunchedEffect(uiState.notificationSettingsErrorMessage) {
+        val message = uiState.notificationSettingsErrorMessage ?: return@LaunchedEffect
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        viewModel.onEvent(MyPageUiEvent.NotificationSettingsErrorShown)
+    }
 
     NotificationSettingsScreen(
         uiState = uiState,

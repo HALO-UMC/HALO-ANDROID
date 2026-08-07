@@ -9,8 +9,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.umc.halo.core.audio.BgmTrackCatalog
 import com.umc.halo.presentation.mypage.MyPageUiEvent
 import com.umc.halo.presentation.mypage.MyPageUiState
 import com.umc.halo.presentation.mypage.component.MyPageContainer
@@ -29,7 +31,11 @@ fun SystemSettingsScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val tracks = listOf("산들바람", "산들바람", "산들바람")
+    val tracks = BgmTrackCatalog.tracks
+
+    LaunchedEffect(Unit) {
+        onEvent(MyPageUiEvent.SystemSettingsEntered)
+    }
 
     MyPageContainer(modifier = modifier) {
         MyPageTopBar(title = "시스템 설정", onBack = onBack)
@@ -73,6 +79,9 @@ fun SystemSettingsScreen(
                             value = uiState.volume,
                             onValueChange = {
                                 onEvent(MyPageUiEvent.VolumeChanged(it))
+                            },
+                            onValueChangeFinished = {
+                                onEvent(MyPageUiEvent.VolumeChangeFinished)
                             }
                         )
                     }
@@ -99,7 +108,7 @@ fun SystemSettingsScreen(
 
                         tracks.forEachIndexed { index, track ->
                             TrackRow(
-                                title = track,
+                                title = track.title,
                                 selected = uiState.selectedTrackIndex == index,
                                 playing = uiState.playingTrackIndex == index,
                                 onClick = {
