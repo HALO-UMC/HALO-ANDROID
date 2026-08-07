@@ -21,4 +21,12 @@ interface MemberRepository {
      * @return 서버 탈퇴 성공 여부. 실패하면 로컬 토큰은 지우지 않음
      */
     suspend fun withdraw(): Boolean
+
+    /**
+     * 사용자 접속
+     * 사용자의 접속 시점을 판단 (백엔드 요구 API)
+     *
+     * @return 없음
+     */
+    suspend fun userAccess()
 }
