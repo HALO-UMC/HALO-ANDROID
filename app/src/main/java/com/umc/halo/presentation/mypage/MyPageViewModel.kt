@@ -3,12 +3,14 @@ package com.umc.halo.presentation.mypage
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.umc.halo.core.audio.BgmPlaybackManager
+import com.umc.halo.core.datastore.DeviceUuidDataStore
 import com.umc.halo.data.remote.auth.GoogleLoginDataSource
 import com.umc.halo.data.remote.auth.KakaoLoginDataSource
 import com.umc.halo.domain.model.member.MemberInfo
 import com.umc.halo.domain.model.settings.NotificationSettings
 import com.umc.halo.domain.repository.auth.AuthRepository
 import com.umc.halo.domain.repository.member.MemberRepository
+import com.umc.halo.domain.repository.notification.NotificationRepository
 import com.umc.halo.domain.repository.settings.SettingsRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -63,8 +65,26 @@ class MyPageViewModel @Inject constructor(
                 copy(notificationSettingsErrorMessage = null)
             }
 
-            is MyPageUiEvent.AllNotificationsChanged -> updateNotificationSettings {
-                copy(isAllNotificationEnabled = event.enabled)
+            is MyPageUiEvent.AllNotificationsChanged -> {
+                if (!currentState.notificationPermissionGranted) {
+                    updateState {
+                        copy(
+                            shouldOpenNotificationSettings = true
+                        )
+                    }
+                } else {
+                    updateNotificationSettings {
+                        copy(
+                            isAllNotificationEnabled = event.enabled
+                        )
+                    }
+                }
+            }
+
+            MyPageUiEvent.NotificationSettingsOpened -> updateState {
+                copy(
+                    shouldOpenNotificationSettings = false
+                )
             }
 
             is MyPageUiEvent.TodayChapterNotificationChanged -> {
@@ -164,6 +184,24 @@ class MyPageViewModel @Inject constructor(
 
             MyPageUiEvent.AccountNavigationHandled -> updateState { copy(navigateToLogin = false) }
             MyPageUiEvent.AccountErrorShown -> updateState { copy(accountErrorMessage = null) }
+        }
+    }
+
+    fun offAllNotification() = viewModelScope.launch {
+        settingsRepository.updateNotificationSettings(
+            currentState.toNotificationSettings().copy(
+                isAllNotificationEnabled = false
+            )
+        )
+    }
+
+    fun onNotificationPermissionChanged(granted: Boolean) {
+        updateState {
+            copy(notificationPermissionGranted = granted)
+        }
+
+        if (!granted && currentState.allNotificationsEnabled) {
+            offAllNotification()
         }
     }
 

@@ -52,40 +52,10 @@ fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToStorybook: (Long) -> Unit
 ) {
-    val context = LocalContext.current
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        // 필요하면 ViewModel에 결과 전달
-    }
-
     LaunchedEffect(Unit) {
         //화면 불러오기
         viewModel.getHome()
         viewModel.loadBgmSetting()
-
-        //알림 권한 허용
-        if (
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-
-        //초기 토큰 발급 (테스트용)
-        FirebaseMessaging.getInstance().token
-            .addOnSuccessListener { token ->
-                Log.d("FCM", token)
-            }
-
-        //토큰용 UUID 생성
-        val testUuid = UUID.randomUUID().toString()
-
-        Log.d("UUID", testUuid)
     }
 
     val state by viewModel.uiState.collectAsState()

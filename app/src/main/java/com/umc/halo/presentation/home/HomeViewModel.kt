@@ -2,14 +2,18 @@ package com.umc.halo.presentation.home
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.messaging.FirebaseMessaging
 import com.umc.halo.core.audio.BgmPlaybackManager
 import com.umc.halo.R
+import com.umc.halo.core.datastore.DeviceUuidDataStore
+import com.umc.halo.data.remote.dto.request.notification.NotificationRequest
 import com.umc.halo.domain.model.home.Books
 import com.umc.halo.domain.model.home.HomeStatus
 import com.umc.halo.domain.model.home.StartStorybook
 import com.umc.halo.domain.model.home.UserInfo
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.domain.repository.home.HomeRepository
+import com.umc.halo.domain.repository.notification.NotificationRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import com.umc.halo.presentation.component.storybookSpineOf
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -86,7 +90,8 @@ class HomeViewModel @Inject constructor(
                         currentProgress = book.currentChapterOrder,
                         isFirst = book.isFirst,
                         isCompleted = !book.todayAvailable,
-                        imageUrl = book.imageUrl
+                        imageUrl = book.imageUrl,
+                        subtitle = book.shortDescription
                     )
                 )
             }

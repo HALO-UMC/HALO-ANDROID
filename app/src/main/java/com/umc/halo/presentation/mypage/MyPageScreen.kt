@@ -1,13 +1,22 @@
 package com.umc.halo.presentation.mypage
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryScreenMode
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryUiEvent
@@ -51,6 +60,41 @@ fun NotificationSettingsRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+
+    //알림 권한 허용 되었는지 판단
+    val hasPermission =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+
+    LaunchedEffect(uiState.shouldOpenNotificationSettings) {
+        if (uiState.shouldOpenNotificationSettings) {
+
+            Toast.makeText(
+                context,
+                "알림을 사용하려면 기기 설정에서 알림 권한을 허용해주세요.",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", context.packageName, null)
+            }
+            context.startActivity(intent)
+
+            viewModel.onEvent(
+                MyPageUiEvent.NotificationSettingsOpened
+            )
+        }
+    }
+
+    LaunchedEffect(hasPermission) {
+        viewModel.onNotificationPermissionChanged(hasPermission)
+    }
 
     LaunchedEffect(Unit) {
         viewModel.onEvent(MyPageUiEvent.NotificationSettingsEntered)
