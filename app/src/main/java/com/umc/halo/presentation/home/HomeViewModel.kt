@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
 import com.umc.halo.core.audio.BgmPlaybackManager
 import com.umc.halo.R
-import com.umc.halo.core.datastore.DeviceUuidDataStore
-import com.umc.halo.data.remote.dto.request.notification.NotificationRequest
 import com.umc.halo.domain.model.home.Books
 import com.umc.halo.domain.model.home.HomeStatus
 import com.umc.halo.domain.model.home.StartStorybook
@@ -14,11 +12,12 @@ import com.umc.halo.domain.model.home.UserInfo
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.domain.repository.home.HomeRepository
 import com.umc.halo.domain.repository.member.MemberRepository
-import com.umc.halo.domain.repository.notification.NotificationRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import com.umc.halo.presentation.component.storybookSpineOf
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 import kotlin.math.abs
 import kotlin.math.cos
@@ -39,40 +38,80 @@ class HomeViewModel @Inject constructor(
                 selectedStorybook(event.storyBookId)
             }
 
+            HomeUiEvent.ErrorShown -> updateState { copy(errorMessage = null) }
+
             else -> Unit
         }
     }
 
-    fun getHome() {
+    fun loadHome() {
         viewModelScope.launch {
-            val home = homeRepository.getHome()
+            val isFirstLoad = currentState.bookShelf.isEmpty()
+            updateState { copy(isLoading = isFirstLoad, errorMessage = null) }
 
-            updateState {
-                copy(
-                    userInfo = UserInfo(home.memberName, true),
-                    userState = if (home.homeStatus == HomeStatus.NO_STORYBOOK) UserState.FTU else UserState.RU,
-                    bookShelf = home.bookShelfList,
-                    customStorybookList = home.customStorybookList,
-                    continueStorybookList = home.continueStorybookList
-                )
+            val homeResult = async {
+                runCatching { homeRepository.getHome() }
             }
+            val bgmResult = async {
+                runCatching { bgmPlaybackManager.loadSettings() }
+            }
+            val userAccessResult = async {
+                runCatching { memberRepository.userAccess() }
+            }
+
+            homeResult.await().onSuccess { home ->
+                updateState {
+                    copy(
+                        userInfo = UserInfo(home.memberName, true),
+                        userState = if (home.homeStatus == HomeStatus.NO_STORYBOOK) {
+                            UserState.FTU
+                        } else {
+                            UserState.RU
+                        },
+                        bookShelf = home.bookShelfList,
+                        customStorybookList = home.customStorybookList,
+                        continueStorybookList = home.continueStorybookList
+                    )
+                }
+            }.onFailure {
+                updateState {
+                    copy(
+                        errorMessage = LOAD_FAILED_MESSAGE
+                    )
+                }
+            }
+
+            bgmResult.await()
+                .onFailure {
+                    updateState {
+                        copy(
+                            errorMessage = LOAD_FAILED_MESSAGE
+                        )
+                    }
+                }
+
+            userAccessResult.await()
+                .onFailure {
+                    updateState {
+                        copy(
+                            errorMessage = ACCESS_FAILED_MESSAGE
+                        )
+                    }
+                }
+
+            updateState { copy(isLoading = false) }
         }
     }
 
-    fun loadBgmSetting() {
-        viewModelScope.launch {
-            bgmPlaybackManager.loadSettings()
-        }
+    private companion object {
+        const val LOAD_FAILED_MESSAGE = "홈화면을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
+        const val ACCESS_FAILED_MESSAGE = "사용자 정보를 갱신하지 못했습니다."
     }
 
     fun onBgmPlayerClicked() {
         viewModelScope.launch {
             bgmPlaybackManager.toggleHomePlayback()
         }
-    }
-
-    fun userAccess() = viewModelScope.launch {
-        memberRepository.userAccess()
     }
 
     private fun selectedStorybook(id: Long?) {

@@ -88,8 +88,9 @@ fun OnboardingRoute(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
-        if (!granted) {
-            //모든 알림 끄기
+        if (granted) {
+            viewModel.onAllNotification()
+        } else {
             viewModel.offAllNotification()
         }
     }

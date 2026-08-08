@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -42,6 +43,7 @@ import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.home.actionguide.ActionGuide
 import com.umc.halo.presentation.home.bookcase.BookCase
 import com.umc.halo.presentation.component.CustomStorybook
+import com.umc.halo.presentation.storybook.list.StorybookUiEvent
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary30
 import com.umc.halo.presentation.theme.Primary500
@@ -54,13 +56,19 @@ fun HomeRoute(
 ) {
     LaunchedEffect(Unit) {
         //화면 불러오기
-        viewModel.getHome()
-        viewModel.userAccess()
-        viewModel.loadBgmSetting()
+        viewModel.loadHome()
     }
 
+
+    val context = LocalContext.current
     val state by viewModel.uiState.collectAsState()
     val bgmState by viewModel.bgmState.collectAsState()
+
+    LaunchedEffect(state.errorMessage) {
+        val message = state.errorMessage ?: return@LaunchedEffect
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        viewModel.onEvent(HomeUiEvent.ErrorShown)
+    }
 
     HomeScreen(
         state = state,
@@ -69,6 +77,10 @@ fun HomeRoute(
         onEvent = { event ->
             when (event) {
                 is HomeUiEvent.OnBookClicked -> {
+                    viewModel.onEvent(event)
+                }
+
+                is HomeUiEvent.ErrorShown -> {
                     viewModel.onEvent(event)
                 }
 

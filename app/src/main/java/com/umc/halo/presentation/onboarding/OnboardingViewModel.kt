@@ -377,6 +377,15 @@ class OnboardingViewModel @Inject constructor(
 
         settingsRepository.updateNotificationSettings(newSettings)
     }
+
+    fun onAllNotification() = viewModelScope.launch {
+        val notificationSettings = settingsRepository.getNotificationSettings()
+        val newSettings = notificationSettings.copy(
+            isAllNotificationEnabled = true
+        )
+
+        settingsRepository.updateNotificationSettings(newSettings)
+    }
 }
 
 private fun OnboardingUiState.restore(status: OnboardingStatus): OnboardingUiState {

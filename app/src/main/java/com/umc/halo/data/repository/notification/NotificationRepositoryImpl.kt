@@ -11,13 +11,17 @@ class NotificationRepositoryImpl @Inject constructor(
     private val notificationApi: NotificationApi
 ): NotificationRepository {
     override suspend fun addMembers(fcmToken: String, deviceIdentifier: String) {
-        notificationApi.addMembers(
+        val response = notificationApi.addMembers(
             NotificationRequest(
                 fcmToken,
                 deviceType = "ANDROID",
                 deviceIdentifier
             )
         )
+
+        if (!response.isSuccess) {
+            error("로그인 실패 (code=${response.code}, message=${response.message})")
+        }
     }
 
     override suspend fun deleteMembers(deviceIdentifier: String) {

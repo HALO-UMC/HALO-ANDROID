@@ -12,6 +12,7 @@ data class MyPageUiState(
     val isNotificationSettingsLoading: Boolean = false,
     val notificationSettingsErrorMessage: String? = null,
     val allNotificationsEnabled: Boolean = true,
+    val openedNotificationSettings: Boolean = true,
     val todayChapterNotificationEnabled: Boolean = true,
     val anniversaryNotificationEnabled: Boolean = true,
     val retentionNotificationEnabled: Boolean = true,
