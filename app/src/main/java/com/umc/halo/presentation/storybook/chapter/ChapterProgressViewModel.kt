@@ -429,30 +429,12 @@ class ChapterProgressViewModel @Inject constructor(
         return ChapterSaveForm(
             chapterId = chapter.id,
             emotion = selectedMood?.toEmotion(),
-            coverType = coverTypeForSave(status),
-            imageKey = imageKeyForSave(status),
+            coverType = coverType,
+            imageKey = selectedSceneImageKey,
             sceneCardId = selectedSceneCardId,
             answers = answers,
             status = status
         )
     }
-
-    private fun ChapterProgressUiState.coverTypeForSave(
-        status: ChapterSaveStatus
-    ): ChapterCoverType? =
-        if (status == ChapterSaveStatus.DRAFT && coverType == ChapterCoverType.IMAGE) {
-            null
-        } else {
-            coverType
-        }
-
-    private fun ChapterProgressUiState.imageKeyForSave(
-        status: ChapterSaveStatus
-    ): String? =
-        if (status == ChapterSaveStatus.DRAFT) {
-            null
-        } else {
-            selectedSceneImageKey
-        }
 
 }
