@@ -189,7 +189,7 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-    fun offAllNotification() = viewModelScope.launch {
+    suspend fun offAllNotification() {
         settingsRepository.updateNotificationSettings(
             currentState.toNotificationSettings().copy(
                 isAllNotificationEnabled = false
@@ -197,7 +197,7 @@ class MyPageViewModel @Inject constructor(
         )
     }
 
-    fun onAllNotification() = viewModelScope.launch {
+    suspend fun onAllNotification() {
         settingsRepository.updateNotificationSettings(
             currentState.toNotificationSettings().copy(
                 isAllNotificationEnabled = true
@@ -205,15 +205,17 @@ class MyPageViewModel @Inject constructor(
         )
     }
 
-    fun onNotificationPermissionChanged(granted: Boolean) {
+    suspend fun onNotificationPermissionChanged(granted: Boolean) {
         updateState {
             copy(notificationPermissionGranted = granted)
         }
 
         if (!granted && currentState.allNotificationsEnabled) {
             offAllNotification()
-        } else {
+        } else if (granted && currentState.allNotificationsEnabled){
             onAllNotification()
+        } else {
+            offAllNotification()
         }
     }
 
