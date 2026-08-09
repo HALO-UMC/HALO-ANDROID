@@ -31,14 +31,14 @@ object Routes {
     const val SHOW_THEME = "show_theme/{storybookId}"
 
     // Storybook inner screens
-    const val STORYBOOK_DETAIL = "storybook_detail/{storybookId}?completedChapterOrder={completedChapterOrder}"
+    const val STORYBOOK_DETAIL = "storybook_detail/{storybookId}"
 
     // Chapter screens
     const val CHAPTER_PROGRESS = "chapter_progress/{storybookId}/{chapterOrder}"
     const val CHAPTER_RESULT = "chapter_result/{memberChapterId}"
 
-    fun storybookDetail(storybookId: Long, completedChapterOrder: Long?): String =
-        "storybook_detail/$storybookId" + (completedChapterOrder?.let { "?completedChapterOrder=$it" } ?: "")
+    fun storybookDetail(storybookId: Long): String =
+        "storybook_detail/$storybookId"
 
     fun chapterProgress(
         storybookId: Long,
