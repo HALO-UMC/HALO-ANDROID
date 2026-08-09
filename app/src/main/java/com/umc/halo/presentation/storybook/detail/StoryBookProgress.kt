@@ -163,7 +163,7 @@ fun ProgressIndicator(
     applyOffset: Boolean
 ) {
     Column(
-        modifier = if (applyOffset) Modifier.offset(x = (-6).dp) else Modifier
+        modifier = if (applyOffset) Modifier.offset(x = (-9).dp) else Modifier
     ) {
         if (applyOffset) {
             Canvas(

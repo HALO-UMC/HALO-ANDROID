@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,8 +49,14 @@ fun StoryBookDetailRoute(
     onNavigateToShowTheme: (Long) -> Unit,
     onNavigateToBack: () -> Unit
 ) {
+
+    val listState = rememberLazyListState()
+
+
     LaunchedEffect(Unit) {
         viewModel.getStorybookDetail()
+        //화면이 재구성될 때 맨 위로 이동
+        listState.scrollToItem(0)
     }
 
     val state by viewModel.uiState.collectAsState()
@@ -62,6 +70,7 @@ fun StoryBookDetailRoute(
 
     StoryBookDetailScreen(
         state = state,
+        listState = listState,
         onEvent = { event ->
             fun navigate(storyBookId: Long, chapterId: Long) {
                 val chapter = state.storyBookIndex.firstOrNull { it.id == chapterId } ?: return
@@ -133,6 +142,7 @@ fun StoryBookDetailTopBar(
 @Composable
 fun StoryBookDetailScreen(
     state: StoryBookDetailUiState,
+    listState: LazyListState,
     onEvent: (StoryBookDetailUiEvent) -> Unit
 ) {
     if (state.showDialog) {
@@ -151,7 +161,8 @@ fun StoryBookDetailScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = ScreenPaddingHorizontal)
+                .padding(horizontal = ScreenPaddingHorizontal),
+            state = listState
         ) {
             item {
                 StoryBookIndexIntro(

@@ -117,7 +117,7 @@ fun ContentsOverlay(
             Modifier.fillMaxSize()
         ) {
             Text(
-                text = "테마 ${item.storybookId}장은\n'내일 다시' 참여할 수 있어요!",
+                text = "테마 ${item.currentProgress}장은\n'내일 다시' 참여할 수 있어요!",
                 style = HaloType.body01Medium,
                 color = Gray600,
                 modifier = Modifier

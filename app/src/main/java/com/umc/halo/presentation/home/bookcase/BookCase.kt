@@ -351,18 +351,14 @@ fun BookItem(
             Box(
                 Modifier
                     .fillMaxSize()
-                    .background(White)
+                    .clip(RoundedCornerShape(11.1.dp))
+                    .haloCardShadow(RoundedCornerShape(11.1.dp))
             ) {
                 Image(
                     painter = painterResource(item.coverImage),
                     contentDescription = "${item.id}",
                     modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            shape = RoundedCornerShape(11.1.dp)
-                            clip = true
-                        }
-                        .haloCardShadow(RoundedCornerShape(11.1.dp)),
+                        .fillMaxSize(),
                     contentScale = ContentScale.FillBounds
                 )
             }
