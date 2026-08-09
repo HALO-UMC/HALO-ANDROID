@@ -15,5 +15,7 @@ data class HomeUiState (
     val bookShelf: List<BookResult> = emptyList(),
     val customStorybookList: List<CustomStorybook> = emptyList(),
     val continueStorybookList: List<ContinueStorybook> = emptyList(),
-    val startStorybook: StartStorybook? = null
+    val startStorybook: StartStorybook? = null,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
 )

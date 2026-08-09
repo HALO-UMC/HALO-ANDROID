@@ -91,7 +91,7 @@ fun ContinueStorybookHome(
                     }
 
                     if (!firstItem.todayAvailable) {
-                        ContentsOverlay(firstItem)
+                        ContentsOverlay(firstItem, Modifier.matchParentSize())
                     }
                 }
 
@@ -107,7 +107,7 @@ fun ContinueStorybookHome(
                         }
 
                         if (!secondItem.todayAvailable) {
-                            ContentsOverlay(secondItem)
+                            ContentsOverlay(secondItem, Modifier.matchParentSize())
                         }
                     }
                 }
@@ -151,10 +151,11 @@ fun PageIndicator(
 
 @Composable
 fun ContentsOverlay(
-    item: ContinueStorybook
+    item: ContinueStorybook,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .alpha(0.9f)
             .clickable { }, //contents click overlay

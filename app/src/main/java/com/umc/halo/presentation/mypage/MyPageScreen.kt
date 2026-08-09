@@ -2,22 +2,27 @@ package com.umc.halo.presentation.mypage
 
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryScreenMode
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryUiEvent
 import com.umc.halo.presentation.mypage.anniversary.AnniversaryViewModel
@@ -60,17 +65,35 @@ fun NotificationSettingsRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
 
     //알림 권한 허용 되었는지 판단
-    val hasPermission =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
+    var hasPermission by remember {
+        mutableStateOf(
+            NotificationManagerCompat
+                .from(context)
+                .areNotificationsEnabled()
+        )
+    }
+
+    // 설정에서 돌아왔을때 판단
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+
+                hasPermission = NotificationManagerCompat
+                    .from(context)
+                    .areNotificationsEnabled()
+            }
         }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     LaunchedEffect(uiState.shouldOpenNotificationSettings) {
         if (uiState.shouldOpenNotificationSettings) {
@@ -94,6 +117,7 @@ fun NotificationSettingsRoute(
 
     LaunchedEffect(hasPermission) {
         viewModel.onNotificationPermissionChanged(hasPermission)
+        viewModel.onEvent(MyPageUiEvent.NotificationSettingsEntered)
     }
 
     LaunchedEffect(Unit) {
