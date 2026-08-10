@@ -74,11 +74,10 @@ class LoginViewModel @Inject constructor(
 
                 val loginResult = authRepository.login(provider, idToken)
 
-                registerFCMToken()
-
                 resolveDestinationAfterLogin(loginResult)
             }.onSuccess { destination ->
                 updateState { copy(destination = destination) }
+                registerFCMToken()
             }.onFailure { throwable ->
                 // 사용자가 직접 창을 닫은 건 실패가 아님으로 처리
                 if (throwable !is LoginCancelledException) {
