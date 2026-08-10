@@ -103,7 +103,7 @@ fun StorybookCard(
             .background(White)
             // 대기 상태이거나 onClick이 없으면 클릭 비활성화
             .then(
-                if (onClick != null && !isWaiting) Modifier.clickable { onClick() }
+                if (onClick != null) Modifier.clickable { onClick() }
                 else Modifier
             )
     ) {

@@ -206,6 +206,9 @@ private val openLicenseItems = listOf(
 @Composable
 fun OpenLicenseScreen(
     onBack: () -> Unit,
+    onNavigateToAccountInfo: () -> Unit,
+    onNavigateToPrivacyPolicy: () -> Unit,
+    onNavigateToTerms: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedLicense by remember {
