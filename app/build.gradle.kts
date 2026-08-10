@@ -16,7 +16,8 @@ val localProperties = Properties().apply {
         localFile.inputStream().use { load(it) }
     }
 }
-val baseUrl: String = localProperties.getProperty("BASE_URL") ?: "\"http://localhost:8080/\""
+val baseUrlDebug: String = localProperties.getProperty("BASE_URL_DEBUG") ?: "\"http://localhost:8080/\""
+val baseUrlRelease: String = localProperties.getProperty("BASE_URL_RELEASE") ?: "\"http://localhost:8080/\""
 // 카카오 네이티브 앱 키 (KAKAO_NATIVE_APP_KEY에 오류나면 빌드는 성공하지만 로그인은 동작 하지 않음)
 val kakaoNativeAppKey: String = localProperties.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
 // 구글 Web 클라이언트 ID (idToken 발급용 serverClientId) 값 없으면 빌드는 되지만 구글 로그인은 동작 안 함
@@ -35,12 +36,9 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // BuildConfig.BASE_URL 로 코드에서 접근 (값은 local.properties 에서 주입)
-        buildConfigField("String", "BASE_URL", baseUrl)
 
         // 카카오 SDK 초기화(KakaoSdk.init)에서 BuildConfig.KAKAO_NATIVE_APP_KEY 로 사용
         buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoNativeAppKey\"")
@@ -51,8 +49,30 @@ android {
         buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
     }
 
+    val keystorePath: String? = localProperties.getProperty("KEYSTORE_FILE")
+
+    signingConfigs {
+        create("release") {
+            if (keystorePath != null) {
+                storeFile = file(keystorePath)
+                storePassword = localProperties.getProperty("KEYSTORE_PASSWORD")
+                keyAlias = localProperties.getProperty("KEY_ALIAS")
+                keyPassword = localProperties.getProperty("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
+        debug {
+            // BuildConfig.BASE_URL 로 코드에서 접근 (값은 local.properties 에서 주입)
+            buildConfigField("String", "BASE_URL", baseUrlDebug)
+        }
         release {
+            signingConfig = signingConfigs.getByName("release")
+
+            // BuildConfig.BASE_URL 로 코드에서 접근 (값은 local.properties 에서 주입)
+            buildConfigField("String", "BASE_URL", baseUrlRelease)
+
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
