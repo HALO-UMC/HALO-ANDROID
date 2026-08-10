@@ -9,15 +9,12 @@ plugins {
 }
 
 // 민감정보는 git에 올리지 않는 local.properties 에서 읽어옴
-// local.properties 에 BASE_URL 이 없으면 로컬 개발용 placeholder 를 사용해 Retrofit 이 크래시 없이 생성되도록 함
 val localProperties = Properties().apply {
     val localFile = rootProject.file("local.properties")
     if (localFile.exists()) {
         localFile.inputStream().use { load(it) }
     }
 }
-val baseUrlDebug: String = localProperties.getProperty("BASE_URL_DEBUG") ?: "\"http://localhost:8080/\""
-val baseUrlRelease: String = localProperties.getProperty("BASE_URL_RELEASE") ?: "\"http://localhost:8080/\""
 // 카카오 네이티브 앱 키 (KAKAO_NATIVE_APP_KEY에 오류나면 빌드는 성공하지만 로그인은 동작 하지 않음)
 val kakaoNativeAppKey: String = localProperties.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
 // 구글 Web 클라이언트 ID (idToken 발급용 serverClientId) 값 없으면 빌드는 되지만 구글 로그인은 동작 안 함
@@ -64,14 +61,14 @@ android {
 
     buildTypes {
         debug {
-            // BuildConfig.BASE_URL 로 코드에서 접근 (값은 local.properties 에서 주입)
-            buildConfigField("String", "BASE_URL", baseUrlDebug)
+            // BuildConfig.BASE_URL 로 코드에서 접근 — 개발 서버
+            buildConfigField("String", "BASE_URL", "\"https://dev.halo-app.co.kr/\"")
         }
         release {
             signingConfig = signingConfigs.getByName("release")
 
-            // BuildConfig.BASE_URL 로 코드에서 접근 (값은 local.properties 에서 주입)
-            buildConfigField("String", "BASE_URL", baseUrlRelease)
+            // BuildConfig.BASE_URL 로 코드에서 접근 — 운영 서버
+            buildConfigField("String", "BASE_URL", "\"https://halo-app.co.kr/\"")
 
             isMinifyEnabled = false
             proguardFiles(

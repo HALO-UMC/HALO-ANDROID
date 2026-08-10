@@ -188,16 +188,20 @@ git clone <https://github.com/HALO-UMC/HALO-ANDROID.git>
 
 ### **환경 변수 / 시크릿**
 
-Base URL, 소셜 로그인 키 등 민감 정보는 `local.properties`에 넣고 **Git에 올리지 않는다.**
+소셜 로그인 키, 서명 키 비밀번호 등 민감 정보는 `local.properties`에 넣고 **Git에 올리지 않는다.**
 
 ```
 # local.properties 예시
-BASE_URL="https://..."
 KAKAO_NATIVE_APP_KEY="..."
 GOOGLE_WEB_CLIENT_ID="..."
+
+# 릴리즈 서명용 (키스토어를 가진 사람만 필요)
+KEYSTORE_FILE=...
+KEYSTORE_PASSWORD=...
+KEY_ALIAS=...
+KEY_PASSWORD=...
 ```
 
-> `BASE_URL`이 없으면 로컬 개발용 placeholder가 사용된다.
 > 
 > 
 > Kakao / Google 로그인 키가 없으면 빌드는 가능하지만 실제 소셜 로그인 동작은 제한될 수 있다.

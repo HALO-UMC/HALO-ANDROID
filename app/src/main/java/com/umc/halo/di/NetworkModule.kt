@@ -19,7 +19,8 @@ import javax.inject.Singleton
  * 사용법 : 생성자/필드에서 Retrofit(또는 OkHttpClient)을 @Inject 로 바로 받아 사용 가능
  *   예) class XxxApiService @Inject constructor(retrofit: Retrofit)
  *
- * baseUrl 은 BuildConfig.BASE_URL(= local.properties 의 BASE_URL) 을 사용
+ * baseUrl 은 BuildConfig.BASE_URL 을 사용
+ *   값은 app/build.gradle.kts 의 buildTypes 에 직접 적혀 있음 (debug=개발 서버 / release=운영 서버)
  *
  * 인증 처리는 두 단계로 나뉜다
  *   - AuthInterceptor    : 모든 요청에 Authorization 헤더를 붙임

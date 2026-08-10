@@ -81,8 +81,8 @@ sealed interface StorybookBadge {
  *
  * @param coverUrl 서버가 준 커버 이미지 URL. null·빈 문자열이면 회색 플레이스홀더
  * @param badge null이면 배지 없음(전체 탭). 진행중/완료 탭은 각각 [StorybookBadge]를 넘김
- * @param isWaiting true면 오늘 분량 완료 상태 → 카드를 어둡게 하고 안내 문구 표시 + 클릭 비활성화
- * @param onClick null이거나 isWaiting=true면 클릭되지 않음
+ * @param isWaiting true면 오늘 분량 완료(서버 status=TODAY_DONE) 상태
+ * @param onClick null이면 클릭되지 않음
  */
 @Composable
 fun StorybookCard(
@@ -101,7 +101,7 @@ fun StorybookCard(
             .haloCardShadow(shape)
             .clip(shape)
             .background(White)
-            // 대기 상태이거나 onClick이 없으면 클릭 비활성화
+            // onClick이 없을 때만 클릭 비활성화
             .then(
                 if (onClick != null) Modifier.clickable { onClick() }
                 else Modifier
