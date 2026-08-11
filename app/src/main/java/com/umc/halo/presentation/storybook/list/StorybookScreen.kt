@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,7 +31,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,8 +40,8 @@ import com.umc.halo.domain.model.storybook.Storybook
 import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.domain.model.storybook.StorybookTheme
 import com.umc.halo.presentation.component.CustomStorybookCard
-import com.umc.halo.presentation.storybook.chapter.component.HaloLoadFailed
-import com.umc.halo.presentation.storybook.chapter.component.HaloLoading
+import com.umc.halo.presentation.component.HaloLoadFailed
+import com.umc.halo.presentation.component.HaloLoading
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray700

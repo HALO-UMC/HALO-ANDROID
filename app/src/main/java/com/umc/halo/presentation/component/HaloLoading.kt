@@ -1,4 +1,4 @@
-package com.umc.halo.presentation.storybook.chapter.component
+package com.umc.halo.presentation.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

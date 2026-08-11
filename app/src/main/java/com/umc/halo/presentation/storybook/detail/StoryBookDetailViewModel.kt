@@ -54,34 +54,50 @@ class StoryBookDetailViewModel @Inject constructor(
                 }
             }
 
+            StoryBookDetailUiEvent.OnScreenShown, StoryBookDetailUiEvent.OnRetryClicked -> getStorybookDetail()
+
+            StoryBookDetailUiEvent.ErrorShown -> updateState { copy(errorMessage = null) }
+
             else -> Unit
         }
     }
 
-    fun getStorybookDetail() {
+    private fun getStorybookDetail() {
         viewModelScope.launch {
-            val storybookDetail = storybookDetailRepository.getStorybookDetail(storybookId)
+            updateState { copy(isLoading = true, errorMessage = null) }
+            runCatching { storybookDetailRepository.getStorybookDetail(storybookId) }
+                .onSuccess { storybookDetail ->
+                    updateState {
+                        copy(
+                            storyBookId = storybookDetail.storyBookId,
+                            storyBookInfo = storybookDetail.storyBookInfo,
+                            storyBookProgress = storybookDetail.storyBookProgress,
+                            storyBookIndex = storybookDetail.storyBookIndex,
+                            todayStoryBookInfo = when (val progress = storybookDetail.storyBookProgress) {
+                                StorybookProgress.Done ->
+                                    storybookDetail.storyBookIndex
+                                        .last()
+                                        .toTodayStoryBook()
+                                        .copy(isCompleted = true)
 
-            updateState {
-                copy(
-                    storyBookId = storybookDetail.storyBookId,
-                    storyBookInfo = storybookDetail.storyBookInfo,
-                    storyBookProgress = storybookDetail.storyBookProgress,
-                    storyBookIndex = storybookDetail.storyBookIndex,
-                    todayStoryBookInfo = when (val progress = storybookDetail.storyBookProgress) {
-                        StorybookProgress.Done ->
-                            storybookDetail.storyBookIndex
-                                .last()
-                                .toTodayStoryBook()
-                                .copy(isCompleted = true)
-
-                        is StorybookProgress.InProgress ->
-                            storybookDetail.storyBookIndex
-                                .first { it.id == progress.chapter + 1L }
-                                .toTodayStoryBook()
+                                is StorybookProgress.InProgress ->
+                                    storybookDetail.storyBookIndex
+                                        .first { it.id == progress.chapter + 1L }
+                                        .toTodayStoryBook()
+                            },
+                            hasLoadFailed = false
+                        )
                     }
-                )
-            }
+                }.onFailure {
+                    updateState {
+                        copy(
+                            hasLoadFailed = true,
+                            errorMessage = LOAD_FAILED_MESSAGE
+                        )
+                    }
+                }
+
+            updateState { copy(isLoading = false) }
         }
     }
 
@@ -119,4 +135,9 @@ class StoryBookDetailViewModel @Inject constructor(
         isLocked = isLocked,
         isCompleted = false
     )
+
+    private companion object {
+        // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
+        const val LOAD_FAILED_MESSAGE = "스토리북 상세 페이지를 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
+    }
 }

@@ -7,8 +7,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.umc.halo.presentation.storybook.chapter.component.HaloLoadFailed
-import com.umc.halo.presentation.storybook.chapter.component.HaloLoading
+import com.umc.halo.presentation.component.HaloLoadFailed
+import com.umc.halo.presentation.component.HaloLoading
 
 /**
  * @param initialStorybookId 특정 스토리북으로 진입한 경우 그 테마부터 보여줌

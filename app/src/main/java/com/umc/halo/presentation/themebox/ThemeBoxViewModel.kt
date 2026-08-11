@@ -63,7 +63,8 @@ class ThemeBoxViewModel @Inject constructor(
                             themeList = themeBox.themeList,
                             currentStorybookId = themeBox.currentStorybookId,
                             customStorybookList = themeBox.customStorybookList,
-                            continueStorybookList = themeBox.continueStorybookList
+                            continueStorybookList = themeBox.continueStorybookList,
+                            hasLoadFailed = false
                         )
                     }
                 }.onFailure {
