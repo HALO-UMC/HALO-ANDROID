@@ -29,10 +29,13 @@ class HaloFirebaseMessagingService: FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
 
+        // 등록 실패해도 앱이 죽지 않게 에외처리 — 이 코루틴은 화면과 무관한 백그라운드에서
         CoroutineScope(Dispatchers.IO).launch {
-            val uuid = deviceUuidDataStore.getOrCreate()
+            runCatching {
+                val uuid = deviceUuidDataStore.getOrCreate()
 
-            notificationRepository.addMembers(token, uuid)
+                notificationRepository.addMembers(token, uuid)
+            }
         }
     }
 
