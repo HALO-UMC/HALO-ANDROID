@@ -6,6 +6,9 @@ import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.domain.model.storybook.TodayStoryBook
 
 data class StoryBookDetailUiState(
+    val isLoading: Boolean = false,
+    val hasLoadFailed: Boolean = false,
+    val errorMessage: String? = null,
     val storyBookId: Long = 0,
     val storyBookInfo: StoryBookInfo = StoryBookInfo(
         title = "void",

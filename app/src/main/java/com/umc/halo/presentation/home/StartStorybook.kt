@@ -56,7 +56,7 @@ fun StartStorybook(
             .padding(horizontal = 24.dp)
     ) {
         Text(
-            text = "${item.storybookId}장을 바로 시작해보세요!",
+            text = "${item.currentProgress}장을 바로 시작해보세요!",
             style = HaloType.body01SemiBold,
             color = Color(0xFF3C3A35)
         )
@@ -118,7 +118,7 @@ fun ContentsOverlay(
         ) {
             Text(
                 text = "테마 ${item.currentProgress}장은\n'내일 다시' 참여할 수 있어요!",
-                style = HaloType.body01Medium,
+                style = HaloType.body02Medium,
                 color = Gray600,
                 modifier = Modifier
                     .align(Alignment.Center),

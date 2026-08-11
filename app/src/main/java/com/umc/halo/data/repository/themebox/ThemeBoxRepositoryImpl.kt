@@ -38,7 +38,7 @@ class ThemeBoxRepositoryImpl @Inject constructor(
                 title = it.title,
                 storybookId = it.storybookId,
                 currentChapterOrder = it.nextChapterOrder.toLong(),
-                todayAvailable = true
+                todayAvailable = it.todayAvailable
             )
         },
         customStorybookList = recommendedStorybooks.map {

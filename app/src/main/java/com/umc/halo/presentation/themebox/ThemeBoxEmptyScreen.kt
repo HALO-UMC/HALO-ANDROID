@@ -2,6 +2,7 @@ package com.umc.halo.presentation.themebox
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -25,6 +26,8 @@ import com.umc.halo.R
 import com.umc.halo.domain.model.themebox.ContinueStorybook
 import com.umc.halo.presentation.component.ContinueStorybookCard
 import com.umc.halo.presentation.component.CustomStorybook
+import com.umc.halo.presentation.home.ContentsOverlay
+import com.umc.halo.presentation.home.HomeUiEvent
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
@@ -32,7 +35,7 @@ import com.umc.halo.presentation.theme.HaloType
 
 @Composable
 fun ThemeBoxEmptyScreen(
-    state: ThemeBoxUiState.Empty,
+    state: ThemeBoxUiState,
     onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
     Column(
@@ -45,15 +48,17 @@ fun ThemeBoxEmptyScreen(
 
         Spacer(Modifier.height(35.dp))
 
-        when (state) {
-            is ThemeBoxUiState.Empty.FTU -> {
+        when (state.themeBoxState) {
+            ThemeBoxState.Empty.FTU -> {
                 CustomStorybook(state.customStorybookList) { id ->
                     onEvent(ThemeBoxUiEvent.OnCustomizedStoryBookClicked(id))
                 }
             }
-            is ThemeBoxUiState.Empty.RU -> {
+            ThemeBoxState.Empty.RU -> {
                 ContinueStorybook(state.continueStorybookList, onEvent)
             }
+
+            else -> Unit
         }
     }
 }
@@ -114,8 +119,16 @@ fun ContinueStorybook(
         items(
             items = continueStorybookList
         ) { item ->
-            ContinueStorybookCard(item) {
-                onEvent(ThemeBoxUiEvent.OnContinueStoryBookClicked(item.storybookId))
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                ContinueStorybookCard(item) {
+                    onEvent(ThemeBoxUiEvent.OnContinueStoryBookClicked(item.storybookId))
+                }
+
+                if (item.todayAvailable) {
+                    ContentsOverlay(item, Modifier.matchParentSize())
+                }
             }
         }
     }

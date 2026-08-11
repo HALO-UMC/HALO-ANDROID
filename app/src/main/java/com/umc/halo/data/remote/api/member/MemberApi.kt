@@ -4,6 +4,7 @@ import com.umc.halo.core.network.BaseResponse
 import com.umc.halo.data.remote.dto.response.member.MyInfoResponse
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 
 /**
@@ -19,6 +20,6 @@ interface MemberApi {
     @DELETE("api/v1/members/me")
     suspend fun withdraw(): BaseResponse<Unit>
 
-    @POST("api/v1/members/access")
+    @PATCH("api/v1/members/last-access-at")
     suspend fun userAccess()
 }

@@ -1,5 +1,6 @@
 package com.umc.halo.presentation.storybook.detail
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -32,6 +34,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.domain.model.storybook.StoryBookInfo
 import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.presentation.component.HaloTopBar
+import com.umc.halo.presentation.component.HaloLoadFailed
+import com.umc.halo.presentation.component.HaloLoading
 import com.umc.halo.presentation.storybook.list.StorybookBadge
 import com.umc.halo.presentation.storybook.list.StorybookCard
 import com.umc.halo.presentation.theme.Gray500
@@ -51,10 +55,11 @@ fun StoryBookDetailRoute(
 ) {
 
     val listState = rememberLazyListState()
+    val context = LocalContext.current
 
 
     LaunchedEffect(Unit) {
-        viewModel.getStorybookDetail()
+        viewModel.onEvent(StoryBookDetailUiEvent.OnScreenShown)
         //화면이 재구성될 때 맨 위로 이동
         listState.scrollToItem(0)
     }
@@ -66,6 +71,12 @@ fun StoryBookDetailRoute(
             onNavigateToChapterProgress(startedStorybookId, 1)
             viewModel.clearStartedStorybook()
         }
+    }
+
+    LaunchedEffect(state.errorMessage) {
+        val message = state.errorMessage ?: return@LaunchedEffect
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        viewModel.onEvent(StoryBookDetailUiEvent.ErrorShown)
     }
 
     StoryBookDetailScreen(
@@ -111,17 +122,11 @@ fun StoryBookDetailRoute(
                     }
                 }
 
-                is StoryBookDetailUiEvent.OnClickOpenDialog -> {
-                    viewModel.onEvent(event)
-                }
-
-                is StoryBookDetailUiEvent.OnClickDismissDialog -> {
-                    viewModel.onEvent(event)
-                }
-
                 is StoryBookDetailUiEvent.OnclickBackArrow -> {
                     onNavigateToBack()
                 }
+
+                else -> viewModel.onEvent(event)
             }
         }
     )
@@ -145,54 +150,67 @@ fun StoryBookDetailScreen(
     listState: LazyListState,
     onEvent: (StoryBookDetailUiEvent) -> Unit
 ) {
-    if (state.showDialog) {
-        StoryBookDetailAlert(onEvent)
-    }
+    when {
+        state.isLoading -> HaloLoading()
 
-    Column(
-        Modifier.navigationBarsPadding()
-    ) {
-        StoryBookDetailTopBar(
-            title = state.storyBookInfo.title
-        ) {
-            onEvent(StoryBookDetailUiEvent.OnclickBackArrow)
-        }
+        state.hasLoadFailed -> HaloLoadFailed(
+            text = "스토리북 상세화면",
+            onRetry = {
+                onEvent(StoryBookDetailUiEvent.OnRetryClicked)
+            }
+        )
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = ScreenPaddingHorizontal),
-            state = listState
-        ) {
-            item {
-                StoryBookIndexIntro(
-                    state,
-                    onEvent = onEvent)
-
-                Spacer(Modifier.height(56.dp))
-
-                Text(
-                    text = "이야기의 차례",
-                    style = HaloType.body01SemiBold,
-                    color = Gray800
-                )
-
-                Spacer(Modifier.height(18.dp))
+        else -> {
+            if (state.showDialog) {
+                StoryBookDetailAlert(onEvent)
             }
 
-            items(
-                items = state.storyBookIndex,
-                key = { item -> item.id }
-            ) { item ->
-                StoryBookIndex(
-                    state.storyBookId,
-                    item,
-                    onEvent = onEvent
-                )
-            }
+            Column(
+                Modifier.navigationBarsPadding()
+            ) {
+                StoryBookDetailTopBar(
+                    title = state.storyBookInfo.title
+                ) {
+                    onEvent(StoryBookDetailUiEvent.OnclickBackArrow)
+                }
 
-            item {
-                Spacer(Modifier.height(38.dp))
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = ScreenPaddingHorizontal),
+                    state = listState
+                ) {
+                    item {
+                        StoryBookIndexIntro(
+                            state,
+                            onEvent = onEvent)
+
+                        Spacer(Modifier.height(56.dp))
+
+                        Text(
+                            text = "이야기의 차례",
+                            style = HaloType.body01SemiBold,
+                            color = Gray800
+                        )
+
+                        Spacer(Modifier.height(18.dp))
+                    }
+
+                    items(
+                        items = state.storyBookIndex,
+                        key = { item -> item.id }
+                    ) { item ->
+                        StoryBookIndex(
+                            state.storyBookId,
+                            item,
+                            onEvent = onEvent
+                        )
+                    }
+
+                    item {
+                        Spacer(Modifier.height(38.dp))
+                    }
+                }
             }
         }
     }
