@@ -73,10 +73,10 @@ class TermsViewModel @Inject constructor(
 
             // 약관 목록과 동의 현황은 서로 다른 API라서 두 개를 동시에 요청
             val termsDeferred = async { runCatching { termsRepository.getTerms() } }
-            val agreedStatusDeferred = async { termsRepository.getTermsAgreedStatus() }
+            val agreedStatusDeferred = async { runCatching { termsRepository.getTermsAgreedStatus() } }
 
             val termsResult = termsDeferred.await()
-            val agreedStatus = agreedStatusDeferred.await()
+            val agreedIds = agreedStatusDeferred.await().getOrNull()?.agreedTermIds.orEmpty()
 
             termsResult
                 .onSuccess { terms ->
@@ -84,7 +84,7 @@ class TermsViewModel @Inject constructor(
                         copy(
                             terms = terms,
                             // 온보딩에서 되돌아온 경우 이미 동의한 약관을 다시 체크해둠
-                            agreedIds = agreedStatus.agreedTermIds
+                            agreedIds = agreedIds
                         )
                     }
                 }
@@ -129,7 +129,8 @@ class TermsViewModel @Inject constructor(
      */
     private fun cancelSignUp() {
         viewModelScope.launch {
-            authRepository.logout()
+            // 로그아웃이 실패해도 로그인 화면으로 보냄
+            runCatching { authRepository.logout() }
             updateState { copy(destination = AuthDestination.LOGIN) }
         }
     }

@@ -78,7 +78,7 @@ fun CalendarDayRecordModal(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = String.format(Locale.US, "%02d월 %02d일", month, day),
+                    text = String.format(Locale.US, "%02d월 %02d일 기록", month, day),
                     style = HaloType.body01SemiBold,
                     color = Gray800,
                     modifier = Modifier.weight(1f)
@@ -117,7 +117,7 @@ fun CalendarDayRecordModal(
                         }
                     }
                 }
-                // 장 기록중(그 날 완료한 장, 최신순)
+                // 장 기록(그 날 완료한 장, 최신순)
                 if (record.completedChapters.isNotEmpty()) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text("장 기록", style = HaloType.body02SemiBold, color = Gray800)

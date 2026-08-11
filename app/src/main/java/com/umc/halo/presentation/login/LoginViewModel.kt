@@ -38,7 +38,7 @@ class LoginViewModel @Inject constructor(
         // 로컬에만 있는 정보임
         viewModelScope.launch {
             // updateState 의 람다는 suspend 가 아니라서 조회를 먼저 끝내고 상태에 넣는다
-            val provider = authRepository.getLastLoginProvider()
+            val provider = runCatching { authRepository.getLastLoginProvider() }.getOrNull()
             updateState { copy(recentProvider = provider) }
         }
     }
