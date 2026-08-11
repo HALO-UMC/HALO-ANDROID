@@ -3,11 +3,12 @@ package com.umc.halo.core.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import java.util.UUID
+import java.io.IOException
 import javax.inject.Inject
 
 /**
@@ -26,9 +27,17 @@ class TokenDataStore @Inject constructor(
         }
     }
 
+    /**
+     * DataStore 는 파일을 못 읽으면 Flow 로 IOException
+     * 안 잡으면 토큰을 읽는 쪽에서 그대로 터지므로 읽기 실패는 '저장된 값 없음' 으로
+     * -> 토큰이 없는 것으로 취급돼 자동 로그인이 실패하고 로그인 화면으로 이동
+     */
+    private val preferences: Flow<Preferences> = dataStore.data
+        .catch { e -> if (e is IOException) emit(emptyPreferences()) else throw e }
+
     // 저장된 토큰 (없으면 null)
-    val accessTokenFlow: Flow<String?> = dataStore.data.map { it[ACCESS_TOKEN] }
-    val refreshTokenFlow: Flow<String?> = dataStore.data.map { it[REFRESH_TOKEN] }
+    val accessTokenFlow: Flow<String?> = preferences.map { it[ACCESS_TOKEN] }
+    val refreshTokenFlow: Flow<String?> = preferences.map { it[REFRESH_TOKEN] }
 
     // 로그아웃과 재발급 실패 시 토큰 제거
     suspend fun clear() {
