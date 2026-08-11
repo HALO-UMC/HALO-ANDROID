@@ -118,7 +118,7 @@ fun ContentsOverlay(
         ) {
             Text(
                 text = "테마 ${item.currentProgress}장은\n'내일 다시' 참여할 수 있어요!",
-                style = HaloType.body01Medium,
+                style = HaloType.body02Medium,
                 color = Gray600,
                 modifier = Modifier
                     .align(Alignment.Center),

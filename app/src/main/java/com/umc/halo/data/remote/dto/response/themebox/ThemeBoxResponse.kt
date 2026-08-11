@@ -27,7 +27,8 @@ data class CompletedStorybookResponse(
 data class InProgressStorybookResponse(
     val storybookId: Long,
     val title: String,
-    val nextChapterOrder: Int
+    val nextChapterOrder: Int,
+    val todayAvailable: Boolean
 )
 
 data class RecommendedStorybookResponse(

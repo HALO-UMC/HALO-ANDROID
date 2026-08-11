@@ -2,6 +2,7 @@ package com.umc.halo.presentation.themebox
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -25,6 +26,8 @@ import com.umc.halo.R
 import com.umc.halo.domain.model.themebox.ContinueStorybook
 import com.umc.halo.presentation.component.ContinueStorybookCard
 import com.umc.halo.presentation.component.CustomStorybook
+import com.umc.halo.presentation.home.ContentsOverlay
+import com.umc.halo.presentation.home.HomeUiEvent
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.Gray800
@@ -114,8 +117,16 @@ fun ContinueStorybook(
         items(
             items = continueStorybookList
         ) { item ->
-            ContinueStorybookCard(item) {
-                onEvent(ThemeBoxUiEvent.OnContinueStoryBookClicked(item.storybookId))
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                ContinueStorybookCard(item) {
+                    onEvent(ThemeBoxUiEvent.OnContinueStoryBookClicked(item.storybookId))
+                }
+
+                if (item.todayAvailable) {
+                    ContentsOverlay(item, Modifier.matchParentSize())
+                }
             }
         }
     }
