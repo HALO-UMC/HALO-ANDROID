@@ -42,6 +42,8 @@ import com.umc.halo.domain.model.storybook.Storybook
 import com.umc.halo.domain.model.storybook.StorybookProgress
 import com.umc.halo.domain.model.storybook.StorybookTheme
 import com.umc.halo.presentation.component.CustomStorybookCard
+import com.umc.halo.presentation.storybook.chapter.component.HaloLoadFailed
+import com.umc.halo.presentation.storybook.chapter.component.HaloLoading
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray700
@@ -140,9 +142,10 @@ private fun StorybookContent(
         Spacer(Modifier.height(24.dp))
 
         when {
-            state.isLoading -> StorybookLoading()
+            state.isLoading -> HaloLoading()
 
-            state.hasLoadFailed -> StorybookLoadFailed(
+            state.hasLoadFailed -> HaloLoadFailed(
+                text = "스토리북",
                 onRetry = { onEvent(StorybookUiEvent.OnRetryClicked) }
             )
 
@@ -183,50 +186,6 @@ private fun StorybookContent(
                 }
             }
         }
-    }
-}
-
-/**
- * 첫 조회 중
- * TODO: 로딩 표현은 디자인에 없어 임시
- */
-@Composable
-private fun StorybookLoading() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(color = Primary500)
-    }
-}
-
-/**
- * 조회 실패 + 보여줄 목록도 없는 상태
- * TODO: 문구·버튼 모양은 디자인 확정 후 교체
- */
-@Composable
-private fun StorybookLoadFailed(onRetry: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "스토리북을 불러오지 못했어요.",
-            style = HaloType.body02Regular,
-            color = Gray700,
-            textAlign = TextAlign.Center
-        )
-        Spacer(Modifier.height(12.dp))
-        Text(
-            text = "다시 시도",
-            style = HaloType.body02Medium,
-            color = Primary500,
-            modifier = Modifier
-                .clip(RoundedCornerShape(100.dp))
-                .clickable { onRetry() }
-                .padding(horizontal = 20.dp, vertical = 8.dp)
-        )
     }
 }
 

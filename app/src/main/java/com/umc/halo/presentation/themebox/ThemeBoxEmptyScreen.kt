@@ -35,7 +35,7 @@ import com.umc.halo.presentation.theme.HaloType
 
 @Composable
 fun ThemeBoxEmptyScreen(
-    state: ThemeBoxUiState.Empty,
+    state: ThemeBoxUiState,
     onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
     Column(
@@ -48,15 +48,17 @@ fun ThemeBoxEmptyScreen(
 
         Spacer(Modifier.height(35.dp))
 
-        when (state) {
-            is ThemeBoxUiState.Empty.FTU -> {
+        when (state.themeBoxState) {
+            ThemeBoxState.Empty.FTU -> {
                 CustomStorybook(state.customStorybookList) { id ->
                     onEvent(ThemeBoxUiEvent.OnCustomizedStoryBookClicked(id))
                 }
             }
-            is ThemeBoxUiState.Empty.RU -> {
+            ThemeBoxState.Empty.RU -> {
                 ContinueStorybook(state.continueStorybookList, onEvent)
             }
+
+            else -> Unit
         }
     }
 }

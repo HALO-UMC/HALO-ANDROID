@@ -30,7 +30,7 @@ import com.umc.halo.presentation.theme.Primary500
 
 @Composable
 fun ThemeBoxFilledScreen(
-    state: ThemeBoxUiState.Filled,
+    state: ThemeBoxUiState,
     initialStorybookId: Long? = null,
     onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
