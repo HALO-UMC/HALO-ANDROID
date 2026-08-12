@@ -14,6 +14,8 @@ import com.umc.halo.domain.model.onboarding.OnboardingStatus
 import com.umc.halo.domain.model.onboarding.OnboardingTag
 import com.umc.halo.domain.model.onboarding.OnboardingTags
 import com.umc.halo.domain.repository.onboarding.OnboardingRepository
+import org.json.JSONObject
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class OnboardingRepositoryImpl @Inject constructor(
@@ -25,17 +27,29 @@ class OnboardingRepositoryImpl @Inject constructor(
             .getOrDefault(false)
 
     override suspend fun getStatus(): OnboardingStatus {
-        val response = onboardingApi.getStatus()
+        val response = runCatching {
+            onboardingApi.getStatus()
+        }.getOrElse { throwable ->
+            throw IllegalStateException(throwable.toApiErrorMessage("onboarding status failed"))
+        }
         return response.requireResult("onboarding status").toDomain()
     }
 
     override suspend fun getTags(): OnboardingTags {
-        val response = onboardingApi.getTags()
+        val response = runCatching {
+            onboardingApi.getTags()
+        }.getOrElse { throwable ->
+            throw IllegalStateException(throwable.toApiErrorMessage("onboarding tags failed"))
+        }
         return response.requireResult("onboarding tags").toDomain()
     }
 
     override suspend fun checkNickname(name: String): Boolean {
-        val response = onboardingApi.checkNickname(name)
+        val response = runCatching {
+            onboardingApi.checkNickname(name)
+        }.getOrElse { throwable ->
+            throw IllegalStateException(throwable.toApiErrorMessage("nickname check failed"))
+        }
         return response.requireResult("nickname check").isAvailable
     }
 
@@ -85,18 +99,54 @@ class OnboardingRepositoryImpl @Inject constructor(
         )
 
     private suspend fun save(request: OnboardingSaveRequest): OnboardingSaveResult {
-        val response = onboardingApi.saveOnboarding(request)
+        val response = runCatching {
+            onboardingApi.saveOnboarding(request)
+        }.getOrElse { throwable ->
+            throw IllegalStateException(throwable.toApiErrorMessage("onboarding save failed"))
+        }
         return response.requireResult("onboarding save").toDomain()
     }
 
     private fun <T> BaseResponse<T>.requireResult(label: String): T {
         if (!isSuccess || result == null) {
-            error("$label failed: code=$code, message=$message")
+            error(toApiErrorMessage("$label failed"))
         }
 
         return result
     }
 }
+
+private fun Throwable.toApiErrorMessage(defaultMessage: String): String =
+    if (this is HttpException) {
+        response()
+            ?.errorBody()
+            ?.string()
+            ?.extractApiErrorMessage()
+            ?: defaultMessage
+    } else {
+        message?.takeIf { it.isNotBlank() } ?: defaultMessage
+    }
+
+private fun BaseResponse<*>.toApiErrorMessage(defaultMessage: String): String =
+    message.takeIf { it.isNotBlank() } ?: defaultMessage
+
+private fun String.extractApiErrorMessage(): String? =
+    runCatching {
+        val json = JSONObject(this)
+        val result = json.opt("result")
+        when (result) {
+            is JSONObject -> {
+                val keys = result.keys()
+                if (keys.hasNext()) {
+                    result.optString(keys.next()).takeIf { it.isNotBlank() }
+                } else {
+                    null
+                }
+            }
+            is String -> result.takeIf { it.isNotBlank() }
+            else -> null
+        } ?: json.optString("message").takeIf { it.isNotBlank() }
+    }.getOrNull()
 
 private fun OnboardingTagsResponse.toDomain() = OnboardingTags(
     parentPersonalityTags = parentPersonalityTags.map { it.toDomain() },
