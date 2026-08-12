@@ -140,7 +140,7 @@ private fun ChapterQuestionHeader(
             color = QuestionTitleColor
         )
 
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         Text(
             text = "정답 없이, 떠오르는 장면과 마음을 편하게 남겨요.",

@@ -128,7 +128,7 @@ fun GoalStep(
                     color = Gray800
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
                     text = "해당하는 항목을 선택해주세요.",

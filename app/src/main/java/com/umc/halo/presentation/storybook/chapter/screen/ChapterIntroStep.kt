@@ -78,7 +78,7 @@ fun ChapterIntroStep(
                     .fillMaxSize()
                     .padding(
                         start = 24.dp,
-                        top = 72.dp,
+                        top = 30.dp,
                         end = 24.dp,
                         bottom = 100.dp
                     )

@@ -35,16 +35,21 @@ import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloTheme
 import com.umc.halo.presentation.theme.HaloType
 
-private const val TopSpaceWeight = 2.25f
-private const val CharacterToButtonWeight = 1f
+/**
+ * 재로그인 화면 세로 여백
+ */
+private const val TopSpaceWeight = 153.05f         // 상태바 아래 ~ 문구
+private const val TextToCharacterWeight = 40f      // 문구 ~ 캐릭터
+private const val CharacterToButtonWeight = 68.1f  // 캐릭터 ~ 카카오 버튼(배지가 있으면 배지)
+private const val ButtonToNoticeWeight = 36f       // 구글 버튼 ~ 약관 문구
 
-private val TitleToCharacterSpacing = 40.dp
+private val TextLineSpacing = 4.dp                 // 문구 두 줄 사이 (고정)
+private val BadgeToButtonSpacing = 6.dp            // '최근 로그인' 배지 ~ 버튼 (고정)
+private val ButtonSpacing = 12.dp                  // 카카오 ~ 구글 버튼 (고정)
+private val BottomSpacing = 53.dp                  // 약관 문구 ~ 네비게이션바 (고정, 시스템바 안전 여백)
+
 private val CharacterWidth = 132.4.dp
 private val CharacterHeight = 153.9.dp
-private val BadgeToButtonSpacing = 6.dp
-private val ButtonSpacing = 12.dp
-private val ButtonToNoticeSpacing = 36.dp
-private val BottomSpacing = 53.dp
 
 /**
  * 재로그인 화면 진입점
@@ -108,21 +113,25 @@ fun ReloginScreen(
 
             Text(
                 text = "다시 돌아온 걸 환영해요!",
-                style = HaloType.body02Medium,
+                style = HaloType.body02Medium.copy(letterSpacing = Tracking1Percent),
                 color = Gray800,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(TextLineSpacing))
 
             Text(
                 text = "HALO 다시 시작해볼까요?",
-                style = HaloType.heading01Regular.copy(fontWeight = FontWeight.Medium),
+                style = HaloType.heading01Regular.copy(
+                    fontWeight = FontWeight.Medium,
+                    letterSpacing = Tracking2Percent
+                ),
                 color = Gray800,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(Modifier.height(TitleToCharacterSpacing))
+            // 문구 ~ 캐릭터 여백
+            Spacer(Modifier.weight(TextToCharacterWeight))
 
             // 중앙 HALO 캐릭터
             Image(
@@ -163,11 +172,12 @@ fun ReloginScreen(
                 onClick = onGoogleClick
             )
 
-            Spacer(Modifier.height(ButtonToNoticeSpacing))
+            // 구글 버튼 ~ 약관 문구 여백
+            Spacer(Modifier.weight(ButtonToNoticeWeight))
 
             Text(
                 text = "계속 진행하면 이용약관과 개인정보처리방침에 동의하게 됩니다.",
-                style = HaloType.caption01Medium,
+                style = HaloType.caption01Medium.copy(letterSpacing = Tracking1Percent),
                 color = Gray400,
                 textAlign = TextAlign.Center
             )

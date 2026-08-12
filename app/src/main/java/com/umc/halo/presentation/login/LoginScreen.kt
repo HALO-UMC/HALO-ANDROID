@@ -30,7 +30,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.R
@@ -40,9 +42,25 @@ import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloTheme
 import com.umc.halo.presentation.theme.HaloType
 
-private const val TopSpaceWeight = 3f            // 상태바 아래 ~ 문구
-private const val CharacterToButtonWeight = 1f   // 캐릭터 ~ 카카오 버튼
+/**
+ * 로그인 화면 세로 여백
+ */
+private const val TopSpaceWeight = 169f          // 상태바 아래 ~ 문구
+private const val TextToCharacterWeight = 23.7f  // 문구 ~ 캐릭터
+private const val CharacterToButtonWeight = 30f  // 캐릭터 ~ 카카오 버튼
+private const val ButtonToTermsWeight = 36.25f   // 구글 버튼 ~ 약관 문구
+
+private val TextLineSpacing = 4.dp               // 문구 두 줄 사이 (고정)
+private val ButtonSpacing = 12.dp                // 카카오 ~ 구글 버튼 (고정)
+private val BottomSpacing = 53.dp                // 약관 문구 ~ 네비게이션바 (고정, 시스템바 안전 여백)
+
 private val CharacterOffsetX = 12.dp             // 캐릭터를 중앙에서 오른쪽으로 밀어놓은 값
+
+/**
+ * 로그인·재로그인 화면 자간
+ */
+internal val Tracking1Percent: TextUnit = (-0.01).em   // 문구·버튼·약관·배지
+internal val Tracking2Percent: TextUnit = (-0.02).em   // 제목 (Heading01/200)
 
 /**
  * 로그인 화면 진입점
@@ -105,21 +123,25 @@ fun LoginScreen(
 
         Text(
             text = "가장 가까운 사람을 다시 알아가는 시간",
-            style = HaloType.body02Medium,
+            style = HaloType.body02Medium.copy(letterSpacing = Tracking1Percent),
             color = Gray800,
             textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(TextLineSpacing))
 
         Text(
             text = "HALO 시작해볼까요?",
-            style = HaloType.heading01Regular.copy(fontWeight = FontWeight.Medium),
+            style = HaloType.heading01Regular.copy(
+                fontWeight = FontWeight.Medium,
+                letterSpacing = Tracking2Percent
+            ),
             color = Gray800,
             textAlign = TextAlign.Center
         )
 
-        Spacer(Modifier.height(23.dp))
+        // 문구 ~ 캐릭터 여백
+        Spacer(Modifier.weight(TextToCharacterWeight))
 
         // 중앙 HALO 캐릭터
         Image(
@@ -144,7 +166,7 @@ fun LoginScreen(
             onClick = onKakaoClick
         )
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(ButtonSpacing))
 
         // 구글 로그인 버튼
         SocialLoginButton(
@@ -158,17 +180,18 @@ fun LoginScreen(
             onClick = onGoogleClick
         )
 
-        Spacer(Modifier.height(36.dp))
+        // 구글 버튼 ~ 약관 문구 여백
+        Spacer(Modifier.weight(ButtonToTermsWeight))
 
         Text(
             text = "계속 진행하면 이용약관과 개인정보처리방침에 동의하게 됩니다.",
-            style = HaloType.caption01Medium,
+            style = HaloType.caption01Medium.copy(letterSpacing = Tracking1Percent),
             color = Gray400,
             textAlign = TextAlign.Center
         )
 
         // 네비게이션바 위로 띄우는 여백
-        Spacer(Modifier.height(53.dp))
+        Spacer(Modifier.height(BottomSpacing))
     }
 
         // 로그인 진행 중 표시

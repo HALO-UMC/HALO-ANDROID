@@ -45,7 +45,7 @@ internal fun RecentLoginBadge(modifier: Modifier = Modifier) {
         ) {
             Text(
                 text = "최근 로그인",
-                style = HaloType.body03Regular,
+                style = HaloType.body03Regular.copy(letterSpacing = Tracking1Percent),
                 color = Primary600
             )
         }

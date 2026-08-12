@@ -21,5 +21,7 @@ data class Chapter(
 )
 
 data class StorybookStartResponse(
-    val storybookId: Long
+    val memberStorybookId: Long,
+    val storybookId: Long,
+    val status: String
 )

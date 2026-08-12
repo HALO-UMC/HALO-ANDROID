@@ -104,7 +104,7 @@ fun ChapterSceneCardModal(
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
                         text = "오늘의 이야기와 어울리는 장면카드를 골라주세요.",

@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,17 +27,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.umc.halo.R
 import com.umc.halo.presentation.component.HaloNumberWheelField
 import com.umc.halo.presentation.onboarding.Gender
 import com.umc.halo.presentation.onboarding.OnboardingUiEvent
 import com.umc.halo.presentation.onboarding.OnboardingUiState
 import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
+import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.Gray50
@@ -56,38 +61,21 @@ fun BasicInfoStep(
     }
 
     val currentYear = today.get(Calendar.YEAR)
-    val currentMonth = today.get(Calendar.MONTH) + 1
-    val currentDay = today.get(Calendar.DAY_OF_MONTH)
-
     val yearOptions = remember(currentYear) {
         (currentYear downTo MIN_BIRTH_YEAR).toList()
     }
 
-    val monthOptions = remember(
-        uiState.birthYear,
-        currentYear,
-        currentMonth
-    ) {
-        if (uiState.birthYear == currentYear) {
-            (1..currentMonth).toList()
-        } else {
-            (1..12).toList()
-        }
+    val monthOptions = remember {
+        (1..12).toList()
     }
 
     val maximumDay = remember(
         uiState.birthYear,
-        uiState.birthMonth,
-        currentYear,
-        currentMonth,
-        currentDay
+        uiState.birthMonth
     ) {
         calculateMaximumSelectableDay(
             selectedYear = uiState.birthYear,
-            selectedMonth = uiState.birthMonth,
-            currentYear = currentYear,
-            currentMonth = currentMonth,
-            currentDay = currentDay
+            selectedMonth = uiState.birthMonth
         )
     }
 
@@ -422,16 +410,30 @@ private fun BirthDateWheelField(
             } else {
                 selected.toString()
             }
+        },
+        horizontalPadding = 0.dp,
+        textStyle = HaloType.body01Medium,
+        valueUnitSpacing = 12.dp,
+        unitTrailingSpacing = 11.dp,
+        valueWidth = if (options.any { it >= 1000 }) 44.dp else 30.dp,
+        valueContentAlignment = Alignment.CenterEnd,
+        trailingContent = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_onboarding_birth_wheel_arrow),
+                contentDescription = null,
+                tint = Gray200,
+                modifier = Modifier.size(
+                    width = 10.dp,
+                    height = 16.dp
+                )
+            )
         }
     )
 }
 
 private fun calculateMaximumSelectableDay(
     selectedYear: Int?,
-    selectedMonth: Int?,
-    currentYear: Int,
-    currentMonth: Int,
-    currentDay: Int
+    selectedMonth: Int?
 ): Int {
     if (
         selectedYear == null ||
@@ -440,22 +442,10 @@ private fun calculateMaximumSelectableDay(
         return 31
     }
 
-    val daysInSelectedMonth = daysInMonth(
+    return daysInMonth(
         year = selectedYear,
         month = selectedMonth
     )
-
-    return if (
-        selectedYear == currentYear &&
-        selectedMonth == currentMonth
-    ) {
-        minOf(
-            daysInSelectedMonth,
-            currentDay
-        )
-    } else {
-        daysInSelectedMonth
-    }
 }
 
 private fun daysInMonth(

@@ -432,9 +432,11 @@ class MyPageViewModel @Inject constructor(
             updateState { copy(isProcessingAccountAction = true) }
 
 
-            // 로그 아웃시 토큰 삭제
-            val uuid = deviceUuidDataStore.getOrCreate()
-            notificationRepository.deleteMembers(uuid)
+            // FCM 기기 등록 해제
+            runCatching {
+                val uuid = deviceUuidDataStore.getOrCreate()
+                notificationRepository.deleteMembers(uuid)
+            }
 
             // 서버 호출이 실패해도 로컬 토큰은 지워짐 (AuthRepository.logout 참고)
             authRepository.logout()

@@ -58,7 +58,15 @@ private fun isValidBirthDate(
         else -> return false
     }
 
-    return day in 1..maxDay
+    if (day !in 1..maxDay) return false
+
+    val today = Calendar.getInstance()
+    val selectedDate = Calendar.getInstance().apply {
+        clear()
+        set(year, month - 1, day)
+    }
+
+    return !selectedDate.after(today)
 }
 
 enum class Gender(
