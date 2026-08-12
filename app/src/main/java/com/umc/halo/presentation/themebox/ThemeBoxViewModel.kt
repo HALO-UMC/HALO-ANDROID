@@ -50,7 +50,7 @@ class ThemeBoxViewModel @Inject constructor(
                     updateState {
                         copy(
                             themeBoxState = if (themeBox.numberOfCharacter == 0) {
-                                if (themeBox.storyBookInProgress == 0) {
+                                if (themeBox.continueStorybookList.isEmpty()) {
                                     ThemeBoxState.Empty.FTU
                                 } else {
                                     ThemeBoxState.Empty.RU

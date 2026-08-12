@@ -24,8 +24,11 @@ import androidx.compose.ui.unit.dp
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray30
 import com.umc.halo.presentation.theme.Gray600
+import com.umc.halo.presentation.theme.Gray700
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary30
+import com.umc.halo.presentation.theme.Primary50
+import com.umc.halo.presentation.theme.Primary600
 
 @Composable
 fun BackGroundMusicPlayer(
@@ -44,7 +47,7 @@ fun BackGroundMusicPlayer(
                 color = Color.Transparent,
                 shape = RoundedCornerShape(16.dp)
             )
-            .background(if (isPlaying) Primary30 else Gray30)
+            .background(if (isPlaying) Primary50 else Gray30)
             .padding(
                 horizontal = 18.dp,
                 vertical = 17.dp
@@ -54,7 +57,7 @@ fun BackGroundMusicPlayer(
         Text(
             text = title,
             style = HaloType.body02Medium,
-            color = Gray600
+            color = if (isPlaying) Primary600 else Gray700
         )
 
         Spacer(Modifier.weight(1f))
@@ -74,6 +77,7 @@ fun BackGroundMusicPlayer(
                         R.drawable.ic_home_bgmplayer_play
                     }
                 ),
+                tint = if (isPlaying) Primary600 else Gray700,
                 contentDescription = if (isPlaying) "bgm_pause" else "bgm_play"
             )
         }

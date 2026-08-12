@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.mypage
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.umc.halo.core.audio.BgmPlaybackManager
 import com.umc.halo.core.datastore.DeviceUuidDataStore
@@ -190,19 +191,27 @@ class MyPageViewModel @Inject constructor(
     }
 
     suspend fun offAllNotification() {
-        settingsRepository.updateNotificationSettings(
-            currentState.toNotificationSettings().copy(
-                isAllNotificationEnabled = false
+        runCatching {
+            settingsRepository.updateNotificationSettings(
+                currentState.toNotificationSettings().copy(
+                    isAllNotificationEnabled = false
+                )
             )
-        )
+        }.onFailure { throwable ->
+            Log.e("Notification", "전체 알림 끄기 실패", throwable)
+        }
     }
 
     suspend fun onAllNotification() {
-        settingsRepository.updateNotificationSettings(
-            currentState.toNotificationSettings().copy(
-                isAllNotificationEnabled = true
+        runCatching {
+            settingsRepository.updateNotificationSettings(
+                currentState.toNotificationSettings().copy(
+                    isAllNotificationEnabled = true
+                )
             )
-        )
+        }.onFailure { throwable ->
+            Log.e("Notification", "전체 알림 켜기 실패", throwable)
+        }
     }
 
     suspend fun onNotificationPermissionChanged(granted: Boolean) {

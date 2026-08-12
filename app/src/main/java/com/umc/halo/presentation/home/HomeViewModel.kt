@@ -15,6 +15,7 @@ import com.umc.halo.domain.repository.member.MemberRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import com.umc.halo.presentation.component.storybookSpineOf
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -31,12 +32,15 @@ class HomeViewModel @Inject constructor(
     private val memberRepository: MemberRepository
 ): BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
     val bgmState = bgmPlaybackManager.state
+    private var loadJob: Job? = null
 
     override fun onEvent(event: HomeUiEvent) {
         when (event) {
             is HomeUiEvent.OnBookClicked -> {
                 selectedStorybook(event.storyBookId)
             }
+
+            HomeUiEvent.OnScreenShown, HomeUiEvent.OnRetryClicked -> loadHome()
 
             HomeUiEvent.ErrorShown -> updateState { copy(errorMessage = null) }
 
@@ -45,7 +49,8 @@ class HomeViewModel @Inject constructor(
     }
 
     fun loadHome() {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             val isFirstLoad = currentState.bookShelf.isEmpty()
             updateState { copy(isLoading = isFirstLoad, errorMessage = null) }
 
@@ -63,20 +68,22 @@ class HomeViewModel @Inject constructor(
                 updateState {
                     copy(
                         userInfo = UserInfo(home.memberName, true),
-                        userState = if (home.homeStatus == HomeStatus.NO_STORYBOOK) {
+                        userState = if (!home.customStorybookList.isEmpty()) {
                             UserState.FTU
                         } else {
                             UserState.RU
                         },
                         bookShelf = home.bookShelfList,
                         customStorybookList = home.customStorybookList,
-                        continueStorybookList = home.continueStorybookList
+                        continueStorybookList = home.continueStorybookList,
+                        hasLoadFailed = false
                     )
                 }
             }.onFailure {
                 updateState {
                     copy(
-                        errorMessage = LOAD_FAILED_MESSAGE
+                        errorMessage = LOAD_FAILED_MESSAGE,
+                        hasLoadFailed = bookShelf.isEmpty()
                     )
                 }
             }

@@ -8,8 +8,10 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +20,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,8 +30,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -38,25 +44,31 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.lottiefiles.dotlottie.core.compose.runtime.DotLottieController
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
 import com.lottiefiles.dotlottie.core.util.DotLottieSource
+import com.umc.halo.R
 import com.umc.halo.core.audio.BgmPlaybackState
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.home.actionguide.ActionGuide
 import com.umc.halo.presentation.home.bookcase.BookCase
 import com.umc.halo.presentation.component.CustomStorybook
+import com.umc.halo.presentation.component.HaloLoadFailed
+import com.umc.halo.presentation.component.HaloLoading
 import com.umc.halo.presentation.storybook.list.StorybookUiEvent
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary30
+import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary500
+import com.umc.halo.presentation.theme.Primary600
 import java.util.UUID
 
 @Composable
 fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToStorybook: (Long) -> Unit
+    onNavigateToStorybook: (Long) -> Unit,
+    onNavigateToThemeBox: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         //화면 불러오기
-        viewModel.loadHome()
+        viewModel.onEvent(HomeUiEvent.OnScreenShown)
     }
 
 
@@ -76,14 +88,6 @@ fun HomeRoute(
         onBgmClick = viewModel::onBgmPlayerClicked,
         onEvent = { event ->
             when (event) {
-                is HomeUiEvent.OnBookClicked -> {
-                    viewModel.onEvent(event)
-                }
-
-                is HomeUiEvent.ErrorShown -> {
-                    viewModel.onEvent(event)
-                }
-
                 is HomeUiEvent.OnCustomizedStoryBookClicked -> {
                     onNavigateToStorybook(event.storyBookId)
                 }
@@ -95,6 +99,12 @@ fun HomeRoute(
                 is HomeUiEvent.OnStartStorybookClicked -> {
                     onNavigateToStorybook(event.storyBookId)
                 }
+
+                HomeUiEvent.OnThemeBoxClicked -> {
+                    onNavigateToThemeBox()
+                }
+
+                else -> viewModel.onEvent(event)
             }
         }
     )
@@ -107,20 +117,33 @@ fun HomeScreen(
     onBgmClick: () -> Unit,
     onEvent: (HomeUiEvent) -> Unit
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        LazyColumn(
-            Modifier
-                .fillMaxSize()
-        ) {
-            item {
-                HomeScreenContents(
-                    state = state,
-                    bgmState = bgmState,
-                    onBgmClick = onBgmClick,
-                    onEvent = onEvent
-                )
+    when {
+        state.isLoading -> HaloLoading()
+
+        state.hasLoadFailed -> HaloLoadFailed(
+            text = "홈화면",
+            onRetry = {
+                onEvent(HomeUiEvent.OnRetryClicked)
+            }
+        )
+
+        else -> {
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                LazyColumn(
+                    Modifier
+                        .fillMaxSize()
+                ) {
+                    item {
+                        HomeScreenContents(
+                            state = state,
+                            bgmState = bgmState,
+                            onBgmClick = onBgmClick,
+                            onEvent = onEvent
+                        )
+                    }
+                }
             }
         }
     }
@@ -214,16 +237,49 @@ fun HomeScreenContents(
             }
 
             is UserState.RU -> {
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .background(Primary30)
-                        .padding(vertical = 23.dp)
-                ) {
-                    if (state.startStorybook != null) {
-                        StartStorybook(state.startStorybook, onEvent)
-                    } else {
-                        ContinueStorybookHome(state.continueStorybookList, onEvent)
+                if (state.continueStorybookList.isEmpty()) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 17.dp)
+                            .padding(horizontal = 24.dp)
+                            .height(36.dp)
+                            .clip(RoundedCornerShape(24.dp))
+                            .background(Primary50)
+                            .clickable {
+                                onEvent(HomeUiEvent.OnThemeBoxClicked)
+                            }
+                    ) {
+                        Row(
+                            Modifier
+                                .align(Alignment.Center)
+                        ) {
+                            Text(
+                                text = "테마함 확인하러 가기",
+                                style = HaloType.body02Medium,
+                                color = Primary600
+                            )
+
+                            Icon(
+                                painter = painterResource(R.drawable.ic_home_right_arrow),
+                                contentDescription = null,
+                                tint = Primary600
+                            )
+
+                        }
+                    }
+                } else {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(Primary30)
+                            .padding(vertical = 23.dp)
+                    ) {
+                        if (state.startStorybook != null) {
+                            StartStorybook(state.startStorybook, onEvent)
+                        } else {
+                            ContinueStorybookHome(state.continueStorybookList, onEvent)
+                        }
                     }
                 }
 

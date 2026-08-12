@@ -12,6 +12,7 @@ import com.umc.halo.domain.repository.notification.NotificationRepository
 import com.umc.halo.domain.usecase.auth.ResolveDestinationAfterLoginUseCase
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -89,17 +90,24 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    /**
-     * FCM 기기 등록 — 이 기기의 UUID 와 현재 푸시 토큰을 한 쌍으로 서버에 저장
-     *
-     * 로그인 본체와 달리 이 함수는 별도 코루틴이라 여기서 예외가 새면 로그인 성공 직후 앱이 종료되므로 반드시 가듐
-     */
-    private fun registerFCMToken() = viewModelScope.launch {
-        runCatching {
-            val uuid = deviceUuidDataStore.getOrCreate()
-            val token = notificationRepository.getFcmToken()
+    private suspend fun registerFCMToken() {
+        repeat(3) { attempt ->
+            runCatching {
+                val uuid = deviceUuidDataStore.getOrCreate()
+                val token = notificationRepository.getFcmToken()
 
-            notificationRepository.addMembers(token, uuid)
+                notificationRepository.addMembers(token, uuid)
+            }.onSuccess {
+                return
+            }.onFailure {
+                Log.e(
+                    "FCM",
+                    "${attempt + 1}번째 실패",
+                    it
+                )
+
+                delay(1000)
+            }
         }
     }
 

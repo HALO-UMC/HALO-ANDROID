@@ -34,7 +34,10 @@ class HaloFirebaseMessagingService: FirebaseMessagingService() {
             runCatching {
                 val uuid = deviceUuidDataStore.getOrCreate()
 
+            runCatching {
                 notificationRepository.addMembers(token, uuid)
+            }.onFailure {
+                Log.e("notification","FCM 갱신 실패(onNewToken)")
             }
         }
     }
