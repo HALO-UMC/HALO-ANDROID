@@ -31,8 +31,7 @@ class HaloFirebaseMessagingService: FirebaseMessagingService() {
 
         // 등록 실패해도 앱이 죽지 않게 에외처리 — 이 코루틴은 화면과 무관한 백그라운드에서
         CoroutineScope(Dispatchers.IO).launch {
-            runCatching {
-                val uuid = deviceUuidDataStore.getOrCreate()
+            val uuid = deviceUuidDataStore.getOrCreate()
 
             runCatching {
                 notificationRepository.addMembers(token, uuid)

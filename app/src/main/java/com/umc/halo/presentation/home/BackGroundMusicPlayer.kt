@@ -40,7 +40,7 @@ fun BackGroundMusicPlayer(
         Modifier
             .padding(horizontal = 24.dp)
             .fillMaxWidth()
-            .aspectRatio(52f / 9f)
+            .aspectRatio(52f / 7f)
             .clip(RoundedCornerShape(16.dp))
             .border(
                 width = 0.dp,

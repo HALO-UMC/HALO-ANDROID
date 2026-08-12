@@ -237,46 +237,47 @@ fun HomeScreenContents(
             }
 
             is UserState.RU -> {
-                if (state.continueStorybookList.isEmpty()) {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(top = 17.dp)
-                            .padding(horizontal = 24.dp)
-                            .height(36.dp)
-                            .clip(RoundedCornerShape(24.dp))
-                            .background(Primary50)
-                            .clickable {
-                                onEvent(HomeUiEvent.OnThemeBoxClicked)
+
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .background(Primary30)
+                        .padding(vertical = 23.dp)
+                ) {
+                    if (state.startStorybook != null) {
+                        StartStorybook(state.startStorybook, onEvent)
+                    } else {
+                        if (state.continueStorybookList.isEmpty()) {
+                            Box(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 17.dp)
+                                    .padding(horizontal = 24.dp)
+                                    .height(36.dp)
+                                    .clip(RoundedCornerShape(24.dp))
+                                    .background(Primary50)
+                                    .clickable {
+                                        onEvent(HomeUiEvent.OnThemeBoxClicked)
+                                    }
+                            ) {
+                                Row(
+                                    Modifier
+                                        .align(Alignment.Center)
+                                ) {
+                                    Text(
+                                        text = "테마함 확인하러 가기",
+                                        style = HaloType.body02Medium,
+                                        color = Primary600
+                                    )
+
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_home_right_arrow),
+                                        contentDescription = null,
+                                        tint = Primary600
+                                    )
+
+                                }
                             }
-                    ) {
-                        Row(
-                            Modifier
-                                .align(Alignment.Center)
-                        ) {
-                            Text(
-                                text = "테마함 확인하러 가기",
-                                style = HaloType.body02Medium,
-                                color = Primary600
-                            )
-
-                            Icon(
-                                painter = painterResource(R.drawable.ic_home_right_arrow),
-                                contentDescription = null,
-                                tint = Primary600
-                            )
-
-                        }
-                    }
-                } else {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .background(Primary30)
-                            .padding(vertical = 23.dp)
-                    ) {
-                        if (state.startStorybook != null) {
-                            StartStorybook(state.startStorybook, onEvent)
                         } else {
                             ContinueStorybookHome(state.continueStorybookList, onEvent)
                         }

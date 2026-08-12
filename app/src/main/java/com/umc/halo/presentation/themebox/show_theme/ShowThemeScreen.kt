@@ -52,7 +52,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ShowThemeRoute(
     vm: ShowThemeViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit
+    onNavigateBack: (Long?) -> Unit
 ) {
     LaunchedEffect(Unit) {
         vm.getThemeExhibition()
@@ -69,7 +69,7 @@ fun ShowThemeRoute(
 
                 is ShowThemeUiEvent.UpdateProgress -> vm.onEvent(event)
 
-                ShowThemeUiEvent.OnClickBackArrow -> onNavigateBack()
+                ShowThemeUiEvent.OnClickBackArrow -> onNavigateBack(state.storybookId)
             }
         }
     )
