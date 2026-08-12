@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +22,7 @@ import com.umc.halo.R
 import com.umc.halo.presentation.mypage.component.MyPageContainer
 import com.umc.halo.presentation.mypage.component.MyPageTopBar
 import com.umc.halo.presentation.mypage.component.SectionTitle
-import com.umc.halo.presentation.theme.Black
+import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.HaloType
 
@@ -41,34 +42,39 @@ fun TermsScreen(
     MyPageContainer(modifier = modifier) {
         MyPageTopBar(title = "이용 약관", onBack = onBack)
 
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(horizontal = 24.dp)
-                .padding(top = 36.dp)
+                .padding(top = 36.dp, bottom = 24.dp)
         ) {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                SectionTitle("세부 약관")
+                Spacer(Modifier.height(18.dp))
+                listOf(
+                    "서비스 이용약관",
+                    "개인정보 처리방침",
+                    "콘텐츠 보관 및 활용 안내",
+                    "마케팅 정보 수신 동의"
+                ).forEachIndexed { index, title ->
+                    TermsAgreementRow(
+                        title = title,
+                        onClick = { uriHandler.openUri(termsLinks[index]) }
+                    )
+                    if (index != 3) {
+                        Spacer(Modifier.height(12.dp))
+                    }
+                }
+            }
+
             Text(
                 text = "최종 업데이트 | 26. 06.26",
                 style = HaloType.body03Regular,
-                color = Black
+                color = Gray300,
+                modifier = Modifier.align(Alignment.BottomEnd)
             )
-            Spacer(Modifier.height(28.dp))
-            SectionTitle("세부 약관")
-            Spacer(Modifier.height(18.dp))
-            listOf(
-                "서비스 이용약관",
-                "개인정보 처리방침",
-                "콘텐츠 보관 및 활용 안내",
-                "마케팅 정보 수신 동의"
-            ).forEachIndexed { index, title ->
-                TermsAgreementRow(
-                    title = title,
-                    onClick = { uriHandler.openUri(termsLinks[index]) }
-                )
-                if (index != 3) {
-                    Spacer(Modifier.height(12.dp))
-                }
-            }
         }
     }
 }

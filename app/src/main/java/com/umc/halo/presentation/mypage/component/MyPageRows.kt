@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.umc.halo.R
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray300
@@ -309,12 +310,12 @@ fun WarningLine(text: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = text,
-            style = HaloType.body01Regular,
+            style = HaloType.body01Regular.copy(fontSize = 18.sp),
             color = Gray500
         )
     }
