@@ -1,6 +1,7 @@
 package com.umc.halo.data.repository.storybook
 
 import com.umc.halo.data.remote.api.storybook.StorybookDetailApi
+import com.umc.halo.core.network.BaseResponse
 import com.umc.halo.data.remote.dto.response.storybook.StorybookDetailResponse
 import com.umc.halo.data.remote.dto.response.storybook.StorybookStartResponse
 import com.umc.halo.domain.model.storybook.StoryBookIndex
@@ -19,15 +20,23 @@ class StorybookDetailRepositoryImpl @Inject constructor(
     override suspend fun getStorybookDetail(storybookId: Long): StorybookDetailResult {
         val response = storybookDetailApi.getStorybookDetail(storybookId)
 
+        if (!response.isSuccess) {
+            error(response.toApiErrorMessage("스토리북 상세 페이지를 불러오지 못했어요."))
+        }
+
         return response.result?.toDomain()
-            ?: throw IllegalStateException("storybook data is null")
+            ?: throw IllegalStateException("스토리북 상세 페이지를 불러오지 못했어요.")
     }
 
     override suspend fun startStorybook(storybookId: Long): StorybookStartResponse {
         val response = storybookDetailApi.startStorybook(storybookId)
 
+        if (!response.isSuccess) {
+            error(response.toApiErrorMessage("스토리북을 시작하지 못했어요."))
+        }
+
         return response.result
-            ?: throw IllegalStateException("storybook is not started")
+            ?: throw IllegalStateException("스토리북을 시작하지 못했어요.")
     }
 }
 
@@ -70,4 +79,7 @@ private fun completeStatusStringIntoBoolean(status: String): Boolean {
         StorybookIndexStatus.TODAY -> false
     }
 }
+
+private fun BaseResponse<*>.toApiErrorMessage(defaultMessage: String): String =
+    message.takeIf { it.isNotBlank() } ?: defaultMessage
 
