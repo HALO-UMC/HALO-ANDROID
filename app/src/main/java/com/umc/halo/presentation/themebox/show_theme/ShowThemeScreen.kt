@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.themebox.show_theme
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -34,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,6 +46,7 @@ import com.umc.halo.presentation.theme.Black
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.White
+import com.umc.halo.presentation.themebox.ThemeBoxUiEvent
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -59,17 +62,22 @@ fun ShowThemeRoute(
     }
 
     val state by vm.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(state.errorMessage) {
+        val message = state.errorMessage ?: return@LaunchedEffect
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        vm.onEvent(ShowThemeUiEvent.ErrorShown)
+        vm.onEvent(ShowThemeUiEvent.OnClickBackArrow)
+    }
 
     ShowThemeScreen(
         state = state,
         onEvent = { event ->
             when (event) {
-                ShowThemeUiEvent.PreviousPage,ShowThemeUiEvent.NextPage,
-                     ShowThemeUiEvent.ResumePage, ShowThemeUiEvent.StopPage, -> vm.onEvent(event)
-
-                is ShowThemeUiEvent.UpdateProgress -> vm.onEvent(event)
-
                 ShowThemeUiEvent.OnClickBackArrow -> onNavigateBack(state.storybookId)
+
+                else -> vm.onEvent(event)
             }
         }
     )
@@ -112,7 +120,7 @@ fun ShowThemeScreen(
             delay(50)
         }
 
-        if (state.currentPage == 10) {
+        if (state.currentPage == 9) {
             onEvent(ShowThemeUiEvent.OnClickBackArrow)
         } else {
             onEvent(ShowThemeUiEvent.NextPage)

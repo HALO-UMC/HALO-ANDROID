@@ -103,6 +103,7 @@ fun CarouselPager(
             val cardHeight = maxHeight * 0.84f
 
             Column(
+                Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Card(

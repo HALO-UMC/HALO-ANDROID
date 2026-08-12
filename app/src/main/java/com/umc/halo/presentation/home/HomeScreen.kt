@@ -182,7 +182,19 @@ fun HomeScreenContents(
                 ) {
                     append("${state.userInfo.name} ")
                 }
-                append("안녕하세요!,\n스토리북 작성을 시작해보세요!")
+
+                append("안녕하세요!,\n")
+
+                append(
+                    if (
+                        state.continueStorybookList.isEmpty() &&
+                        state.customStorybookList.isEmpty()
+                    ) {
+                        "모든 테마를 완료하셨네요!"
+                    } else {
+                        "스토리북 작성을 시작해보세요!"
+                    }
+                )
             },
             style = HaloType.heading03Medium,
             modifier = Modifier.padding(horizontal = 24.dp),
@@ -237,48 +249,47 @@ fun HomeScreenContents(
             }
 
             is UserState.RU -> {
-
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .background(Primary30)
-                        .padding(vertical = 23.dp)
-                ) {
-                    if (state.startStorybook != null) {
-                        StartStorybook(state.startStorybook, onEvent)
-                    } else {
-                        if (state.continueStorybookList.isEmpty()) {
-                            Box(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 17.dp)
-                                    .padding(horizontal = 24.dp)
-                                    .height(36.dp)
-                                    .clip(RoundedCornerShape(24.dp))
-                                    .background(Primary50)
-                                    .clickable {
-                                        onEvent(HomeUiEvent.OnThemeBoxClicked)
-                                    }
-                            ) {
-                                Row(
-                                    Modifier
-                                        .align(Alignment.Center)
-                                ) {
-                                    Text(
-                                        text = "테마함 확인하러 가기",
-                                        style = HaloType.body02Medium,
-                                        color = Primary600
-                                    )
-
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_home_right_arrow),
-                                        contentDescription = null,
-                                        tint = Primary600
-                                    )
-
+                if (state.startStorybook != null) {
+                    StartStorybook(state.startStorybook, onEvent)
+                } else {
+                    if (state.continueStorybookList.isEmpty()) {
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(top = 23.dp)
+                                .padding(horizontal = 24.dp)
+                                .height(36.dp)
+                                .clip(RoundedCornerShape(24.dp))
+                                .background(Primary50)
+                                .clickable {
+                                    onEvent(HomeUiEvent.OnThemeBoxClicked)
                                 }
+                        ) {
+                            Row(
+                                Modifier
+                                    .align(Alignment.Center)
+                            ) {
+                                Text(
+                                    text = "테마함 확인하러 가기",
+                                    style = HaloType.body02Medium,
+                                    color = Primary600
+                                )
+
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_home_right_arrow),
+                                    contentDescription = null,
+                                    tint = Primary600
+                                )
+
                             }
-                        } else {
+                        }
+                    } else {
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .background(Primary30)
+                                .padding(vertical = 23.dp)
+                        ) {
                             ContinueStorybookHome(state.continueStorybookList, onEvent)
                         }
                     }

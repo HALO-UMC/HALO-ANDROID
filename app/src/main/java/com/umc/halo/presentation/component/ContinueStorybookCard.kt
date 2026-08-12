@@ -80,7 +80,7 @@ fun ContinueStorybookCard(
 
                 Text(
                     text = "오늘 ${item.currentChapterOrder}장까지 완료할 수 있어요!",
-                    style = HaloType.caption01Regular,
+                    style = HaloType.body03Medium,
                     color = Gray500
                 )
             }

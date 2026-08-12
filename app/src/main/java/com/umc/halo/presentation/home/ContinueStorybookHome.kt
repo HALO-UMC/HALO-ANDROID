@@ -124,6 +124,8 @@ fun ContinueStorybookHome(
 fun PageIndicator(
     pagerState: PagerState
 ) {
+    if (pagerState.pageCount <= 1) return
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(
