@@ -21,7 +21,7 @@ interface TermsApi {
     @GET("api/v1/terms/agreements")
     suspend fun getTermsAgreed(): BaseResponse<TermsAgreedResponse>
 
-    // 약관 동의 저장. 필수 약관이 하나라도 빠지면 서버가 TERMS400_1 로 reject
+    // 약관 동의 저장. 필수 약관이 하나라도 빠지면 서버가 TERM400_1 로 reject
     @POST("api/v1/terms/agreements")
     suspend fun agreeTerms(@Body request: TermsAgreementRequest): BaseResponse<Unit>
 }
