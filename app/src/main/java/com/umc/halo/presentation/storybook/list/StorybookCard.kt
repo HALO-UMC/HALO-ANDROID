@@ -2,6 +2,7 @@ package com.umc.halo.presentation.storybook.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -44,10 +45,10 @@ private val CardCornerRadius = 8.dp
 private const val CoverWeight = 119f                 // 커버 : 라벨 높이 비율 = 119 : 66
 private const val LabelWeight = 66f
 private val LabelPaddingHorizontal = 12.dp
-private val LabelPaddingVertical = 13.dp
 private val CoverPlaceholderColor = Gray100          // 커버 로딩 중,로드 실패 시 뒤에 깔리는 배경
-private val CoverDimColor = Color(0x1A000000)        // 커버 위 10% 딤 (책갈피·커버가 묻히지 않게)
-private val WaitingOverlayColor = Color(0x99000000)  // 대기 상태 60% 딤
+private val CoverDimColor = Color.Black.copy(alpha = 0.08f)
+private val WaitingCoverDimColor = Color.Black.copy(alpha = 0.10f)
+private val WaitingOverlayColor = Color.Black.copy(alpha = 0.60f)
 private val WaitingTextSize = 13.5.sp                // 대기 안내 문구
 
 // 책갈피(배지) — 진행중/완료 공통
@@ -124,11 +125,11 @@ fun StorybookCard(
                     )
                 }
 
-                // 커버 위 딤(디자인 10%) — 커버 유무와 상관없이 항상
+                // 커버 위 딤 — 커버 유무와 상관없이 항상
                 Box(
                     modifier = Modifier
                         .matchParentSize()
-                        .background(CoverDimColor)
+                        .background(if (isWaiting) WaitingCoverDimColor else CoverDimColor)
                 )
 
                 if (badge != null && !isWaiting) {
@@ -147,10 +148,8 @@ fun StorybookCard(
                     .fillMaxWidth()
                     .weight(LabelWeight)
                     .background(White)
-                    .padding(
-                        horizontal = LabelPaddingHorizontal,
-                        vertical = LabelPaddingVertical
-                    )
+                    .padding(horizontal = LabelPaddingHorizontal),
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = title,

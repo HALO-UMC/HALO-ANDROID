@@ -99,7 +99,7 @@ fun AccountInfoScreen(
                     contentHorizontalPadding = AccountInfoContentIndent
                 )
                 MenuRow(
-                    title = "로그 아웃",
+                    title = "로그아웃",
                     onClick = {
                         onEvent(MyPageUiEvent.LogoutDialogChanged(true))
                     },

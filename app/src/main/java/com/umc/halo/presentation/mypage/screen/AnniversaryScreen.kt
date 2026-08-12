@@ -176,7 +176,11 @@ private fun AnniversaryListScreen(
                     AnniversarySectionTitle("기념일 관리")
                     Spacer(Modifier.weight(1f))
                     AnniversaryPillButton(
-                        text = if (uiState.isSelectionMode) "삭제" else "선택",
+                        text = when {
+                            !uiState.isSelectionMode -> "선택"
+                            actualSelectedIds.isEmpty() -> "취소"
+                            else -> "삭제"
+                        },
                         active = actualSelectedIds.isNotEmpty(),
                         onClick = {
                             if (uiState.isSelectionMode) {
@@ -221,7 +225,7 @@ private fun AnniversaryListScreen(
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 28.dp, bottom = 60.dp)
+                    .padding(end = 28.dp, bottom = 36.dp)
                     .width(121.dp)
                     .shadow(
                         elevation = 10.dp,
@@ -413,7 +417,7 @@ private fun AnniversaryFormScreen(
                         placeholder = "기록해보세요.",
                         onValueChange = { onEvent(AnniversaryUiEvent.TitleChanged(it)) },
                         maxLength = 20,
-                        showCounter = true
+                        showCounter = false
                     )
                     Spacer(Modifier.height(12.dp))
                     AnniversaryRepeatInputRow(

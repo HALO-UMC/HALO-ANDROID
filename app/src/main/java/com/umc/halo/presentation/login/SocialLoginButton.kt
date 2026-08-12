@@ -80,7 +80,7 @@ internal fun SocialLoginButton(
             }
             Text(
                 text = text,
-                style = HaloType.body01Medium,
+                style = HaloType.body01Medium.copy(letterSpacing = Tracking1Percent),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f)
             )

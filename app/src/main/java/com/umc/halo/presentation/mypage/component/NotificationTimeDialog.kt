@@ -30,6 +30,7 @@ import com.umc.halo.presentation.mypage.MyPageUiEvent
 import com.umc.halo.presentation.mypage.MyPageUiState
 import com.umc.halo.presentation.mypage.formattedNotificationTime
 import com.umc.halo.presentation.theme.Gray100
+import com.umc.halo.presentation.theme.Gray200
 import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.Gray800
@@ -138,7 +139,7 @@ private fun DialogHeader(
                 color = Gray800
             )
             if (showCurrentTime) {
-                Spacer(Modifier.height(2.dp))
+                Spacer(Modifier.height(4.dp))
                 Text(
                     text = "현재 알림 발송 시각 : $timeText",
                     style = HaloType.body03Regular,
@@ -177,7 +178,10 @@ private fun NotificationTimeEditor(
             color = Gray800
         )
         Spacer(Modifier.height(12.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
+        ) {
             TimeWheelBox(
                 selectedValue = hour,
                 values = 0..23,
@@ -253,9 +257,24 @@ private fun TimeWheelBox(
             .height(58.dp),
         valueFormatter = { it.toString().padStart(2, '0') },
         fieldHeight = 58.dp,
+        horizontalPadding = 12.dp,
         cornerRadius = 18.dp,
         usePlaceholder = false,
-        circular = true
+        circular = true,
+        valueUnitSpacing = 4.dp,
+        unitTrailingSpacing = 12.dp,
+        valueWidth = 30.dp,
+        trailingContent = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_onboarding_birth_wheel_arrow),
+                contentDescription = null,
+                tint = Gray200,
+                modifier = Modifier.size(
+                    width = 10.dp,
+                    height = 16.dp
+                )
+            )
+        }
     )
 }
 

@@ -441,7 +441,10 @@ private fun NameRequirementGuide(
 ) {
     val hasInput = uiState.name.isNotEmpty()
 
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
         NameRequirementRow(
             text = "최소 2자 ~ 최대 10자 이내",
             isSatisfied = uiState.isNameLengthValid,

@@ -21,7 +21,7 @@ import com.umc.halo.R
 import com.umc.halo.presentation.mypage.component.MyPageContainer
 import com.umc.halo.presentation.mypage.component.MyPageTopBar
 import com.umc.halo.presentation.mypage.component.SectionTitle
-import com.umc.halo.presentation.theme.Black
+import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray400
 import com.umc.halo.presentation.theme.HaloType
 
@@ -47,12 +47,6 @@ fun TermsScreen(
                 .padding(horizontal = 24.dp)
                 .padding(top = 36.dp)
         ) {
-            Text(
-                text = "최종 업데이트 | 26. 06.26",
-                style = HaloType.body03Regular,
-                color = Black
-            )
-            Spacer(Modifier.height(28.dp))
             SectionTitle("세부 약관")
             Spacer(Modifier.height(18.dp))
             listOf(
@@ -69,6 +63,15 @@ fun TermsScreen(
                     Spacer(Modifier.height(12.dp))
                 }
             }
+
+            Spacer(Modifier.height(12.dp))
+
+            Text(
+                text = "최종 업데이트 | 26. 06.26",
+                style = HaloType.body03Regular,
+                color = Gray300,
+                modifier = Modifier.align(Alignment.End)
+            )
         }
     }
 }

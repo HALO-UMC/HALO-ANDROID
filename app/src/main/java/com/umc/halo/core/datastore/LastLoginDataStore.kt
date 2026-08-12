@@ -3,9 +3,12 @@ package com.umc.halo.core.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 import javax.inject.Inject
 
 /**
@@ -25,8 +28,12 @@ class LastLoginDataStore @Inject constructor(
         }
     }
 
-    /** 저장된 로그인 방식 (한 번도 로그인한 적 없으면 null) */
-    val providerFlow: Flow<String?> = dataStore.data.map { it[LAST_LOGIN_PROVIDER] }
+    /**
+     * 저장된 로그인 방식 (한 번도 로그인한 적 없으면 null)
+     */
+    val providerFlow: Flow<String?> = dataStore.data
+        .catch { e -> if (e is IOException) emit(emptyPreferences()) else throw e }
+        .map { it[LAST_LOGIN_PROVIDER] }
 
     private companion object {
         val LAST_LOGIN_PROVIDER = stringPreferencesKey("last_login_provider")

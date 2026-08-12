@@ -123,12 +123,19 @@ class ChapterRepositoryImpl @Inject constructor(
             error(presignedResponse.toApiErrorMessage("사진 업로드에 실패했어요. 다시 선택해주세요."))
         }
 
-        val request = Request.Builder()
+        val requestBuilder = Request.Builder()
             .url(presigned!!.presignedUrl!!)
             .put(bytes.toRequestBody(contentType.toMediaType()))
             .header("Content-Type", contentType)
             .header("Content-Length", fileSize.toString())
-            .build()
+
+        presigned.requiredHeaders.orEmpty().forEach { (name, value) ->
+            if (name.isNotBlank() && value.isNotBlank()) {
+                requestBuilder.header(name, value)
+            }
+        }
+
+        val request = requestBuilder.build()
 
         s3Client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) {

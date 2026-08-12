@@ -77,6 +77,7 @@ data class CompletedChapterAnswerResponse(
 data class PresignedUrlResponse(
     val presignedUrl: String?,
     val imageKey: String?,
+    val requiredHeaders: Map<String, String>?,
     @SerializedName(value = "expires", alternate = ["expries"])
     val expires: Int?
 )
