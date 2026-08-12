@@ -6,16 +6,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 
-private val CardShadowColor = Color(0xCFECE9E7)
+private val CardShadowColor = Color(0x733F3F3F)
 private val BookShadowColor = Color(0x33999999)
 
 /**
  * Card_shadow
- * box-shadow: 0 0 4px 2px rgba(236, 233, 231, 0.81)
+ * box-shadow: 0 0 8px 4px rgba(63, 63, 63, 0.45)
  */
 fun Modifier.haloCardShadow(shape: Shape): Modifier =
     shadow(
-        elevation = 4.dp,
+        elevation = 6.dp,
         shape = shape,
         clip = false,
         ambientColor = CardShadowColor,
