@@ -63,7 +63,7 @@ class HomeViewModel @Inject constructor(
                 updateState {
                     copy(
                         userInfo = UserInfo(home.memberName, true),
-                        userState = if (home.homeStatus == HomeStatus.NO_STORYBOOK) {
+                        userState = if (home.continueStorybookList.isEmpty()) {
                             UserState.FTU
                         } else {
                             UserState.RU

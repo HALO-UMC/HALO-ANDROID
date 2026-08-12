@@ -12,6 +12,7 @@ import com.umc.halo.domain.repository.notification.NotificationRepository
 import com.umc.halo.domain.usecase.auth.ResolveDestinationAfterLoginUseCase
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -89,11 +90,25 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun registerFCMToken() = viewModelScope.launch {
-        val uuid = deviceUuidDataStore.getOrCreate()
-        val token = notificationRepository.getFcmToken()
+    private suspend fun registerFCMToken() {
+        repeat(3) { attempt ->
+            runCatching {
+                val uuid = deviceUuidDataStore.getOrCreate()
+                val token = notificationRepository.getFcmToken()
 
-        notificationRepository.addMembers(token,uuid)
+                notificationRepository.addMembers(token, uuid)
+            }.onSuccess {
+                return
+            }.onFailure {
+                Log.e(
+                    "FCM",
+                    "${attempt + 1}번째 실패",
+                    it
+                )
+
+                delay(1000)
+            }
+        }
     }
 
     private companion object {

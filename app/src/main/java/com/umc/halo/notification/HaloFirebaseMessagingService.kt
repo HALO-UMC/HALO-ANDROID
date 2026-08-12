@@ -32,7 +32,11 @@ class HaloFirebaseMessagingService: FirebaseMessagingService() {
         CoroutineScope(Dispatchers.IO).launch {
             val uuid = deviceUuidDataStore.getOrCreate()
 
-            notificationRepository.addMembers(token, uuid)
+            runCatching {
+                notificationRepository.addMembers(token, uuid)
+            }.onFailure {
+                Log.e("notification","FCM 갱신 실패(onNewToken)")
+            }
         }
     }
 
