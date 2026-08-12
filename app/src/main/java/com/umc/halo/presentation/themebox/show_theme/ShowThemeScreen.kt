@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,9 +26,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -95,18 +99,24 @@ fun ShowThemeScreen(
         pageCount = { state.chapters.size }
     )
 
+    val currentIsPlaying by rememberUpdatedState(state.isPlaying)
+
     LaunchedEffect(state.currentPage) {
         var progress = 0f
 
         while (progress < 1f) {
-            if (state.isPlaying) {
+            if (currentIsPlaying) {
                 progress += 0.01f
                 onEvent(ShowThemeUiEvent.UpdateProgress(progress))
             }
             delay(50)
         }
 
-        onEvent(ShowThemeUiEvent.NextPage)
+        if (state.currentPage == 10) {
+            onEvent(ShowThemeUiEvent.OnClickBackArrow)
+        } else {
+            onEvent(ShowThemeUiEvent.NextPage)
+        }
     }
 
     val currentPage = state.chapters.getOrNull(state.currentPage) ?: return
@@ -115,28 +125,29 @@ fun ShowThemeScreen(
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(Unit) {
-                detectTapGestures(
-                    onPress = { offset ->
-                        // 1. 누르는 동안 자동 넘김 일시정지
-                        onEvent(ShowThemeUiEvent.StopPage)
+                awaitEachGesture {
+                    val down = awaitFirstDown()
 
-                        // 손을 떼거나 화면 밖으로 이탈할 때까지 대기
-                        try {
-                            awaitRelease()
-                        } finally {
-                            // 2. 손을 떼면 다시 재생
-                            onEvent(ShowThemeUiEvent.ResumePage)
+                    onEvent(ShowThemeUiEvent.StopPage)
+
+                    val up = waitForUpOrCancellation()
+
+                    if (up != null) {
+                        val duration = up.uptimeMillis - down.uptimeMillis
+
+                        if (duration < 200) {
+                            // 짧은 탭
+                            if (down.position.x > size.width / 2f) {
+                                onEvent(ShowThemeUiEvent.NextPage)
+                            } else {
+                                onEvent(ShowThemeUiEvent.PreviousPage)
+                            }
                         }
-                    },
-                    onTap = { offset ->
-                        // 3. 화면 좌/우 반전 영역 터치 판단
-                        if (offset.x > size.width / 2f) {
-                            onEvent(ShowThemeUiEvent.NextPage)
-                        } else {
-                            onEvent(ShowThemeUiEvent.PreviousPage)
-                        }
+
+                        // 짧은 탭이든 길게 누르든 손을 떼면 재생
+                        onEvent(ShowThemeUiEvent.ResumePage)
                     }
-                )
+                }
             }
     ) {
         // 배경 이미지
@@ -154,14 +165,21 @@ fun ShowThemeScreen(
                 .background(Black.copy(alpha = 0.3f))
         )
 
-        ShowThemeTopBar(title = currentPage.title, onEvent = onEvent)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            ShowThemeTopBar(title = currentPage.title, onEvent = onEvent)
+
+            StoryProgressBar(state)
+        }
 
         // 하단 텍스트 콘텐츠
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .padding(horizontal = 36.dp, vertical = 24.dp)
+                .padding(horizontal = 24.dp, vertical = 36.dp)
         ) {
             Text(
                 text = "${currentPage.id}장",
@@ -206,23 +224,21 @@ fun StoryProgressBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(3.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+            .padding(23.dp)
     ) {
-        state.chapters.forEachIndexed { index, _ ->
-
-            LinearProgressIndicator(
-                progress = {
-                    when {
-                        index < state.currentPage -> 1f
-                        index == state.currentPage -> state.progress
-                        else -> 0f
-                    }
-                },
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(0xFFD9D9D9))
+        ) {
+            Box(
                 modifier = Modifier
-                    .weight(1f) ,
-                color = White,
-                trackColor = Gray100
+                    .fillMaxWidth(state.progress)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(White)
             )
         }
     }
