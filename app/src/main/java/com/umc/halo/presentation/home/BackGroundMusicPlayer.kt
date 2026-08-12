@@ -50,7 +50,7 @@ fun BackGroundMusicPlayer(
             .background(if (isPlaying) Primary50 else Gray30)
             .padding(
                 horizontal = 18.dp,
-                vertical = 17.dp
+                vertical = 12.dp
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {

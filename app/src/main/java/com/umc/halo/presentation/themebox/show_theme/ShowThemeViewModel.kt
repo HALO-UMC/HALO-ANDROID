@@ -66,29 +66,41 @@ class ShowThemeViewModel @Inject constructor(
                 }
             }
 
+            ShowThemeUiEvent.ErrorShown ->  updateState { copy(errorMessage = null) }
+
             else -> Unit
         }
     }
 
     fun getThemeExhibition() {
         viewModelScope.launch {
-            val themeExhibition = themeBoxRepository.getThemeExhibition(storybookId)
-
-            updateState {
-                copy(
-                    storybookId = themeExhibition.storybookId,
-                    chapters = themeExhibition.chapters.map {
-                        ThemeExhibitionChapter(
-                            id = it.chapterOrder,
-                            title = it.title,
-                            imageUrl = it.chapterImageUrl,
-                            completedDate = it.completedDate,
-                            summary = it.summary
-                        )
-                    }
-                )
+            updateState { copy(errorMessage = null) }
+            runCatching {
+                themeBoxRepository.getThemeExhibition(storybookId)
+            }.onSuccess { themeExhibition ->
+                updateState {
+                    copy(
+                        storybookId = themeExhibition.storybookId,
+                        chapters = themeExhibition.chapters.map {
+                            ThemeExhibitionChapter(
+                                id = it.chapterOrder,
+                                title = it.title,
+                                imageUrl = it.chapterImageUrl,
+                                completedDate = it.completedDate,
+                                summary = it.summary
+                            )
+                        }
+                    )
+                }
+            }.onFailure {
+                updateState { copy(errorMessage = LOAD_FAILED_MESSAGE) }
             }
         }
+    }
+
+    private companion object {
+        // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
+        const val LOAD_FAILED_MESSAGE = "감상화면을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
     }
 
 }

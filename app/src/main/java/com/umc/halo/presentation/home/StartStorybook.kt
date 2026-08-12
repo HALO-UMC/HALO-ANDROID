@@ -56,7 +56,16 @@ fun StartStorybook(
             .padding(horizontal = 24.dp)
     ) {
         Text(
-            text = if (item.currentProgress == 10 && item.isCompleted) "이야기가 완성되었어요!" else "${item.currentProgress}장을 바로 시작해보세요!",
+            text = when {
+                item.currentProgress == 10 && item.isCompleted ->
+                    "이야기가 완성되었어요!"
+
+                item.currentProgress == 0 ->
+                    "1장을 바로 시작해보세요!"
+
+                else ->
+                    "${item.currentProgress}장을 바로 시작해보세요!"
+            },
             style = HaloType.body01SemiBold,
             color = Color(0xFF3C3A35)
         )
@@ -185,7 +194,7 @@ fun StartStorybookContents(
 
             Text(
                 text = if (item.currentProgress == 10 && item.isCompleted) "모든 페이지를 완성했어요!" else if (item.isFirst) item.subtitle else "오늘 ${item.currentProgress}장까지 완료할 수 있어요!",
-                style = HaloType.caption01Regular,
+                style = HaloType.body03Medium,
                 color = Gray500
             )
 
