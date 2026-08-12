@@ -1,5 +1,6 @@
 package com.umc.halo.data.repository.anniversary
 
+import com.umc.halo.core.network.BaseResponse
 import com.umc.halo.data.remote.api.anniversary.AnniversaryApi
 import com.umc.halo.data.remote.dto.request.anniversary.AnniversarySaveRequest
 import com.umc.halo.data.remote.dto.response.anniversary.AnniversaryListResponse
@@ -17,10 +18,16 @@ class AnniversaryRepositoryImpl @Inject constructor(
     private val anniversaryApi: AnniversaryApi
 ) : AnniversaryRepository {
     override suspend fun getAnniversaries(): AnniversaryOverview {
-        val response = anniversaryApi.getAnniversaries()
+        val response = runCatching {
+            anniversaryApi.getAnniversaries()
+        }.getOrElse { throwable ->
+            throw IllegalStateException(
+                throwable.toApiErrorMessage("기념일 정보를 불러오지 못했어요.")
+            )
+        }
         val result = response.result
         if (!response.isSuccess || result == null) {
-            error("기념일 목록 조회 실패 (code=${response.code}, message=${response.message})")
+            error(response.toApiErrorMessage("기념일 정보를 불러오지 못했어요."))
         }
 
         return result.toDomain()
@@ -30,7 +37,9 @@ class AnniversaryRepositoryImpl @Inject constructor(
         val response = runCatching {
             anniversaryApi.createAnniversary(form.toRequest())
         }.getOrElse { throwable ->
-            throw IllegalStateException(throwable.toApiErrorMessage("기념일을 저장하지 못했어요."))
+            throw IllegalStateException(
+                throwable.toApiErrorMessage("기념일을 저장하지 못했어요.")
+            )
         }
         val result = response.result
         if (!response.isSuccess || result?.anniversaryId == null) {
@@ -44,7 +53,9 @@ class AnniversaryRepositoryImpl @Inject constructor(
         val response = runCatching {
             anniversaryApi.updateAnniversary(anniversaryId, form.toRequest())
         }.getOrElse { throwable ->
-            throw IllegalStateException(throwable.toApiErrorMessage("기념일을 저장하지 못했어요."))
+            throw IllegalStateException(
+                throwable.toApiErrorMessage("기념일을 저장하지 못했어요.")
+            )
         }
         val result = response.result
         if (!response.isSuccess || result?.anniversaryId == null) {
@@ -55,9 +66,15 @@ class AnniversaryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteAnniversaries(anniversaryIds: List<Long>) {
-        val response = anniversaryApi.deleteAnniversaries(anniversaryIds)
+        val response = runCatching {
+            anniversaryApi.deleteAnniversaries(anniversaryIds)
+        }.getOrElse { throwable ->
+            throw IllegalStateException(
+                throwable.toApiErrorMessage("기념일을 삭제하지 못했어요.")
+            )
+        }
         if (!response.isSuccess) {
-            error("기념일 삭제 실패 (code=${response.code}, message=${response.message})")
+            error(response.toApiErrorMessage("기념일을 삭제하지 못했어요."))
         }
     }
 }
@@ -122,21 +139,24 @@ private fun Throwable.toApiErrorMessage(defaultMessage: String): String =
         message?.takeIf { it.isNotBlank() } ?: defaultMessage
     }
 
-private fun com.umc.halo.core.network.BaseResponse<*>.toApiErrorMessage(defaultMessage: String): String =
+private fun BaseResponse<*>.toApiErrorMessage(defaultMessage: String): String =
     message.takeIf { it.isNotBlank() } ?: defaultMessage
 
 private fun String.extractApiErrorMessage(): String? =
     runCatching {
         val json = JSONObject(this)
-        val fieldErrors = json.optJSONObject("result")
-        if (fieldErrors != null) {
-            val keys = fieldErrors.keys()
-            if (keys.hasNext()) {
-                fieldErrors.optString(keys.next()).takeIf { it.isNotBlank() }
-            } else {
-                null
+        val result = json.opt("result")
+        when (result) {
+            is JSONObject -> {
+                val keys = result.keys()
+                if (keys.hasNext()) {
+                    result.optString(keys.next()).takeIf { it.isNotBlank() }
+                } else {
+                    null
+                }
             }
-        } else {
-            json.optString("message").takeIf { it.isNotBlank() }
-        }
+
+            is String -> result.takeIf { it.isNotBlank() }
+            else -> null
+        } ?: json.optString("message").takeIf { it.isNotBlank() }
     }.getOrNull()

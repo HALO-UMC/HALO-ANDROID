@@ -132,11 +132,16 @@ class AnniversaryViewModel @Inject constructor(
                         )
                     }
                 }
-                .onFailure {
+                .onFailure { throwable ->
                     updateState {
                         copy(
                             isLoading = false,
-                            errorMessage = if (showError) LOAD_FAILED_MESSAGE else null
+                            errorMessage = if (showError) {
+                                throwable.message?.takeIf { message -> message.isNotBlank() }
+                                    ?: LOAD_FAILED_MESSAGE
+                            } else {
+                                null
+                            }
                         )
                     }
                 }
@@ -253,11 +258,12 @@ class AnniversaryViewModel @Inject constructor(
                     }
                     loadAnniversaries(showError = false)
                 }
-                .onFailure {
+                .onFailure { throwable ->
                     updateState {
                         copy(
                             isSaving = false,
-                            errorMessage = DELETE_FAILED_MESSAGE
+                            errorMessage = throwable.message?.takeIf { message -> message.isNotBlank() }
+                                ?: DELETE_FAILED_MESSAGE
                         )
                     }
                 }
