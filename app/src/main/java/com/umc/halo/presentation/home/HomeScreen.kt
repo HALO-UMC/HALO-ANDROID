@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -62,7 +63,8 @@ import java.util.UUID
 @Composable
 fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToStorybook: (Long) -> Unit
+    onNavigateToStorybook: (Long) -> Unit,
+    onNavigateToThemeBox: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         //화면 불러오기
@@ -96,6 +98,10 @@ fun HomeRoute(
 
                 is HomeUiEvent.OnStartStorybookClicked -> {
                     onNavigateToStorybook(event.storyBookId)
+                }
+
+                HomeUiEvent.OnThemeBoxClicked -> {
+                    onNavigateToThemeBox()
                 }
 
                 else -> viewModel.onEvent(event)
@@ -236,9 +242,13 @@ fun HomeScreenContents(
                         Modifier
                             .fillMaxWidth()
                             .padding(top = 17.dp)
+                            .padding(horizontal = 24.dp)
                             .height(36.dp)
                             .clip(RoundedCornerShape(24.dp))
                             .background(Primary50)
+                            .clickable {
+                                onEvent(HomeUiEvent.OnThemeBoxClicked)
+                            }
                     ) {
                         Row(
                             Modifier
@@ -252,7 +262,8 @@ fun HomeScreenContents(
 
                             Icon(
                                 painter = painterResource(R.drawable.ic_home_right_arrow),
-                                contentDescription = null
+                                contentDescription = null,
+                                tint = Primary600
                             )
 
                         }
