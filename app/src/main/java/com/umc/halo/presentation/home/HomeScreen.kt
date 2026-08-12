@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,8 +29,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -38,6 +43,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.lottiefiles.dotlottie.core.compose.runtime.DotLottieController
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
 import com.lottiefiles.dotlottie.core.util.DotLottieSource
+import com.umc.halo.R
 import com.umc.halo.core.audio.BgmPlaybackState
 import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.home.actionguide.ActionGuide
@@ -48,7 +54,9 @@ import com.umc.halo.presentation.component.HaloLoading
 import com.umc.halo.presentation.storybook.list.StorybookUiEvent
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary30
+import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary500
+import com.umc.halo.presentation.theme.Primary600
 import java.util.UUID
 
 @Composable
@@ -223,16 +231,44 @@ fun HomeScreenContents(
             }
 
             is UserState.RU -> {
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .background(Primary30)
-                        .padding(vertical = 23.dp)
-                ) {
-                    if (state.startStorybook != null) {
-                        StartStorybook(state.startStorybook, onEvent)
-                    } else {
-                        ContinueStorybookHome(state.continueStorybookList, onEvent)
+                if (state.continueStorybookList.isEmpty()) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 17.dp)
+                            .height(36.dp)
+                            .clip(RoundedCornerShape(24.dp))
+                            .background(Primary50)
+                    ) {
+                        Row(
+                            Modifier
+                                .align(Alignment.Center)
+                        ) {
+                            Text(
+                                text = "테마함 확인하러 가기",
+                                style = HaloType.body02Medium,
+                                color = Primary600
+                            )
+
+                            Icon(
+                                painter = painterResource(R.drawable.ic_home_right_arrow),
+                                contentDescription = null
+                            )
+
+                        }
+                    }
+                } else {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(Primary30)
+                            .padding(vertical = 23.dp)
+                    ) {
+                        if (state.startStorybook != null) {
+                            StartStorybook(state.startStorybook, onEvent)
+                        } else {
+                            ContinueStorybookHome(state.continueStorybookList, onEvent)
+                        }
                     }
                 }
 
