@@ -1,7 +1,6 @@
 package com.umc.halo.data.repository.anniversary
 
 import com.umc.halo.data.remote.api.anniversary.AnniversaryApi
-import com.umc.halo.data.remote.dto.request.anniversary.AnniversaryDeleteRequest
 import com.umc.halo.data.remote.dto.request.anniversary.AnniversarySaveRequest
 import com.umc.halo.data.remote.dto.response.anniversary.AnniversaryListResponse
 import com.umc.halo.domain.model.anniversary.AnniversaryOverview
@@ -56,9 +55,7 @@ class AnniversaryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteAnniversaries(anniversaryIds: List<Long>) {
-        val response = anniversaryApi.deleteAnniversaries(
-            AnniversaryDeleteRequest(anniversaryIds = anniversaryIds)
-        )
+        val response = anniversaryApi.deleteAnniversaries(anniversaryIds)
         if (!response.isSuccess) {
             error("기념일 삭제 실패 (code=${response.code}, message=${response.message})")
         }
