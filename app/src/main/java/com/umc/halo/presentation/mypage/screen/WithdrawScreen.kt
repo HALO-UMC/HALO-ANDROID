@@ -88,14 +88,14 @@ fun WithdrawScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(Modifier.height(44.dp))
+                Spacer(Modifier.height(32.dp))
                 Image(
                     painter = painterResource(id = R.drawable.ic_orange_character),
                     contentDescription = null,
-                    modifier = Modifier.size(width = 94.dp, height = 109.dp)
+                    modifier = Modifier.size(width = 141.dp, height = 164.dp)
                 )
 
-                Spacer(Modifier.height(48.dp))
+                Spacer(Modifier.height(32.dp))
                 WarningLine("❶ 계정 정보가 삭제돼요.")
                 WarningLine("❷ 기록과 스토리북이 모두 사라져요")
                 WarningLine("❸ 삭제 후에는 복구할 수 없어요.")

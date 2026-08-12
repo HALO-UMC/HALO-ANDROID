@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -182,7 +183,7 @@ private fun ChapterMoodHeader(
             color = MoodTitleColor
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         Text(
             text = "이 장면을 남기며 가장 가까웠던 마음을 선택해요.",
@@ -198,22 +199,43 @@ private fun MoodCardGrid(
     onMoodClick: (ChapterMood) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.width(234.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    BoxWithConstraints(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
     ) {
-        MoodCards.chunked(2).forEach { rowItems ->
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                rowItems.forEach { spec ->
-                    MoodCard(
-                        spec = spec,
-                        selected = selectedMood == spec.mood,
-                        onClick = {
-                            onMoodClick(spec.mood)
-                        }
-                    )
+        val cardGap = 16.dp
+        val gridWidth = (maxWidth * 0.65f).coerceIn(
+            minimumValue = 234.dp,
+            maximumValue = 270.dp
+        )
+        val cardSize = ((gridWidth - cardGap) / 2f).coerceIn(
+            minimumValue = 109.dp,
+            maximumValue = 127.dp
+        )
+        val imageSize = (cardSize * 0.51f).coerceIn(
+            minimumValue = 56.dp,
+            maximumValue = 64.dp
+        )
+
+        Column(
+            modifier = Modifier.width(gridWidth),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            MoodCards.chunked(2).forEach { rowItems ->
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(cardGap)
+                ) {
+                    rowItems.forEach { spec ->
+                        MoodCard(
+                            spec = spec,
+                            selected = selectedMood == spec.mood,
+                            cardSize = cardSize,
+                            imageSize = imageSize,
+                            onClick = {
+                                onMoodClick(spec.mood)
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -224,6 +246,8 @@ private fun MoodCardGrid(
 private fun MoodCard(
     spec: MoodCardSpec,
     selected: Boolean,
+    cardSize: androidx.compose.ui.unit.Dp,
+    imageSize: androidx.compose.ui.unit.Dp,
     onClick: () -> Unit
 ) {
     val backgroundColor = if (selected) {
@@ -234,7 +258,7 @@ private fun MoodCard(
 
     Column(
         modifier = Modifier
-            .size(110.dp)
+            .size(cardSize)
             .clip(RoundedCornerShape(16.dp))
             .background(backgroundColor)
             .clickable(onClick = onClick),
@@ -244,7 +268,7 @@ private fun MoodCard(
         Image(
             painter = painterResource(id = spec.imageResId),
             contentDescription = spec.label,
-            modifier = Modifier.size(56.dp)
+            modifier = Modifier.size(imageSize)
         )
 
         Spacer(modifier = Modifier.height(4.dp))

@@ -11,6 +11,6 @@ interface StorybookDetailApi {
     @GET("/api/v1/storybooks/{storybookId}")
     suspend fun getStorybookDetail(@Path("storybookId") storybookId: Long): BaseResponse<StorybookDetailResponse>
 
-    @POST("/api/v1/storybooks/{storybookId}/start")
+    @POST("/api/v1/storybooks/{storybookId}/member-storybooks")
     suspend fun startStorybook(@Path("storybookId") storybookId: Long): BaseResponse<StorybookStartResponse>
 }

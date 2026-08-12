@@ -29,11 +29,6 @@ fun OnboardingProgressBar(
         maximumValue = totalStep
     )
 
-    // currentStep이 1이면 첫 번째,
-    // currentStep이 2이면 두 번째,
-    // currentStep이 3이면 세 번째만 활성화된다.
-    val activeIndex = safeCurrentStep - 1
-
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -47,18 +42,14 @@ fun OnboardingProgressBar(
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         repeat(totalStep) { index ->
-            val isActive = index == activeIndex
+            val isFilled = index < safeCurrentStep
 
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .height(5.dp)
                     .background(
-                        color = if (isActive) {
-                            Gray700
-                        } else {
-                            Gray100
-                        },
+                        color = if (isFilled) Gray700 else Gray100,
                         shape = RoundedCornerShape(30.dp)
                     )
             )

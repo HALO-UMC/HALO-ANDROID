@@ -101,6 +101,7 @@ fun NotificationSettingsScreen(
                 title = "오늘의 장 알림",
                 checked = uiState.todayChapterNotificationEnabled,
                 enabled = detailControlsEnabled,
+                preserveDisabledCheckedState = true,
                 modifier = Modifier.padding(vertical = 18.dp),
                 onCheckedChange = {
                     onEvent(MyPageUiEvent.TodayChapterNotificationChanged(it))
@@ -111,6 +112,7 @@ fun NotificationSettingsScreen(
                 title = "기념일 알림",
                 checked = uiState.anniversaryNotificationEnabled,
                 enabled = detailControlsEnabled,
+                preserveDisabledCheckedState = true,
                 modifier = Modifier.padding(vertical = 18.dp),
                 onCheckedChange = {
                     onEvent(MyPageUiEvent.AnniversaryNotificationChanged(it))
@@ -121,6 +123,7 @@ fun NotificationSettingsScreen(
                 title = "리텐션 알림",
                 checked = uiState.retentionNotificationEnabled,
                 enabled = detailControlsEnabled,
+                preserveDisabledCheckedState = true,
                 modifier = Modifier.padding(vertical = 18.dp),
                 onCheckedChange = {
                     onEvent(MyPageUiEvent.RetentionNotificationChanged(it))

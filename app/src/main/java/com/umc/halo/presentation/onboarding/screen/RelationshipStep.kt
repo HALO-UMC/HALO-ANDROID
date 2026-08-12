@@ -130,7 +130,7 @@ fun RelationshipStep(
                     color = Gray800
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
                     text = "지금 우리의 관계와 가장 가까운 것을 골라주세요.",
