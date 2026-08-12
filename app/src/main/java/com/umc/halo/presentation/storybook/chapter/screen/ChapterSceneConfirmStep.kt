@@ -92,7 +92,7 @@ fun ChapterSceneConfirmStep(
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
                     text = "이미지 변경을 원할 시, 하단 버튼을 선택해주세요!",

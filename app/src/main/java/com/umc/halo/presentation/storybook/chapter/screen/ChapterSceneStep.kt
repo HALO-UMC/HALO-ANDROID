@@ -198,7 +198,7 @@ private fun ChapterSceneHeader(
             color = SceneTitleColor
         )
 
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         Text(
             text = "사진으로 남겨도, 장면카드로 대신해도 좋아요.\n이 페이지에 어울리는 순간을 골라주세요.",

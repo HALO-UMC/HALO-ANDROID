@@ -182,7 +182,7 @@ private fun ChapterMoodHeader(
             color = MoodTitleColor
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         Text(
             text = "이 장면을 남기며 가장 가까웠던 마음을 선택해요.",
