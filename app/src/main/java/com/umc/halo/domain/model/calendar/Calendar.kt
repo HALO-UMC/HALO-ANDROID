@@ -18,7 +18,8 @@ data class CalendarDay(
     val day: Int,
     val inCurrentMonth: Boolean = true,  // false = 요일 정렬용 빈칸
     val mark: DayMark? = null,           // 서비스 로고 마크
-    val isToday: Boolean = false         // 오늘날짜
+    val isToday: Boolean = false,        // 오늘날짜
+    val isFuture: Boolean = false        // 오늘날짜 기준 미래날짜
 )
 
 /**

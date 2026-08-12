@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -20,11 +19,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umc.halo.R
@@ -89,6 +90,7 @@ fun ReloginRoute(
  *
  * @param isLoading      로그인 진행 중이면 버튼을 잠그고 로딩 표시를 띄움(중복 요청 방지)
  * @param recentProvider 직전에 사용한 로그인 방식. 그 버튼 위에 '최근 로그인' 배지를 띄운다.
+ *                       구글이면 배지가 카카오 버튼 위에 겹쳐 그려진다(버튼 위치는 그대로).
  *                       null(로그인 기록 없음)이면 배지를 그리지 않음
  */
 @Composable
@@ -143,7 +145,11 @@ fun ReloginScreen(
             // 캐릭터 ~ 버튼 여백
             Spacer(Modifier.weight(CharacterToButtonWeight))
 
-            RecentLoginBadgeSlot(isVisible = recentProvider == SocialProvider.KAKAO)
+            // 카카오가 최근이면 배지가 버튼 위 빈 공간에 그대로 자리를 차지
+            if (recentProvider == SocialProvider.KAKAO) {
+                RecentLoginBadge(modifier = Modifier.align(Alignment.End))
+                Spacer(Modifier.height(BadgeToButtonSpacing))
+            }
 
             // 카카오 로그인 버튼
             SocialLoginButton(
@@ -158,7 +164,13 @@ fun ReloginScreen(
 
             Spacer(Modifier.height(ButtonSpacing))
 
-            RecentLoginBadgeSlot(isVisible = recentProvider == SocialProvider.GOOGLE)
+            if (recentProvider == SocialProvider.GOOGLE) {
+                RecentLoginBadge(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .overlayAbove(BadgeToButtonSpacing)
+                )
+            }
 
             // 구글 로그인 버튼
             SocialLoginButton(
@@ -198,14 +210,15 @@ fun ReloginScreen(
 }
 
 /**
- * 버튼 바로 위의 '최근 로그인' 자리
+ * 세로 공간을 차지하지 않고 자기 자리보다 위쪽에 겹쳐 그림
+ * @param gap 자기 자리와 얼마나 떨어뜨릴지
  */
-@Composable
-private fun ColumnScope.RecentLoginBadgeSlot(isVisible: Boolean) {
-    if (!isVisible) return
-
-    RecentLoginBadge(modifier = Modifier.align(Alignment.End))
-    Spacer(Modifier.height(BadgeToButtonSpacing))
+private fun Modifier.overlayAbove(gap: Dp) = layout { measurable, constraints ->
+    val placeable = measurable.measure(constraints)
+    val gapPx = gap.roundToPx()
+    layout(width = placeable.width, height = 0) {
+        placeable.place(x = 0, y = -(placeable.height + gapPx))
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true, name = "재로그인 - 최근 카카오")

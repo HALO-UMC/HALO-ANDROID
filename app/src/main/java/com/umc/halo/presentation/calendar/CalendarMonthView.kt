@@ -171,10 +171,11 @@ private fun DayCell(
         Box(modifier = modifier.height(CellHeight))
         return
     }
+    // 미래 날짜는 눌러도 모달을 띄우지 않음
     Box(
         modifier = modifier
             .height(CellHeight)
-            .clickable { onClick() },
+            .clickable(enabled = !day.isFuture) { onClick() },
         contentAlignment = Alignment.Center
     ) {
         // 오늘날짜 - 주황 원

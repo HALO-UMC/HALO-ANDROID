@@ -34,18 +34,31 @@ import com.umc.halo.domain.model.calendar.DateCompletedChapter
 import com.umc.halo.domain.model.calendar.DateCompletedStorybook
 import com.umc.halo.domain.model.calendar.DayRecord
 import com.umc.halo.presentation.component.haloCardShadow
+import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloType
-import com.umc.halo.presentation.theme.Primary30
+import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.White
+
+// 디자인 값
+private val ModalCornerRadius = 16.dp
+private val ModalPadding = 24.dp          // 모달 안쪽 여백
+private val ModalOuterPadding = 18.dp     // 화면 좌우 ~ 모달 바깥 여백
+private val SectionSpacing = 18.dp        // 헤더/섹션 사이
+private val HeaderHeight = 30.dp          // 날짜 + 닫기 버튼 영역
+private val CardCornerRadius = 16.dp
+private val CompletedCardHeight = 114.dp  // 완성 스토리북 카드
+private val CoverWidth = 57.dp
+private val CoverHeight = 68.4.dp
+private val ArrowSize = 18.dp
 
 /**
  * 날짜 클릭 시 뜨는 기록 모달
  * - isLoading == true         : 서버에서 그 날 기록을 불러오는 중
- * - record.hasRecord == true  : (완성 스토리북) + (장 기록중 리스트)
+ * - record.hasRecord == true  : (완성 스토리북) + (장 기록 리스트)
  * - record.hasRecord == false : "아직 기록이 없어요!" + '시작하기' CTA
  *
  */
@@ -64,30 +77,35 @@ fun CalendarDayRecordModal(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 18.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .padding(horizontal = ModalOuterPadding)
+                .clip(RoundedCornerShape(ModalCornerRadius))
                 .background(White)
                 .heightIn(max = 640.dp)             // 내용이 길면 스크롤로
                 .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp)
+                .padding(ModalPadding),
+            verticalArrangement = Arrangement.spacedBy(SectionSpacing)
         ) {
             // 헤더: 날짜 + 닫기
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(HeaderHeight),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Text(
                     text = String.format(Locale.US, "%02d월 %02d일 기록", month, day),
                     style = HaloType.body01SemiBold,
                     color = Gray800,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .align(Alignment.Bottom)
                 )
                 Icon(
                     painter = painterResource(R.drawable.ic_common_close),
                     contentDescription = "닫기",
-                    tint = Gray800,
+                    tint = Gray300,
                     modifier = Modifier
+                        .align(Alignment.Top)
                         .size(24.dp)
                         .clickable { onEvent(CalendarUiEvent.OnDismissModal) }
                 )
@@ -121,7 +139,7 @@ fun CalendarDayRecordModal(
                 if (record.completedChapters.isNotEmpty()) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text("장 기록", style = HaloType.body02SemiBold, color = Gray800)
-                        Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(SectionSpacing)) {
                             record.completedChapters.forEach { chapter ->
                                 ChapterCard(
                                     item = chapter,
@@ -142,8 +160,8 @@ fun CalendarDayRecordModal(
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text("아직 기록이 없어요!", style = HaloType.heading02SemiBold, color = Gray800)
                     Text(
-                        "쉬운 테마부터 바로 시작해보세요!",
-                        style = HaloType.caption01Regular,
+                        "맞춤 테마부터 바로 시작해보세요!",
+                        style = HaloType.body03Regular,
                         color = Gray500
                     )
                 }
@@ -167,68 +185,75 @@ private fun CompletedCard(
     item: DateCompletedStorybook,
     onClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(CardCornerRadius)
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(CompletedCardHeight)
             .haloCardShadow(shape)
             .clip(shape)
-            .background(androidx.compose.ui.graphics.Color.White)
+            .background(White)
             .clickable { onClick() }
             .padding(horizontal = 18.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        // 커버 이미지 — 서버가 주는 URL. 아직 안 오거나 로드에 실패하면 뒤에 깔린 Gray50 이 그대로 보임
-        Box(
-            modifier = Modifier
-                .width(57.dp)
-                .height(68.dp)
-                .clip(RoundedCornerShape(6.dp))
-                .background(Gray50)
+        Row(
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            if (!item.imageUrl.isNullOrBlank()) {
-                AsyncImage(
-                    model = item.imageUrl,
-                    contentDescription = null,      // 장식용 이미지라 null
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.matchParentSize()
+            // 커버 이미지 — 서버가 주는 URL. 아직 안 오거나 로드에 실패하면 뒤에 깔린 Gray50 이 그대로 보임
+            Box(
+                modifier = Modifier
+                    .width(CoverWidth)
+                    .height(CoverHeight)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(Gray50)
+            ) {
+                if (!item.imageUrl.isNullOrBlank()) {
+                    AsyncImage(
+                        model = item.imageUrl,
+                        contentDescription = null,      // 장식용 이미지라 null
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.matchParentSize()
+                    )
+                }
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(item.title, style = HaloType.body01SemiBold, color = Gray800)
+                Text(
+                    "이 테마를 완성한 날이네요!",
+                    style = HaloType.body03Regular,
+                    color = Gray500
                 )
             }
-        }
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            Text(item.title, style = HaloType.body01SemiBold, color = Gray800)
-            Text(
-                "이 테마를 완성한 날이네요!",
-                style = HaloType.caption01Regular,
-                color = Gray500
-            )
         }
         Icon(
             painter = painterResource(R.drawable.ic_home_right_arrow),
             contentDescription = null,
             tint = Gray800,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(ArrowSize)
         )
     }
 }
 
-/** 장 기록중 카드 (제목 + "N장 기록을 완료했어요!" + >) → 클릭 시 그 장의 완료 결과 화면 */
+/** 장 기록 카드 (제목 + "N장까지 완료했어요!" + >) → 클릭 시 그 장의 완료 결과 화면 */
 @Composable
 private fun ChapterCard(
     item: DateCompletedChapter,
     onClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(CardCornerRadius)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .haloCardShadow(shape)
             .clip(shape)
-            .background(androidx.compose.ui.graphics.Color.White)
+            .background(White)
             .clickable { onClick() }
             .padding(horizontal = 18.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -249,7 +274,7 @@ private fun ChapterCard(
             painter = painterResource(R.drawable.ic_home_right_arrow),
             contentDescription = null,
             tint = Gray800,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(ArrowSize)
         )
     }
 }
@@ -263,7 +288,7 @@ private fun ChapterBadge(
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(24.dp))
-            .background(Primary30)
+            .background(Primary50)
             .clickable { onClick() }
             .height(36.dp)
             .padding(horizontal = 12.dp),
@@ -275,7 +300,7 @@ private fun ChapterBadge(
             painter = painterResource(R.drawable.ic_home_right_arrow),
             contentDescription = null,
             tint = Primary500,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(ArrowSize)
         )
     }
 }

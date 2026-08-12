@@ -118,6 +118,9 @@ class CalendarViewModel @Inject constructor(
         val year = currentState.year
         val month = currentState.month
 
+        // 미래 날짜는 기록이 생길 수 없어 모달을 열지 않음
+        if (isFuture(year, month, day)) return
+
         dayRecordJob?.cancel()
         dayRecordJob = viewModelScope.launch {
             updateState {
@@ -175,7 +178,8 @@ class CalendarViewModel @Inject constructor(
                     day = d,
                     inCurrentMonth = true,
                     mark = marks[d],
-                    isToday = isCurrentMonth && d == currentDay
+                    isToday = isCurrentMonth && d == currentDay,
+                    isFuture = isFuture(year, month, d)
                 )
             )
         }
@@ -187,6 +191,15 @@ class CalendarViewModel @Inject constructor(
     /** 표시 중인 (year, month) 가 현재 월보다 과거인가 → true 면 다음 달 이동/오른쪽 화살표 허용 */
     private fun canGoNext(year: Int, month: Int): Boolean =
         (year * 12 + month) < (currentYear * 12 + currentMonth)
+
+    /**
+     * 오늘보다 미래 날짜인가?
+     */
+    private fun isFuture(year: Int, month: Int, day: Int): Boolean {
+        val shownMonth = year * 12 + month
+        val thisMonth = currentYear * 12 + currentMonth
+        return shownMonth > thisMonth || (shownMonth == thisMonth && day > currentDay)
+    }
 
     private companion object {
         // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
