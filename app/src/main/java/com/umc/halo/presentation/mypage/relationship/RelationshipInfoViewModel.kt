@@ -52,14 +52,16 @@ class RelationshipInfoViewModel @Inject constructor(
                         )
                     }
                 }
-                .onFailure {
+                .onFailure { throwable ->
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             parentPersonalityTags = emptyList(),
                             currentRelationState = null,
                             goalRelationships = emptyList(),
-                            errorMessage = LOAD_FAILED_MESSAGE
+                            errorMessage = throwable.message
+                                ?.takeIf { message -> message.isNotBlank() }
+                                ?: LOAD_FAILED_MESSAGE
                         )
                     }
                 }

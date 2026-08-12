@@ -83,7 +83,11 @@ class OnboardingViewModel @Inject constructor(
                     parentPersonalityTags = tags?.parentPersonalityTags.orEmpty(),
                     currentRelationStateTags = tags?.currentRelationStateTags.orEmpty(),
                     goalRelationshipTags = tags?.goalRelationshipTags.orEmpty(),
-                    loadErrorMessage = if (tags == null) TAG_LOAD_FAILED_MESSAGE else null
+                    loadErrorMessage = if (tags == null) {
+                        tagsResult.exceptionOrNull().toUserMessage(TAG_LOAD_FAILED_MESSAGE)
+                    } else {
+                        null
+                    }
                 )
 
                 if (status == null) {
@@ -229,11 +233,11 @@ class OnboardingViewModel @Inject constructor(
 
             val isAvailable = runCatching {
                 onboardingRepository.checkNickname(currentState.name)
-            }.getOrElse {
+            }.getOrElse { throwable ->
                 updateState {
                     copy(
                         isSaving = false,
-                        nameErrorText = NICKNAME_CHECK_FAILED_MESSAGE
+                        nameErrorText = throwable.toUserMessage(NICKNAME_CHECK_FAILED_MESSAGE)
                     )
                 }
                 return@launch
@@ -249,12 +253,12 @@ class OnboardingViewModel @Inject constructor(
                 return@launch
             }
 
-            val saved = runCatching {
+            val saveResult = runCatching {
                 onboardingRepository.saveStep1(currentState.name)
-            }.isSuccess
+            }
 
             updateState {
-                if (saved) {
+                if (saveResult.isSuccess) {
                     copy(
                         isSaving = false,
                         currentStep = OnboardingStep.BASIC_INFO
@@ -262,7 +266,7 @@ class OnboardingViewModel @Inject constructor(
                 } else {
                     copy(
                         isSaving = false,
-                        nameErrorText = SAVE_FAILED_MESSAGE
+                        nameErrorText = saveResult.exceptionOrNull().toUserMessage(SAVE_FAILED_MESSAGE)
                     )
                 }
             }
@@ -319,13 +323,14 @@ class OnboardingViewModel @Inject constructor(
                 )
             }
 
-            val result = runCatching { save() }.getOrNull()
+            val saveResult = runCatching { save() }
+            val result = saveResult.getOrNull()
 
             updateState {
                 if (result == null) {
                     copy(
                         isSaving = false,
-                        saveErrorMessage = SAVE_FAILED_MESSAGE
+                        saveErrorMessage = saveResult.exceptionOrNull().toUserMessage(SAVE_FAILED_MESSAGE)
                     )
                 } else if (
                     currentStep == OnboardingStep.GOAL &&
@@ -380,6 +385,11 @@ class OnboardingViewModel @Inject constructor(
 
         settingsRepository.updateNotificationSettings(newSettings)
     }
+}
+
+private fun Throwable?.toUserMessage(defaultMessage: String): String {
+    val message = this?.message?.takeIf { it.isNotBlank() } ?: return defaultMessage
+    return if (message.endsWith("failed")) defaultMessage else message
 }
 
 private fun OnboardingUiState.restore(status: OnboardingStatus): OnboardingUiState {

@@ -249,6 +249,15 @@ class MyPageViewModel @Inject constructor(
                         )
                     }
                 }
+                .onFailure { throwable ->
+                    updateState {
+                        copy(
+                            accountErrorMessage = throwable.message
+                                ?.takeIf { it.isNotBlank() }
+                                ?: "내 정보를 불러오지 못했어요."
+                        )
+                    }
+                }
 
             runCatching { settingsRepository.getNotificationSettings() }
                 .onSuccess { applyNotificationSettings(it) }
@@ -265,11 +274,13 @@ class MyPageViewModel @Inject constructor(
             updateState { copy(isBgmLoading = true, systemSettingsErrorMessage = null) }
 
             bgmPlaybackManager.loadSettings(force = true)
-                .onFailure {
+                .onFailure { throwable ->
                     updateState {
                         copy(
                             isBgmLoading = false,
-                            systemSettingsErrorMessage = BGM_LOAD_FAILED_MESSAGE
+                            systemSettingsErrorMessage = throwable.message
+                                ?.takeIf { it.isNotBlank() }
+                                ?: BGM_LOAD_FAILED_MESSAGE
                         )
                     }
                 }
@@ -290,12 +301,14 @@ class MyPageViewModel @Inject constructor(
                     applyNotificationSettings(settings)
                     updateState { copy(isNotificationSettingsLoading = false) }
                 }
-                .onFailure {
+                .onFailure { throwable ->
                     updateState {
                         copy(
                             isNotificationSettingsLoading = false,
                             notificationSettingsErrorMessage = if (showErrorMessage) {
-                                NOTIFICATION_LOAD_FAILED_MESSAGE
+                                throwable.message
+                                    ?.takeIf { it.isNotBlank() }
+                                    ?: NOTIFICATION_LOAD_FAILED_MESSAGE
                             } else {
                                 null
                             },
@@ -326,7 +339,7 @@ class MyPageViewModel @Inject constructor(
                     applyNotificationSettings(settings)
                     updateState { copy(isNotificationSettingsLoading = false) }
                 }
-                .onFailure {
+                .onFailure { throwable ->
                     applyNotificationSettings(previous)
                     updateState {
                         copy(
@@ -335,7 +348,9 @@ class MyPageViewModel @Inject constructor(
                             isEditingNotificationTime = false,
                             draftNotificationHour = notificationHour,
                             draftNotificationMinute = notificationMinute,
-                            notificationSettingsErrorMessage = NOTIFICATION_SAVE_FAILED_MESSAGE
+                            notificationSettingsErrorMessage = throwable.message
+                                ?.takeIf { it.isNotBlank() }
+                                ?: NOTIFICATION_SAVE_FAILED_MESSAGE
                         )
                     }
                 }
@@ -381,7 +396,7 @@ class MyPageViewModel @Inject constructor(
     private fun onBgmEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
             bgmPlaybackManager.setEnabled(enabled)
-                .onFailure { showBgmSaveError() }
+                .onFailure { showBgmSaveError(it) }
         }
     }
 
@@ -392,14 +407,14 @@ class MyPageViewModel @Inject constructor(
     private fun onBgmTrackClicked(index: Int) {
         viewModelScope.launch {
             bgmPlaybackManager.onTrackClicked(index)
-                .onFailure { showBgmSaveError() }
+                .onFailure { showBgmSaveError(it) }
         }
     }
 
     private fun saveCurrentBgmSetting() {
         viewModelScope.launch {
             bgmPlaybackManager.saveCurrent()
-                .onFailure { showBgmSaveError() }
+                .onFailure { showBgmSaveError(it) }
         }
     }
 
@@ -419,9 +434,13 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-    private fun showBgmSaveError() {
+    private fun showBgmSaveError(throwable: Throwable? = null) {
         updateState {
-            copy(systemSettingsErrorMessage = BGM_SAVE_FAILED_MESSAGE)
+            copy(
+                systemSettingsErrorMessage = throwable?.message
+                    ?.takeIf { it.isNotBlank() }
+                    ?: BGM_SAVE_FAILED_MESSAGE
+            )
         }
     }
 
