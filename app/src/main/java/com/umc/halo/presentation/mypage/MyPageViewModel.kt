@@ -240,6 +240,15 @@ class MyPageViewModel @Inject constructor(
                         )
                     }
                 }
+                .onFailure { throwable ->
+                    updateState {
+                        copy(
+                            accountErrorMessage = throwable.message
+                                ?.takeIf { it.isNotBlank() }
+                                ?: "내 정보를 불러오지 못했어요."
+                        )
+                    }
+                }
 
             runCatching { settingsRepository.getNotificationSettings() }
                 .onSuccess { applyNotificationSettings(it) }
