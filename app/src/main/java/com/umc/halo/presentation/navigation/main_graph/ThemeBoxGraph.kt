@@ -58,7 +58,14 @@ fun NavGraphBuilder.themeBoxGraph(
             )
         ) {
             ShowThemeRoute(
-                onNavigateBack = { navController.popBackStackIfCurrent(Routes.SHOW_THEME) }
+                onNavigateBack = { storybookId ->
+                    navController.navigate(Routes.themeBox(storybookId)) {
+                        launchSingleTop = true
+                        popUpTo(Graphs.THEME_BOX) {
+                            inclusive = false
+                        }
+                    }
+                }
             )
         }
 
