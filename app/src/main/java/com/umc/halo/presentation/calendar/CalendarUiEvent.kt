@@ -21,8 +21,8 @@ sealed interface CalendarUiEvent {
     /**
      * 모달 '장 기록중' 카드 클릭 → 그 장의 완료 결과 화면(chapter_result)으로 이동
      *
-     *  서버는 장의 고유 id 를 주지 않고 순서([chapterOrder], 1~10)만 주기에 같은 방식으로 구현
-     *  TODO :'완료된 장 다시보기' API(GET /api/v1/member-chapters/{memberChapterId})가 연동되면 실제 id 로 바꿔야 함
+     *  서버가 일별 기록 조회 응답에 장의 고유 id 를 실어주므로 그 값을 그대로 넘김
+     *  ('완료된 장 다시보기' API GET /api/v1/member-chapters/{memberChapterId} 가 받는 id 와 같은 값)
      */
     data class OnChapterClicked(val memberChapterId: Long) : CalendarUiEvent
 
