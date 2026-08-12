@@ -96,15 +96,9 @@ class OnboardingViewModel @Inject constructor(
     }
 
     private fun updateName(input: String) {
-        val filteredName = input
-            .filter { character ->
-                character.isAllowedNameCharacter()
-            }
-            .take(MAX_NAME_LENGTH)
-
         updateState {
             copy(
-                name = filteredName,
+                name = input,
                 nameErrorText = null,
                 saveErrorMessage = null
             )

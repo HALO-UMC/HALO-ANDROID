@@ -4,10 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +25,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -45,7 +48,12 @@ fun HaloNumberWheelField(
     horizontalPadding: Dp = 24.dp,
     cornerRadius: Dp = 16.dp,
     usePlaceholder: Boolean = true,
-    circular: Boolean = false
+    circular: Boolean = false,
+    textStyle: TextStyle = HaloType.body02Medium,
+    valueUnitSpacing: Dp? = null,
+    unitTrailingSpacing: Dp = 0.dp,
+    valueWidth: Dp? = null,
+    trailingContent: (@Composable () -> Unit)? = null
 ) {
     val wheelValues = remember(
         values,
@@ -140,13 +148,23 @@ fun HaloNumberWheelField(
                 .fillMaxHeight()
                 .padding(horizontal = horizontalPadding),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = if (valueUnitSpacing == null) {
+                Arrangement.SpaceBetween
+            } else {
+                Arrangement.Center
+            }
         ) {
             LazyColumn(
                 state = listState,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
+                modifier = if (valueWidth == null) {
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                } else {
+                    Modifier
+                        .width(valueWidth)
+                        .fillMaxHeight()
+                },
                 horizontalAlignment = Alignment.Start
             ) {
                 items(displayItemCount) { index ->
@@ -157,24 +175,35 @@ fun HaloNumberWheelField(
                             .height(fieldHeight),
                         contentAlignment = Alignment.CenterStart
                     ) {
+                        val textColor = when {
+                            value == null -> Gray300
+                            isScrolling -> Gray300
+                            else -> Gray800
+                        }
+
                         Text(
                             text = value?.let(valueFormatter) ?: placeholder,
-                            style = HaloType.body02Medium,
-                            color = when {
-                                value == null -> Gray300
-                                isScrolling -> Gray300
-                                else -> Gray800
-                            }
+                            style = textStyle,
+                            color = textColor
                         )
                     }
                 }
             }
 
+            valueUnitSpacing?.let { spacing ->
+                Spacer(modifier = Modifier.width(spacing))
+            }
+
             Text(
                 text = unit,
-                style = HaloType.body02Medium,
+                style = textStyle,
                 color = Gray800
             )
+
+            if (trailingContent != null) {
+                Spacer(modifier = Modifier.width(unitTrailingSpacing))
+                trailingContent()
+            }
         }
     }
 }
