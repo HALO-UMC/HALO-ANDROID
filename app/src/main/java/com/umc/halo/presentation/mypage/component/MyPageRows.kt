@@ -159,6 +159,7 @@ fun SettingSwitchRow(
     modifier: Modifier = Modifier,
     description: String? = null,
     enabled: Boolean = true,
+    preserveDisabledCheckedState: Boolean = false,
     titleStyle: TextStyle = HaloType.body02SemiBold
 ) {
     Row(
@@ -184,7 +185,8 @@ fun SettingSwitchRow(
         HaloSwitch(
             checked = checked,
             onCheckedChange = onCheckedChange,
-            enabled = enabled
+            enabled = enabled,
+            preserveDisabledCheckedState = preserveDisabledCheckedState
         )
     }
 }
@@ -194,7 +196,8 @@ fun HaloSwitch(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    preserveDisabledCheckedState: Boolean = false
 ) {
     val thumbOffset by animateDpAsState(
         targetValue = if (checked) 21.dp else 3.dp,
@@ -208,6 +211,7 @@ fun HaloSwitch(
             .clip(RoundedCornerShape(100.dp))
             .background(
                 when {
+                    !enabled && checked && preserveDisabledCheckedState -> Gray600.copy(alpha = 0.32f)
                     !enabled -> Gray100
                     checked -> Gray600
                     else -> Gray100
@@ -226,7 +230,13 @@ fun HaloSwitch(
                 .offset(x = thumbOffset)
                 .size(18.dp)
                 .clip(CircleShape)
-                .background(if (checked && enabled) White else Gray300)
+                .background(
+                    when {
+                        checked && enabled -> White
+                        checked && preserveDisabledCheckedState -> White.copy(alpha = 0.92f)
+                        else -> Gray300
+                    }
+                )
         )
     }
 }
@@ -315,7 +325,7 @@ fun WarningLine(text: String) {
     ) {
         Text(
             text = text,
-            style = HaloType.body01Regular.copy(fontSize = 18.sp),
+            style = HaloType.body01Regular.copy(fontSize = 17.sp),
             color = Gray500
         )
     }
