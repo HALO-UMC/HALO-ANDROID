@@ -43,6 +43,8 @@ import com.umc.halo.domain.model.home.UserState
 import com.umc.halo.presentation.home.actionguide.ActionGuide
 import com.umc.halo.presentation.home.bookcase.BookCase
 import com.umc.halo.presentation.component.CustomStorybook
+import com.umc.halo.presentation.component.HaloLoadFailed
+import com.umc.halo.presentation.component.HaloLoading
 import com.umc.halo.presentation.storybook.list.StorybookUiEvent
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary30
@@ -56,7 +58,7 @@ fun HomeRoute(
 ) {
     LaunchedEffect(Unit) {
         //화면 불러오기
-        viewModel.loadHome()
+        viewModel.onEvent(HomeUiEvent.OnScreenShown)
     }
 
 
@@ -76,14 +78,6 @@ fun HomeRoute(
         onBgmClick = viewModel::onBgmPlayerClicked,
         onEvent = { event ->
             when (event) {
-                is HomeUiEvent.OnBookClicked -> {
-                    viewModel.onEvent(event)
-                }
-
-                is HomeUiEvent.ErrorShown -> {
-                    viewModel.onEvent(event)
-                }
-
                 is HomeUiEvent.OnCustomizedStoryBookClicked -> {
                     onNavigateToStorybook(event.storyBookId)
                 }
@@ -95,6 +89,8 @@ fun HomeRoute(
                 is HomeUiEvent.OnStartStorybookClicked -> {
                     onNavigateToStorybook(event.storyBookId)
                 }
+
+                else -> viewModel.onEvent(event)
             }
         }
     )
@@ -107,20 +103,33 @@ fun HomeScreen(
     onBgmClick: () -> Unit,
     onEvent: (HomeUiEvent) -> Unit
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        LazyColumn(
-            Modifier
-                .fillMaxSize()
-        ) {
-            item {
-                HomeScreenContents(
-                    state = state,
-                    bgmState = bgmState,
-                    onBgmClick = onBgmClick,
-                    onEvent = onEvent
-                )
+    when {
+        state.isLoading -> HaloLoading()
+
+        state.hasLoadFailed -> HaloLoadFailed(
+            text = "홈화면",
+            onRetry = {
+                onEvent(HomeUiEvent.OnRetryClicked)
+            }
+        )
+
+        else -> {
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                LazyColumn(
+                    Modifier
+                        .fillMaxSize()
+                ) {
+                    item {
+                        HomeScreenContents(
+                            state = state,
+                            bgmState = bgmState,
+                            onBgmClick = onBgmClick,
+                            onEvent = onEvent
+                        )
+                    }
+                }
             }
         }
     }
