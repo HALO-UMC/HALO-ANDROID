@@ -1,5 +1,6 @@
 package com.umc.halo.data.repository.calendar
 
+import com.umc.halo.core.network.BaseResponse
 import com.umc.halo.data.remote.api.calendar.CalendarApi
 import com.umc.halo.domain.model.calendar.CalendarMonth
 import com.umc.halo.domain.model.calendar.CompletedBook
@@ -9,6 +10,8 @@ import com.umc.halo.domain.model.calendar.DayRecord
 import com.umc.halo.domain.model.calendar.MonthSummary
 import com.umc.halo.domain.model.calendar.RecordedDay
 import com.umc.halo.domain.repository.calendar.CalendarRepository
+import org.json.JSONObject
+import retrofit2.HttpException
 import java.util.Locale
 import javax.inject.Inject
 
@@ -21,10 +24,16 @@ class CalendarRepositoryImpl @Inject constructor(
 ) : CalendarRepository {
 
     override suspend fun getMonth(year: Int, month: Int): CalendarMonth {
-        val response = calendarApi.getCalendarMonth(year = year, month = month)
+        val response = runCatching {
+            calendarApi.getCalendarMonth(year = year, month = month)
+        }.getOrElse { throwable ->
+            throw IllegalStateException(
+                throwable.toApiErrorMessage("기록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.")
+            )
+        }
         val result = response.result
         if (!response.isSuccess || result == null) {
-            error("캘린더 메인 조회 실패 (code=${response.code}, message=${response.message})")
+            error(response.toApiErrorMessage("기록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."))
         }
 
         val stats = result.stats
@@ -48,10 +57,16 @@ class CalendarRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getDayRecord(year: Int, month: Int, day: Int): DayRecord {
-        val response = calendarApi.getDayRecord(date = formatDate(year, month, day))
+        val response = runCatching {
+            calendarApi.getDayRecord(date = formatDate(year, month, day))
+        }.getOrElse { throwable ->
+            throw IllegalStateException(
+                throwable.toApiErrorMessage("그 날의 기록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.")
+            )
+        }
         val result = response.result
         if (!response.isSuccess || result == null) {
-            error("일별 기록 조회 실패 (code=${response.code}, message=${response.message})")
+            error(response.toApiErrorMessage("그 날의 기록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."))
         }
 
         return DayRecord(
@@ -81,3 +96,34 @@ class CalendarRepositoryImpl @Inject constructor(
     private fun formatDate(year: Int, month: Int, day: Int): String =
         String.format(Locale.US, "%04d-%02d-%02d", year, month, day)
 }
+
+private fun Throwable.toApiErrorMessage(defaultMessage: String): String =
+    if (this is HttpException) {
+        response()
+            ?.errorBody()
+            ?.string()
+            ?.extractApiErrorMessage()
+            ?: defaultMessage
+    } else {
+        message?.takeIf { it.isNotBlank() } ?: defaultMessage
+    }
+
+private fun BaseResponse<*>.toApiErrorMessage(defaultMessage: String): String =
+    message.takeIf { it.isNotBlank() } ?: defaultMessage
+
+private fun String.extractApiErrorMessage(): String? =
+    runCatching {
+        val json = JSONObject(this)
+        val fieldErrors = json.optJSONObject("result")
+        if (fieldErrors != null) {
+            val keys = fieldErrors.keys()
+            if (keys.hasNext()) {
+                fieldErrors.optString(keys.next()).takeIf { it.isNotBlank() }
+            } else {
+                null
+            }
+        } else {
+            json.optString("result").takeIf { it.isNotBlank() }
+                ?: json.optString("message").takeIf { it.isNotBlank() }
+        }
+    }.getOrNull()

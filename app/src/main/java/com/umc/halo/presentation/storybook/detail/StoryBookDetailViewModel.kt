@@ -10,9 +10,9 @@ import com.umc.halo.domain.repository.storybook.StorybookDetailRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import retrofit2.HttpException
 import javax.inject.Inject
-import kotlin.collections.listOf
 
 @HiltViewModel
 class StoryBookDetailViewModel @Inject constructor(
@@ -103,21 +103,36 @@ class StoryBookDetailViewModel @Inject constructor(
 
     fun startStorybook(storybookId: Long) {
         viewModelScope.launch {
-            val startStoryBookId = runCatching {
+            runCatching {
                 storybookDetailRepository.startStorybook(storybookId).storybookId
-            }.recoverCatching { throwable ->
-                if (throwable is HttpException && throwable.code() == 409) {
-                    storybookId
-                } else {
-                    throw throwable
+            }.onSuccess { startedStorybookId ->
+                updateState {
+                    copy(startedStorybook = startedStorybookId)
                 }
-            }.getOrNull() ?: return@launch
-
-            updateState {
-                copy(
-                    startedStorybook = startStoryBookId
-                )
+            }.onFailure { throwable ->
+                handleStartStorybookFailure(storybookId, throwable)
             }
+        }
+    }
+
+    private fun handleStartStorybookFailure(
+        storybookId: Long,
+        throwable: Throwable
+    ) {
+        val apiError = (throwable as? HttpException)?.toApiError()
+        if (apiError?.code == ALREADY_STARTED_CODE) {
+            updateState {
+                copy(startedStorybook = storybookId)
+            }
+            return
+        }
+
+        updateState {
+            copy(
+                errorMessage = apiError?.message
+                    ?: throwable.message?.takeIf { message -> message.isNotBlank() }
+                    ?: START_FAILED_MESSAGE
+            )
         }
     }
 
@@ -139,5 +154,38 @@ class StoryBookDetailViewModel @Inject constructor(
     private companion object {
         // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
         const val LOAD_FAILED_MESSAGE = "스토리북 상세 페이지를 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
+        const val START_FAILED_MESSAGE = "스토리북을 시작하지 못했어요."
+        const val ALREADY_STARTED_CODE = "STORYBOOK409_1"
     }
+}
+
+private data class StorybookApiError(
+    val code: String?,
+    val message: String?
+)
+
+private fun HttpException.toApiError(): StorybookApiError? =
+    response()
+        ?.errorBody()
+        ?.string()
+        ?.let { body ->
+            runCatching {
+                val json = JSONObject(body)
+                StorybookApiError(
+                    code = json.optString("code").takeIf { it.isNotBlank() },
+                    message = json.extractApiErrorMessage()
+                )
+            }.getOrNull()
+        }
+
+private fun JSONObject.extractApiErrorMessage(): String? {
+    val fieldErrors = optJSONObject("result")
+    if (fieldErrors != null) {
+        val keys = fieldErrors.keys()
+        if (keys.hasNext()) {
+            return fieldErrors.optString(keys.next()).takeIf { it.isNotBlank() }
+        }
+    }
+
+    return optString("message").takeIf { it.isNotBlank() }
 }

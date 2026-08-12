@@ -97,13 +97,14 @@ class CalendarViewModel @Inject constructor(
                         )
                     }
                 }
-                .onFailure {
+                .onFailure { throwable ->
                     // 실패하면 이전 달 수치가 남지 않도록 요약을 비우고 안내
                     updateState {
                         copy(
                             recordedChapterCount = 0,
                             summary = MonthSummary(0, 0, emptyList()),
-                            errorMessage = MONTH_LOAD_FAILED_MESSAGE
+                            errorMessage = throwable.message?.takeIf { message -> message.isNotBlank() }
+                                ?: MONTH_LOAD_FAILED_MESSAGE
                         )
                     }
                 }
@@ -131,13 +132,14 @@ class CalendarViewModel @Inject constructor(
                 .onSuccess { record ->
                     updateState { copy(selectedRecord = record, isDayRecordLoading = false) }
                 }
-                .onFailure {
+                .onFailure { throwable ->
                     // 빈 모달("아직 기록이 없어요")로 오해하지 않도록 모달을 닫고 실패로 알림
                     updateState {
                         copy(
                             selectedDay = null,
                             isDayRecordLoading = false,
-                            errorMessage = DAY_RECORD_LOAD_FAILED_MESSAGE
+                            errorMessage = throwable.message?.takeIf { message -> message.isNotBlank() }
+                                ?: DAY_RECORD_LOAD_FAILED_MESSAGE
                         )
                     }
                 }
