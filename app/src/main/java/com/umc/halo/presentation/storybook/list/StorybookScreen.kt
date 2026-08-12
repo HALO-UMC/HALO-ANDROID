@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,7 +45,9 @@ import com.umc.halo.presentation.component.HaloLoadFailed
 import com.umc.halo.presentation.component.HaloLoading
 import com.umc.halo.presentation.theme.Gray100
 import com.umc.halo.presentation.theme.Gray400
+import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray700
+import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.HaloTheme
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary100
@@ -60,6 +63,9 @@ private val HorizontalPadding = 24.dp
 // 진행중/완료 2열 그리드
 private val GridColumnSpacing = 16.dp
 private val GridRowSpacing = 36.dp
+
+// 목록이 비었을 때 안내 문구가 차지하는 세로 비율
+private const val EmptyMessageHeightFraction = 0.7f
 
 // 전체 탭 섹션 간격
 private val ThemeCardSpacing = 16.dp             // 테마 가로 스크롤 카드 사이
@@ -153,7 +159,9 @@ private fun StorybookContent(
                 StorybookTab.IN_PROGRESS -> StorybookGridSection(
                     title = "진행중인 스토리북",
                     items = state.inProgressStorybooks,
-                    key = { it.id }
+                    key = { it.id },
+                    emptyTitle = "아직 진행중인 스토리북이 없어요!",
+                    emptyDescription = "전체 탭에서 마음에 드는 테마를 골라보세요!"
                 ) { book, cardModifier ->
                     StorybookCard(
                         title = book.title,
@@ -171,7 +179,9 @@ private fun StorybookContent(
                 StorybookTab.DONE -> StorybookGridSection(
                     title = "완료한 스토리북",
                     items = state.doneStorybooks,
-                    key = { it.id }
+                    key = { it.id },
+                    emptyTitle = "아직 완료한 스토리북이 없어요!",
+                    emptyDescription = "열 장을 모두 채우면 한 권이 완성돼요!"
                 ) { book, cardModifier ->
                     StorybookCard(
                         title = book.title,
@@ -370,12 +380,17 @@ private fun StorybookThemeSection(
  * 진행중 / 완료 탭 공통 골격
  *
  * 카드 폭은 남는 폭을 2등분해서 정함
+ *
+ * @param emptyTitle 목록이 비었을 때 그리드 자리에 띄우는 안내 문구(탭마다 다름)
+ * @param emptyDescription 그 아래 한 줄 설명
  */
 @Composable
 private fun <T> StorybookGridSection(
     title: String,
     items: List<T>,
     key: (T) -> Any,
+    emptyTitle: String,
+    emptyDescription: String,
     card: @Composable (T, Modifier) -> Unit
 ) {
     LazyColumn(
@@ -393,6 +408,22 @@ private fun <T> StorybookGridSection(
                 Spacer(Modifier.height(18.dp)) // 제목 → 그리드 간격
             }
         }
+
+        // 목록이 비면 안내문구 띄우기
+        if (items.isEmpty()) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillParentMaxHeight(EmptyMessageHeightFraction),
+                    contentAlignment = Alignment.Center
+                ) {
+                    StorybookEmptyMessage(title = emptyTitle, description = emptyDescription)
+                }
+            }
+            return@LazyColumn
+        }
+
         itemsIndexed(
             items = items.chunked(2),
             key = { _, row -> key(row.first()) }
@@ -411,6 +442,34 @@ private fun <T> StorybookGridSection(
                 }
             }
         }
+    }
+}
+
+/**
+ * 진행중 / 완료 탭이 비었을 때의 안내 문구
+ */
+@Composable
+private fun StorybookEmptyMessage(
+    title: String,
+    description: String
+) {
+    Column(
+        modifier = Modifier.padding(horizontal = HorizontalPadding),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(
+            text = title,
+            style = HaloType.body01SemiBold,
+            color = Gray800,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = description,
+            style = HaloType.body03Regular,
+            color = Gray500,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -456,6 +515,28 @@ private fun StorybookInProgressTabPreview() {
 private fun StorybookDoneTabPreview() {
     HaloTheme {
         StorybookContent(state = previewState(StorybookTab.DONE), onEvent = {})
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true, name = "스토리북 - 진행중(비어있음)")
+@Composable
+private fun StorybookInProgressEmptyPreview() {
+    HaloTheme {
+        StorybookContent(
+            state = previewState(StorybookTab.IN_PROGRESS).copy(inProgressStorybooks = emptyList()),
+            onEvent = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true, name = "스토리북 - 완료(비어있음)")
+@Composable
+private fun StorybookDoneEmptyPreview() {
+    HaloTheme {
+        StorybookContent(
+            state = previewState(StorybookTab.DONE).copy(doneStorybooks = emptyList()),
+            onEvent = {}
+        )
     }
 }
 
