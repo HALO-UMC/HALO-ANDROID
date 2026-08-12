@@ -9,6 +9,8 @@ import com.umc.halo.domain.model.anniversary.UpcomingAnniversary
 import com.umc.halo.domain.repository.anniversary.AnniversaryRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.abs
@@ -19,13 +21,18 @@ class AnniversaryViewModel @Inject constructor(
 ) : BaseViewModel<AnniversaryUiState, AnniversaryUiEvent>(
     initialState = AnniversaryUiState()
 ) {
+    private var clearLastAddedHighlightJob: Job? = null
+
     override fun onEvent(event: AnniversaryUiEvent) {
         when (event) {
             AnniversaryUiEvent.ScreenEntered -> loadAnniversaries(showError = true)
             AnniversaryUiEvent.BackClicked -> handleBack()
             AnniversaryUiEvent.AddClicked -> openAdd()
-            AnniversaryUiEvent.ListExited -> updateState {
-                copy(lastAddedId = null)
+            AnniversaryUiEvent.ListExited -> {
+                clearLastAddedHighlightJob?.cancel()
+                updateState {
+                    copy(lastAddedId = null)
+                }
             }
 
             AnniversaryUiEvent.SelectModeClicked -> updateState {
@@ -293,6 +300,7 @@ class AnniversaryViewModel @Inject constructor(
                 } ?: anniversaryRepository.createAnniversary(saveForm)
             }
                 .onSuccess { savedId ->
+                    val shouldHighlightAddedItem = form.editingId == null
                     updateState {
                         copy(
                             mode = AnniversaryScreenMode.LIST,
@@ -300,9 +308,12 @@ class AnniversaryViewModel @Inject constructor(
                             form = AnniversaryFormState(),
                             isSelectionModeActive = false,
                             selectedIds = emptySet(),
-                            lastAddedId = if (form.editingId == null) savedId else null,
+                            lastAddedId = if (shouldHighlightAddedItem) savedId else null,
                             isSaving = false
                         )
+                    }
+                    if (shouldHighlightAddedItem) {
+                        scheduleLastAddedHighlightClear(savedId)
                     }
                     loadAnniversaries(showError = false)
                 }
@@ -318,9 +329,24 @@ class AnniversaryViewModel @Inject constructor(
         }
     }
 
+    private fun scheduleLastAddedHighlightClear(addedId: Long) {
+        clearLastAddedHighlightJob?.cancel()
+        clearLastAddedHighlightJob = viewModelScope.launch {
+            delay(ADDED_HIGHLIGHT_DURATION_MS)
+            updateState {
+                if (lastAddedId == addedId) {
+                    copy(lastAddedId = null)
+                } else {
+                    this
+                }
+            }
+        }
+    }
+
     private companion object {
         const val TITLE_MAX_LENGTH = 20
         const val MEMO_MAX_LENGTH = 50
+        const val ADDED_HIGHLIGHT_DURATION_MS = 2_000L
         const val LOAD_FAILED_MESSAGE = "기념일 정보를 불러오지 못했어요."
         const val SAVE_FAILED_MESSAGE = "기념일을 저장하지 못했어요."
         const val DELETE_FAILED_MESSAGE = "기념일을 삭제하지 못했어요."

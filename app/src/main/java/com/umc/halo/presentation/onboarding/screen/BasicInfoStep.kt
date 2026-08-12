@@ -416,6 +416,7 @@ private fun BirthDateWheelField(
         valueUnitSpacing = 12.dp,
         unitTrailingSpacing = 11.dp,
         valueWidth = if (options.any { it >= 1000 }) 44.dp else 30.dp,
+        valueContentAlignment = Alignment.CenterEnd,
         trailingContent = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_onboarding_birth_wheel_arrow),

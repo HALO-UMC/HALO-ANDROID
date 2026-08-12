@@ -53,6 +53,7 @@ fun HaloNumberWheelField(
     valueUnitSpacing: Dp? = null,
     unitTrailingSpacing: Dp = 0.dp,
     valueWidth: Dp? = null,
+    valueContentAlignment: Alignment = Alignment.CenterStart,
     trailingContent: (@Composable () -> Unit)? = null
 ) {
     val wheelValues = remember(
@@ -173,7 +174,7 @@ fun HaloNumberWheelField(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(fieldHeight),
-                        contentAlignment = Alignment.CenterStart
+                        contentAlignment = valueContentAlignment
                     ) {
                         val textColor = when {
                             value == null -> Gray300
