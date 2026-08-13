@@ -243,7 +243,7 @@ private fun SceneImageChangeButton(
     Box(
         modifier = Modifier
             .width(120.dp)
-            .height(30.dp)
+            .height(36.dp)
             .clip(RoundedCornerShape(100.dp))
             .background(ChangeButtonBackground)
             .clickable { onClick() },
