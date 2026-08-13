@@ -67,6 +67,7 @@ fun ThemeBoxEmptyScreen(
 fun ThemeBoxEmpty() {
     Card(
         Modifier
+            .padding(horizontal = 24.dp)
             .fillMaxWidth()
             .aspectRatio(78f/47f),
         shape = RoundedCornerShape(16.dp),
