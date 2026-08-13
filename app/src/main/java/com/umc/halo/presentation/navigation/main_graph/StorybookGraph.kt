@@ -1,6 +1,5 @@
 package com.umc.halo.presentation.navigation.main_graph
 
-import android.util.Log
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -18,8 +17,6 @@ import com.umc.halo.presentation.themebox.show_theme.ShowThemeRoute
 fun NavGraphBuilder.storybookGraph(
     navController: NavController
 ) {
-    Log.d("NAV", "storybookGraph registered")
-
     navigation(
         route = Graphs.STORYBOOK,
         startDestination = Routes.STORYBOOK
