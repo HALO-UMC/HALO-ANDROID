@@ -64,7 +64,7 @@ class ThemeBoxRepositoryImpl @Inject constructor(
                 throw IllegalStateException(throwable.toApiErrorMessage(EXHIBITION_FAILED_MESSAGE))
             }
 
-        return response.result.toDomain()
+        return response.result?.toDomain()
             ?: error(response.toApiErrorMessage(EXHIBITION_FAILED_MESSAGE))
     }
 
