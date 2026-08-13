@@ -340,7 +340,16 @@ fun BookItem(
         Box(
             modifier = Modifier
                 .width(coverWidth)
-                .height(item.height.dp)
+                .padding(
+                    top = if (item.id == 1L) 10.dp else 0.dp
+                )
+                .height(
+                    if (item.id == 1L) {
+                        230.dp
+                    } else {
+                        item.height.dp
+                    }
+                )
                 .graphicsLayer {
                     transformOrigin = TransformOrigin(0f, 0.5f)
                     rotationY = coverRotation
