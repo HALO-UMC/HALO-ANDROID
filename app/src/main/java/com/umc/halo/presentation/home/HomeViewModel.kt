@@ -124,8 +124,6 @@ class HomeViewModel @Inject constructor(
     private fun selectedStorybook(id: Long?) {
         val book = _uiState.value.bookShelf.find { it.storybookId == id }
 
-        Log.d("test",book.toString())
-
         if (book == null) {
             updateState {
                 copy(

@@ -1,14 +1,11 @@
 package com.umc.halo.presentation.themebox
 
 import androidx.lifecycle.viewModelScope
-import com.umc.halo.domain.model.storybook.CustomStorybook
-import com.umc.halo.domain.model.themebox.Theme
 import com.umc.halo.domain.repository.themebox.ThemeBoxRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.nio.file.Files.copy
 import javax.inject.Inject
 
 @HiltViewModel

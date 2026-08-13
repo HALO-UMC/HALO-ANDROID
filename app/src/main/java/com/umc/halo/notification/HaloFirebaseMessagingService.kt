@@ -45,8 +45,6 @@ class HaloFirebaseMessagingService: FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
-        Log.d("FCM", message.data.toString())
-
         showNotification(
             title = message.notification?.title ?: "HALO",
             body = message.notification?.body ?: ""
