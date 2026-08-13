@@ -56,3 +56,9 @@ enum class StorybookIndexStatus {
             entries.find { it.name == value } ?: LOCKED
     }
 }
+
+data class StorybookStartResult(
+    val memberStorybookId: Long,
+    val storybookId: Long,
+    val status: String
+)
