@@ -3,6 +3,7 @@ package com.umc.halo.presentation.login
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.umc.halo.core.datastore.DeviceUuidDataStore
+import com.umc.halo.core.network.toUserMessageOrNull
 import com.umc.halo.data.remote.auth.GoogleLoginDataSource
 import com.umc.halo.data.remote.auth.KakaoLoginDataSource
 import com.umc.halo.domain.model.auth.LoginCancelledException
@@ -82,7 +83,10 @@ class LoginViewModel @Inject constructor(
             }.onFailure { throwable ->
                 // 사용자가 직접 창을 닫은 건 실패가 아님으로 처리
                 if (throwable !is LoginCancelledException) {
-                    updateState { copy(errorMessage = LOGIN_FAILED_MESSAGE) }
+                    // SDK 예외의 영문 메시지는 걸러지고 기본 문구로 넘어가게 처리
+                    updateState {
+                        copy(errorMessage = throwable.toUserMessageOrNull() ?: LOGIN_FAILED_MESSAGE)
+                    }
                 }
             }
 
