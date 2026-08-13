@@ -10,9 +10,8 @@ import com.umc.halo.domain.model.storybook.StoryBookInfo
 import com.umc.halo.domain.model.storybook.StorybookDetailResult
 import com.umc.halo.domain.model.storybook.StorybookIndexStatus
 import com.umc.halo.domain.model.storybook.StorybookProgress
-import com.umc.halo.domain.model.storybook.TodayStoryBook
+import com.umc.halo.domain.model.storybook.StorybookStartResult
 import com.umc.halo.domain.repository.storybook.StorybookDetailRepository
-import com.umc.halo.presentation.storybook.detail.StoryBookProgress
 import javax.inject.Inject
 
 class StorybookDetailRepositoryImpl @Inject constructor(
@@ -29,14 +28,14 @@ class StorybookDetailRepositoryImpl @Inject constructor(
             ?: throw IllegalStateException("스토리북 상세 페이지를 불러오지 못했어요.")
     }
 
-    override suspend fun startStorybook(storybookId: Long): StorybookStartResponse {
+    override suspend fun startStorybook(storybookId: Long): StorybookStartResult {
         val response = storybookDetailApi.startStorybook(storybookId)
 
         if (!response.isSuccess) {
             error(response.toApiErrorMessage("스토리북을 시작하지 못했어요."))
         }
 
-        return response.result
+        return response.result?.toDomain()
             ?: throw IllegalStateException("스토리북을 시작하지 못했어요.")
     }
 }
@@ -61,6 +60,12 @@ private fun StorybookDetailResponse.toDomain() = StorybookDetailResult(
             isCompleted = completeStatusStringIntoBoolean(it.status)
         )
     }
+)
+
+private fun StorybookStartResponse.toDomain() = StorybookStartResult(
+    memberStorybookId = memberStorybookId,
+    storybookId = storybookId,
+    status = status
 )
 
 private fun lockedStatusStringIntoBoolean(status: String): Boolean {
