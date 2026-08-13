@@ -105,7 +105,8 @@ fun ContinueStorybook(
     onEvent: (ThemeBoxUiEvent) -> Unit
 ) {
     LazyColumn(
-        Modifier.padding(horizontal = 24.dp)
+        Modifier.padding(horizontal = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
             Text(
@@ -127,10 +128,12 @@ fun ContinueStorybook(
                     onEvent(ThemeBoxUiEvent.OnContinueStoryBookClicked(item.storybookId))
                 }
 
-                if (item.todayAvailable) {
+                if (!item.todayAvailable) {
                     ContentsOverlay(item, Modifier.matchParentSize())
                 }
             }
         }
     }
+
+    Spacer(Modifier.height(38.dp))
 }
