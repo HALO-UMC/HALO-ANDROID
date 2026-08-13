@@ -1,5 +1,6 @@
 package com.umc.halo.data.repository.storybook
 
+import com.umc.halo.core.network.toApiErrorMessage
 import com.umc.halo.data.remote.api.storybook.StorybookApi
 import com.umc.halo.data.remote.dto.response.storybook.StorybookSummaryResponse
 import com.umc.halo.domain.model.storybook.CustomStorybook
@@ -24,8 +25,12 @@ class StorybookRepositoryImpl @Inject constructor(
 ) : StorybookRepository {
 
     override suspend fun getStorybookList(): StorybookListResult {
-        val result = storybookApi.getStorybooks().result
-            ?: throw IllegalStateException("storybook list data is null")
+        val response = runCatching { storybookApi.getStorybooks() }
+            .getOrElse { throwable ->
+                throw IllegalStateException(throwable.toApiErrorMessage(LOAD_FAILED_MESSAGE))
+            }
+
+        val result = response.result ?: error(response.toApiErrorMessage(LOAD_FAILED_MESSAGE))
 
         val summaries = result.storybooks.orEmpty()
         val summaryById = summaries.associateBy { it.storybookId }
@@ -82,8 +87,13 @@ class StorybookRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getRecommendedStorybooks(): List<CustomStorybook> {
-        val result = storybookApi.getRecommendedStorybooks().result
-            ?: throw IllegalStateException("recommended storybook data is null")
+        val response = runCatching { storybookApi.getRecommendedStorybooks() }
+            .getOrElse { throwable ->
+                throw IllegalStateException(throwable.toApiErrorMessage(RECOMMENDED_FAILED_MESSAGE))
+            }
+
+        val result = response.result
+            ?: error(response.toApiErrorMessage(RECOMMENDED_FAILED_MESSAGE))
 
         return result.storybooks.orEmpty().map {
             CustomStorybook(
@@ -113,5 +123,8 @@ class StorybookRepositoryImpl @Inject constructor(
         // 정렬에서 '날짜 없음' 을 맨 뒤로 보내기 위한 값
         const val LAST_DATE = "9999-99-99"   // 오름차순(진행중 탭)용
         const val FIRST_DATE = "0000-00-00"  // 내림차순(완료 탭)용
+
+        const val LOAD_FAILED_MESSAGE = "스토리북을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
+        const val RECOMMENDED_FAILED_MESSAGE = "맞춤 스토리북을 불러오지 못했어요."
     }
 }

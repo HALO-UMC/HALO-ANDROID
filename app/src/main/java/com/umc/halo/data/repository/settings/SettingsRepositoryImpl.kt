@@ -1,6 +1,7 @@
 package com.umc.halo.data.repository.settings
 
 import com.umc.halo.core.network.BaseResponse
+import com.umc.halo.core.network.toApiErrorMessage
 import com.umc.halo.data.remote.api.settings.SettingsApi
 import com.umc.halo.data.remote.dto.request.settings.BgmSettingUpdateRequest
 import com.umc.halo.data.remote.dto.request.settings.NotificationSettingsUpdateRequest
@@ -9,8 +10,6 @@ import com.umc.halo.data.remote.dto.response.settings.NotificationSettingsRespon
 import com.umc.halo.domain.model.settings.BgmSetting
 import com.umc.halo.domain.model.settings.NotificationSettings
 import com.umc.halo.domain.repository.settings.SettingsRepository
-import org.json.JSONObject
-import retrofit2.HttpException
 import javax.inject.Inject
 
 class SettingsRepositoryImpl @Inject constructor(
@@ -83,38 +82,6 @@ class SettingsRepositoryImpl @Inject constructor(
         return result
     }
 }
-
-private fun Throwable.toApiErrorMessage(defaultMessage: String): String =
-    if (this is HttpException) {
-        response()
-            ?.errorBody()
-            ?.string()
-            ?.extractApiErrorMessage()
-            ?: defaultMessage
-    } else {
-        message?.takeIf { it.isNotBlank() } ?: defaultMessage
-    }
-
-private fun BaseResponse<*>.toApiErrorMessage(defaultMessage: String): String =
-    message.takeIf { it.isNotBlank() } ?: defaultMessage
-
-private fun String.extractApiErrorMessage(): String? =
-    runCatching {
-        val json = JSONObject(this)
-        val result = json.opt("result")
-        when (result) {
-            is JSONObject -> {
-                val keys = result.keys()
-                if (keys.hasNext()) {
-                    result.optString(keys.next()).takeIf { it.isNotBlank() }
-                } else {
-                    null
-                }
-            }
-            is String -> result.takeIf { it.isNotBlank() }
-            else -> null
-        } ?: json.optString("message").takeIf { it.isNotBlank() }
-    }.getOrNull()
 
 private fun NotificationSettingsResponse.toDomain(): NotificationSettings = NotificationSettings(
     isAllNotificationEnabled = isAllNotificationEnabled == true,
