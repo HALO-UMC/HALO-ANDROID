@@ -2,14 +2,11 @@ package com.umc.halo.presentation.themebox.show_theme
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.domain.model.showTheme.ThemeExhibitionChapter
 import com.umc.halo.domain.repository.themebox.ThemeBoxRepository
 import com.umc.halo.presentation.base.BaseViewModel
-import com.umc.halo.presentation.base.UiState
-import com.umc.halo.presentation.themebox.ThemeBoxUiEvent
-import com.umc.halo.presentation.themebox.ThemeBoxUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.nio.file.Files.copy
 import javax.inject.Inject
 
 @HiltViewModel

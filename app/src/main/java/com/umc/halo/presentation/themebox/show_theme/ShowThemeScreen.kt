@@ -103,10 +103,6 @@ fun ShowThemeScreen(
     state: ShowThemeUiState,
     onEvent: (ShowThemeUiEvent) -> Unit
 ) {
-    val pagerState = rememberPagerState(
-        pageCount = { state.chapters.size }
-    )
-
     val currentIsPlaying by rememberUpdatedState(state.isPlaying)
 
     LaunchedEffect(state.currentPage) {

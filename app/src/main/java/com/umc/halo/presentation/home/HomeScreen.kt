@@ -1,12 +1,6 @@
 package com.umc.halo.presentation.home
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
-import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -38,9 +32,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.firebase.messaging.FirebaseMessaging
 import com.lottiefiles.dotlottie.core.compose.runtime.DotLottieController
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
 import com.lottiefiles.dotlottie.core.util.DotLottieSource
@@ -52,13 +44,11 @@ import com.umc.halo.presentation.home.bookcase.BookCase
 import com.umc.halo.presentation.component.CustomStorybook
 import com.umc.halo.presentation.component.HaloLoadFailed
 import com.umc.halo.presentation.component.HaloLoading
-import com.umc.halo.presentation.storybook.list.StorybookUiEvent
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary30
 import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary500
 import com.umc.halo.presentation.theme.Primary600
-import java.util.UUID
 
 @Composable
 fun HomeRoute(
@@ -183,7 +173,7 @@ fun HomeScreenContents(
                     append("${state.userInfo.name} ")
                 }
 
-                append("안녕하세요!,\n")
+                append("안녕하세요!\n")
 
                 append(
                     if (
