@@ -218,7 +218,7 @@ fun OnboardingScreen(
         ConfirmActionDialog(
             title = "앱을 종료하시겠습니까?",
             description = "확인을 누르면 HALO가 종료됩니다.",
-            buttonText = "종료",
+            buttonText = "확인",
             onDismiss = { showExitDialog = false },
             onConfirm = {
                 showExitDialog = false

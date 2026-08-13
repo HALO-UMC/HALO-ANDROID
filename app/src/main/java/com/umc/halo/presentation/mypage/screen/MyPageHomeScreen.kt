@@ -49,7 +49,7 @@ fun MyPageScreen(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(top = 36.dp, bottom = 120.dp)
+                .padding(top = 36.dp, bottom = 32.dp)
         ) {
             SectionTitle("내 정보")
             Spacer(Modifier.height(12.dp))

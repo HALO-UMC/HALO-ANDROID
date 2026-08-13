@@ -2,6 +2,8 @@ package com.umc.halo.presentation.onboarding.screen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,36 +20,38 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.umc.halo.R
-import com.umc.halo.presentation.component.HaloNumberWheelField
 import com.umc.halo.presentation.onboarding.Gender
 import com.umc.halo.presentation.onboarding.OnboardingUiEvent
 import com.umc.halo.presentation.onboarding.OnboardingUiState
 import com.umc.halo.presentation.onboarding.component.OnboardingBackButton
 import com.umc.halo.presentation.onboarding.component.OnboardingBottomButton
-import com.umc.halo.presentation.theme.Gray200
+import com.umc.halo.presentation.theme.Gray300
 import com.umc.halo.presentation.theme.Gray500
 import com.umc.halo.presentation.theme.Gray800
 import com.umc.halo.presentation.theme.Gray50
 import com.umc.halo.presentation.theme.HaloType
 import com.umc.halo.presentation.theme.Primary50
 import com.umc.halo.presentation.theme.Primary600
+import com.umc.halo.presentation.theme.White
 import java.util.Calendar
 
 @Composable
@@ -361,6 +366,7 @@ private fun BirthDateSelectionRow(
         BirthDateWheelField(
             value = selectedYear,
             unit = "년",
+            placeholder = "0000",
             options = yearOptions,
             onValueSelected = onYearSelected,
             modifier = Modifier.weight(116f)
@@ -371,6 +377,7 @@ private fun BirthDateSelectionRow(
         BirthDateWheelField(
             value = selectedMonth,
             unit = "월",
+            placeholder = "0",
             options = monthOptions,
             onValueSelected = onMonthSelected,
             modifier = Modifier.weight(90f)
@@ -381,6 +388,7 @@ private fun BirthDateSelectionRow(
         BirthDateWheelField(
             value = selectedDay,
             unit = "일",
+            placeholder = "0",
             options = dayOptions,
             onValueSelected = onDaySelected,
             modifier = Modifier.weight(90f)
@@ -392,43 +400,78 @@ private fun BirthDateSelectionRow(
 private fun BirthDateWheelField(
     value: Int?,
     unit: String,
+    placeholder: String,
     options: List<Int>,
     onValueSelected: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    HaloNumberWheelField(
-        selectedValue = value,
-        values = options,
-        placeholder = "",
-        unit = unit,
-        onValueSelected = onValueSelected,
-        modifier = modifier,
-        usePlaceholder = false,
-        valueFormatter = { selected ->
-            if (unit == "년") {
-                selected.toString().padStart(4, '0')
-            } else {
-                selected.toString()
-            }
-        },
-        horizontalPadding = 0.dp,
-        textStyle = HaloType.body01Medium,
-        valueUnitSpacing = 12.dp,
-        unitTrailingSpacing = 11.dp,
-        valueWidth = if (options.any { it >= 1000 }) 44.dp else 30.dp,
-        valueContentAlignment = Alignment.CenterEnd,
-        trailingContent = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_onboarding_birth_wheel_arrow),
-                contentDescription = null,
-                tint = Gray200,
-                modifier = Modifier.size(
-                    width = 10.dp,
-                    height = 16.dp
-                )
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = modifier
+            .height(68.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Gray50)
+            .clickable(
+                enabled = options.isNotEmpty(),
+                onClick = { expanded = true }
+            )
+            .padding(horizontal = 24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = value?.let { selected ->
+                    if (unit == "년") {
+                        selected.toString().padStart(4, '0')
+                    } else {
+                        selected.toString()
+                    }
+                } ?: placeholder,
+                style = HaloType.body01Medium,
+                color = if (value == null) Gray300 else Gray800
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Text(
+                text = unit,
+                style = HaloType.body01Medium,
+                color = if (value == null) Gray300 else Gray800
             )
         }
-    )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .background(White)
+                .heightIn(max = 240.dp)
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = if (unit == "년") {
+                                option.toString().padStart(4, '0')
+                            } else {
+                                option.toString()
+                            },
+                            style = HaloType.body01Medium,
+                            color = Gray800
+                        )
+                    },
+                    onClick = {
+                        onValueSelected(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
 }
 
 private fun calculateMaximumSelectableDay(

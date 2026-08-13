@@ -1,15 +1,10 @@
 package com.umc.halo.presentation.onboarding
 
 import com.umc.halo.domain.model.onboarding.OnboardingTag
-import java.util.Calendar
-
 internal const val MIN_NAME_LENGTH = 2
 internal const val MAX_NAME_LENGTH = 10
 internal const val MAX_PARENT_PERSONALITY_COUNT = 3
 internal const val MAX_GOAL_COUNT = 2
-
-private const val DEFAULT_BIRTH_MONTH = 1
-private const val DEFAULT_BIRTH_DAY = 1
 
 internal const val NAME_VALIDATION_MESSAGE =
     "이름 조건에 맞춰 다시 입력해주세요!"
@@ -30,10 +25,6 @@ private val NAME_ALLOWED_CHARACTER_REGEX = Regex(
 
 internal fun Char.isAllowedNameCharacter(): Boolean {
     return NAME_ALLOWED_CHARACTER_REGEX.matches(toString())
-}
-
-private fun currentBirthYear(): Int {
-    return Calendar.getInstance().get(Calendar.YEAR)
 }
 
 private fun isValidBirthDate(
@@ -60,8 +51,8 @@ private fun isValidBirthDate(
 
     if (day !in 1..maxDay) return false
 
-    val today = Calendar.getInstance()
-    val selectedDate = Calendar.getInstance().apply {
+    val today = java.util.Calendar.getInstance()
+    val selectedDate = java.util.Calendar.getInstance().apply {
         clear()
         set(year, month - 1, day)
     }
@@ -83,9 +74,9 @@ data class OnboardingUiState(
     val nameErrorText: String? = null,
 
     val selectedGender: Gender? = null,
-    val birthYear: Int? = currentBirthYear(),
-    val birthMonth: Int? = DEFAULT_BIRTH_MONTH,
-    val birthDay: Int? = DEFAULT_BIRTH_DAY,
+    val birthYear: Int? = null,
+    val birthMonth: Int? = null,
+    val birthDay: Int? = null,
     val hasBirthDateTouched: Boolean = false,
 
     val parentPersonalityTags: List<OnboardingTag> = emptyList(),
