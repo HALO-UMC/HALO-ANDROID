@@ -1,6 +1,5 @@
 package com.umc.halo.presentation.themebox.show_theme
 
-import com.umc.halo.data.remote.dto.response.themebox.ThemeExhibitionChapterResponse
 import com.umc.halo.domain.model.showTheme.ThemeExhibitionChapter
 
 data class ShowThemeUiState (

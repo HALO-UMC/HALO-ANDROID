@@ -133,6 +133,10 @@ fun ContinueStorybook(
                 }
             }
         }
+
+        item {
+            Spacer(Modifier.height(35.dp))
+        }
     }
 
     Spacer(Modifier.height(38.dp))

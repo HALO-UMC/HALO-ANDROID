@@ -2,7 +2,6 @@ package com.umc.halo.presentation.themebox.show_theme
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.umc.halo.domain.model.showTheme.ThemeExhibitionChapter
 import com.umc.halo.domain.repository.themebox.ThemeBoxRepository
 import com.umc.halo.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -78,15 +77,7 @@ class ShowThemeViewModel @Inject constructor(
                 updateState {
                     copy(
                         storybookId = themeExhibition.storybookId,
-                        chapters = themeExhibition.chapters.map {
-                            ThemeExhibitionChapter(
-                                id = it.chapterOrder,
-                                title = it.title,
-                                imageUrl = it.chapterImageUrl,
-                                completedDate = it.completedDate,
-                                summary = it.summary
-                            )
-                        }
+                        chapters = themeExhibition.chapters
                     )
                 }
             }.onFailure {

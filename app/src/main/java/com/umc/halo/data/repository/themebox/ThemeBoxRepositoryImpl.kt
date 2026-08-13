@@ -3,6 +3,8 @@ package com.umc.halo.data.repository.themebox
 import com.umc.halo.data.remote.api.themebox.ThemeBoxApi
 import com.umc.halo.data.remote.dto.response.themebox.ThemeBoxResponse
 import com.umc.halo.data.remote.dto.response.themebox.ThemeExhibitionResponse
+import com.umc.halo.domain.model.showTheme.ThemeExhibitionChapter
+import com.umc.halo.domain.model.showTheme.ThemeExhibitionResult
 import com.umc.halo.domain.model.storybook.CustomStorybook
 import com.umc.halo.domain.model.themebox.ContinueStorybook
 import com.umc.halo.domain.model.themebox.Theme
@@ -52,10 +54,23 @@ class ThemeBoxRepositoryImpl @Inject constructor(
         }
     )
 
-    override suspend fun getThemeExhibition(storybookId: Long): ThemeExhibitionResponse {
+    override suspend fun getThemeExhibition(storybookId: Long): ThemeExhibitionResult {
         val response = themeBoxApi.getThemeExhibition(storybookId)
 
-        return response.result
+        return response.result?.toDomain()
             ?: throw IllegalStateException("theme exhibition data is null")
     }
+
+    private fun ThemeExhibitionResponse.toDomain() = ThemeExhibitionResult(
+        storybookId = storybookId,
+        chapters = chapters.map {
+            ThemeExhibitionChapter(
+                id = it.chapterOrder,
+                title = it.title,
+                imageUrl = it.chapterImageUrl,
+                completedDate = it.completedDate,
+                summary = it.summary
+            )
+        }
+    )
 }
