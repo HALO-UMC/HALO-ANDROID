@@ -222,7 +222,14 @@ fun HomeScreenContents(
                         .padding(vertical = 23.dp)
                 ) {
                     if (state.startStorybook != null) {
-                        StartStorybook(state.startStorybook, onEvent)
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .background(Primary30)
+                                .padding(vertical = 23.dp)
+                        ) {
+                            StartStorybook(state.startStorybook, onEvent)
+                        }
                     } else {
                         val customStorybook = state.customStorybookList
                         CustomStorybook(customStorybook,
@@ -240,7 +247,14 @@ fun HomeScreenContents(
 
             is UserState.RU -> {
                 if (state.startStorybook != null) {
-                    StartStorybook(state.startStorybook, onEvent)
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(Primary30)
+                            .padding(vertical = 23.dp)
+                    ) {
+                        StartStorybook(state.startStorybook, onEvent)
+                    }
                 } else {
                     if (state.continueStorybookList.isEmpty()) {
                         Box(
