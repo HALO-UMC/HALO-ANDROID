@@ -34,6 +34,19 @@ internal fun Throwable.toApiErrorMessage(defaultMessage: String): String = when 
 }
 
 /**
+ * ViewModel 이 잡은 예외에서 사용자에게 보여줄 에러 메세지 추출. 없으면 null
+ *
+ * [toApiErrorMessage] 는 마지막 가지에서 예외의 message 를 그대로 사용.
+ * - [IOException] : SDK 단계의 네트워크 단절
+ * - [IllegalStateException] : 레포지토리가 만든 문구
+ */
+internal fun Throwable.toUserMessageOrNull(): String? = when (this) {
+    is IOException -> NETWORK_ERROR_MESSAGE
+    is IllegalStateException -> message?.takeIf { it.isNotBlank() }
+    else -> null
+}
+
+/**
  * 2xx 로 왔지만 `isSuccess = false` 인 응답의 문구
  * (HTTP 상태코드는 성공인데 서버가 본문으로 실패를 알려주는 경우)
  */

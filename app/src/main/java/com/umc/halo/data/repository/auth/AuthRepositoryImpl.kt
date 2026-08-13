@@ -2,6 +2,7 @@ package com.umc.halo.data.repository.auth
 
 import com.umc.halo.core.datastore.LastLoginDataStore
 import com.umc.halo.core.datastore.TokenDataStore
+import com.umc.halo.core.network.toApiErrorMessage
 import com.umc.halo.data.remote.api.auth.AuthApi
 import com.umc.halo.data.remote.dto.request.auth.LoginRequest
 import com.umc.halo.data.remote.dto.request.auth.ReissueRequest
@@ -23,17 +24,23 @@ class AuthRepositoryImpl @Inject constructor(
 ) : AuthRepository {
 
     override suspend fun login(provider: SocialProvider, providerToken: String): LoginResult {
-        val response = authApi.login(
-            LoginRequest(
-                provider = provider.name,   // enum → KAKAO / GOOGLE
-                providerToken = providerToken
+        // 통신 자체가 실패한 경우(네트워크 단절 등)와 서버가 실패로 응답한 경우를 모두
+        // 사용자에게 보여줄 문구로 바꿔서 던짐 -> ViewModel 의 runCatching 이 그대로 표시
+        val response = runCatching {
+            authApi.login(
+                LoginRequest(
+                    provider = provider.name,   // enum → KAKAO / GOOGLE
+                    providerToken = providerToken
+                )
             )
-        )
+        }.getOrElse { throwable ->
+            throw IllegalStateException(throwable.toApiErrorMessage(LOGIN_FAILED_MESSAGE))
+        }
 
         // 공통 래퍼에서 result 추출 (실패/빈 결과면 예외 → ViewModel 의 runCatching 이 처리)
         val result = response.result
         if (!response.isSuccess || result == null) {
-            error("로그인 실패 (code=${response.code}, message=${response.message})")
+            error(response.toApiErrorMessage(LOGIN_FAILED_MESSAGE))
         }
 
         // 서버 토큰 저장 (자동 로그인/인증 헤더에서 재사용)
@@ -85,5 +92,9 @@ class AuthRepositoryImpl @Inject constructor(
 
         // 저장된 문자열 → 도메인 enum 변환
         return SocialProvider.entries.firstOrNull { it.name == saved }
+    }
+
+    private companion object {
+        const val LOGIN_FAILED_MESSAGE = "로그인하지 못했어요. 잠시 후 다시 시도해 주세요."
     }
 }
