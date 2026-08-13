@@ -35,7 +35,7 @@ import com.umc.halo.domain.model.storybook.ChapterSceneCard
 import com.umc.halo.presentation.component.HaloTopBar
 import com.umc.halo.presentation.storybook.chapter.ChapterMood
 import com.umc.halo.presentation.storybook.chapter.ChapterSceneRecordMethod
-import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomAction
+import com.umc.halo.presentation.storybook.chapter.component.ChapterBottomButton
 import com.umc.halo.presentation.storybook.chapter.component.ChapterSceneCardImage
 import com.umc.halo.presentation.storybook.chapter.component.rememberSelectedImageBitmap
 import com.umc.halo.presentation.theme.Gray400
@@ -77,53 +77,58 @@ fun ChapterReviewStep(
             onClick = onBackClick
         )
 
-        Box(
-            modifier = Modifier.fillMaxSize()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(
+                    start = 24.dp,
+                    end = 24.dp,
+                    bottom = 16.dp
+                )
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(
-                        start = 24.dp,
-                        end = 24.dp,
-                        bottom = if (showBottomAction) 122.dp else 32.dp
-                    )
-            ) {
-                Text(
-                    text = "오늘의 기록 확인하기",
-                    style = HaloType.heading03SemiBold,
-                    color = ReviewTitleColor
-                )
+            Spacer(modifier = Modifier.height(24.dp))
 
-                Spacer(modifier = Modifier.height(26.dp))
+            Text(
+                text = "오늘의 기록 확인하기",
+                style = HaloType.heading03SemiBold,
+                color = ReviewTitleColor
+            )
 
-                ReviewQuestionSection(
-                    chapter = chapter,
-                    answers = answers
-                )
+            Spacer(modifier = Modifier.height(26.dp))
 
-                Spacer(modifier = Modifier.height(30.dp))
+            ReviewQuestionSection(
+                chapter = chapter,
+                answers = answers
+            )
 
-                ReviewSceneSection(
-                    selectedMethod = selectedMethod,
-                    selectedImageUri = selectedImageUri,
-                    selectedSceneCard = selectedSceneCard
-                )
+            Spacer(modifier = Modifier.height(48.dp))
 
-                Spacer(modifier = Modifier.height(30.dp))
+            ReviewSceneSection(
+                selectedMethod = selectedMethod,
+                selectedImageUri = selectedImageUri,
+                selectedSceneCard = selectedSceneCard
+            )
 
+            Spacer(modifier = Modifier.height(48.dp))
+
+            if (showBottomAction) {
                 ReviewMoodSection(
                     selectedMood = selectedMood
                 )
-            }
 
-            if (showBottomAction) {
-                ChapterBottomAction(
+                Spacer(modifier = Modifier.height(47.dp))
+
+                ChapterBottomButton(
                     text = "완성하기",
                     enabled = true,
-                    onClick = onCompleteClick,
-                    modifier = Modifier.align(Alignment.BottomCenter)
+                    onClick = onCompleteClick
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+            } else {
+                ReviewMoodSection(
+                    selectedMood = selectedMood
                 )
             }
         }
