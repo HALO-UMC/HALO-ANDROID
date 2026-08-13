@@ -153,7 +153,7 @@ class HomeViewModel @Inject constructor(
             //프론트엔드 처리 데이터 (책장 데이터)
             copy(
                 bookList = listOf(
-                    Books(1, storybookSpineOf(1), R.drawable.image_common_bookcase_cover_1, 240, 48, 0f),
+                    Books(1, storybookSpineOf(1), R.drawable.image_common_bookcase_cover_1, 230, 48, 0f),
                     Books(2, storybookSpineOf(2), R.drawable.image_common_bookcase_cover_2, 230, 76, -14f),
                     Books(3, storybookSpineOf(3), R.drawable.image_common_bookcase_cover_3, 230, 50, 0f),
                     Books(4, storybookSpineOf(4), R.drawable.image_common_bookcase_cover_4, 230, 37, 3.6f),

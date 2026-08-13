@@ -1,5 +1,6 @@
 package com.umc.halo.data.repository.themebox
 
+import com.umc.halo.core.network.toApiErrorMessage
 import com.umc.halo.data.remote.api.themebox.ThemeBoxApi
 import com.umc.halo.data.remote.dto.response.themebox.ThemeBoxResponse
 import com.umc.halo.data.remote.dto.response.themebox.ThemeExhibitionResponse
@@ -16,10 +17,13 @@ class ThemeBoxRepositoryImpl @Inject constructor(
     val themeBoxApi: ThemeBoxApi
 ): ThemeBoxRepository {
     override suspend fun getThemeBox(): ThemeBoxResult {
-        val response = themeBoxApi.getThemeBox()
+        val response = runCatching { themeBoxApi.getThemeBox() }
+            .getOrElse { throwable ->
+                throw IllegalStateException(throwable.toApiErrorMessage(THEME_BOX_FAILED_MESSAGE))
+            }
 
         return response.result?.toDomain()
-            ?: throw IllegalStateException("themeBox data is null")
+            ?: error(response.toApiErrorMessage(THEME_BOX_FAILED_MESSAGE))
     }
 
     private fun ThemeBoxResponse.toDomain() = ThemeBoxResult(
@@ -55,10 +59,18 @@ class ThemeBoxRepositoryImpl @Inject constructor(
     )
 
     override suspend fun getThemeExhibition(storybookId: Long): ThemeExhibitionResult {
-        val response = themeBoxApi.getThemeExhibition(storybookId)
+        val response = runCatching { themeBoxApi.getThemeExhibition(storybookId) }
+            .getOrElse { throwable ->
+                throw IllegalStateException(throwable.toApiErrorMessage(EXHIBITION_FAILED_MESSAGE))
+            }
 
         return response.result?.toDomain()
-            ?: throw IllegalStateException("theme exhibition data is null")
+            ?: error(response.toApiErrorMessage(EXHIBITION_FAILED_MESSAGE))
+    }
+
+    private companion object {
+        const val THEME_BOX_FAILED_MESSAGE = "테마함을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
+        const val EXHIBITION_FAILED_MESSAGE = "감상화면을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
     }
 
     private fun ThemeExhibitionResponse.toDomain() = ThemeExhibitionResult(

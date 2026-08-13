@@ -250,6 +250,7 @@ fun HomeScreenContents(
                         Modifier
                             .fillMaxWidth()
                             .background(Primary30)
+                            .padding(vertical = 23.dp)
                     ) {
                         StartStorybook(state.startStorybook, onEvent)
                     }
