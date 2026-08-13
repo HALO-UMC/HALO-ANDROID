@@ -251,7 +251,7 @@ private fun SceneImageChangeButton(
     ) {
         Text(
             text = text,
-            style = HaloType.caption01Medium,
+            style = HaloType.body03Medium,
             color = Gray400
         )
     }
