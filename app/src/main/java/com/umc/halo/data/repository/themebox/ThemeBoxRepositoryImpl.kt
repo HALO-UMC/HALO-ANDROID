@@ -4,6 +4,8 @@ import com.umc.halo.core.network.toApiErrorMessage
 import com.umc.halo.data.remote.api.themebox.ThemeBoxApi
 import com.umc.halo.data.remote.dto.response.themebox.ThemeBoxResponse
 import com.umc.halo.data.remote.dto.response.themebox.ThemeExhibitionResponse
+import com.umc.halo.domain.model.showTheme.ThemeExhibitionChapter
+import com.umc.halo.domain.model.showTheme.ThemeExhibitionResult
 import com.umc.halo.domain.model.storybook.CustomStorybook
 import com.umc.halo.domain.model.themebox.ContinueStorybook
 import com.umc.halo.domain.model.themebox.Theme
@@ -56,13 +58,13 @@ class ThemeBoxRepositoryImpl @Inject constructor(
         }
     )
 
-    override suspend fun getThemeExhibition(storybookId: Long): ThemeExhibitionResponse {
+    override suspend fun getThemeExhibition(storybookId: Long): ThemeExhibitionResult {
         val response = runCatching { themeBoxApi.getThemeExhibition(storybookId) }
             .getOrElse { throwable ->
                 throw IllegalStateException(throwable.toApiErrorMessage(EXHIBITION_FAILED_MESSAGE))
             }
 
-        return response.result
+        return response.result.toDomain()
             ?: error(response.toApiErrorMessage(EXHIBITION_FAILED_MESSAGE))
     }
 
@@ -70,4 +72,17 @@ class ThemeBoxRepositoryImpl @Inject constructor(
         const val THEME_BOX_FAILED_MESSAGE = "테마함을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
         const val EXHIBITION_FAILED_MESSAGE = "감상화면을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
     }
+
+    private fun ThemeExhibitionResponse.toDomain() = ThemeExhibitionResult(
+        storybookId = storybookId,
+        chapters = chapters.map {
+            ThemeExhibitionChapter(
+                id = it.chapterOrder,
+                title = it.title,
+                imageUrl = it.chapterImageUrl,
+                completedDate = it.completedDate,
+                summary = it.summary
+            )
+        }
+    )
 }

@@ -79,15 +79,7 @@ class ShowThemeViewModel @Inject constructor(
                 updateState {
                     copy(
                         storybookId = themeExhibition.storybookId,
-                        chapters = themeExhibition.chapters.map {
-                            ThemeExhibitionChapter(
-                                id = it.chapterOrder,
-                                title = it.title,
-                                imageUrl = it.chapterImageUrl,
-                                completedDate = it.completedDate,
-                                summary = it.summary
-                            )
-                        }
+                        chapters = themeExhibition.chapters
                     )
                 }
             }.onFailure { throwable ->
