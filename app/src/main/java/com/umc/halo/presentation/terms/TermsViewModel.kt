@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.terms
 
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.network.toUserMessageOrNull
 import com.umc.halo.domain.model.auth.AuthDestination
 import com.umc.halo.domain.repository.auth.AuthRepository
 import com.umc.halo.domain.repository.terms.TermsRepository
@@ -88,7 +89,12 @@ class TermsViewModel @Inject constructor(
                         )
                     }
                 }
-                .onFailure { updateState { copy(errorMessage = LOAD_FAILED_MESSAGE) } }
+                .onFailure { throwable ->
+                    // 레포지토리가 네트워크 단절, 서버 오류를 구분해 문구를 만들어 줌
+                    updateState {
+                        copy(errorMessage = throwable.toUserMessageOrNull() ?: LOAD_FAILED_MESSAGE)
+                    }
+                }
 
             updateState { copy(isLoading = false) }
         }

@@ -3,6 +3,7 @@ package com.umc.halo.data.repository.chapter
 import android.content.Context
 import android.net.Uri
 import com.umc.halo.core.network.BaseResponse
+import com.umc.halo.core.network.toApiErrorMessage
 import com.umc.halo.data.remote.api.chapter.ChapterApi
 import com.umc.halo.data.remote.dto.request.chapter.ChapterAnswerRequest
 import com.umc.halo.data.remote.dto.request.chapter.ChapterSaveRequest
@@ -32,8 +33,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
-import retrofit2.HttpException
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -251,32 +250,3 @@ private fun CompletedChapterResponse.toDomain(): CompletedChapter =
         chapterImageUrl = chapterImageUrl.orEmpty()
     )
 
-private fun Throwable.toApiErrorMessage(defaultMessage: String): String =
-    if (this is HttpException) {
-        response()
-            ?.errorBody()
-            ?.string()
-            ?.extractApiErrorMessage()
-            ?: defaultMessage
-    } else {
-        message?.takeIf { it.isNotBlank() } ?: defaultMessage
-    }
-
-private fun BaseResponse<*>.toApiErrorMessage(defaultMessage: String): String =
-    message.takeIf { it.isNotBlank() } ?: defaultMessage
-
-private fun String.extractApiErrorMessage(): String? =
-    runCatching {
-        val json = JSONObject(this)
-        val fieldErrors = json.optJSONObject("result")
-        if (fieldErrors != null) {
-            val keys = fieldErrors.keys()
-            if (keys.hasNext()) {
-                fieldErrors.optString(keys.next()).takeIf { it.isNotBlank() }
-            } else {
-                null
-            }
-        } else {
-            json.optString("message").takeIf { it.isNotBlank() }
-        }
-    }.getOrNull()

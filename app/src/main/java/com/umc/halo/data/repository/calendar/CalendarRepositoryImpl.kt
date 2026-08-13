@@ -1,6 +1,7 @@
 package com.umc.halo.data.repository.calendar
 
 import com.umc.halo.core.network.BaseResponse
+import com.umc.halo.core.network.toApiErrorMessage
 import com.umc.halo.data.remote.api.calendar.CalendarApi
 import com.umc.halo.domain.model.calendar.CalendarMonth
 import com.umc.halo.domain.model.calendar.CompletedBook
@@ -10,8 +11,6 @@ import com.umc.halo.domain.model.calendar.DayRecord
 import com.umc.halo.domain.model.calendar.MonthSummary
 import com.umc.halo.domain.model.calendar.RecordedDay
 import com.umc.halo.domain.repository.calendar.CalendarRepository
-import org.json.JSONObject
-import retrofit2.HttpException
 import java.util.Locale
 import javax.inject.Inject
 
@@ -97,33 +96,3 @@ class CalendarRepositoryImpl @Inject constructor(
         String.format(Locale.US, "%04d-%02d-%02d", year, month, day)
 }
 
-private fun Throwable.toApiErrorMessage(defaultMessage: String): String =
-    if (this is HttpException) {
-        response()
-            ?.errorBody()
-            ?.string()
-            ?.extractApiErrorMessage()
-            ?: defaultMessage
-    } else {
-        message?.takeIf { it.isNotBlank() } ?: defaultMessage
-    }
-
-private fun BaseResponse<*>.toApiErrorMessage(defaultMessage: String): String =
-    message.takeIf { it.isNotBlank() } ?: defaultMessage
-
-private fun String.extractApiErrorMessage(): String? =
-    runCatching {
-        val json = JSONObject(this)
-        val fieldErrors = json.optJSONObject("result")
-        if (fieldErrors != null) {
-            val keys = fieldErrors.keys()
-            if (keys.hasNext()) {
-                fieldErrors.optString(keys.next()).takeIf { it.isNotBlank() }
-            } else {
-                null
-            }
-        } else {
-            json.optString("result").takeIf { it.isNotBlank() }
-                ?: json.optString("message").takeIf { it.isNotBlank() }
-        }
-    }.getOrNull()
