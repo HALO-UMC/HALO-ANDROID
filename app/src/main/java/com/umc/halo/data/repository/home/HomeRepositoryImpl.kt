@@ -1,5 +1,6 @@
 package com.umc.halo.data.repository.home
 
+import com.umc.halo.core.network.toApiErrorMessage
 import com.umc.halo.data.remote.api.home.HomeApi
 import com.umc.halo.data.remote.dto.response.home.HomeResponse
 import com.umc.halo.domain.model.home.BookResult
@@ -14,10 +15,17 @@ class HomeRepositoryImpl @Inject constructor(
     private val homeApi: HomeApi
 ): HomeRepository {
     override suspend fun getHome(): HomeResult {
-        val response = homeApi.getHome()
+        val response = runCatching { homeApi.getHome() }
+            .getOrElse { throwable ->
+                throw IllegalStateException(throwable.toApiErrorMessage(LOAD_FAILED_MESSAGE))
+            }
 
         return response.result?.toDomain()
-            ?: throw IllegalStateException("Home data is null")
+            ?: error(response.toApiErrorMessage(LOAD_FAILED_MESSAGE))
+    }
+
+    private companion object {
+        const val LOAD_FAILED_MESSAGE = "홈 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
     }
 }
 

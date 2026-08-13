@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.storybook.list
 
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.network.toUserMessageOrNull
 import com.umc.halo.domain.repository.member.MemberRepository
 import com.umc.halo.domain.repository.storybook.StorybookRepository
 import com.umc.halo.presentation.base.BaseViewModel
@@ -68,12 +69,13 @@ class StorybookViewModel @Inject constructor(
                         )
                     }
                 }
-                .onFailure {
+                .onFailure { throwable ->
                     updateState {
                         copy(
                             // 기존 목록이 남아 있으면 그대로 두고 토스트로만 알림
                             hasLoadFailed = themes.isEmpty(),
-                            errorMessage = LOAD_FAILED_MESSAGE
+                            // 레포지토리가 네트워크 단절, 서버 오류를 구분해 문구를 만들어 줌
+                            errorMessage = throwable.toUserMessageOrNull() ?: LOAD_FAILED_MESSAGE
                         )
                     }
                 }

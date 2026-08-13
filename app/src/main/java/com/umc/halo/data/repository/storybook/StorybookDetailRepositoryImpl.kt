@@ -2,6 +2,7 @@ package com.umc.halo.data.repository.storybook
 
 import com.umc.halo.data.remote.api.storybook.StorybookDetailApi
 import com.umc.halo.core.network.BaseResponse
+import com.umc.halo.core.network.toApiErrorMessage
 import com.umc.halo.data.remote.dto.response.storybook.StorybookDetailResponse
 import com.umc.halo.data.remote.dto.response.storybook.StorybookStartResponse
 import com.umc.halo.domain.model.storybook.StoryBookIndex
@@ -79,7 +80,4 @@ private fun completeStatusStringIntoBoolean(status: String): Boolean {
         StorybookIndexStatus.TODAY -> false
     }
 }
-
-private fun BaseResponse<*>.toApiErrorMessage(defaultMessage: String): String =
-    message.takeIf { it.isNotBlank() } ?: defaultMessage
 

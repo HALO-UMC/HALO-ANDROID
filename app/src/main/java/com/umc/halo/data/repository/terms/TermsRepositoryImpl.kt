@@ -1,5 +1,6 @@
 package com.umc.halo.data.repository.terms
 
+import com.umc.halo.core.network.toApiErrorMessage
 import com.umc.halo.data.remote.api.terms.TermsApi
 import com.umc.halo.data.remote.dto.request.terms.TermAgreementItem
 import com.umc.halo.data.remote.dto.request.terms.TermsAgreementRequest
@@ -17,10 +18,14 @@ class TermsRepositoryImpl @Inject constructor(
 ) : TermsRepository {
 
     override suspend fun getTerms(): List<TermsAgreement> {
-        val response = termsApi.getTerms()
+        val response = runCatching { termsApi.getTerms() }
+            .getOrElse { throwable ->
+                throw IllegalStateException(throwable.toApiErrorMessage(LOAD_FAILED_MESSAGE))
+            }
+
         val result = response.result
         if (!response.isSuccess || result == null) {
-            error("약관 목록 조회 실패 (code=${response.code}, message=${response.message})")
+            error(response.toApiErrorMessage(LOAD_FAILED_MESSAGE))
         }
 
         return result.map { dto ->
@@ -77,5 +82,9 @@ class TermsRepositoryImpl @Inject constructor(
         if (year.length != 4) return this
 
         return "${year.takeLast(2)}.$month.$day"      // 26.06.13
+    }
+
+    private companion object {
+        const val LOAD_FAILED_MESSAGE = "약관을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
     }
 }

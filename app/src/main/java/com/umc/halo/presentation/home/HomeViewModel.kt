@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
 import com.umc.halo.core.audio.BgmPlaybackManager
+import com.umc.halo.core.network.toUserMessageOrNull
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.Books
 import com.umc.halo.domain.model.home.HomeStatus
@@ -79,10 +80,11 @@ class HomeViewModel @Inject constructor(
                         hasLoadFailed = false
                     )
                 }
-            }.onFailure {
+            }.onFailure { throwable ->
                 updateState {
                     copy(
-                        errorMessage = LOAD_FAILED_MESSAGE,
+                        // 레포지토리가 네트워크 단절,서버 오류를 구분해 문구를 만들어 줌
+                        errorMessage = throwable.toUserMessageOrNull() ?: LOAD_FAILED_MESSAGE,
                         hasLoadFailed = bookShelf.isEmpty()
                     )
                 }
