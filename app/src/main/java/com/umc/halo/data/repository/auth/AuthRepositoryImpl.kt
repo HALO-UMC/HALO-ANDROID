@@ -2,10 +2,11 @@ package com.umc.halo.data.repository.auth
 
 import com.umc.halo.core.datastore.LastLoginDataStore
 import com.umc.halo.core.datastore.TokenDataStore
+import com.umc.halo.core.network.ReissueResult
+import com.umc.halo.core.network.TokenRefresher
 import com.umc.halo.core.network.toApiErrorMessage
 import com.umc.halo.data.remote.api.auth.AuthApi
 import com.umc.halo.data.remote.dto.request.auth.LoginRequest
-import com.umc.halo.data.remote.dto.request.auth.ReissueRequest
 import com.umc.halo.domain.model.auth.AuthSession
 import com.umc.halo.domain.model.auth.LoginResult
 import com.umc.halo.domain.model.auth.SocialProvider
@@ -19,6 +20,7 @@ import javax.inject.Inject
  */
 class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
+    private val tokenRefresher: TokenRefresher,
     private val tokenDataStore: TokenDataStore,
     private val lastLoginDataStore: LastLoginDataStore
 ) : AuthRepository {
@@ -58,26 +60,25 @@ class AuthRepositoryImpl @Inject constructor(
         )
     }
 
+    /**
+     * 스플래시의 자동 로그인
+     *
+     * 재발급 자체는 [TokenRefresher] 가 전담
+     *
+     * 실패하면 어느 쪽이든 null. 다만 후처리는 다음과 같음
+     * - [ReissueResult.Expired] : 토큰을 지운 상태. 재로그인해야 함
+     * - [ReissueResult.Failed]  : 네트워크 문제일 뿐이라 토큰 보존 -> 다음 실행에서 자동 로그인 재시도
+     */
     override suspend fun reissue(): AuthSession? {
-        val refreshToken = tokenDataStore.refreshTokenFlow.first()
-        if (refreshToken.isNullOrBlank()) return null
-
-        // 만료(AUTH401_2)·네트워크 오류 모두 '자동 로그인 실패'로 같게 처리
-        val result = runCatching { authApi.reissue(ReissueRequest(refreshToken)) }
-            .getOrNull()
-            ?.takeIf { it.isSuccess }
-            ?.result
-
-        if (result == null) {
-            tokenDataStore.clear()
-            return null
+        val session = when (val result = tokenRefresher.refreshForAutoLogin()) {
+            is ReissueResult.Success -> result.session ?: return null
+            ReissueResult.Expired, ReissueResult.Failed -> return null
         }
 
-        tokenDataStore.saveTokens(result.accessToken, result.refreshToken)
-
+        // DTO -> 도메인 변환
         return AuthSession(
-            termsAgreed = result.termsAgreed,
-            onboardingCompleted = result.onboardingCompleted
+            termsAgreed = session.termsAgreed,
+            onboardingCompleted = session.onboardingCompleted
         )
     }
 
