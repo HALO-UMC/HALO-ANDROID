@@ -23,6 +23,7 @@ class BgmPlaybackManager @Inject constructor(
     val state: StateFlow<BgmPlaybackState> = _state.asStateFlow()
 
     private var loaded = false
+    private var wasPlayingBeforeBackground = false
 
     suspend fun loadSettings(force: Boolean = false): Result<Unit> {
         if (loaded && !force) return Result.success(Unit)
@@ -70,6 +71,21 @@ class BgmPlaybackManager @Inject constructor(
     fun stopForAppExit() {
         playerController.stop()
         _state.update { it.copy(isPlaying = false) }
+    }
+
+    fun pauseForBackground() {
+        wasPlayingBeforeBackground = playerController.isPlaying
+        if (wasPlayingBeforeBackground) {
+            playerController.pause()
+        }
+    }
+
+    fun resumeFromBackground() {
+        if (wasPlayingBeforeBackground) {
+            wasPlayingBeforeBackground = false
+            val current = _state.value
+            playerController.play(current.bgmId, current.volume)
+        }
     }
 
     fun setVolume(volume: Float) {
