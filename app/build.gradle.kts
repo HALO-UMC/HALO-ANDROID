@@ -107,7 +107,6 @@ dependencies {
 
     // DI - Hilt
     implementation(libs.hilt.android)
-    implementation(libs.google.firebase.crashlytics.ktx)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
@@ -133,8 +132,8 @@ dependencies {
     implementation(libs.firebase.messaging)
 
     // 로그 전송 - FireBase
-    implementation(libs.firebase.analytics.ktx)
-    implementation(libs.firebase.crashlytics.ktx)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 
     // 이미지 로드 - Coil
     implementation(libs.coil.compose)
