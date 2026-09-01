@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 // 민감정보는 git에 올리지 않는 local.properties 에서 읽어옴
@@ -106,6 +107,7 @@ dependencies {
 
     // DI - Hilt
     implementation(libs.hilt.android)
+    implementation(libs.google.firebase.crashlytics.ktx)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
@@ -128,8 +130,11 @@ dependencies {
 
     // 푸시 알림 - FireBase
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
     implementation(libs.firebase.messaging)
+
+    // 로그 전송 - FireBase
+    implementation(libs.firebase.analytics.ktx)
+    implementation(libs.firebase.crashlytics.ktx)
 
     // 이미지 로드 - Coil
     implementation(libs.coil.compose)
