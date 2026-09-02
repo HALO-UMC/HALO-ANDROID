@@ -14,10 +14,6 @@ class FireBaseCrashlyticsLogger @Inject constructor(
         crashlytics.setCustomKey(key,value)
     }
 
-    override fun setUserId(userId: String) {
-        crashlytics.setUserId(userId)
-    }
-
     override fun recordException(
         throwable: Throwable,
         params: Map<String, String>
