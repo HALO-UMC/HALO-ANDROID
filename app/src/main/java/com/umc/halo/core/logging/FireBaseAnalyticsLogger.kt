@@ -10,6 +10,7 @@ class FireBaseAnalyticsLogger @Inject constructor(
     override fun logScreenView(screenName: String) {
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
             param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, screenName)
         }
     }
 

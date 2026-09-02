@@ -26,6 +26,11 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/notification_accent" />
 
+        <!-- Compose Navigation 경로 기반으로 화면을 직접 로깅하므로 Activity 단위 자동 screen_view는 비활성화 -->
+        <meta-data
+            android:name="google_analytics_automatic_screen_reporting_enabled"
+            android:value="false" />
+
         <service
             android:name=".notification.HaloFirebaseMessagingService"
             android:exported="false">
