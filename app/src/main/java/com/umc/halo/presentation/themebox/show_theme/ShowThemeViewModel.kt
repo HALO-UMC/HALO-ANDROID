@@ -2,7 +2,7 @@ package com.umc.halo.presentation.themebox.show_theme
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.umc.halo.core.logging.ErrorReporter
+import com.umc.halo.core.logging.ActionReporter
 import com.umc.halo.core.network.toUserMessageOrNull
 import com.umc.halo.domain.model.showTheme.ThemeExhibitionChapter
 import com.umc.halo.domain.repository.themebox.ThemeBoxRepository
@@ -14,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ShowThemeViewModel @Inject constructor(
     private val themeBoxRepository: ThemeBoxRepository,
-    private val errorReporter: ErrorReporter,
+    private val actionReporter: ActionReporter,
     savedStateHandle: SavedStateHandle
 ): BaseViewModel<ShowThemeUiState, ShowThemeUiEvent>(ShowThemeUiState()) {
 
@@ -78,6 +78,7 @@ class ShowThemeViewModel @Inject constructor(
             runCatching {
                 themeBoxRepository.getThemeExhibition(storybookId)
             }.onSuccess { themeExhibition ->
+                actionReporter.reportSuccess(SCREEN, "load_exhibition")
                 updateState {
                     copy(
                         storybookId = themeExhibition.storybookId,
@@ -85,7 +86,7 @@ class ShowThemeViewModel @Inject constructor(
                     )
                 }
             }.onFailure { throwable ->
-                errorReporter.report(throwable, SCREEN, "load_theme_exhibition")
+                actionReporter.reportFailure(throwable, SCREEN, "load_exhibition")
                 // 레포지토리가 네트워크 단절, 서버 오류를 구분해 문구를 만들어 줌
                 updateState {
                     copy(errorMessage = throwable.toUserMessageOrNull() ?: LOAD_FAILED_MESSAGE)

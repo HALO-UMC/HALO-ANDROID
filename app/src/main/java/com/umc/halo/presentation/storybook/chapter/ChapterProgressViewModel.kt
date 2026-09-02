@@ -1,7 +1,7 @@
 package com.umc.halo.presentation.storybook.chapter
 
 import androidx.lifecycle.viewModelScope
-import com.umc.halo.core.logging.ErrorReporter
+import com.umc.halo.core.logging.ActionReporter
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.domain.model.storybook.ChapterCoverType
 import com.umc.halo.domain.model.storybook.ChapterDraft
@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ChapterProgressViewModel @Inject constructor(
     private val chapterRepository: ChapterRepository,
-    private val errorReporter: ErrorReporter
+    private val actionReporter: ActionReporter
 ) : BaseViewModel<ChapterProgressUiState, ChapterProgressUiEvent>(
     initialState = ChapterProgressUiState()
 ) {
@@ -118,6 +118,7 @@ class ChapterProgressViewModel @Inject constructor(
             runCatching {
                 chapterRepository.getTodayChapter(storybookId, chapterOrder)
             }.onSuccess { todayChapter ->
+                actionReporter.reportSuccess(SCREEN, "init")
                 val chapter = todayChapter.chapter
                 val restoredState = currentState.applyDraft(
                     chapter = chapter,
@@ -133,7 +134,7 @@ class ChapterProgressViewModel @Inject constructor(
                     )
                 }
             }.onFailure { throwable ->
-                errorReporter.report(throwable, SCREEN, "initialize_chapter")
+                actionReporter.reportFailure(throwable, SCREEN, "init")
                 updateState {
                     copy(
                         isInitialized = false,
@@ -218,6 +219,7 @@ class ChapterProgressViewModel @Inject constructor(
             runCatching {
                 chapterRepository.uploadImageFromUri(imageUri)
             }.onSuccess { uploadedImage ->
+                actionReporter.reportSuccess(SCREEN, "upload_image")
                 updateState {
                     copy(
                         selectedSceneImageKey = uploadedImage.imageKey,
@@ -226,7 +228,7 @@ class ChapterProgressViewModel @Inject constructor(
                     )
                 }
             }.onFailure { throwable ->
-                errorReporter.report(throwable, SCREEN, "upload_scene_image")
+                actionReporter.reportFailure(throwable, SCREEN, "upload_image")
                 updateState {
                     copy(
                         isImageUploading = false,
@@ -369,8 +371,10 @@ class ChapterProgressViewModel @Inject constructor(
         draftSaveJob = viewModelScope.launch {
             runCatching {
                 chapterRepository.saveMemberChapter(form)
+            }.onSuccess {
+                actionReporter.reportSuccess(SCREEN, "save_draft")
             }.onFailure { throwable ->
-                errorReporter.report(throwable, SCREEN, "save_draft")
+                actionReporter.reportFailure(throwable, SCREEN, "save_draft")
                 updateState {
                     copy(errorMessage = throwable.message ?: "임시저장에 실패했어요.")
                 }
@@ -397,6 +401,7 @@ class ChapterProgressViewModel @Inject constructor(
             runCatching {
                 chapterRepository.saveMemberChapter(form)
             }.onSuccess {
+                actionReporter.reportSuccess(SCREEN, "complete")
                 val storybookId = currentState.chapter?.storybookId
                 updateState {
                     copy(
@@ -405,7 +410,7 @@ class ChapterProgressViewModel @Inject constructor(
                     )
                 }
             }.onFailure { throwable ->
-                errorReporter.report(throwable, SCREEN, "complete_chapter")
+                actionReporter.reportFailure(throwable, SCREEN, "complete")
                 updateState {
                     copy(
                         isSaving = false,

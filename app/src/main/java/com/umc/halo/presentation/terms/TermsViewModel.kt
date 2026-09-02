@@ -1,7 +1,7 @@
 package com.umc.halo.presentation.terms
 
 import androidx.lifecycle.viewModelScope
-import com.umc.halo.core.logging.ErrorReporter
+import com.umc.halo.core.logging.ActionReporter
 import com.umc.halo.core.network.toUserMessageOrNull
 import com.umc.halo.domain.model.auth.AuthDestination
 import com.umc.halo.domain.repository.auth.AuthRepository
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class TermsViewModel @Inject constructor(
     private val termsRepository: TermsRepository,
     private val authRepository: AuthRepository,
-    private val errorReporter: ErrorReporter
+    private val actionReporter: ActionReporter
 ) : BaseViewModel<TermsUiState, TermsUiEvent>(TermsUiState()) {
 
     init {
@@ -83,6 +83,7 @@ class TermsViewModel @Inject constructor(
 
             termsResult
                 .onSuccess { terms ->
+                    actionReporter.reportSuccess(SCREEN, "load_terms")
                     updateState {
                         copy(
                             terms = terms,
@@ -92,7 +93,7 @@ class TermsViewModel @Inject constructor(
                     }
                 }
                 .onFailure { throwable ->
-                    errorReporter.report(throwable, SCREEN, "load_terms")
+                    actionReporter.reportFailure(throwable, SCREEN, "load_terms")
                     // 레포지토리가 네트워크 단절, 서버 오류를 구분해 문구를 만들어 줌
                     updateState {
                         copy(errorMessage = throwable.toUserMessageOrNull() ?: LOAD_FAILED_MESSAGE)

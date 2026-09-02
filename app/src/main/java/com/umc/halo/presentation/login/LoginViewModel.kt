@@ -3,7 +3,7 @@ package com.umc.halo.presentation.login
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.umc.halo.core.datastore.DeviceUuidDataStore
-import com.umc.halo.core.logging.ErrorReporter
+import com.umc.halo.core.logging.ActionReporter
 import com.umc.halo.core.network.toUserMessageOrNull
 import com.umc.halo.data.remote.auth.GoogleLoginDataSource
 import com.umc.halo.data.remote.auth.KakaoLoginDataSource
@@ -33,7 +33,7 @@ class LoginViewModel @Inject constructor(
     private val resolveDestinationAfterLogin: ResolveDestinationAfterLoginUseCase,
     private val deviceUuidDataStore: DeviceUuidDataStore,
     private val notificationRepository: NotificationRepository,
-    private val errorReporter: ErrorReporter
+    private val actionReporter: ActionReporter
 ) : BaseViewModel<LoginUiState, LoginUiEvent>(
     initialState = LoginUiState()
 ) {
@@ -80,12 +80,13 @@ class LoginViewModel @Inject constructor(
 
                 resolveDestinationAfterLogin(loginResult)
             }.onSuccess { destination ->
+                actionReporter.reportSuccess(SCREEN, "login")
                 updateState { copy(destination = destination) }
                 registerFCMToken()
             }.onFailure { throwable ->
                 // 사용자가 직접 창을 닫은 건 실패가 아님으로 처리
                 if (throwable !is LoginCancelledException) {
-                    errorReporter.report(throwable, SCREEN, "login")
+                    actionReporter.reportFailure(throwable, SCREEN, "login")
                     // SDK 예외의 영문 메시지는 걸러지고 기본 문구로 넘어가게 처리
                     updateState {
                         copy(errorMessage = throwable.toUserMessageOrNull() ?: LOGIN_FAILED_MESSAGE)
@@ -105,6 +106,7 @@ class LoginViewModel @Inject constructor(
 
                 notificationRepository.addMembers(token, uuid)
             }.onSuccess {
+                actionReporter.reportSuccess(SCREEN, "register_fcm_token")
                 return
             }.onFailure {
                 Log.e(
@@ -115,7 +117,7 @@ class LoginViewModel @Inject constructor(
 
                 // 마지막 시도까지 실패했을 때만 리포트 (재시도 중엔 노이즈라 생략)
                 if (attempt == FCM_REGISTER_MAX_ATTEMPTS - 1) {
-                    errorReporter.report(it, SCREEN, "register_fcm_token")
+                    actionReporter.reportFailure(it, SCREEN, "register_fcm_token")
                 }
 
                 delay(1000)

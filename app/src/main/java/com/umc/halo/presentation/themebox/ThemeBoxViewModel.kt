@@ -1,7 +1,7 @@
 package com.umc.halo.presentation.themebox
 
 import androidx.lifecycle.viewModelScope
-import com.umc.halo.core.logging.ErrorReporter
+import com.umc.halo.core.logging.ActionReporter
 import com.umc.halo.core.network.toUserMessageOrNull
 import com.umc.halo.domain.repository.themebox.ThemeBoxRepository
 import com.umc.halo.presentation.base.BaseViewModel
@@ -13,7 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ThemeBoxViewModel @Inject constructor(
     private val themeBoxRepository: ThemeBoxRepository,
-    private val errorReporter: ErrorReporter
+    private val actionReporter: ActionReporter
 ): BaseViewModel<ThemeBoxUiState, ThemeBoxUiEvent>(ThemeBoxUiState()) {
 
     private var loadJob: Job? = null
@@ -47,6 +47,7 @@ class ThemeBoxViewModel @Inject constructor(
 
             runCatching { themeBoxRepository.getThemeBox() }
                 .onSuccess {  themeBox ->
+                    actionReporter.reportSuccess(SCREEN, "load_theme_box")
                     updateState {
                         copy(
                             themeBoxState = if (themeBox.numberOfCharacter == 0) {
@@ -68,7 +69,7 @@ class ThemeBoxViewModel @Inject constructor(
                         )
                     }
                 }.onFailure { throwable ->
-                    errorReporter.report(throwable, SCREEN, "load_theme_box")
+                    actionReporter.reportFailure(throwable, SCREEN, "load_theme_box")
                     updateState {
                         copy(
                             // 기존 목록이 남아 있으면 그대로 두고 토스트로만 알림
