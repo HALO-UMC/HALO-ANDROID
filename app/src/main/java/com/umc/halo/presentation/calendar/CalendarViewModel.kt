@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.calendar
 
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.logging.ErrorReporter
 import com.umc.halo.domain.model.calendar.CalendarDay
 import com.umc.halo.domain.model.calendar.MonthSummary
 import com.umc.halo.domain.model.calendar.RecordedDay
@@ -23,7 +24,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
-    private val calendarRepository: CalendarRepository
+    private val calendarRepository: CalendarRepository,
+    private val errorReporter: ErrorReporter
 ) : BaseViewModel<CalendarUiState, CalendarUiEvent>(CalendarUiState()) {
 
     // 실제 오늘 — 현재 월을 조회 상한선으로 사용
@@ -98,6 +100,7 @@ class CalendarViewModel @Inject constructor(
                     }
                 }
                 .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "load_month")
                     // 실패하면 이전 달 수치가 남지 않도록 요약을 비우고 안내
                     updateState {
                         copy(
@@ -133,6 +136,7 @@ class CalendarViewModel @Inject constructor(
                     updateState { copy(selectedRecord = record, isDayRecordLoading = false) }
                 }
                 .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "load_day_record")
                     // 빈 모달("아직 기록이 없어요")로 오해하지 않도록 모달을 닫고 실패로 알림
                     updateState {
                         copy(
@@ -204,6 +208,7 @@ class CalendarViewModel @Inject constructor(
     }
 
     private companion object {
+        const val SCREEN = "calendar"
         // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
         const val MONTH_LOAD_FAILED_MESSAGE = "기록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
         const val DAY_RECORD_LOAD_FAILED_MESSAGE = "그 날의 기록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."

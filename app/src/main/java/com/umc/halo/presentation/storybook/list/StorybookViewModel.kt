@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.storybook.list
 
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.logging.ErrorReporter
 import com.umc.halo.core.network.toUserMessageOrNull
 import com.umc.halo.domain.repository.member.MemberRepository
 import com.umc.halo.domain.repository.storybook.StorybookRepository
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class StorybookViewModel @Inject constructor(
     private val storybookRepository: StorybookRepository,
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
+    private val errorReporter: ErrorReporter
 ) : BaseViewModel<StorybookUiState, StorybookUiEvent>(StorybookUiState()) {
 
     // 화면에 다시 들어와 조회가 겹칠 때 늦게 도착한 이전 응답이 새 결과를 덮어쓰지 않도록 이전 요청을 취소
@@ -70,6 +72,7 @@ class StorybookViewModel @Inject constructor(
                     }
                 }
                 .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "load_storybook_list")
                     updateState {
                         copy(
                             // 기존 목록이 남아 있으면 그대로 두고 토스트로만 알림
@@ -81,18 +84,27 @@ class StorybookViewModel @Inject constructor(
                 }
 
             // 맞춤 스토리북·사용자 이름은 부가 정보라 실패해도 화면은 띄우게 함
-            recommendedDeferred.await().onSuccess { recommended ->
-                updateState { copy(customStorybooks = recommended) }
-            }
-            memberDeferred.await().onSuccess { member ->
-                updateState { copy(userName = member.name) }
-            }
+            recommendedDeferred.await()
+                .onSuccess { recommended ->
+                    updateState { copy(customStorybooks = recommended) }
+                }
+                .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "load_recommended_storybooks")
+                }
+            memberDeferred.await()
+                .onSuccess { member ->
+                    updateState { copy(userName = member.name) }
+                }
+                .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "load_my_info")
+                }
 
             updateState { copy(isLoading = false) }
         }
     }
 
     private companion object {
+        const val SCREEN = "storybook_list"
         // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
         const val LOAD_FAILED_MESSAGE = "스토리북을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
     }

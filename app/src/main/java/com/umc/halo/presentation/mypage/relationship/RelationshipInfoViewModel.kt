@@ -2,6 +2,7 @@ package com.umc.halo.presentation.mypage.relationship
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.logging.ErrorReporter
 import com.umc.halo.domain.repository.relationship.RelationshipRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RelationshipInfoViewModel @Inject constructor(
-    private val relationshipRepository: RelationshipRepository
+    private val relationshipRepository: RelationshipRepository,
+    private val errorReporter: ErrorReporter
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RelationshipInfoUiState())
@@ -53,6 +55,7 @@ class RelationshipInfoViewModel @Inject constructor(
                     }
                 }
                 .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "load_relationship_info")
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -69,6 +72,7 @@ class RelationshipInfoViewModel @Inject constructor(
     }
 
     private companion object {
+        const val SCREEN = "relationship_info"
         const val LOAD_FAILED_MESSAGE = "관계 정보를 불러오지 못했어요."
     }
 }

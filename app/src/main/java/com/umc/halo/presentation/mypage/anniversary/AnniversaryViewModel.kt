@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.mypage.anniversary
 
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.logging.ErrorReporter
 import com.umc.halo.domain.model.anniversary.AnniversaryOverview
 import com.umc.halo.domain.model.anniversary.AnniversarySaveForm
 import com.umc.halo.domain.model.anniversary.CommonAnniversary
@@ -17,7 +18,8 @@ import kotlin.math.abs
 
 @HiltViewModel
 class AnniversaryViewModel @Inject constructor(
-    private val anniversaryRepository: AnniversaryRepository
+    private val anniversaryRepository: AnniversaryRepository,
+    private val errorReporter: ErrorReporter
 ) : BaseViewModel<AnniversaryUiState, AnniversaryUiEvent>(
     initialState = AnniversaryUiState()
 ) {
@@ -133,6 +135,7 @@ class AnniversaryViewModel @Inject constructor(
                     }
                 }
                 .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "load_anniversaries")
                     updateState {
                         copy(
                             isLoading = false,
@@ -259,6 +262,7 @@ class AnniversaryViewModel @Inject constructor(
                     loadAnniversaries(showError = false)
                 }
                 .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "delete_anniversaries")
                     updateState {
                         copy(
                             isSaving = false,
@@ -324,6 +328,7 @@ class AnniversaryViewModel @Inject constructor(
                     loadAnniversaries(showError = false)
                 }
                 .onFailure {
+                    errorReporter.report(it, SCREEN, "save_anniversary")
                     updateState {
                         copy(
                             isSaving = false,
@@ -350,6 +355,7 @@ class AnniversaryViewModel @Inject constructor(
     }
 
     private companion object {
+        const val SCREEN = "anniversary"
         const val TITLE_MAX_LENGTH = 20
         const val MEMO_MAX_LENGTH = 50
         const val ADDED_HIGHLIGHT_DURATION_MS = 2_000L

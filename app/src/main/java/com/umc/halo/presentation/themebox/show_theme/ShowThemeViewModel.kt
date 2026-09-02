@@ -2,6 +2,7 @@ package com.umc.halo.presentation.themebox.show_theme
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.logging.ErrorReporter
 import com.umc.halo.core.network.toUserMessageOrNull
 import com.umc.halo.domain.model.showTheme.ThemeExhibitionChapter
 import com.umc.halo.domain.repository.themebox.ThemeBoxRepository
@@ -13,6 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ShowThemeViewModel @Inject constructor(
     private val themeBoxRepository: ThemeBoxRepository,
+    private val errorReporter: ErrorReporter,
     savedStateHandle: SavedStateHandle
 ): BaseViewModel<ShowThemeUiState, ShowThemeUiEvent>(ShowThemeUiState()) {
 
@@ -83,6 +85,7 @@ class ShowThemeViewModel @Inject constructor(
                     )
                 }
             }.onFailure { throwable ->
+                errorReporter.report(throwable, SCREEN, "load_theme_exhibition")
                 // 레포지토리가 네트워크 단절, 서버 오류를 구분해 문구를 만들어 줌
                 updateState {
                     copy(errorMessage = throwable.toUserMessageOrNull() ?: LOAD_FAILED_MESSAGE)
@@ -92,6 +95,7 @@ class ShowThemeViewModel @Inject constructor(
     }
 
     private companion object {
+        const val SCREEN = "show_theme"
         // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
         const val LOAD_FAILED_MESSAGE = "감상화면을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
     }

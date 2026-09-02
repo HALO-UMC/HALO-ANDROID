@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.umc.halo.core.audio.BgmPlaybackManager
 import com.umc.halo.core.datastore.DeviceUuidDataStore
+import com.umc.halo.core.logging.ErrorReporter
 import com.umc.halo.data.remote.auth.GoogleLoginDataSource
 import com.umc.halo.data.remote.auth.KakaoLoginDataSource
 import com.umc.halo.domain.model.member.MemberInfo
@@ -37,7 +38,8 @@ class MyPageViewModel @Inject constructor(
     private val kakaoLoginDataSource: KakaoLoginDataSource,
     private val googleLoginDataSource: GoogleLoginDataSource,
     private val deviceUuidDataStore: DeviceUuidDataStore,
-    private val notificationRepository: NotificationRepository
+    private val notificationRepository: NotificationRepository,
+    private val errorReporter: ErrorReporter
 ) : BaseViewModel<MyPageUiState, MyPageUiEvent>(
     initialState = MyPageUiState()
 ) {
@@ -198,6 +200,7 @@ class MyPageViewModel @Inject constructor(
                 )
             )
         }.onFailure { throwable ->
+            errorReporter.report(throwable, SCREEN, "toggle_all_notification")
             Log.e("Notification", "전체 알림 끄기 실패", throwable)
         }
     }
@@ -210,6 +213,7 @@ class MyPageViewModel @Inject constructor(
                 )
             )
         }.onFailure { throwable ->
+            errorReporter.report(throwable, SCREEN, "toggle_all_notification")
             Log.e("Notification", "전체 알림 켜기 실패", throwable)
         }
     }
@@ -250,6 +254,7 @@ class MyPageViewModel @Inject constructor(
                     }
                 }
                 .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "load_my_info")
                     updateState {
                         copy(
                             accountErrorMessage = throwable.message
@@ -261,7 +266,8 @@ class MyPageViewModel @Inject constructor(
 
             runCatching { settingsRepository.getNotificationSettings() }
                 .onSuccess { applyNotificationSettings(it) }
-                .onFailure {
+                .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "load_notification_settings")
                     updateState { copy(isReceivingNotification = false) }
                 }
 
@@ -275,6 +281,7 @@ class MyPageViewModel @Inject constructor(
 
             bgmPlaybackManager.loadSettings(force = true)
                 .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "load_bgm_settings")
                     updateState {
                         copy(
                             isBgmLoading = false,
@@ -302,6 +309,7 @@ class MyPageViewModel @Inject constructor(
                     updateState { copy(isNotificationSettingsLoading = false) }
                 }
                 .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "load_notification_settings")
                     updateState {
                         copy(
                             isNotificationSettingsLoading = false,
@@ -340,6 +348,7 @@ class MyPageViewModel @Inject constructor(
                     updateState { copy(isNotificationSettingsLoading = false) }
                 }
                 .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "update_notification_settings")
                     applyNotificationSettings(previous)
                     updateState {
                         copy(
@@ -435,6 +444,9 @@ class MyPageViewModel @Inject constructor(
     }
 
     private fun showBgmSaveError(throwable: Throwable? = null) {
+        if (throwable != null) {
+            errorReporter.report(throwable, SCREEN, "save_bgm_settings")
+        }
         updateState {
             copy(
                 systemSettingsErrorMessage = throwable?.message
@@ -455,6 +467,8 @@ class MyPageViewModel @Inject constructor(
             runCatching {
                 val uuid = deviceUuidDataStore.getOrCreate()
                 notificationRepository.deleteMembers(uuid)
+            }.onFailure { throwable ->
+                errorReporter.report(throwable, SCREEN, "delete_fcm_member")
             }
 
             // 서버 호출이 실패해도 로컬 토큰은 지워짐 (AuthRepository.logout 참고)
@@ -501,6 +515,7 @@ class MyPageViewModel @Inject constructor(
     }
 
     private companion object {
+        const val SCREEN = "mypage"
         // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
         const val WITHDRAW_FAILED_MESSAGE = "회원 탈퇴에 실패했어요. 잠시 후 다시 시도해 주세요."
         const val BGM_LOAD_FAILED_MESSAGE = "BGM 설정을 불러오지 못했어요."

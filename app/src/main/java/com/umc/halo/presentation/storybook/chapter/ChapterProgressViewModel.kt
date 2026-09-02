@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.storybook.chapter
 
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.logging.ErrorReporter
 import com.umc.halo.domain.model.storybook.Chapter
 import com.umc.halo.domain.model.storybook.ChapterCoverType
 import com.umc.halo.domain.model.storybook.ChapterDraft
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChapterProgressViewModel @Inject constructor(
-    private val chapterRepository: ChapterRepository
+    private val chapterRepository: ChapterRepository,
+    private val errorReporter: ErrorReporter
 ) : BaseViewModel<ChapterProgressUiState, ChapterProgressUiEvent>(
     initialState = ChapterProgressUiState()
 ) {
@@ -131,6 +133,7 @@ class ChapterProgressViewModel @Inject constructor(
                     )
                 }
             }.onFailure { throwable ->
+                errorReporter.report(throwable, SCREEN, "initialize_chapter")
                 updateState {
                     copy(
                         isInitialized = false,
@@ -223,6 +226,7 @@ class ChapterProgressViewModel @Inject constructor(
                     )
                 }
             }.onFailure { throwable ->
+                errorReporter.report(throwable, SCREEN, "upload_scene_image")
                 updateState {
                     copy(
                         isImageUploading = false,
@@ -366,6 +370,7 @@ class ChapterProgressViewModel @Inject constructor(
             runCatching {
                 chapterRepository.saveMemberChapter(form)
             }.onFailure { throwable ->
+                errorReporter.report(throwable, SCREEN, "save_draft")
                 updateState {
                     copy(errorMessage = throwable.message ?: "임시저장에 실패했어요.")
                 }
@@ -400,6 +405,7 @@ class ChapterProgressViewModel @Inject constructor(
                     )
                 }
             }.onFailure { throwable ->
+                errorReporter.report(throwable, SCREEN, "complete_chapter")
                 updateState {
                     copy(
                         isSaving = false,
@@ -437,4 +443,7 @@ class ChapterProgressViewModel @Inject constructor(
         )
     }
 
+    private companion object {
+        const val SCREEN = "chapter_progress"
+    }
 }

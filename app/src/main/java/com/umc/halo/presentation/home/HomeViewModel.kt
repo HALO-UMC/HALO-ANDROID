@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
 import com.umc.halo.core.audio.BgmPlaybackManager
+import com.umc.halo.core.logging.ErrorReporter
 import com.umc.halo.core.network.toUserMessageOrNull
 import com.umc.halo.R
 import com.umc.halo.domain.model.home.Books
@@ -30,7 +31,8 @@ import kotlin.math.sin
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
     private val bgmPlaybackManager: BgmPlaybackManager,
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
+    private val errorReporter: ErrorReporter
 ): BaseViewModel<HomeUiState, HomeUiEvent>(HomeUiState()) {
     val bgmState = bgmPlaybackManager.state
     private var loadJob: Job? = null
@@ -66,6 +68,7 @@ class HomeViewModel @Inject constructor(
             }
 
             homeResult.await().onSuccess { home ->
+                errorReporter.reportSuccess(SCREEN, "load_home")
                 updateState {
                     copy(
                         userInfo = UserInfo(home.memberName, true),
@@ -81,6 +84,7 @@ class HomeViewModel @Inject constructor(
                     )
                 }
             }.onFailure { throwable ->
+                errorReporter.report(throwable, SCREEN, "load_home")
                 updateState {
                     copy(
                         // 레포지토리가 네트워크 단절,서버 오류를 구분해 문구를 만들어 줌
@@ -91,7 +95,11 @@ class HomeViewModel @Inject constructor(
             }
 
             bgmResult.await()
-                .onFailure {
+                .onSuccess {
+                    errorReporter.reportSuccess(SCREEN, "load_bgm_settings")
+                }
+                .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "load_bgm_settings")
                     updateState {
                         copy(
                             errorMessage = LOAD_FAILED_MESSAGE
@@ -100,7 +108,11 @@ class HomeViewModel @Inject constructor(
                 }
 
             userAccessResult.await()
-                .onFailure {
+                .onSuccess {
+                    errorReporter.reportSuccess(SCREEN, "user_access")
+                }
+                .onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "user_access")
                     updateState {
                         copy(
                             errorMessage = ACCESS_FAILED_MESSAGE
@@ -113,6 +125,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private companion object {
+        const val SCREEN = "home"
         const val LOAD_FAILED_MESSAGE = "홈화면을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
         const val ACCESS_FAILED_MESSAGE = "사용자 정보를 갱신하지 못했습니다."
     }

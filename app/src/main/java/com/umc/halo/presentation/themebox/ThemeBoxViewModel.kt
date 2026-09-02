@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.themebox
 
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.logging.ErrorReporter
 import com.umc.halo.core.network.toUserMessageOrNull
 import com.umc.halo.domain.repository.themebox.ThemeBoxRepository
 import com.umc.halo.presentation.base.BaseViewModel
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ThemeBoxViewModel @Inject constructor(
-    private val themeBoxRepository: ThemeBoxRepository
+    private val themeBoxRepository: ThemeBoxRepository,
+    private val errorReporter: ErrorReporter
 ): BaseViewModel<ThemeBoxUiState, ThemeBoxUiEvent>(ThemeBoxUiState()) {
 
     private var loadJob: Job? = null
@@ -66,6 +68,7 @@ class ThemeBoxViewModel @Inject constructor(
                         )
                     }
                 }.onFailure { throwable ->
+                    errorReporter.report(throwable, SCREEN, "load_theme_box")
                     updateState {
                         copy(
                             // 기존 목록이 남아 있으면 그대로 두고 토스트로만 알림
@@ -81,6 +84,7 @@ class ThemeBoxViewModel @Inject constructor(
     }
 
     private companion object {
+        const val SCREEN = "themebox"
         // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
         const val LOAD_FAILED_MESSAGE = "테마함을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
     }
