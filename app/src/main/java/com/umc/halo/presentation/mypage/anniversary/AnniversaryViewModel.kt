@@ -1,6 +1,7 @@
 package com.umc.halo.presentation.mypage.anniversary
 
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.logging.ActionReporter
 import com.umc.halo.domain.model.anniversary.AnniversaryOverview
 import com.umc.halo.domain.model.anniversary.AnniversarySaveForm
 import com.umc.halo.domain.model.anniversary.CommonAnniversary
@@ -17,7 +18,8 @@ import kotlin.math.abs
 
 @HiltViewModel
 class AnniversaryViewModel @Inject constructor(
-    private val anniversaryRepository: AnniversaryRepository
+    private val anniversaryRepository: AnniversaryRepository,
+    private val actionReporter: ActionReporter
 ) : BaseViewModel<AnniversaryUiState, AnniversaryUiEvent>(
     initialState = AnniversaryUiState()
 ) {
@@ -123,6 +125,7 @@ class AnniversaryViewModel @Inject constructor(
 
             runCatching { anniversaryRepository.getAnniversaries() }
                 .onSuccess { overview ->
+                    actionReporter.reportSuccess(SCREEN, "load")
                     updateState {
                         copy(
                             upcomingItems = overview.toUpcomingItems(),
@@ -133,6 +136,7 @@ class AnniversaryViewModel @Inject constructor(
                     }
                 }
                 .onFailure { throwable ->
+                    actionReporter.reportFailure(throwable, SCREEN, "load")
                     updateState {
                         copy(
                             isLoading = false,
@@ -246,6 +250,7 @@ class AnniversaryViewModel @Inject constructor(
             updateState { copy(isSaving = true, errorMessage = null) }
             runCatching { anniversaryRepository.deleteAnniversaries(idsToDelete) }
                 .onSuccess {
+                    actionReporter.reportSuccess(SCREEN, "delete")
                     updateState {
                         copy(
                             personalItems = personalItems.filterNot { it.id in idsToDelete },
@@ -259,6 +264,7 @@ class AnniversaryViewModel @Inject constructor(
                     loadAnniversaries(showError = false)
                 }
                 .onFailure { throwable ->
+                    actionReporter.reportFailure(throwable, SCREEN, "delete")
                     updateState {
                         copy(
                             isSaving = false,
@@ -306,6 +312,7 @@ class AnniversaryViewModel @Inject constructor(
                 } ?: anniversaryRepository.createAnniversary(saveForm)
             }
                 .onSuccess { savedId ->
+                    actionReporter.reportSuccess(SCREEN, "save")
                     val shouldHighlightAddedItem = form.editingId == null
                     updateState {
                         copy(
@@ -324,6 +331,7 @@ class AnniversaryViewModel @Inject constructor(
                     loadAnniversaries(showError = false)
                 }
                 .onFailure {
+                    actionReporter.reportFailure(it, SCREEN, "save")
                     updateState {
                         copy(
                             isSaving = false,
@@ -350,6 +358,7 @@ class AnniversaryViewModel @Inject constructor(
     }
 
     private companion object {
+        const val SCREEN = "anniversary"
         const val TITLE_MAX_LENGTH = 20
         const val MEMO_MAX_LENGTH = 50
         const val ADDED_HIGHLIGHT_DURATION_MS = 2_000L
