@@ -47,6 +47,7 @@ fun MyPageScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
                 .padding(top = 36.dp, bottom = 32.dp)
