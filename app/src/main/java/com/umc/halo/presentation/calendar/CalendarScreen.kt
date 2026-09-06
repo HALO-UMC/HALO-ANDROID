@@ -55,6 +55,11 @@ fun CalendarScreen(
     val state by vm.uiState.collectAsState()
     val context = LocalContext.current
 
+    // 화면이 보일 때마다 조회
+    LaunchedEffect(Unit) {
+        vm.onEvent(CalendarUiEvent.OnScreenShown)
+    }
+
     // 조회 실패 안내
     // TODO: 표시 방식은 디자인 확정 후 교체 (지금은 토스트)
     LaunchedEffect(state.errorMessage) {

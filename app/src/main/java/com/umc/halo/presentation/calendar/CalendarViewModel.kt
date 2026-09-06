@@ -19,7 +19,7 @@ import javax.inject.Inject
  * 달력(그 달의 실제 일수·1일 요일 정렬)은 여기서 계산하고
  * 그 위에 얹을 데이터(기록된 날·요약·날짜별 기록)는 서버에서 받아옴
  *
- * 조회 범위: **과거 ~ 현재 월(오늘 기준)** 까지만
+ * 조회 범위: 과거 ~ 현재 월(오늘 기준) 까지만
  * 현재 월에선 다음 달로 못 넘어가게 오른쪽 화살표를 숨김 처리
  */
 @HiltViewModel
@@ -39,13 +39,14 @@ class CalendarViewModel @Inject constructor(
     private var monthJob: Job? = null
     private var dayRecordJob: Job? = null
 
-    init {
-        // 현재 월부터 시작
-        loadMonth(currentYear, currentMonth)
-    }
+    // 첫 진입은 현재 월부터 조회 재진입은 보고 있던 달을 다시 조회
+    private var isFirstLoad = true
 
     override fun onEvent(event: CalendarUiEvent) {
         when (event) {
+            CalendarUiEvent.OnScreenShown ->
+                if (isFirstLoad) loadMonth(currentYear, currentMonth) else refreshMonth()
+
             CalendarUiEvent.OnPrevMonthClicked -> moveMonth(-1)
             CalendarUiEvent.OnNextMonthClicked -> moveMonth(+1)
 
@@ -68,12 +69,12 @@ class CalendarViewModel @Inject constructor(
     }
 
     /**
-     * 그 달의 현황을 서버에서 받아옴
      *
      * 응답을 기다리는 동안 화면이 멈춘 것처럼 보이지 않도록
      * 달력 뼈대(마크 없는 빈 달력)를 먼저 그려두고 마크·요약만 나중에 채우기
      */
     private fun loadMonth(year: Int, month: Int) {
+        isFirstLoad = false
         monthJob?.cancel()
         monthJob = viewModelScope.launch {
             updateState {
@@ -89,33 +90,52 @@ class CalendarViewModel @Inject constructor(
                 )
             }
 
-            runCatching { calendarRepository.getMonth(year, month) }
-                .onSuccess { calendarMonth ->
-                    actionReporter.reportSuccess(SCREEN, "load_month")
-                    updateState {
-                        copy(
-                            recordedChapterCount = calendarMonth.completedChapterCount,
-                            days = buildDays(year, month, calendarMonth.recordedDays),
-                            summary = calendarMonth.summary
-                        )
-                    }
+            fetchMonth(year, month).onFailure {
+                // 실패하면 다른 달 수치가 남지 않도록 요약을 비움
+                updateState {
+                    copy(recordedChapterCount = 0, summary = MonthSummary(0, 0, emptyList()))
                 }
-                .onFailure { throwable ->
-                    actionReporter.reportFailure(throwable, SCREEN, "load_month")
-                    // 실패하면 이전 달 수치가 남지 않도록 요약을 비우고 안내
-                    updateState {
-                        copy(
-                            recordedChapterCount = 0,
-                            summary = MonthSummary(0, 0, emptyList()),
-                            errorMessage = throwable.message?.takeIf { message -> message.isNotBlank() }
-                                ?: MONTH_LOAD_FAILED_MESSAGE
-                        )
-                    }
-                }
+            }
 
             updateState { copy(isLoading = false) }
         }
     }
+
+    /**
+     * 보고 있던 달을 다시 조회 (화면 재진입)
+     */
+    private fun refreshMonth() {
+        val year = currentState.year
+        val month = currentState.month
+
+        monthJob?.cancel()
+        monthJob = viewModelScope.launch { fetchMonth(year, month) }
+    }
+
+    /**
+     * 월별 현황 조회 → 성공하면 마크, 요약을 교체
+     */
+    private suspend fun fetchMonth(year: Int, month: Int) =
+        runCatching { calendarRepository.getMonth(year, month) }
+            .onSuccess { calendarMonth ->
+                actionReporter.reportSuccess(SCREEN, "load_month")
+                updateState {
+                    copy(
+                        recordedChapterCount = calendarMonth.completedChapterCount,
+                        days = buildDays(year, month, calendarMonth.recordedDays),
+                        summary = calendarMonth.summary
+                    )
+                }
+            }
+            .onFailure { throwable ->
+                actionReporter.reportFailure(throwable, SCREEN, "load_month")
+                updateState {
+                    copy(
+                        errorMessage = throwable.message?.takeIf { message -> message.isNotBlank() }
+                            ?: MONTH_LOAD_FAILED_MESSAGE
+                    )
+                }
+            }
 
     /** 날짜 클릭 → 그 날 기록 조회 (응답 전까지 모달은 로딩 상태로 열려 있음) */
     private fun loadDayRecord(day: Int) {
