@@ -2,6 +2,7 @@ package com.umc.halo.presentation.storybook.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.umc.halo.core.logging.ActionReporter
 import com.umc.halo.domain.model.storybook.StoryBookIndex
 import com.umc.halo.domain.model.storybook.StoryBookInfo
 import com.umc.halo.domain.model.storybook.StorybookProgress
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StoryBookDetailViewModel @Inject constructor(
     private val storybookDetailRepository: StorybookDetailRepository,
+    private val actionReporter: ActionReporter,
     savedStateHandle: SavedStateHandle
 ): BaseViewModel<StoryBookDetailUiState, StoryBookDetailUiEvent>(
     StoryBookDetailUiState()
@@ -67,6 +69,7 @@ class StoryBookDetailViewModel @Inject constructor(
             updateState { copy(isLoading = true, errorMessage = null) }
             runCatching { storybookDetailRepository.getStorybookDetail(storybookId) }
                 .onSuccess { storybookDetail ->
+                    actionReporter.reportSuccess(SCREEN, "load_detail")
                     updateState {
                         copy(
                             storyBookId = storybookDetail.storyBookId,
@@ -88,7 +91,8 @@ class StoryBookDetailViewModel @Inject constructor(
                             hasLoadFailed = false
                         )
                     }
-                }.onFailure {
+                }.onFailure { throwable ->
+                    actionReporter.reportFailure(throwable, SCREEN, "load_detail")
                     updateState {
                         copy(
                             hasLoadFailed = true,
@@ -106,6 +110,7 @@ class StoryBookDetailViewModel @Inject constructor(
             runCatching {
                 storybookDetailRepository.startStorybook(storybookId).storybookId
             }.onSuccess { startedStorybookId ->
+                actionReporter.reportSuccess(SCREEN, "start")
                 updateState {
                     copy(startedStorybook = startedStorybookId)
                 }
@@ -119,6 +124,7 @@ class StoryBookDetailViewModel @Inject constructor(
         storybookId: Long,
         throwable: Throwable
     ) {
+        actionReporter.reportFailure(throwable, SCREEN, "start")
         val apiError = (throwable as? HttpException)?.toApiError()
         if (apiError?.code == ALREADY_STARTED_CODE) {
             updateState {
@@ -152,6 +158,7 @@ class StoryBookDetailViewModel @Inject constructor(
     )
 
     private companion object {
+        const val SCREEN = "storybook_detail"
         // TODO: 에러 문구/표시 방식은 디자인 확정 후 교체
         const val LOAD_FAILED_MESSAGE = "스토리북 상세 페이지를 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
         const val START_FAILED_MESSAGE = "스토리북을 시작하지 못했어요."

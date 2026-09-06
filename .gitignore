@@ -301,3 +301,5 @@ fabric.properties
 # Claude Code 관련 문서·산출물 (깃에 올리지 않음)
 CLAUDE.md
 .claude/
+HALO_패키지구조*.md
+HALO_공유화면모듈*.md

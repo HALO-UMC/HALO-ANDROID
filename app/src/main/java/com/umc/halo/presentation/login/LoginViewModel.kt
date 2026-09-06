@@ -3,6 +3,7 @@ package com.umc.halo.presentation.login
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.umc.halo.core.datastore.DeviceUuidDataStore
+import com.umc.halo.core.logging.ActionReporter
 import com.umc.halo.core.network.toUserMessageOrNull
 import com.umc.halo.data.remote.auth.GoogleLoginDataSource
 import com.umc.halo.data.remote.auth.KakaoLoginDataSource
@@ -31,7 +32,8 @@ class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val resolveDestinationAfterLogin: ResolveDestinationAfterLoginUseCase,
     private val deviceUuidDataStore: DeviceUuidDataStore,
-    private val notificationRepository: NotificationRepository
+    private val notificationRepository: NotificationRepository,
+    private val actionReporter: ActionReporter
 ) : BaseViewModel<LoginUiState, LoginUiEvent>(
     initialState = LoginUiState()
 ) {
@@ -78,11 +80,13 @@ class LoginViewModel @Inject constructor(
 
                 resolveDestinationAfterLogin(loginResult)
             }.onSuccess { destination ->
+                actionReporter.reportSuccess(SCREEN, "login")
                 updateState { copy(destination = destination) }
                 registerFCMToken()
             }.onFailure { throwable ->
                 // 사용자가 직접 창을 닫은 건 실패가 아님으로 처리
                 if (throwable !is LoginCancelledException) {
+                    actionReporter.reportFailure(throwable, SCREEN, "login")
                     // SDK 예외의 영문 메시지는 걸러지고 기본 문구로 넘어가게 처리
                     updateState {
                         copy(errorMessage = throwable.toUserMessageOrNull() ?: LOGIN_FAILED_MESSAGE)
@@ -95,13 +99,14 @@ class LoginViewModel @Inject constructor(
     }
 
     private suspend fun registerFCMToken() {
-        repeat(3) { attempt ->
+        repeat(FCM_REGISTER_MAX_ATTEMPTS) { attempt ->
             runCatching {
                 val uuid = deviceUuidDataStore.getOrCreate()
                 val token = notificationRepository.getFcmToken()
 
                 notificationRepository.addMembers(token, uuid)
             }.onSuccess {
+                actionReporter.reportSuccess(SCREEN, "register_fcm_token")
                 return
             }.onFailure {
                 Log.e(
@@ -110,12 +115,19 @@ class LoginViewModel @Inject constructor(
                     it
                 )
 
+                // 마지막 시도까지 실패했을 때만 리포트 (재시도 중엔 노이즈라 생략)
+                if (attempt == FCM_REGISTER_MAX_ATTEMPTS - 1) {
+                    actionReporter.reportFailure(it, SCREEN, "register_fcm_token")
+                }
+
                 delay(1000)
             }
         }
     }
 
     private companion object {
+        const val SCREEN = "login"
+        const val FCM_REGISTER_MAX_ATTEMPTS = 3
         // TODO: 에러 문구/표시 방식)은 디자인 확정 후 교체
         const val LOGIN_FAILED_MESSAGE = "로그인에 실패했어요. 잠시 후 다시 시도해 주세요."
     }
