@@ -2,6 +2,10 @@ package com.umc.halo.presentation.calendar
 
 /** 캘린더 화면 이벤트 */
 sealed interface CalendarUiEvent {
+
+    //보고 있던 달을 다시 조회
+    data object OnScreenShown : CalendarUiEvent
+
     // 달 이동
     data object OnPrevMonthClicked : CalendarUiEvent
     data object OnNextMonthClicked : CalendarUiEvent
